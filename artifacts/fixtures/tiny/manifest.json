@@ -1,0 +1,12 @@
+{
+  "name": "tiny",
+  "format": 1,
+  "files": {
+    "LICENSE": "9b304d1ef211f1da0ebc18ee333564472da14e46db9b5744cab02a62c32ec691",
+    "calibration.json": "add436c2f424a1186df010af347fb04ab0ec241eff6a75aebf70208574fc6468",
+    "config.json": "efbef6d216e47d784431bc2e03af00e6f7119f66279a6227fe538eb43a0faa6c",
+    "model.safetensors": "3dea6416a1dc9335efcc4f0611fd2c61021043cd5be5d658d538f0680cce9ee6",
+    "tokenizer.json": "a4050d8180b24e575b0edb490302be3e1263a965a1f1cf2cbcdb54d8c076c9c2"
+  },
+  "dataset_manifest": null
+}

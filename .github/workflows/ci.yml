@@ -1,0 +1,25 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - run: python -m unittest data.test_data_schema
+      - run: python training/python/tools/gate.py --self-test
+      - run: python training/python/tools/gate.py --task T-rust-skel
+  gpu:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "GPU parity runs separately and never blocks CPU CI (no device here)"

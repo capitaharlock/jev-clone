@@ -1,0 +1,15 @@
+[package]
+name = "jev-bench"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "jev-bench"
+path = "src/main.rs"
+
+[dependencies]
+jev-runtime = { path = "../jev-runtime" }
+
+[lib]
+name = "jev_bench"
+path = "src/lib.rs"

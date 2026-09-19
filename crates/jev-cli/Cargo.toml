@@ -1,0 +1,14 @@
+[package]
+name = "jev-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "jevclone"
+path = "src/main.rs"
+
+[dependencies]
+clap = { workspace = true }
+jev-core = { path = "../jev-core" }
+jev-server = { path = "../jev-server" }
+tokio = { workspace = true }

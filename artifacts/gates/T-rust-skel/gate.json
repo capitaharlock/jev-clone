@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "task": "T-rust-skel",
+  "pass": true,
+  "commit": "f9efd0e7e0192faf03e9331072a2f33c4894ef3f",
+  "config": "cpu",
+  "tree_hash": "dc6714b11a07358063161d7bb55570d06c941179d363f93d6e5422e0ea26cd81",
+  "upstream": null,
+  "upstream_msg": "no upstream (root gate)",
+  "metrics": {
+    "fmt": "pass",
+    "clippy": "pass",
+    "rust-tests": "pass",
+    "python-tests": "pass"
+  },
+  "created_utc": "2026-09-19T22:36:15.371701+00:00"
+}

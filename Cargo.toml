@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/jev-core",
+    "crates/jev-model",
+    "crates/jev-runtime",
+    "crates/jev-server",
+    "crates/jev-cli",
+    "crates/jev-bench",
+    "crates/jev-format",
+]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+hex = "0.4"
+half = { version = "2", features = ["serde"] }
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+clap = { version = "4", features = ["derive"] }
+
+[profile.release]
+lto = true
