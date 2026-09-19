@@ -1,0 +1,6 @@
+{"text": "My card was declined abroad", "label": "card_declined", "split": "train"}
+{"text": "How do I reset my PIN?", "label": "pin_reset", "split": "train"}
+{"text": "¿Dónde está mi transferencia?", "label": "transfer_status", "split": "train"}
+{"text": "Close my savings account please", "label": "account_closure", "split": "calibration"}
+{"text": "What is my balance?", "label": "balance_check", "split": "test"}
+{"text": "Unlabeled mumble", "label": null, "split": "train"}

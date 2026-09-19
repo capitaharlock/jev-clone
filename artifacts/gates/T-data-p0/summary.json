@@ -1,0 +1,87 @@
+{
+  "p0_version": 1,
+  "counts": {
+    "huffpost": 6,
+    "banking77": 6,
+    "boolq": 6,
+    "civil-comments": 6,
+    "helpsteer2": 6
+  },
+  "splits": {
+    "train": 20,
+    "calibration": 5,
+    "test": 5
+  },
+  "option_histogram": {
+    "4": 12,
+    "2": 12,
+    "5": 30
+  },
+  "fence": {
+    "huffpost": {
+      "license": "CC0",
+      "usage": "train",
+      "train_ok": false,
+      "reason": "gated: needs HuffPost content-rights fence decision (plan \u00a7148)",
+      "revision": "hf-khalidalt-huffpost-snap-9f2c4a1e",
+      "sha256": "d09da33b8303dbf100ea90af255e15365045e895f84cc327cf906965d6977a4d"
+    },
+    "banking77": {
+      "license": "CC-BY-4.0",
+      "usage": "train",
+      "train_ok": true,
+      "reason": "ok",
+      "revision": "hf-polyai-banking77-v1-1a2b3c4d",
+      "sha256": "c948a996545f10d59d4b009fa41e175b7fc9bef011a704ed25c2255c2ad9ad7e"
+    },
+    "boolq": {
+      "license": "CC-BY-SA-3.0",
+      "usage": "train",
+      "train_ok": false,
+      "reason": "license 'CC-BY-SA-3.0' not approved for train",
+      "revision": "hf-google-boolq-v1-5e6f7a8b",
+      "sha256": "bfcd885ba142dc9cc1c7b29675908c2e0da5c29c082e9a05b18f3863e2f43a74"
+    },
+    "civil-comments": {
+      "license": "CC0-1.0",
+      "usage": "train",
+      "train_ok": true,
+      "reason": "ok",
+      "revision": "tfds-civil-comments-3.0.1-c9d0e1f2",
+      "sha256": "0fdb8c13c04f572459d22a0004b93073f1ba3acb156f3dcfa86785fd08829850"
+    },
+    "helpsteer2": {
+      "license": "CC-BY-4.0",
+      "usage": "train",
+      "train_ok": true,
+      "reason": "ok",
+      "revision": "hf-nvidia-helpsteer2-v1-4b5c6d7e",
+      "sha256": "634e7aba532cabb36bdeb0b2e78eafe406a55ac46cf8b3d5ee9676d849ab94c6"
+    }
+  },
+  "firewall_benchmarks_blocked": [
+    "arc-challenge",
+    "clinc150-oos",
+    "gpqa",
+    "mmlu-pro",
+    "musr",
+    "openbookqa",
+    "rewardbench2",
+    "simpleqa"
+  ],
+  "huffpost_note": "smoke only (\u00a7148): not reasoning evidence, gated from commercial weights",
+  "boolq_note": "CC-BY-SA-3.0 share-alike obligations preserved in card + manifests",
+  "manifest": {
+    "p0_version": 1,
+    "seed": 20260920,
+    "weights": {
+      "huffpost": 1.0,
+      "banking77": 1.0,
+      "boolq": 1.0,
+      "civil-comments": 1.0,
+      "helpsteer2": 1.0
+    },
+    "examples": 30,
+    "manifest_sha256": "43280dd232a927c13fa64509d090c4dce6b4a603be4e01f01da580a6b1b0c1d2"
+  }
+}

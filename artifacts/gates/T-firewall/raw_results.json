@@ -1,0 +1,55 @@
+{
+  "firewall_version": 1,
+  "stress_suite_version": 1,
+  "seed": 20260919,
+  "sim_threshold": 0.5,
+  "canaries": {
+    "hits": 16,
+    "total": 16
+  },
+  "detection_rate": 1.0,
+  "clean": {
+    "false_positives": 0,
+    "total": 8
+  },
+  "false_positive_rate": 0.0,
+  "perturbed": {
+    "label_rename": {
+      "hits": 16,
+      "total": 16
+    },
+    "opaque_id_trap": {
+      "hits": 16,
+      "total": 16
+    },
+    "shuffle_words": {
+      "hits": 0,
+      "total": 16
+    },
+    "hard_sibling": {
+      "hits": 16,
+      "total": 16
+    },
+    "irrelevant_state": {
+      "hits": 16,
+      "total": 16
+    },
+    "evidence_last": {
+      "hits": 16,
+      "total": 16
+    },
+    "contradiction": {
+      "hits": 16,
+      "total": 16
+    },
+    "multilingual_mismatch": {
+      "hits": 16,
+      "total": 16
+    },
+    "typos": {
+      "hits": 16,
+      "total": 16
+    }
+  },
+  "verdict": "GO"
+}

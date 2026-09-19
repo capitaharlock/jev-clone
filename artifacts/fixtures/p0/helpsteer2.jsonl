@@ -1,0 +1,6 @@
+{"prompt": "Summarize tides", "response": "Tides follow the moon.", "helpfulness": 4, "correctness": 4, "coherence": 4, "complexity": 1, "verbosity": 1, "split": "train"}
+{"prompt": "Explain taxes", "response": "Taxes fund services.", "helpfulness": 3, "correctness": 3, "coherence": 3, "complexity": 2, "verbosity": 2, "split": "train"}
+{"prompt": "Resume las mareas", "response": "Las mareas siguen a la luna.", "helpfulness": 4, "correctness": 4, "coherence": 3, "complexity": 1, "verbosity": 1, "split": "calibration"}
+{"prompt": "Debug this loop", "response": "Check the index bound.", "helpfulness": 2, "correctness": 2, "coherence": 2, "complexity": 3, "verbosity": 2, "split": "test"}
+{"prompt": "Write a haiku", "response": "Silent code sleeps still.", "helpfulness": 3, "correctness": 3, "coherence": 4, "complexity": 2, "verbosity": 1, "split": "train"}
+{"prompt": "Unrated answer", "response": "Some text here.", "helpfulness": null, "correctness": null, "coherence": null, "complexity": null, "verbosity": null, "split": "train"}

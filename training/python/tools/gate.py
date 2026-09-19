@@ -103,6 +103,7 @@ REGRESSION = [
     ("rust-tests", ["cargo", "test", "--workspace"]),
     ("python-tests", ["python3", "-m", "unittest", "data.test_data_schema"]),
     ("python-firewall", ["python3", "-m", "unittest", "data.test_firewall"]),
+    ("python-adapters", ["python3", "-m", "unittest", "data.test_adapters"]),
 ]
 
 
