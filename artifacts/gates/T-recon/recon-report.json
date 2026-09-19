@@ -1,0 +1,115 @@
+{
+  "recon_version": 1,
+  "seed": 20260920,
+  "snapshot_hash": "sha256:af91648606822a0a45e4d69c879ead0001eb83998c8b5c7106c685d56d4d3ce9",
+  "n_items": 54,
+  "inventory": {
+    "recon_version": 1,
+    "machine": "arm64",
+    "cpu": "arm",
+    "os": "Darwin 25.3.0",
+    "python": "3.14.6",
+    "torch": "absent",
+    "cuda": false,
+    "mps": true
+  },
+  "baselines": {
+    "random": {
+      "status": "measured",
+      "n": 45,
+      "acc": 0.28888888888888886
+    },
+    "majority": {
+      "status": "measured",
+      "n": 45,
+      "acc": 0.3333333333333333
+    },
+    "char-ngram-centroid": {
+      "status": "measured",
+      "n": 18,
+      "acc": 0.16666666666666666
+    },
+    "tiny-logreg-tfidf": {
+      "status": "measured",
+      "n": 18,
+      "acc": 0.16666666666666666
+    },
+    "gliclass-hf": {
+      "status": "not_available",
+      "reason": "offline: pesa HF no descargable en esta m\u00e1quina"
+    },
+    "laya": {
+      "status": "not_available",
+      "reason": "offline: repo/pesos no disponibles localmente"
+    },
+    "verdict-kev-jevlike": {
+      "status": "not_available",
+      "reason": "offline: servicios externos sin credenciales en local"
+    },
+    "small-llm": {
+      "status": "not_available",
+      "reason": "offline: ning\u00fan checkpoint LLM vendorizado en el repo"
+    }
+  },
+  "latency": {
+    "encode_50states": {
+      "cold_s": 0.0005185829941183329,
+      "warm": {
+        "n": 20,
+        "p50": 0.0004600000102072954,
+        "p95": 0.0007477089529857039,
+        "p99": 0.0008922080742195249,
+        "min": 0.0004420001059770584,
+        "max": 0.0008922080742195249
+      }
+    },
+    "score_snapshot": {
+      "cold_s": 0.0017712500412017107,
+      "warm": {
+        "n": 5,
+        "p50": 0.0018490420188754797,
+        "p95": 0.0018659579800441861,
+        "p99": 0.0018659579800441861,
+        "min": 0.0017550000920891762,
+        "max": 0.0018659579800441861
+      }
+    }
+  },
+  "raw_latency_s": {
+    "encode_50states": [
+      0.000583832967095077,
+      0.0004791670944541693,
+      0.0005110829370096326,
+      0.0007477089529857039,
+      0.0008922080742195249,
+      0.0005047500599175692,
+      0.0005239159800112247,
+      0.00046125007793307304,
+      0.00044704193715006113,
+      0.0005237919976934791,
+      0.0005087919998914003,
+      0.0004600000102072954,
+      0.0004491670988500118,
+      0.00044566707219928503,
+      0.0004456250462681055,
+      0.00044487498234957457,
+      0.0004448340041562915,
+      0.0004437500610947609,
+      0.00044249999336898327,
+      0.0004420001059770584
+    ],
+    "score_snapshot": [
+      0.0018510830122977495,
+      0.0018659579800441861,
+      0.001799292047508061,
+      0.0018490420188754797,
+      0.0017550000920891762
+    ]
+  },
+  "ideas": [
+    "centroide char-ngram ya separa intents: el encoder compartido debe batir baseline 2 en Banking77 para probar transferencia.",
+    "majority por dataset es el suelo honesto de cada slice de sesgo.",
+    "encode_50states marca el techo CPU del front-end sin batching."
+  ],
+  "report_hash": "sha256:fc3fa483117ae0e815effd9903c5867cee9541c0137d041cedbb9d47453a6a93"
+}

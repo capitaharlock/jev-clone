@@ -44,7 +44,7 @@ ROOT = os.path.dirname(
 GATE_DIR = os.path.join(ROOT, "artifacts", "gates")
 
 # Relative paths (from repo root) whose bytes define the lineage.
-LINEAGE_DIRS = ("crates", "training", "data", "artifacts/fixtures")
+LINEAGE_DIRS = ("crates", "training", "data", "eval", "artifacts/fixtures")
 SKIP_DIRS = {"target", "__pycache__", ".git"}
 
 
@@ -104,6 +104,7 @@ REGRESSION = [
     ("python-tests", ["python3", "-m", "unittest", "data.test_data_schema"]),
     ("python-firewall", ["python3", "-m", "unittest", "data.test_firewall"]),
     ("python-adapters", ["python3", "-m", "unittest", "data.test_adapters"]),
+    ("python-recon", ["python3", "-m", "unittest", "eval.test_recon"]),
 ]
 
 
