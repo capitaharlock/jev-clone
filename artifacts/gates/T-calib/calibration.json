@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "calib_version": 1,
+  "predictor": {
+    "name": "cosine-char3-softmax",
+    "base_temperature": 1.0,
+    "version": 1
+  },
+  "fit_split": "calibration",
+  "split_sha256": "d99ec319bc2b044e879fb1a1e84dfde28f60ffcd8aca8a3852f6dc32246e876e",
+  "n_fit": 100,
+  "global": {
+    "temperature": 0.05,
+    "nll_before": 0.5646935979401707,
+    "nll_after": 0.023480522517238117,
+    "n": 100,
+    "group": "global"
+  },
+  "by_locale": {
+    "en-US": {
+      "temperature": 0.05,
+      "nll_before": 0.550272639387209,
+      "nll_after": 0.002239061510555054,
+      "n": 47
+    },
+    "es-ES": {
+      "temperature": 0.05,
+      "nll_before": 0.577481995147514,
+      "nll_after": 0.042317289825051396,
+      "n": 53
+    }
+  },
+  "by_cardinality": {
+    "2": {
+      "temperature": 0.05,
+      "nll_before": 0.5646935979401707,
+      "nll_after": 0.023480522517238117,
+      "n": 100
+    }
+  },
+  "thresholds": {
+    "maxprob": {
+      "threshold": 0.9206906939534327,
+      "target_coverage": 0.9
+    },
+    "energy": {
+      "threshold": 1.2022880771052384,
+      "target_coverage": 0.9
+    },
+    "margin": {
+      "threshold": 0.8413813879068655,
+      "target_coverage": 0.9
+    }
+  }
+}

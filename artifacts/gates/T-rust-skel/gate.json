@@ -2,9 +2,9 @@
   "format": 1,
   "task": "T-rust-skel",
   "pass": true,
-  "commit": "c2d3306be47fed31363004d27a94d21d3b642fbb",
+  "commit": "66bf6b8a6753d00f3e0a12f124d69e1448f65b8b",
   "config": "cpu",
-  "tree_hash": "5bba14f9b1c4b31708c70f1b9b43b5a7cc2bdbf26c9561fc6338af70c351389f",
+  "tree_hash": "3d8343ca9a782891ca263a5aee0bb1f92722be2aa89f728e9201ba5f99707964",
   "upstream": null,
   "upstream_msg": "no upstream (root gate)",
   "metrics": {
@@ -21,7 +21,8 @@
     "python-hardneg": "pass",
     "python-curriculum": "pass",
     "python-distillation": "pass",
-    "python-gold": "pass"
+    "python-gold": "pass",
+    "python-calib": "pass"
   },
-  "created_utc": "2026-09-20T00:20:50.999949+00:00"
+  "created_utc": "2026-09-20T00:38:47.893773+00:00"
 }

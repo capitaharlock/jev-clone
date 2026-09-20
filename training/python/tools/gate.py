@@ -116,6 +116,7 @@ REGRESSION = [
     ("python-distillation", ["python3", "-m", "unittest",
                              "model.test_distillation"]),
     ("python-gold", ["python3", "-m", "unittest", "data.test_gold"]),
+    ("python-calib", ["python3", "-m", "unittest", "eval.test_calib"]),
 ]
 
 
