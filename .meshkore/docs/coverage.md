@@ -41,6 +41,8 @@ anterior y conserva su linaje de artefactos.
 | 16 | local-runtime | T-quant-onnx | Export/quantización sólo si gana medida |
 | 17 | cloud-release | T-cloud-api | API y Docker reproducible local |
 | 18 | cloud-release | T-release | Bundle verificable de research release |
+| — | decision-model | T-prefetch | Prefetch único + conversión temprana de todas las fuentes |
+| — | decision-model | T-train-base | Baseline TF-IDF+LR sobre sets convertidos, v2 absorbe Qwen-aug |
 
 Gate command: `python training/python/tools/gate.py --task <task-id>`. It must
 write `artifacts/gates/<task-id>/gate.json` with `pass: true`, commit, upstream
@@ -49,9 +51,10 @@ The next task must refuse to start if that artifact is missing, red, stale or
 belongs to another lineage. A failed scientific target records NO-GO and takes
 the documented fallback; failing tests or integrity checks never get bypassed.
 
-`T-dist-train` is the only optional branch. It unlocks after `T-v1-train`,
-remains backlog, and no required task depends on it; V1 therefore needs one
-terminal and one computer only.
+`train-scaleout` is the only optional branch (backlog initiative, 3 tasks:
+`T-scaleout-gate` → `T-dist-train` → `T-scaleout-data`). It unlocks after
+`T-curriculum` (done) via its own gate, and no required task depends on it;
+V1 therefore needs one terminal and one computer only.
 
 ## Sections (plan maestro)
 
@@ -79,7 +82,7 @@ terminal and one computer only.
 | §43 Dataset matrix | Fuente, licencia, transformación y train/eval-only | T-data-schema, source-register |
 | §42 Firewall | Benchmarks: no entrenar | T-firewall |
 | §§44–47 Sintético | Hard negatives, teachers, presupuestos €; Qwen local primero | T-hardneg, T-distillation |
-| §§123–125 / single-machine | Un equipo por run; cola opcional con 3 workers; DDP solo CUDA homogéneo si gana medido | T-curriculum, T-dist-train (backlog, opcional) |
+| §§123–125 / single-machine | Un equipo por run; cola opcional con 3 workers; DDP solo CUDA homogéneo si gana medido | T-curriculum, #train-scaleout: T-scaleout-gate, T-dist-train, T-scaleout-data (backlog, opcional) |
 | §§48–49 Gold | Human gold set, acuerdo inter-anotador | T-gold |
 | §§50–53 Curriculum | Stages, sampling, cardinalidad, multi-Q | T-curriculum |
 | §54–55 Scratch | Contrastivo extra, from-scratch | defer: research (solo con gap) |
@@ -89,7 +92,7 @@ terminal and one computer only.
 | §§68–70 Repo/tests/repro | Layout, testing, reproducibilidad | T-rust-skel |
 | §§85, 107–111 Long/mutable state | Buckets 512/2K/4K/8K, position stress, invalidación | T-shared-state, T-state-cache |
 | §§99 Shortcut learning | Label/source/position/template leakage | T-firewall, T-option-mixer |
-| §§125–127 Scheduler/ablations | Cola local, successive halving, ablations | T-curriculum, T-dist-train |
+| §§125–127 Scheduler/ablations | Cola local, successive halving, ablations | T-curriculum, T-dist-train (#train-scaleout) |
 | §§128–134 GO/M0–M5 | Criterios y milestones 0–5 | T-calib (GO), T-release (M5) |
 | §135 No-hacer | Lista de prohibiciones del primer mes | T-calib |
 | §§136–147 Riesgos | 11 riesgos + register | T-calib |
@@ -125,6 +128,13 @@ terminal and one computer only.
 | MoE / from-scratch tiny / decoder→encoder | defer: research P3 |
 | Compresión latente de state | defer: V2, tras V1 sólido |
 | Long-state | T-shared-state mide 512/2K/4K/8K; compresión solo si el perfil lo exige |
-| Tres dispositivos | T-dist-train paraleliza runs; no promete DDP heterogéneo ni 3× sin benchmark |
+| Tres dispositivos | #train-scaleout: T-scaleout-gate (activación/inventario x3), T-dist-train (cola x3, paraleliza runs), T-scaleout-data (volumen); no DDP heterogéneo ni 3× sin benchmark |
+| Data-training §§19–31, 120–126 | Fuentes masivas P0+P1, HuffPost/MASSIVE completos, cierre LogiQA/ReClor | #data-training: T-bigsrc, T-massive-huff |
+| Data-training §§32–47, 127–133 | Synthetic factory council, Wikidata programático, hard negatives, K, multi-Q | #data-training: T-synth-factory, T-prog-gold |
+| Data-training §§48–53, 61–68, 86–87, 95–97, 111–112, 135–137 | Mixes 1M→5M, guardrails, losses, distillation soft, scaling | #data-training: T-mix-1m, T-mix-5m |
+| Data-training §§54–55, 76–83, 113–115, 138–140 | OOD, calibration split, Jevals clean room, 4 reportes | #data-training: T-data-eval |
+| Data-training §§21–22, 34, 50–51, 87–89 | v2/v3 10M/20M, FLAN amplio, Dolma (sólo si la curva abre) | #data-training: T-mix-10m (backlog) |
 | Multi-región / routing global | defer: post-comercial |
+| Monitor 24/7 terminal + dashboard (totalizadores, state.json) | #data-training: T-train-monitor (`tools/training_monitor.py`, `artifacts/runs/training-monitor/state.json`; v2: latido `--tick`, train en fondo con venv) |
+| Teacher barato + datasets intencionales de decisión (email-triage v1, juez/labeler) | #data-training: T-teacher-intent `done` (`data/intent/email_triage.py` 5k filas, `data/teacher_client.py` con caché; piloto 500 acuerdo 0,92, coste 0,00 €; train 20260920T223639Z acc=1,0; 14 casos forward-testing) |
 | gRPC / MessagePack / unix sockets | defer: solo si JSON limita |

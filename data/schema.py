@@ -26,6 +26,7 @@ class Question:
     options: list[Option] = field(default_factory=list)
     answer: str | None = None  # option id, or "unknown"
     teacher_conf: float | None = None
+    weights: dict[str, float] | None = None  # per-option weights (#T-teacher-intent)
 
 
 @dataclass
@@ -64,6 +65,17 @@ def validate(example: Example) -> list[str]:
             errors.append(f"question {q.id}: answer not among options")
         if q.teacher_conf is not None and not 0.0 <= q.teacher_conf <= 1.0:
             errors.append(f"question {q.id}: teacher_conf outside [0,1]")
+        if q.weights is not None:
+            if not isinstance(q.weights, dict):
+                errors.append(f"question {q.id}: weights must be a dict")
+            else:
+                for k, v in q.weights.items():
+                    if k not in opt_ids:
+                        errors.append(f"question {q.id}: weight key {k!r} not among options")
+                    if not isinstance(v, (int, float)) or v < 0:
+                        errors.append(f"question {q.id}: weight {k!r} must be >= 0")
+                if not any((v or 0) > 0 for v in q.weights.values()):
+                    errors.append(f"question {q.id}: weights need at least one positive value")
     return errors
 
 

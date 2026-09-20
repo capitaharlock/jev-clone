@@ -1,0 +1,101 @@
+{
+  "run": "20260920T223639Z",
+  "model": "tfidf-logreg-v1",
+  "seeds": {
+    "subsample": 7
+  },
+  "data": {
+    "boolq": 10279023,
+    "helpsteer2": 76977430,
+    "civil-comments": 1062302574,
+    "huffpost": 88534603,
+    "banking77": 6360326,
+    "massive": 40814161,
+    "logiqa": 74365745,
+    "reclor": 7567995,
+    "email-triage": 2820195
+  },
+  "jobs": [
+    {
+      "task": "boolq",
+      "n_train": 9427,
+      "n_eval": 3270,
+      "accuracy": 0.6776758409785932,
+      "logloss": 0.6054342843280323,
+      "seconds": 2.4,
+      "model": "models/boolq.pkl"
+    },
+    {
+      "task": "helpsteer2",
+      "n_train": 101620,
+      "n_eval": 5190,
+      "accuracy": 0.31676300578034683,
+      "logloss": 1.4436734176647816,
+      "seconds": 88.3,
+      "model": "models/helpsteer2.pkl"
+    },
+    {
+      "task": "civil-comments",
+      "n_train": 50000,
+      "n_eval": 20000,
+      "accuracy": 0.9282,
+      "logloss": 0.20420340570272535,
+      "seconds": 16.6,
+      "model": "models/civil-comments.pkl"
+    },
+    {
+      "task": "huffpost",
+      "n_train": 162935,
+      "n_eval": 18205,
+      "accuracy": 0.6234001647898929,
+      "logloss": 1.445361353338337,
+      "seconds": 112.1,
+      "model": "models/huffpost.pkl"
+    },
+    {
+      "task": "banking77",
+      "n_train": 10003,
+      "n_eval": 3080,
+      "accuracy": 0.8545454545454545,
+      "logloss": 1.2746290931342672,
+      "seconds": 7.1,
+      "model": "models/banking77.pkl"
+    },
+    {
+      "task": "massive",
+      "n_train": 69084,
+      "n_eval": 20000,
+      "accuracy": 0.79035,
+      "logloss": 1.1173770004827195,
+      "seconds": 47.0,
+      "model": "models/massive.pkl"
+    },
+    {
+      "task": "logiqa",
+      "n_train": 63683,
+      "n_eval": 20000,
+      "accuracy": 0.43505,
+      "logloss": 1.0727166808922386,
+      "seconds": 29.7,
+      "model": "models/logiqa.pkl"
+    },
+    {
+      "task": "reclor",
+      "n_train": 4638,
+      "n_eval": 500,
+      "accuracy": 0.254,
+      "logloss": 1.4120460234868382,
+      "seconds": 2.4,
+      "model": "models/reclor.pkl"
+    },
+    {
+      "task": "email-triage",
+      "n_train": 4000,
+      "n_eval": 1000,
+      "accuracy": 1.0,
+      "logloss": 0.021238723266307567,
+      "seconds": 0.2,
+      "model": "models/email-triage.pkl"
+    }
+  ]
+}

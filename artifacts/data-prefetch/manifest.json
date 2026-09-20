@@ -215,6 +215,16 @@
    },
    "sha256": "1820341d37e6633f",
    "note": "test split gold hidden -> answer unknown"
+  },
+  {
+   "job": "email-triage",
+   "hf_id": null,
+   "status": "converted-intent-v1",
+   "rows": 5000,
+   "examples": 5000,
+   "skipped": 0,
+   "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d",
+   "revision": "intent-v1"
   }
  ],
  "summary": {

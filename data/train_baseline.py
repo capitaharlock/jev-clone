@@ -32,6 +32,7 @@ JOBS = [
     {"name": "massive", "file": "massive.jsonl", "kind": "choice", "sample": None},
     {"name": "logiqa", "file": "logiqa.jsonl", "kind": "choice", "sample": None},
     {"name": "reclor", "file": "reclor.jsonl", "kind": "choice", "sample": None},
+    {"name": "email-triage", "file": "email-triage.jsonl", "kind": "choice", "sample": None},
 ]
 
 EVAL_SPLITS = {"calibration", "test", "valid", "validation"}
@@ -85,7 +86,7 @@ def run_job(job):
             out["logloss"] = None
     else:
         out["accuracy"] = out["logloss"] = None
-    return out
+    return out, vec, clf
 
 
 def main():
@@ -102,10 +103,17 @@ def main():
         "data": {j["name"]: (DATA / j["file"]).stat().st_size for j in JOBS},
     }
     results = []
+    modeldir = rundir / "models"
+    modeldir.mkdir(exist_ok=True)
+    import pickle
+
     for job in JOBS:
         t0 = time.time()
-        res = run_job(job)
+        res, vec, clf = run_job(job)
         res["seconds"] = round(time.time() - t0, 1)
+        with open(modeldir / f"{job['name']}.pkl", "wb") as fh:
+            pickle.dump({"vectorizer": vec, "clf": clf, "task": job["name"]}, fh)
+        res["model"] = f"models/{job['name']}.pkl"
         results.append(res)
         print(json.dumps(res), flush=True)
     manifest["jobs"] = results
