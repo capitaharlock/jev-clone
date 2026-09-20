@@ -1,0 +1,24 @@
+{"utt_id": "en001", "locale": "en-US", "utterance": "set an alarm for seven in the morning", "intent": "alarm_set"}
+{"utt_id": "en002", "locale": "en-US", "utterance": "wake me up at seven am please", "intent": "alarm_set"}
+{"utt_id": "en003", "locale": "en-US", "utterance": "what will the weather be like tomorrow", "intent": "weather_query"}
+{"utt_id": "en004", "locale": "en-US", "utterance": "is it going to rain this weekend", "intent": "weather_query"}
+{"utt_id": "en005", "locale": "en-US", "utterance": "play some jazz music", "intent": "music_play"}
+{"utt_id": "en006", "locale": "en-US", "utterance": "put on my workout playlist", "intent": "music_play"}
+{"utt_id": "en007", "locale": "en-US", "utterance": "book a flight to Madrid", "intent": "travel_book"}
+{"utt_id": "en008", "locale": "en-US", "utterance": "find me a train to Barcelona", "intent": "travel_book"}
+{"utt_id": "en009", "locale": "en-US", "utterance": "turn off the kitchen lights", "intent": "home_control"}
+{"utt_id": "en010", "locale": "en-US", "utterance": "dim the living room lamp", "intent": "home_control"}
+{"utt_id": "en011", "locale": "en-US", "utterance": "send a message to Ana", "intent": "message_send"}
+{"utt_id": "en012", "locale": "en-US", "utterance": "text Carlos that I am late", "intent": "message_send"}
+{"utt_id": "es001", "locale": "es-ES", "utterance": "pon una alarma a las siete de la mañana", "intent": "alarm_set"}
+{"utt_id": "es002", "locale": "es-ES", "utterance": "despiértame a las siete por favor", "intent": "alarm_set"}
+{"utt_id": "es003", "locale": "es-ES", "utterance": "qué tiempo hará mañana", "intent": "weather_query"}
+{"utt_id": "es004", "locale": "es-ES", "utterance": "va a llover este fin de semana", "intent": "weather_query"}
+{"utt_id": "es005", "locale": "es-ES", "utterance": "pon música de jazz", "intent": "music_play"}
+{"utt_id": "es006", "locale": "es-ES", "utterance": "reproduce mi lista de ejercicio", "intent": "music_play"}
+{"utt_id": "es007", "locale": "es-ES", "utterance": "reserva un vuelo a Madrid", "intent": "travel_book"}
+{"utt_id": "es008", "locale": "es-ES", "utterance": "busca un tren a Barcelona", "intent": "travel_book"}
+{"utt_id": "es009", "locale": "es-ES", "utterance": "apaga las luces de la cocina", "intent": "home_control"}
+{"utt_id": "es010", "locale": "es-ES", "utterance": "atenúa la lámpara del salón", "intent": "home_control"}
+{"utt_id": "es011", "locale": "es-ES", "utterance": "envía un mensaje a Ana", "intent": "message_send"}
+{"utt_id": "es012", "locale": "es-ES", "utterance": "escribe a Carlos que llego tarde", "intent": "message_send"}

@@ -1,0 +1,86 @@
+{
+  "seed": 173,
+  "bench_hash": "b531ca6e4003cb1c9a2cef83274791dcbe7fcaece5526a5b8bb9d290bae4016e",
+  "measured": [
+    {
+      "id": "proxy-S",
+      "dim": 256,
+      "status": "measured",
+      "accuracy": 0.7708333333333334,
+      "nll": 2.4766982959250887,
+      "p50_ms": 0.6116250297054648,
+      "p95_ms": 1.0187500156462193,
+      "n": 48
+    },
+    {
+      "id": "proxy-M",
+      "dim": 1024,
+      "status": "measured",
+      "accuracy": 0.8125,
+      "nll": 2.440770198913631,
+      "p50_ms": 1.74008309841156,
+      "p95_ms": 2.9266669880598783,
+      "n": 48
+    },
+    {
+      "id": "proxy-L",
+      "dim": 4096,
+      "status": "measured",
+      "accuracy": 0.8541666666666666,
+      "nll": 2.432944046791218,
+      "p50_ms": 6.261541973799467,
+      "p95_ms": 10.426916996948421,
+      "n": 48
+    }
+  ],
+  "top2": [
+    "proxy-L",
+    "proxy-M"
+  ],
+  "why_others_lose": {
+    "proxy-S": "lower accuracy at higher latency vs top-2 (smoke proxy axis)",
+    "ettin-68m": "not runnable here (clear: permissive license); excluded from Pareto, not imputed",
+    "modernbert-base": "not runnable here (clear: permissive license); excluded from Pareto, not imputed",
+    "lfm2.5-230m": "not runnable here (conditional: commercial use pending LFM Open v1.0 review); excluded from Pareto, not imputed",
+    "neobert-250m": "not runnable here (blocked: trust_remote_code unaudited); excluded from Pareto, not imputed"
+  },
+  "pending_real": [
+    {
+      "id": "ettin-68m",
+      "status": "pending_weights",
+      "gate": {
+        "id": "ettin-68m",
+        "verdict": "clear",
+        "reason": "permissive license"
+      }
+    },
+    {
+      "id": "modernbert-base",
+      "status": "pending_weights",
+      "gate": {
+        "id": "modernbert-base",
+        "verdict": "clear",
+        "reason": "permissive license"
+      }
+    },
+    {
+      "id": "lfm2.5-230m",
+      "status": "pending_weights",
+      "gate": {
+        "id": "lfm2.5-230m",
+        "verdict": "conditional",
+        "reason": "commercial use pending LFM Open v1.0 review"
+      }
+    },
+    {
+      "id": "neobert-250m",
+      "status": "pending_weights",
+      "gate": {
+        "id": "neobert-250m",
+        "verdict": "blocked",
+        "reason": "trust_remote_code unaudited"
+      }
+    }
+  ],
+  "comparable": true
+}

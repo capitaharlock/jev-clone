@@ -1,0 +1,54 @@
+{
+  "revision": "hardneg-r1-seed442",
+  "seed": 442,
+  "pools": {
+    "banking77": 5,
+    "huffpost": 5
+  },
+  "sample": {
+    "gold": "account_closure",
+    "in_domain": [
+      {
+        "label": "balance_check",
+        "difficulty": 0.063628
+      },
+      {
+        "label": "card_declined",
+        "difficulty": 0.0
+      },
+      {
+        "label": "pin_reset",
+        "difficulty": 0.0
+      }
+    ],
+    "cross_dataset": [
+      {
+        "label": "BUSINESS",
+        "difficulty": 0.0,
+        "from": "huffpost"
+      },
+      {
+        "label": "FOOD",
+        "difficulty": 0.0,
+        "from": "huffpost"
+      }
+    ],
+    "seed": 442
+  },
+  "ood_kinds": [
+    "contradictory",
+    "corrupt",
+    "missing-answer",
+    "unrelated"
+  ],
+  "n_ood": 24,
+  "n_rejected": 0,
+  "canary_rejected": true,
+  "metrics": {
+    "unknown_recall": 0.4166666666666667,
+    "unknown_precision": 1.0,
+    "high_confidence_errors": 0,
+    "threshold": 0.55
+  },
+  "difficulty_monotonic_note": "in-domain difficulties (near->far): [0.063628, 0.0, 0.0]"
+}

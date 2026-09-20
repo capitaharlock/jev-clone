@@ -1,0 +1,53 @@
+{
+  "seed": 5050,
+  "stages": {
+    "s0-warmup": {
+      "n": 24,
+      "loss_start": 0.6691163175947595,
+      "loss_end": 0.1288661950818189,
+      "ece": 0.11291491062713105,
+      "ece_target": 0.05,
+      "promoted": true,
+      "rollback": null
+    },
+    "s1-multi": {
+      "n": 12,
+      "loss_start": 0.015843220826999918,
+      "loss_end": 0.00473546767298504,
+      "ece": 0.004707205339580927,
+      "ece_target": 0.05,
+      "promoted": true,
+      "rollback": null
+    },
+    "s2-semantic": {
+      "n": 16,
+      "loss_start": 0.14860964345343347,
+      "loss_end": 0.09184493050162239,
+      "ece": 0.07530855255908492,
+      "ece_target": 0.05,
+      "promoted": true,
+      "rollback": null
+    },
+    "s3-hardneg": {
+      "n": 24,
+      "loss_start": 0.16986981131807274,
+      "loss_end": 0.13122456097510424,
+      "ece": 0.11360738107109919,
+      "ece_target": 0.05,
+      "promoted": true,
+      "rollback": null
+    }
+  },
+  "ablations": {
+    "ce_vs_ce_brier": {
+      "nll_ce": 0.026251670123801273,
+      "nll_ce_brier": 0.023336003015312683,
+      "promote_brier": true
+    },
+    "permutation": {
+      "mean_inconsistency": 0.0494935850519168
+    }
+  },
+  "base_bench_nll": 0.6931471805599453,
+  "queue": "single-machine"
+}

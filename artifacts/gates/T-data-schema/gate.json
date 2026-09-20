@@ -2,16 +2,16 @@
   "format": 1,
   "task": "T-data-schema",
   "pass": true,
-  "commit": "e830f0ff79b3ddbe0b3e66bf67102268f15f3abe",
+  "commit": "c2d3306be47fed31363004d27a94d21d3b642fbb",
   "config": "cpu",
-  "tree_hash": "7db4fbaf0eb18f2995568659fa2445beb05f2afecfe74ee694883cf883bf5ad3",
+  "tree_hash": "5bba14f9b1c4b31708c70f1b9b43b5a7cc2bdbf26c9561fc6338af70c351389f",
   "upstream": {
     "format": 1,
     "task": "T-rust-skel",
     "pass": true,
-    "commit": "e830f0ff79b3ddbe0b3e66bf67102268f15f3abe",
+    "commit": "c2d3306be47fed31363004d27a94d21d3b642fbb",
     "config": "cpu",
-    "tree_hash": "7db4fbaf0eb18f2995568659fa2445beb05f2afecfe74ee694883cf883bf5ad3",
+    "tree_hash": "5bba14f9b1c4b31708c70f1b9b43b5a7cc2bdbf26c9561fc6338af70c351389f",
     "upstream": null,
     "upstream_msg": "no upstream (root gate)",
     "metrics": {
@@ -21,9 +21,16 @@
       "python-tests": "pass",
       "python-firewall": "pass",
       "python-adapters": "pass",
-      "python-recon": "pass"
+      "python-recon": "pass",
+      "python-bakeoff": "pass",
+      "python-shared-state": "pass",
+      "python-option-mixer": "pass",
+      "python-hardneg": "pass",
+      "python-curriculum": "pass",
+      "python-distillation": "pass",
+      "python-gold": "pass"
     },
-    "created_utc": "2026-09-19T23:02:03.896884+00:00"
+    "created_utc": "2026-09-20T00:20:50.999949+00:00"
   },
   "upstream_msg": "upstream T-rust-skel PASS, same lineage",
   "metrics": {
@@ -33,7 +40,14 @@
     "python-tests": "pass",
     "python-firewall": "pass",
     "python-adapters": "pass",
-    "python-recon": "pass"
+    "python-recon": "pass",
+    "python-bakeoff": "pass",
+    "python-shared-state": "pass",
+    "python-option-mixer": "pass",
+    "python-hardneg": "pass",
+    "python-curriculum": "pass",
+    "python-distillation": "pass",
+    "python-gold": "pass"
   },
-  "created_utc": "2026-09-19T23:02:06.718022+00:00"
+  "created_utc": "2026-09-20T00:20:56.425893+00:00"
 }

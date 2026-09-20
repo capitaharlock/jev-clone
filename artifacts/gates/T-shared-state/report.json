@@ -1,0 +1,65 @@
+{
+  "seed": 174,
+  "quality_margin": 0.05,
+  "q_curves": [
+    {
+      "Q": 1,
+      "shared_encodes": 1,
+      "full_encodes": 1,
+      "acc_shared": 1.0,
+      "acc_full": 1.0
+    },
+    {
+      "Q": 2,
+      "shared_encodes": 1,
+      "full_encodes": 2,
+      "acc_shared": 0.5,
+      "acc_full": 0.5
+    },
+    {
+      "Q": 4,
+      "shared_encodes": 1,
+      "full_encodes": 4,
+      "acc_shared": 0.5,
+      "acc_full": 0.5
+    },
+    {
+      "Q": 8,
+      "shared_encodes": 1,
+      "full_encodes": 8,
+      "acc_shared": 0.5,
+      "acc_full": 0.5
+    }
+  ],
+  "len_curves": [
+    {
+      "tokens": 512,
+      "start": 0.5,
+      "middle": 0.5,
+      "end": 0.5
+    },
+    {
+      "tokens": 2048,
+      "start": 0.5,
+      "middle": 0.5,
+      "end": 0.5
+    },
+    {
+      "tokens": 4096,
+      "start": 0.5,
+      "middle": 0.5,
+      "end": 0.5
+    },
+    {
+      "tokens": 8192,
+      "start": 0.5,
+      "middle": 0.5,
+      "end": 0.5
+    }
+  ],
+  "v1_state_limit_tokens": 8192,
+  "cache": {
+    "hits": 1,
+    "misses": 2
+  }
+}

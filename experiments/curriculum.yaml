@@ -1,0 +1,5 @@
+# curriculum smoke queue (seed 5050)
+seed: 5050
+steps: 60
+lr: 0.5
+stages: [s0-warmup, s1-multi, s2-semantic, s3-hardneg]

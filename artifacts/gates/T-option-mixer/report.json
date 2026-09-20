@@ -1,0 +1,35 @@
+{
+  "seed": 1414,
+  "results": {
+    "independent": {
+      "accuracy": 0.1,
+      "perm_stability": 1.0,
+      "insert_stability": 0.923685110296524,
+      "p50_ms": 0.007333001121878624,
+      "n": 40
+    },
+    "deepsets": {
+      "accuracy": 0.075,
+      "perm_stability": 1.0,
+      "insert_stability": 0.9057021366477795,
+      "p50_ms": 0.24675007443875074,
+      "n": 40
+    },
+    "set_transformer": {
+      "accuracy": 0.025,
+      "perm_stability": 1.0,
+      "insert_stability": 0.9115487267228587,
+      "p50_ms": 0.9609169792383909,
+      "n": 40
+    }
+  },
+  "perm_stability_min": 0.9,
+  "insert_stability_min": 0.8,
+  "ranked": [
+    "independent",
+    "set_transformer",
+    "deepsets"
+  ],
+  "selected": "independent",
+  "fallback_to_baseline": true
+}

@@ -1,0 +1,40 @@
+{
+  "seed": 6060,
+  "disagreement": {
+    "agree": 10,
+    "disagree": 0,
+    "adjudicated": 0
+  },
+  "hard": {
+    "nll": 0.16840942622980584,
+    "brier": 0.03769813477346083,
+    "ece": 0.1435413373121225,
+    "mean_conf": 0.8564586626878775
+  },
+  "soft": {
+    "nll": 0.2730398702510926,
+    "brier": 0.06277968893699216,
+    "ece": 0.2330753316762932,
+    "mean_conf": 0.7669246683237066
+  },
+  "zero_shot_hard": {
+    "nll": 0.29514033338659723,
+    "brier": 0.08048457434675949,
+    "ece": 0.24082230876426255,
+    "mean_conf": 0.7591776912357374
+  },
+  "zero_shot_soft": {
+    "nll": 0.39222404323277654,
+    "brier": 0.11256824818045726,
+    "ece": 0.16086947977917793,
+    "mean_conf": 0.6852796804173596
+  },
+  "cost_per_1k": 0.0,
+  "cost_note": "measured",
+  "phase_budget_eur": [
+    0.0,
+    20.0
+  ],
+  "within_budget": true,
+  "decision": "keep-hard-labels (no measured gain; roadmap unblocked)"
+}

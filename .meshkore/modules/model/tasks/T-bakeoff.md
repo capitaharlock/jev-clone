@@ -1,7 +1,7 @@
 ---
 id: T-bakeoff
 title: Backbone bake-off
-status: next
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -10,8 +10,9 @@ depends_on:
   - T-recon
 created: 2026-09-19
 updated: 2026-09-20
-resolved_by: A001
-resolved_by_conv: _onboarding_v1
+completed_at: 2026-09-20T00:21:58Z
+resolved_by: A004
+resolved_by_conv: general-09192230
 ---
 # Backbone bake-off
 
@@ -58,3 +59,7 @@ Fuente: plan §§5, 6, 173, 120–121.
 Unblocked 2026-09-20: el intento previo cayó por límite de uso del agente
 externo, no por causa técnica; su dependencia #T-recon ya está en PASS, así
 que vuelve a `next` como siguiente de la cadena.
+
+## Resolution
+
+#T-bakeoff con gate PASS (linaje 5bba14f9b1c4): harness único con mismos splits/seeds/head provisional; 3 proxies smoke medidos (L 0.854, M 0.812, S 0.771 acc) con top-2 = proxy-L/M; backbones reales como pending_weights (LFM condicional, NeoBERT bloqueado por remote code) excluidos del Pareto sin imputar; 9 tests verdes.

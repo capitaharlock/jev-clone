@@ -105,6 +105,17 @@ REGRESSION = [
     ("python-firewall", ["python3", "-m", "unittest", "data.test_firewall"]),
     ("python-adapters", ["python3", "-m", "unittest", "data.test_adapters"]),
     ("python-recon", ["python3", "-m", "unittest", "eval.test_recon"]),
+    ("python-bakeoff", ["python3", "-m", "unittest", "model.test_bakeoff"]),
+    ("python-shared-state", ["python3", "-m", "unittest",
+                             "model.test_shared_state"]),
+    ("python-option-mixer", ["python3", "-m", "unittest",
+                             "model.test_option_mixer"]),
+    ("python-hardneg", ["python3", "-m", "unittest", "data.test_hardneg"]),
+    ("python-curriculum", ["python3", "-m", "unittest",
+                           "training.python.test_curriculum"]),
+    ("python-distillation", ["python3", "-m", "unittest",
+                             "model.test_distillation"]),
+    ("python-gold", ["python3", "-m", "unittest", "data.test_gold"]),
 ]
 
 
