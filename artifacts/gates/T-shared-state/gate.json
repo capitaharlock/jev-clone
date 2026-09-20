@@ -2,51 +2,51 @@
   "format": 1,
   "task": "T-shared-state",
   "pass": true,
-  "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+  "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
   "config": "cpu",
-  "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+  "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
   "upstream": {
     "format": 1,
     "task": "T-bakeoff",
     "pass": true,
-    "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+    "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
     "config": "cpu",
-    "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+    "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
     "upstream": {
       "format": 1,
       "task": "T-recon",
       "pass": true,
-      "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+      "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
       "config": "cpu",
-      "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+      "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
       "upstream": {
         "format": 1,
         "task": "T-data-p0",
         "pass": true,
-        "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+        "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
         "config": "cpu",
-        "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+        "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
         "upstream": {
           "format": 1,
           "task": "T-firewall",
           "pass": true,
-          "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+          "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
           "config": "cpu",
-          "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+          "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
           "upstream": {
             "format": 1,
             "task": "T-data-schema",
             "pass": true,
-            "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+            "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
             "config": "cpu",
-            "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+            "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
             "upstream": {
               "format": 1,
               "task": "T-rust-skel",
               "pass": true,
-              "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
+              "commit": "19b0f42d994a56667bb0b66dd94f5544c781c635",
               "config": "cpu",
-              "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
+              "tree_hash": "0a3e9fde7832152d44c65897ee0e8e73f3e5f0790f8e241c9e06215cf686f375",
               "upstream": null,
               "upstream_msg": "no upstream (root gate)",
               "metrics": {
@@ -65,9 +65,10 @@
                 "python-distillation": "pass",
                 "python-gold": "pass",
                 "python-calib": "pass",
-                "python-local-infer": "pass"
+                "python-local-infer": "pass",
+                "python-state-cache": "pass"
               },
-              "created_utc": "2026-09-20T01:14:32.485407+00:00"
+              "created_utc": "2026-09-20T01:33:14.205076+00:00"
             },
             "upstream_msg": "upstream T-rust-skel PASS, same lineage",
             "metrics": {
@@ -86,9 +87,10 @@
               "python-distillation": "pass",
               "python-gold": "pass",
               "python-calib": "pass",
-              "python-local-infer": "pass"
+              "python-local-infer": "pass",
+              "python-state-cache": "pass"
             },
-            "created_utc": "2026-09-20T01:14:38.446630+00:00"
+            "created_utc": "2026-09-20T01:33:26.741499+00:00"
           },
           "upstream_msg": "upstream T-data-schema PASS, same lineage",
           "metrics": {
@@ -107,9 +109,10 @@
             "python-distillation": "pass",
             "python-gold": "pass",
             "python-calib": "pass",
-            "python-local-infer": "pass"
+            "python-local-infer": "pass",
+            "python-state-cache": "pass"
           },
-          "created_utc": "2026-09-20T01:14:44.449251+00:00"
+          "created_utc": "2026-09-20T01:33:33.045561+00:00"
         },
         "upstream_msg": "upstream T-firewall PASS, same lineage",
         "metrics": {
@@ -128,9 +131,10 @@
           "python-distillation": "pass",
           "python-gold": "pass",
           "python-calib": "pass",
-          "python-local-infer": "pass"
+          "python-local-infer": "pass",
+          "python-state-cache": "pass"
         },
-        "created_utc": "2026-09-20T01:14:50.435573+00:00"
+        "created_utc": "2026-09-20T01:33:39.341581+00:00"
       },
       "upstream_msg": "upstream T-data-p0 PASS, same lineage",
       "metrics": {
@@ -149,9 +153,10 @@
         "python-distillation": "pass",
         "python-gold": "pass",
         "python-calib": "pass",
-        "python-local-infer": "pass"
+        "python-local-infer": "pass",
+        "python-state-cache": "pass"
       },
-      "created_utc": "2026-09-20T01:14:56.463662+00:00"
+      "created_utc": "2026-09-20T01:33:45.619432+00:00"
     },
     "upstream_msg": "upstream T-recon PASS, same lineage",
     "metrics": {
@@ -170,9 +175,10 @@
       "python-distillation": "pass",
       "python-gold": "pass",
       "python-calib": "pass",
-      "python-local-infer": "pass"
+      "python-local-infer": "pass",
+      "python-state-cache": "pass"
     },
-    "created_utc": "2026-09-20T01:15:02.478058+00:00"
+    "created_utc": "2026-09-20T01:33:51.905575+00:00"
   },
   "upstream_msg": "upstream T-bakeoff PASS, same lineage",
   "metrics": {
@@ -191,7 +197,8 @@
     "python-distillation": "pass",
     "python-gold": "pass",
     "python-calib": "pass",
-    "python-local-infer": "pass"
+    "python-local-infer": "pass",
+    "python-state-cache": "pass"
   },
-  "created_utc": "2026-09-20T01:15:08.459630+00:00"
+  "created_utc": "2026-09-20T01:33:58.190008+00:00"
 }
