@@ -1,0 +1,7 @@
+{"premise": "The long document states the merger completed in June after regulatory approval.", "hypothesis": "The merger completed in June.", "label": "entailment", "split": "train"}
+{"premise": "The long document states the merger completed in June after regulatory approval.", "hypothesis": "The merger never happened.", "label": "not_entailment", "split": "train"}
+{"premise": "She boarded the night train carrying only a small bag.", "hypothesis": "She traveled light.", "label": "entailment", "split": "calibration"}
+{"premise": "She boarded the night train carrying only a small bag.", "hypothesis": "She missed her train.", "label": "not_entailment", "split": "test"}
+{"premise": "Extra entailment case for balance.", "hypothesis": "Balanced yes.", "label": "entailment", "split": "train"}
+{"premise": "Extra non-entailment case one.", "hypothesis": "Balanced no one.", "label": "not_entailment", "split": "train"}
+{"premise": "Extra non-entailment case two.", "hypothesis": "Balanced no two.", "label": "not_entailment", "split": "train"}

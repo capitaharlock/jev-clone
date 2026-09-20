@@ -13,7 +13,8 @@ from dataclasses import asdict, dataclass
 USAGES = ("train", "research-only", "eval-only")
 
 # Licenses approved for `train` use (mirrors source-register.md).
-TRAIN_APPROVED_LICENSES = frozenset({"MIT", "Apache-2.0", "CC0", "CC0-1.0", "CC-BY-4.0"})
+TRAIN_APPROVED_LICENSES = frozenset({"MIT", "Apache-2.0", "CC0", "CC0-1.0", "CC-BY-4.0",
+                                     "BSD-2-Clause", "BSD-3-Clause"})
 
 # Some datasets need extra provenance conditions before training.
 TRAIN_GATED = {

@@ -1,0 +1,13 @@
+{
+  "bigsrc_version": 1,
+  "complete": true,
+  "dedupe_removed": 10,
+  "license": "Apache-2.0",
+  "overlap_removed": 0,
+  "revision": "hf-bigscience-p3-stream-7b2e4d8a",
+  "rows_after": 4,
+  "rows_before": 14,
+  "shard_sha256": "c11971b6926fa2aab096117cfe00db09bc3b42ca8b10cd33a2a9720c02e482c7",
+  "source": "p3",
+  "tokens_approx": 31
+}

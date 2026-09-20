@@ -1,0 +1,4 @@
+{"questions": [{"answer": "yes", "id": "p3-anli-6", "kind": "choice", "options": [{"id": "yes", "text": "yes"}, {"id": "no", "text": "no"}, {"id": "maybe", "text": "maybe"}]}], "split": "train", "state": "Shared premise 0 with hypothesis?"}
+{"questions": [{"answer": "mars", "id": "p3-arc-12", "kind": "choice", "options": [{"id": "mars", "text": "mars"}, {"id": "venus", "text": "venus"}, {"id": "jupiter", "text": "jupiter"}]}], "split": "train", "state": "Which planet is red?"}
+{"questions": [{"answer": "yes", "id": "p3-anli-5", "kind": "choice", "options": [{"id": "yes", "text": "yes"}, {"id": "no", "text": "no"}, {"id": "maybe", "text": "maybe"}]}], "split": "train", "state": "Shared premise 2 with hypothesis?"}
+{"questions": [{"answer": "yes", "id": "p3-anli-10", "kind": "choice", "options": [{"id": "yes", "text": "yes"}, {"id": "no", "text": "no"}, {"id": "maybe", "text": "maybe"}]}], "split": "train", "state": "Shared premise 1 with hypothesis?"}

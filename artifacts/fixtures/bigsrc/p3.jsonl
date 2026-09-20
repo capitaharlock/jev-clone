@@ -1,0 +1,14 @@
+{"dataset": "anli", "template": "tmpl-0", "input": "Shared premise 0 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-0", "input": "Shared premise 1 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-0", "input": "Shared premise 2 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-1", "input": "Shared premise 0 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-1", "input": "Shared premise 1 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-1", "input": "Shared premise 2 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-2", "input": "Shared premise 0 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-2", "input": "Shared premise 1 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-2", "input": "Shared premise 2 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-3", "input": "Shared premise 0 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-3", "input": "Shared premise 1 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "anli", "template": "tmpl-3", "input": "Shared premise 2 with hypothesis?", "answer_choices": ["yes", "no", "maybe"], "target": "yes", "split": "train"}
+{"dataset": "arc", "template": "q-0", "input": "Which planet is red?", "answer_choices": ["mars", "venus", "jupiter"], "target": "mars", "split": "train"}
+{"dataset": "arc", "template": "q-1", "input": "Which planet is red?", "answer_choices": ["mars", "venus", "jupiter"], "target": "mars", "split": "train"}

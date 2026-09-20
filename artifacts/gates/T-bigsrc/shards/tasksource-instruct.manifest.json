@@ -1,0 +1,13 @@
+{
+  "bigsrc_version": 1,
+  "complete": true,
+  "dedupe_removed": 0,
+  "license": "Apache-2.0",
+  "overlap_removed": 0,
+  "revision": "hf-tasksource-instruct-v0-mat-5f3a9c1e",
+  "rows_after": 6,
+  "rows_before": 6,
+  "shard_sha256": "0f7f6987254d57c46002b56f36271fb7c2d7aa18babda2375b251a047173004e",
+  "source": "tasksource-instruct",
+  "tokens_approx": 54
+}

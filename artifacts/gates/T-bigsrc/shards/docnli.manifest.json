@@ -1,0 +1,13 @@
+{
+  "bigsrc_version": 1,
+  "complete": true,
+  "dedupe_removed": 1,
+  "license": "BSD-3-Clause",
+  "overlap_removed": 0,
+  "revision": "hf-tasksource-doc-nli-3c9f1a2b",
+  "rows_after": 6,
+  "rows_before": 7,
+  "shard_sha256": "12f9359c9bd30c7ae9af40ad89de73cc3592c27eb3489f38fdac965097d0fd36",
+  "source": "docnli",
+  "tokens_approx": 92
+}
