@@ -8,6 +8,7 @@ members = [
     "crates/jev-cli",
     "crates/jev-bench",
     "crates/jev-format",
+    "crates/jev-quant",
 ]
 
 [workspace.dependencies]

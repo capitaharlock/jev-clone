@@ -119,6 +119,10 @@ REGRESSION = [
     ("python-calib", ["python3", "-m", "unittest", "eval.test_calib"]),
     ("python-local-infer", ["python3", "-m", "unittest",
                             "training.python.test_local_infer"]),
+    ("python-state-cache", ["python3", "-m", "unittest",
+                            "training.python.test_state_cache"]),
+    ("python-quant-onnx", ["python3", "-m", "unittest",
+                           "training.python.test_quant_onnx"]),
 ]
 
 

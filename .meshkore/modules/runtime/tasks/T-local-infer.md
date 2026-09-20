@@ -1,4 +1,5 @@
 ---
+status: done
 id: T-local-infer
 title: Local inference on Metal, CUDA and CPU
 status: done
@@ -10,9 +11,10 @@ depends_on:
   - T-calib
 created: 2026-09-19
 updated: 2026-09-20
-completed_at: 2026-09-20T01:15:59Z
+completed_at: 2026-09-20T01:26:44.103Z
 resolved_by: A004
 resolved_by_conv: general-09192230
+commit_shas: ['19b0f42d994a56667bb0b66dd94f5544c781c635']
 ---
 # Local inference on Metal, CUDA and CPU
 
@@ -46,8 +48,6 @@ Fuente: stack §§8–9, 13, 15, 35, 38; plan §56.
 
 ## Resolution
 
-**PASS** — gate `T-local-infer` PASS (config=cpu) in a 14-gate chain
-sharing one tree lineage with all upstream gates re-run. CPU backend
-executes behind the `Backend` trait; Metal/CUDA stay `not_available`
-with reasons. Raw bench + device inventory in
-`artifacts/gates/T-local-infer/`.
+Cadena de gates en marcha (2/15). Coverage ya cita #T-state-cache, sin cambios. Espero al PASS completo para cerrar el commit.
+
+15.7M tokens

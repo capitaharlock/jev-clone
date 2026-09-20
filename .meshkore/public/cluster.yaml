@@ -1,0 +1,59 @@
+# MeshKore cluster config — Standard v26 (schema 'cluster_yaml').
+# Written by `daemon.py init`. Canonical schema:
+#   https://api.meshkore.com/v1/standard.json
+version: 1
+id: users-ricartjuncadella-documents-prj-asi
+type: dev
+name: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+description: "Local-first MeshKore cluster — /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone."
+
+transport:
+  protocol: websocket
+  # Informational only. The cockpit reads the live endpoint from
+  # /health.endpoint and identifies this cluster by `id`, NOT by port.
+  # The daemon picks a port in 5570-5589 on first boot
+  # and STICKS to it (~/.meshkore/ports.json, py-1.15.0+) — it should stay
+  # stable across restarts. If external integrations hardcode this port,
+  # a drift here breaks them (2026-07-08 incident) — set `architect.port`
+  # below to make the assignment durable even if the registry is wiped.
+  endpoint: "https://daemon.meshkore.com:5573"
+
+storage:
+  mode: local
+
+# Durable seed for _pick_port's sticky registry — only consulted on a
+# from-scratch assignment (registry wiped, or first boot on a new
+# machine); an existing sticky entry always wins. Safe to bump if you
+# deliberately want to move this cluster's daemon to a new port, but
+# check for hardcoded consumers first.
+architect:
+  port: 5573
+
+modules:
+  - id: general
+    kind: area
+    name: General
+  - id: project
+    kind: area
+    name: Project
+  - id: model
+    kind: area
+    name: Decision model
+  - id: data
+    kind: area
+    name: Data foundation
+  - id: runtime
+    kind: area
+    name: Local runtime
+  - id: eval
+    kind: area
+    name: Evaluation and trust
+  - id: cloud
+    kind: area
+    name: Cloud and release
+
+# Standard §10.4 — daemon self-update (architect.meshkore.com CDN).
+# Set auto_update: false to require explicit confirmation per update.
+daemon:
+  auto_update: true
+  auto_update_source: https://architect.meshkore.com/reference/cluster/scripts/daemon.py

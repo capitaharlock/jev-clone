@@ -1,0 +1,14 @@
+# MeshKore — runtime state (do not commit)
+# Everything else under .meshkore/ (public, docs, modules, roadmap/initiatives) IS versioned.
+.meshkore/.runtime/
+.meshkore/credentials/
+.meshkore/agents/
+.meshkore/timeline/
+.meshkore/log/
+.meshkore/queues/
+.meshkore/uploads/
+.meshkore/snapshots/
+.meshkore/state.json
+.meshkore/roadmap/state.json
+.meshkore/roadmap/state.js
+.meshkore/scripts/

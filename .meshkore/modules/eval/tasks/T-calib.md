@@ -10,8 +10,11 @@ depends_on:
   - T-gold
 created: 2026-09-19
 updated: 2026-09-20
+completed_at: 2026-09-20T00:40:09.639Z
+resolved_by: A004
+resolved_by_conv: general-09192230
+commit_shas: ['8865912dc172347c00edc17bc2471ad5801aeafb']
 ---
-
 # Calibration and abstention
 
 Toolkit NLL/Brier/ECE, temperature scaling (global → por tipo →
@@ -43,12 +46,31 @@ Fuente: plan §§16–17, 25–26.
 
 ## Resolution
 
-#T-calib con gate PASS (linaje 3d8343ca9a78, cadena de 13 gates
-revalidada): NLL/Brier/ECE con bins vacíos conservados, temperature
-scaling global → por locale → por cardinalidad con fallback registrado,
-calibrador en `artifacts/gates/T-calib/calibration.json` ligado al
-predictor y al hash del split; fit rechaza splits no-calibration.
-Veredicto GO (test ECE 0.021 ≤ 0.05, accuracy intacta, gap EN-ES 0.037);
-risk-coverage en test vacua (predictor perfecto en el piloto sintético)
-y demostrada en OOD MASSIVE (0.19 vs 0.50 azar) con CIs bootstrap.
-16 tests verdes.
+Sí, la segunda iniciativa (#eval-trust) está terminada: 3/3 tareas en `done`. Verifiqué toda la suite antes (111 Python + 19 Rust en verde) e implementé #T-calib — calibración con temperature scaling, abstención con curvas risk-coverage y veredicto GO — con 13 gates PASS en un linaje (commit `8865912`). Suite final: 127 Python + 19 Rust, todo verde. Quedan `decision-model` (solo T-dist-train en backlog), `local-runtime` (3 tareas) y `cloud-release`.
+
+— T-calib · toolkit de calibración/abstención con gate PASS y cierre de #eval-trust
+
+**Commit** `8865912dc` · 21 files · 9.6M tokens
+
+**Files changed (21):**
+- `.meshkore/modules/eval/tasks/T-calib.md`
+- `artifacts/gates/T-bakeoff/gate.json`
+- `artifacts/gates/T-bakeoff/report.json`
+- `artifacts/gates/T-calib/calibration.json`
+- `artifacts/gates/T-calib/gate.json`
+- `artifacts/gates/T-calib/report.json`
+- `artifacts/gates/T-curriculum/gate.json`
+- `artifacts/gates/T-data-p0/gate.json`
+- `artifacts/gates/T-data-schema/gate.json`
+- `artifacts/gates/T-distillation/gate.json`
+- `artifacts/gates/T-firewall/gate.json`
+- `artifacts/gates/T-gold/gate.json`
+- `artifacts/gates/T-hardneg/gate.json`
+- `artifacts/gates/T-option-mixer/gate.json`
+- `artifacts/gates/T-option-mixer/report.json`
+- `artifacts/gates/T-recon/gate.json`
+- `artifacts/gates/T-rust-skel/gate.json`
+- `artifacts/gates/T-shared-state/gate.json`
+- `eval/calib.py`
+- `eval/test_calib.py`
+- `training/python/tools/gate.py`

@@ -1,0 +1,12 @@
+/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/deps/serde-f503d66980a1dd5e.d: /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/build/serde-a141b59bada3e0e0/out/private.rs
+
+/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/deps/libserde-f503d66980a1dd5e.rmeta: /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/build/serde-a141b59bada3e0e0/out/private.rs
+
+/Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/Users/ricartjuncadella/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/build/serde-a141b59bada3e0e0/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/target/debug/build/serde-a141b59bada3e0e0/out

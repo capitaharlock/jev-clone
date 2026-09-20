@@ -5,21 +5,21 @@
       "accuracy": 0.1,
       "perm_stability": 1.0,
       "insert_stability": 0.923685110296524,
-      "p50_ms": 0.007375027053058147,
+      "p50_ms": 0.007291906513273716,
       "n": 40
     },
     "deepsets": {
       "accuracy": 0.075,
       "perm_stability": 1.0,
       "insert_stability": 0.9057021366477795,
-      "p50_ms": 0.24454109370708466,
+      "p50_ms": 0.24187506642192602,
       "n": 40
     },
     "set_transformer": {
       "accuracy": 0.025,
       "perm_stability": 1.0,
       "insert_stability": 0.9115487267228587,
-      "p50_ms": 0.9535000426694751,
+      "p50_ms": 0.9582500206306577,
       "n": 40
     }
   },

@@ -461,6 +461,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "jev-quant"
+version = "0.1.0"
+dependencies = [
+ "half",
+ "hex",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "jev-runtime"
 version = "0.1.0"
 dependencies = [

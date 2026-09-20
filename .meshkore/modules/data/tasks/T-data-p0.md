@@ -10,12 +10,11 @@ depends_on:
   - T-firewall
 created: 2026-09-19
 updated: 2026-09-20
-completed_at: 2026-09-20T00:00:00.000Z
+completed_at: 2026-09-19T22:52:05.491Z
 resolved_by: A004
 resolved_by_conv: general-09192230
-commit_shas: ['2cf9979']
+commit_shas: ['e830f0ff79b3ddbe0b3e66bf67102268f15f3abe', '2cf997920a0b3b7da07c498149aaed2c70f13782']
 ---
-
 # P0 dataset adapters
 
 HuffPost (con decisión documentada sobre su sesgo de titulares, §148),
@@ -61,13 +60,34 @@ Fuente: plan §§29–40 (P0), 44.1, 148.
 
 ## Resolution
 
-#T-data-p0 ejecutada con gate PASS en el linaje `02414ff6` (commit `2cf9979`): 5 adapters a schema universal con revisiones fijadas, transforms gratuitas con semilla, mixed loader determinista y summary con conteos/distribuciones/hashes en `artifacts/gates/T-data-p0/summary.json`. Cadena revalidada T-rust-skel → T-data-schema → T-firewall → T-data-p0, todo PASS.
+#T-data-p0 lista con gate PASS: 5 adapters a schema universal con revisiones fijadas, transforms con semilla y mixed loader determinista. Cadena T-rust-skel → T-data-schema → T-firewall → T-data-p0 revalidada en un linaje (commits `2cf9979`, `e830f0f`).
 <details><summary>data/adapters.py + fixtures + tests — qué incluye</summary>
 
-- Adapters HuffPost (smoke §148), Banking77, BoolQ, Civil Comments y HelpSteer2 con cards fijadas (revisión inmutable + SHA-256) y rechazo de filas corruptas.
-- Pre-check schema+licencia+contaminación por adapter; fence: banking77/civil/helpsteer2 train-clear, huffpost y boolq gated con obligaciones documentadas.
-- Mixed loader con pesos y semilla: mismo seed → mismo orden, batches y manifest; IDs disjuntos entre splits; smoke CPU reduce loss sin NaN.
-- 12 tests nuevos (32/32 verdes con los suites previos); gate extendido con paso `python-adapters`.
+- Adapters HuffPost (smoke §148), Banking77, BoolQ, Civil y HelpSteer2; filas corruptas rechazadas, `unknown`/unicode cubiertos.
+- Pre-check schema+licencia+contaminación; fence: banking77/civil/helpsteer2 train-clear, huffpost y boolq gated con obligaciones en card.
+- Mixed loader: mismo seed → mismo orden/batches/manifest; smoke CPU reduce loss sin NaN; summary en `artifacts/gates/T-data-p0/summary.json`.
+- 12 tests nuevos (32/32 verdes); gate con paso `python-adapters`.
 </details>
 
-— T-data-p0 · 5 adapters P0, mixed loader y gate PASS (commit 2cf9979)
+Siguiente en cola: rama eval (#T-recon → #T-calib) o modelo, según dependencias — digo cuál al seguir.
+
+— T-data-p0 · 5 adapters P0, mixed loader determinista y gate PASS
+
+**Commit** `e830f0ff7` (+1) · 15 files · 5.1M tokens
+
+**Files changed (15):**
+- `.meshkore/modules/data/tasks/T-data-p0.md`
+- `artifacts/fixtures/p0/banking77.jsonl`
+- `artifacts/fixtures/p0/boolq.jsonl`
+- `artifacts/fixtures/p0/civil.jsonl`
+- `artifacts/fixtures/p0/helpsteer2.jsonl`
+- `artifacts/fixtures/p0/huffpost.jsonl`
+- `artifacts/gates/T-data-p0/gate.json`
+- `artifacts/gates/T-data-p0/summary.json`
+- `artifacts/gates/T-data-schema/gate.json`
+- `artifacts/gates/T-firewall/gate.json`
+- `artifacts/gates/T-firewall/raw_results.json`
+- `artifacts/gates/T-rust-skel/gate.json`
+- `data/adapters.py`
+- `data/test_adapters.py`
+- `training/python/tools/gate.py`
