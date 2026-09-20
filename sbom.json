@@ -1,0 +1,406 @@
+{
+  "sbom": "jevclone",
+  "source": "Cargo.lock",
+  "packages": [
+    {
+      "name": "anstream",
+      "version": "1.0.0"
+    },
+    {
+      "name": "anstyle",
+      "version": "1.0.14"
+    },
+    {
+      "name": "anstyle-parse",
+      "version": "1.0.0"
+    },
+    {
+      "name": "anstyle-query",
+      "version": "1.1.5"
+    },
+    {
+      "name": "anstyle-wincon",
+      "version": "3.0.11"
+    },
+    {
+      "name": "async-trait",
+      "version": "0.1.92"
+    },
+    {
+      "name": "atomic-waker",
+      "version": "1.1.2"
+    },
+    {
+      "name": "axum",
+      "version": "0.7.9"
+    },
+    {
+      "name": "axum-core",
+      "version": "0.4.5"
+    },
+    {
+      "name": "bitflags",
+      "version": "2.13.2"
+    },
+    {
+      "name": "block-buffer",
+      "version": "0.10.4"
+    },
+    {
+      "name": "bytes",
+      "version": "1.12.1"
+    },
+    {
+      "name": "cfg-if",
+      "version": "1.0.5"
+    },
+    {
+      "name": "clap",
+      "version": "4.6.7"
+    },
+    {
+      "name": "clap_builder",
+      "version": "4.6.7"
+    },
+    {
+      "name": "clap_derive",
+      "version": "4.6.7"
+    },
+    {
+      "name": "clap_lex",
+      "version": "1.1.1"
+    },
+    {
+      "name": "colorchoice",
+      "version": "1.0.5"
+    },
+    {
+      "name": "cpufeatures",
+      "version": "0.2.17"
+    },
+    {
+      "name": "crunchy",
+      "version": "0.2.4"
+    },
+    {
+      "name": "crypto-common",
+      "version": "0.1.7"
+    },
+    {
+      "name": "digest",
+      "version": "0.10.7"
+    },
+    {
+      "name": "errno",
+      "version": "0.3.14"
+    },
+    {
+      "name": "form_urlencoded",
+      "version": "1.2.2"
+    },
+    {
+      "name": "futures-channel",
+      "version": "0.3.34"
+    },
+    {
+      "name": "futures-core",
+      "version": "0.3.34"
+    },
+    {
+      "name": "futures-task",
+      "version": "0.3.34"
+    },
+    {
+      "name": "futures-util",
+      "version": "0.3.34"
+    },
+    {
+      "name": "generic-array",
+      "version": "0.14.7"
+    },
+    {
+      "name": "half",
+      "version": "2.7.1"
+    },
+    {
+      "name": "heck",
+      "version": "0.5.0"
+    },
+    {
+      "name": "hex",
+      "version": "0.4.3"
+    },
+    {
+      "name": "http",
+      "version": "1.5.0"
+    },
+    {
+      "name": "http-body",
+      "version": "1.1.0"
+    },
+    {
+      "name": "http-body-util",
+      "version": "0.1.5"
+    },
+    {
+      "name": "httparse",
+      "version": "1.10.1"
+    },
+    {
+      "name": "httpdate",
+      "version": "1.0.3"
+    },
+    {
+      "name": "hyper",
+      "version": "1.11.1"
+    },
+    {
+      "name": "hyper-util",
+      "version": "0.1.20"
+    },
+    {
+      "name": "is_terminal_polyfill",
+      "version": "1.70.2"
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.18"
+    },
+    {
+      "name": "jev-bench",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-cli",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-core",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-format",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-model",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-quant",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-runtime",
+      "version": "0.1.0"
+    },
+    {
+      "name": "jev-server",
+      "version": "0.1.0"
+    },
+    {
+      "name": "libc",
+      "version": "0.2.189"
+    },
+    {
+      "name": "lock_api",
+      "version": "0.4.14"
+    },
+    {
+      "name": "log",
+      "version": "0.4.34"
+    },
+    {
+      "name": "matchit",
+      "version": "0.7.3"
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3"
+    },
+    {
+      "name": "mime",
+      "version": "0.3.17"
+    },
+    {
+      "name": "mio",
+      "version": "1.2.3"
+    },
+    {
+      "name": "once_cell",
+      "version": "1.21.4"
+    },
+    {
+      "name": "once_cell_polyfill",
+      "version": "1.70.2"
+    },
+    {
+      "name": "parking_lot",
+      "version": "0.12.5"
+    },
+    {
+      "name": "parking_lot_core",
+      "version": "0.9.12"
+    },
+    {
+      "name": "percent-encoding",
+      "version": "2.3.2"
+    },
+    {
+      "name": "pin-project-lite",
+      "version": "0.2.17"
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107"
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47"
+    },
+    {
+      "name": "redox_syscall",
+      "version": "0.5.18"
+    },
+    {
+      "name": "rustversion",
+      "version": "1.0.23"
+    },
+    {
+      "name": "ryu",
+      "version": "1.0.23"
+    },
+    {
+      "name": "scopeguard",
+      "version": "1.2.0"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229"
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229"
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229"
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.151"
+    },
+    {
+      "name": "serde_path_to_error",
+      "version": "0.1.20"
+    },
+    {
+      "name": "serde_urlencoded",
+      "version": "0.7.1"
+    },
+    {
+      "name": "sha2",
+      "version": "0.10.9"
+    },
+    {
+      "name": "signal-hook-registry",
+      "version": "1.4.8"
+    },
+    {
+      "name": "slab",
+      "version": "0.4.12"
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.1"
+    },
+    {
+      "name": "socket2",
+      "version": "0.6.5"
+    },
+    {
+      "name": "strsim",
+      "version": "0.11.1"
+    },
+    {
+      "name": "syn",
+      "version": "2.0.119"
+    },
+    {
+      "name": "syn",
+      "version": "3.0.6"
+    },
+    {
+      "name": "sync_wrapper",
+      "version": "1.0.2"
+    },
+    {
+      "name": "tokio",
+      "version": "1.53.1"
+    },
+    {
+      "name": "tokio-macros",
+      "version": "2.7.2"
+    },
+    {
+      "name": "tower",
+      "version": "0.5.3"
+    },
+    {
+      "name": "tower-layer",
+      "version": "0.3.3"
+    },
+    {
+      "name": "tower-service",
+      "version": "0.3.3"
+    },
+    {
+      "name": "tracing",
+      "version": "0.1.44"
+    },
+    {
+      "name": "tracing-core",
+      "version": "0.1.36"
+    },
+    {
+      "name": "typenum",
+      "version": "1.20.1"
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.26"
+    },
+    {
+      "name": "utf8parse",
+      "version": "0.2.2"
+    },
+    {
+      "name": "version_check",
+      "version": "0.9.5"
+    },
+    {
+      "name": "wasi",
+      "version": "0.11.1+wasi-snapshot-preview1"
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1"
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2"
+    },
+    {
+      "name": "zerocopy",
+      "version": "0.8.57"
+    },
+    {
+      "name": "zerocopy-derive",
+      "version": "0.8.57"
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23"
+    }
+  ]
+}

@@ -9,3 +9,4 @@ tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 jev-runtime = { path = "../jev-runtime" }
+jev-model = { path = "../jev-model" }

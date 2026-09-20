@@ -11,6 +11,9 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
+pub mod runpod;
+pub mod v1;
+
 pub struct Inner {
     pub runtime: jev_runtime::Runtime,
     pub sched: jev_runtime::BatchScheduler,
@@ -104,6 +107,79 @@ async fn health() -> &'static str {
     "ok"
 }
 
+async fn ready(
+    axum::extract::State(state): axum::extract::State<AppState>,
+) -> Json<serde_json::Value> {
+    // Readiness self-check: fixed dummy vectors, reserved key. The body
+    // reports capability only — never state.
+    let key = jev_runtime::CacheKey::new("__ready__", "__ready__", "__ready__");
+    let ok = {
+        let mut inner = state.inner.lock().expect("runtime lock");
+        let w = vec![0.25f32; 8];
+        let b = vec![0.0f32; 2];
+        let x = vec![0.5f32; 4];
+        inner.runtime.infer(&key, &w, &b, &x, 2).0.len() == 2
+    };
+    let device = state
+        .inner
+        .lock()
+        .expect("runtime lock")
+        .runtime
+        .device_name();
+    Json(serde_json::json!({"ready": ok, "device": device, "schema": v1::SCHEMA}))
+}
+
+fn api_status(err: &v1::ApiError) -> StatusCode {
+    match err.code.as_str() {
+        "too-large" => StatusCode::PAYLOAD_TOO_LARGE,
+        "bad-batch" => StatusCode::UNPROCESSABLE_ENTITY,
+        "bad-envelope" => StatusCode::BAD_REQUEST,
+        _ => StatusCode::UNPROCESSABLE_ENTITY,
+    }
+}
+
+async fn choice_route(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    Json(req): Json<v1::ChoiceRequest>,
+) -> Result<Json<v1::ChoiceResponse>, (StatusCode, Json<v1::ApiError>)> {
+    let fut = async { v1::choose(&state, &req) };
+    match tokio::time::timeout(std::time::Duration::from_millis(v1::QUERY_TIMEOUT_MS), fut).await {
+        Ok(Ok(r)) => Ok(Json(r)),
+        Ok(Err(e)) => Err((api_status(&e), Json(e))),
+        Err(_) => Err((
+            StatusCode::REQUEST_TIMEOUT,
+            Json(v1::ApiError {
+                code: "timeout".to_string(),
+                message: "query budget exceeded".to_string(),
+            }),
+        )),
+    }
+}
+
+async fn batch_choice_route(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    Json(req): Json<v1::BatchChoiceRequest>,
+) -> Result<Json<v1::BatchChoiceResponse>, (StatusCode, Json<v1::ApiError>)> {
+    match v1::choose_batch(&state, &req) {
+        Ok(r) => Ok(Json(r)),
+        Err(e) => Err((api_status(&e), Json(e))),
+    }
+}
+
+async fn runpod_route(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    Json(body): Json<serde_json::Value>,
+) -> (StatusCode, Json<serde_json::Value>) {
+    let (req, id) = match runpod::unwrap_envelope(&body) {
+        Ok(t) => t,
+        Err(e) => return (StatusCode::BAD_REQUEST, Json(runpod::wrap_err(None, &e))),
+    };
+    match v1::choose(&state, &req) {
+        Ok(r) => (StatusCode::OK, Json(runpod::wrap_ok(id.as_deref(), &r))),
+        Err(e) => (api_status(&e), Json(runpod::wrap_err(id.as_deref(), &e))),
+    }
+}
+
 async fn infer_route(
     axum::extract::State(state): axum::extract::State<AppState>,
     Json(req): Json<InferRequest>,
@@ -125,8 +201,12 @@ async fn batch_route(
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health))
+        .route("/ready", get(ready))
         .route("/infer", post(infer_route))
         .route("/infer_batch", post(batch_route))
+        .route("/v1/choice", post(choice_route))
+        .route("/v1/batch", post(batch_choice_route))
+        .route("/runpod", post(runpod_route))
         .with_state(state)
 }
 

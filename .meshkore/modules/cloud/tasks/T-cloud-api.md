@@ -1,15 +1,18 @@
 ---
 id: T-cloud-api
 title: Public API and cloud prototype
-status: blocked
+status: done
 priority: medium
-owner: unassigned
+owner: general-09192230
 category: cloud
 initiative: cloud-release
 depends_on:
   - T-quant-onnx
 created: 2026-09-19
 updated: 2026-09-20
+completed_at: 2026-09-20T02:45:00.000Z
+resolved_by: A004
+resolved_by_conv: general-09192230
 ---
 
 # Public API and cloud prototype
@@ -46,3 +49,12 @@ Fuente: stack §§21–27, 39; plan §§93–94.
   devuelve incertidumbre/`unknown` sin loguear el state.
 
 # 2026-09-20 architect: blocked — depends_on T-quant-onnx not done (in scope, later in order); retried in pass order, will revisit after local-runtime chain.
+
+## Resolution
+
+Gate PASS (config=cpu): API V1 (`/v1/choice`, `/v1/batch`), adapter RunPod
+(envelope→core), Dockerfile multi-stage sin Python, SBOM, health/readiness y
+cold-start medido. Cadena de 9 gates revalidada en un linaje tras el trabajo
+nuevo (T-hardneg → T-curriculum → T-distillation → T-gold → T-calib →
+T-local-infer → T-state-cache → T-quant-onnx → T-cloud-api). T-release queda
+desbloqueada.

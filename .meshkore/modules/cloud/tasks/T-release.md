@@ -1,7 +1,7 @@
 ---
 id: T-release
 title: Research release and observability
-status: blocked
+status: next
 priority: medium
 owner: unassigned
 category: cloud
@@ -46,3 +46,4 @@ Fuente: stack §§24, 28; plan §§134, 170.
   release atómica; cualquier gate pendiente la bloquea.
 
 # 2026-09-20 architect: blocked — chains on T-cloud-api (blocked); revisit after it ships.
+# 2026-09-20 general: T-cloud-api PASS — unblocked, dispatchable.
