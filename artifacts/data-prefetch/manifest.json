@@ -1,0 +1,224 @@
+{
+ "jobs": [
+  {
+   "job": "boolq",
+   "hf_id": "google/boolq",
+   "status": "converted",
+   "rows": 12697,
+   "examples": 12697,
+   "skipped": 0,
+   "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a",
+   "revision": "unresolved"
+  },
+  {
+   "job": "civil-comments",
+   "hf_id": "google/civil_comments",
+   "status": "converted",
+   "rows": 1999514,
+   "examples": 1999514,
+   "skipped": 0,
+   "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c",
+   "revision": "unresolved"
+  },
+  {
+   "job": "helpsteer2",
+   "hf_id": "nvidia/HelpSteer2",
+   "status": "converted",
+   "rows": 21362,
+   "examples": 21362,
+   "skipped": 0,
+   "sha256": "5fefac5fe5ec09344ea9658b4ad1fae741a11f1771bb4d01a385958b0b89cab8",
+   "revision": "unresolved"
+  },
+  {
+   "job": "massive",
+   "hf_id": "AmazonScience/massive",
+   "status": "raw-snapshot",
+   "reason": "Dataset scripts are no longer supported, but found massive.py",
+   "snapshot_path": "/Users/ricartjuncadella/.cache/huggingface/hub/datasets--AmazonScience--massive/snapshots/ff6bd8e4b27c3543e4f8fe2108f32bb95a6f8740",
+   "files": 6,
+   "sha256": "b69650c46a1ea985a0bc6d6c4328f5e2d8453cad50fd32ee7d7c0d85a47429b6"
+  },
+  {
+   "job": "logiqa20",
+   "hf_id": "datatune/LogiQA2.0",
+   "status": "raw-dump",
+   "rows": 84976,
+   "columns": [
+    "text"
+   ],
+   "sample": [
+    {
+     "text": "{\"id\": 4554, \"answer\": 0, \"text\": \"A college will continue to implement the overseas funding plan this year. It plans to select several of the six teachers from Mr. Liu, Mr. Zhang, Mr. Wang, Mr. Ma, Mr. Niu and Mr. Zhou to visit abroad. Due to the limitations of funding, the needs of discipline development, curriculum arrangement, place and time of each student's visit, the selection shall meet the following conditions: (1) Mr. Liu is the reserve discipline leader of the college, This time we have to send out. (2) if we choose Mr. Liu, we should also choose Mr. Zhou, but we can't choose Mr. Zhang. (3) only if Mr. Niu can't choose, at least one of Mr. Wang and Mr. Ma can choose. (4) if we don't choose Mr. Wang, we don't choose Mr. Zhou either.\", \"question\": \"If the above statement is true, which of the followings must be true?\", \"options\": [\"Mr. Niu didn't choose, but Mr. Zhou did\", \"Mr. Liu was chose, but Mr. Ma didn't\", \"Mr. Wang and Mr. Ma were chosen\", \"Neither Mr. Wang nor Mr. Niu was elected\"], \"type\": {\"Categorical Reasoning\": true, \"Sufficient Conditional Reasoning\": true, \"Necessry Condtional Reasoning\": true, \"Conjunctive Reasoning\": true}}"
+    },
+    {
+     "text": "{\"id\": 7446, \"answer\": 0, \"text\": \"The straw effect means that the juice around the tube can be inhaled by inhaling the fruit juice in the cup with a straw. Implanting some kind of straw in a certain area can gather resources and cause obvious regional effect.\", \"question\": \"Which of the following options does not belong to the straw effect?\", \"options\": [\"The common sense of petroleum prospecting is that the standard distance between the two mining areas is 100 meters. At present, China has explored eight oil fields in the East China Sea, including the new Bajiaoting oil and gas field\", \"The function of the city has shifted to the south, and property prices in Zhongcun, Nanhai Pingzhou, Sanshan and Shunde near the new railway station have all been pushed up\", \"Xijiao Town integrates the resources of the industrial park in the town, and with the strong foundation of its textile industry, it has established the textile characteristics as the main direction of attack, and guided the textile enterprises to transform from extensive to centralized and carry out cluster development\", \"This year, let the prosperity of the modern service industry be matched with convenient transportation, and the combination of the two will become a prosperous area where capital flows yearn for one after another\"], \"type\": {\"Categorical Reasoning\": true, \"Sufficient Conditional Reasoning\": true, \"Conjunctive Reasoning\": true}}"
+    },
+    {
+     "text": "{\"id\": 6272, \"answer\": 0, \"text\": \"Reading is a personal life habit, which is determined by cultural literacy. Without the pursuit of knowledge or the hobby of culture, it is difficult to imagine that people can calm down and read. The habit of reading should be cultivated from an early age. Starting from the beginning, only the love and pursuit of cultural knowledge can make us accustomed to reading. The reading habits and hobbies of Chinese people cannot be solved by a youth reading festival. Therefore, reading is still based on usual habits.\", \"question\": \"Which one of the followings is the topic of the above?\", \"options\": [\"Reading habits\", \"Advocate reading\", \"Love reading since childhood\", \"Pursue knowledge\"], \"type\": {\"Sufficient Conditional Reasoning\": true, \"Disjunctive Reasoning\": true, \"Conjunctive Reasoning\": true}}"
+    }
+   ],
+   "locales": null,
+   "sha256": "1debc735ae24a0f432e422f2135f54b8a890ddc93e98ec15e93de8c8bb45a500"
+  },
+  {
+   "job": "reclor",
+   "hf_id": "sxiong/ReClor",
+   "status": "raw-dump",
+   "rows": 6138,
+   "columns": [
+    "context",
+    "question",
+    "answers",
+    "label",
+    "id_string",
+    "question_type"
+   ],
+   "sample": [
+    {
+     "context": "In rheumatoid arthritis, the body' s immune system misfunctions by attacking healthy cells in the joints causing the release of a hormone that in turn causes pain and swelling. This hormone is normally activated only in reaction to injury or infection. A new arthritis medication will contain a protein that inhibits the functioning of the hormone that causes pain and swelling in the joints.",
+     "question": "The statements above, if true, most strongly support which one of the following conclusions?",
+     "answers": [
+      "Unlike aspirin and other medications that reduce pain and swelling and that are currently available, the new medication would repair existing cell damage that had been caused by rheumatoid arthritis.",
+      "A patient treated with the new medication for rheumatoid arthritis could sustain a joint injury without becoming aware of it.",
+      "Joint diseases other than rheumatoid arthritis would not be affected by the new medication.",
+      "The benefits to rheumatoid arthritis sufferers of the new medication would outweigh the medication's possible harmful side effects."
+     ],
+     "label": 1,
+     "id_string": "train_0",
+     "question_type": -1
+    },
+    {
+     "context": "Patient: Pharmacists maintain that doctors should not be permitted to sell the medicine that they prescribe because doctors would then be tempted to prescribe unnecessary medicines in order to earn extra income. But pharmacists have a financial interest in having a monopoly on the sale of prescription medicines, so their objection to the sale of medicines by doctors cannot be taken seriously.",
+     "question": "The patient's argument proceeds by",
+     "answers": [
+      "attempting to discredit a position by questioning the motives of the proponents of that position",
+      "rejecting a questionable position on the grounds that the general public does not support that position",
+      "pointing out an unstated assumption on which the pharmacists' argument relies and then refuting it",
+      "asserting that pharmacists lack the appropriate knowledge to have informed opinions on the subject under discussion"
+     ],
+     "label": 0,
+     "id_string": "train_1",
+     "question_type": -1
+    },
+    {
+     "context": "Paula will visit the dentist tomorrow morning only if Bill goes golfing in the morning. Bill will not go golfing unless Damien agrees to go golfing too. However, Damien has decided not to go golfing. Ttherefore, Paula will not be visiting the dentist tomorrow morning.",
+     "question": "The pattern of reasoning displayed above most closely parallels which of the following?",
+     "answers": [
+      "If Marge goes to the bank today, Lauren will not cash her check tomorrow. Marge will not wash her car unless it is sunny. However, it is sunny, so Marge will wash her car and go shopping with Lauren.",
+      "Kevin will wash his car tomorrow only if Brittany has to go visit her grandmother. Unless Aunt Susan has to run errands, Brittany will not have to go visit her grandmother. Since Aunt Susan does not have to run errands, Kevin will not wash his car tomorrow.",
+      "Renee will do her homework tonight if there is nothing good on television and if her neighbors do not have a party. Although, there is something good on television; her neighbors are also having a party. Ttherefore, Renee will attend the party.",
+      "Maddie will plan a picnic only if one of her friends, Lisa or Kenny, will come. Kenny will not come to the picnic, but Lisa will. Ttherefore, Maddie will plan a picnic."
+     ],
+     "label": 1,
+     "id_string": "train_2",
+     "question_type": -1
+    }
+   ],
+   "locales": null,
+   "sha256": "e9e57386b836a7a8d0aad932117e9d1ced9e958283f1ed4c3f36b42e2e122136"
+  },
+  {
+   "job": "huffpost",
+   "hf_id": "khalidalt/HuffPost",
+   "status": "raw-snapshot",
+   "reason": "legacy script: datasets>=3 refuses HuffPost.py/banking77.py",
+   "snapshot_path": "/Users/ricartjuncadella/.cache/huggingface/hub/datasets--khalidalt--HuffPost/snapshots/01020533529fc1cda0af7d99231eb96e7837f883",
+   "files": 4,
+   "sha256": "668a11f68d3e6fb1d4d9ad1a1cc821e26a57316895bcfe44f26b4845d84d7900"
+  },
+  {
+   "job": "banking77",
+   "hf_id": "PolyAI/banking77",
+   "status": "raw-snapshot",
+   "reason": "legacy script: datasets>=3 refuses HuffPost.py/banking77.py",
+   "snapshot_path": "/Users/ricartjuncadella/.cache/huggingface/hub/datasets--PolyAI--banking77/snapshots/90d4e2ee5521c04fc1488f065b8b083658768c57",
+   "files": 4,
+   "sha256": "0c452e8b6fedd994d2018530214e66bf5d9c45066bc4924eac6eaaf23136f172"
+  },
+  {
+   "job": "huffpost",
+   "hf_id": "khalidalt/HuffPost",
+   "status": "converted-full-41cat",
+   "rows": 200853,
+   "examples": 181140,
+   "skipped": 19713,
+   "skip_reason": "empty headline/description in source; 0 unknown categories",
+   "splits": {
+    "train": 162935,
+    "test": 18205
+   },
+   "sha256": "f7b11a35143ff41e"
+  },
+  {
+   "job": "banking77",
+   "hf_id": "PolyAI/banking77",
+   "status": "converted-raw-csv",
+   "rows": 13083,
+   "examples": 13083,
+   "skipped": 0,
+   "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca",
+   "revision": "github-master-train/test.csv"
+  },
+  {
+   "job": "massive",
+   "hf_id": "AmazonScience/massive",
+   "status": "converted-6locale",
+   "rows": 99126,
+   "examples": 99126,
+   "skipped": 0,
+   "locales": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "fr-FR",
+    "it-IT",
+    "pt-PT"
+   ],
+   "splits": {
+    "train": 69084,
+    "calibration": 12198,
+    "test": 17844
+   },
+   "sha256": "a49350daa90f3d24",
+   "source": "artifacts/data-raw/massive/amazon-massive-1.1.tar.gz"
+  },
+  {
+   "job": "logiqa",
+   "hf_id": "datatune/LogiQA2.0",
+   "status": "converted",
+   "rows": 84976,
+   "examples": 84935,
+   "skipped": {
+    "truncated": 4,
+    "degenerate": 37
+   },
+   "skip_reason": "4 truncated inner-JSON dump lines; 37 empty passage/question/option",
+   "splits": {
+    "train": 63683,
+    "calibration": 10907,
+    "test": 10345
+   },
+   "sha256": "6020c4874424c41f",
+   "note": "MC + NLI-boolean shapes; reasoning-type flags dropped"
+  },
+  {
+   "job": "reclor",
+   "status": "converted",
+   "rows": 6138,
+   "examples": 6138,
+   "skipped": 0,
+   "splits": {
+    "train": 4638,
+    "calibration": 500,
+    "test": 1000
+   },
+   "sha256": "1820341d37e6633f",
+   "note": "test split gold hidden -> answer unknown"
+  }
+ ],
+ "summary": {
+  "ok": 8,
+  "total": 8
+ }
+}

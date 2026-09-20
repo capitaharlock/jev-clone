@@ -36,8 +36,20 @@ PINNED_REVISIONS = {
 }
 
 HUFFPOST_UNIVERSE = [
+    # Full 41-category universe (T-massive-huff §125): the 200 853-row
+    # source snapshot carries 41 distinct categories; the earlier 8-cat
+    # shortlist silently dropped 134 343 rows. Keep the original 8 first
+    # so seeded _sample_subset draws on those labels stay stable.
     "POLITICS", "SPORTS", "TECH", "ENTERTAINMENT",
     "BUSINESS", "CRIME", "TRAVEL", "FOOD",
+    "WELLNESS", "STYLE & BEAUTY", "PARENTING", "HEALTHY LIVING",
+    "QUEER VOICES", "FOOD & DRINK", "COMEDY", "BLACK VOICES",
+    "HOME & LIVING", "PARENTS", "THE WORLDPOST", "WEDDINGS",
+    "WOMEN", "IMPACT", "DIVORCE", "MEDIA", "WEIRD NEWS",
+    "GREEN", "WORLDPOST", "RELIGION", "STYLE", "SCIENCE",
+    "WORLD NEWS", "TASTE", "MONEY", "ARTS", "FIFTY",
+    "GOOD NEWS", "ARTS & CULTURE", "ENVIRONMENT", "COLLEGE",
+    "LATINO VOICES", "CULTURE & ARTS", "EDUCATION",
 ]
 HELPSTEER_ATTRS = ["helpfulness", "correctness", "coherence", "complexity", "verbosity"]
 HELPSTEER_LEVELS = ["0", "1", "2", "3", "4"]
