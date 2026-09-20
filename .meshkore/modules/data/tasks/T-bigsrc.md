@@ -13,6 +13,7 @@ updated: 2026-09-20
 completed_at: 2026-09-20T12:04:03Z
 resolved_by: A004
 resolved_by_conv: general-09192230
+commit_shas: ['ee96d6ffc70f52e246eee6c9d3c96c7db486693e']
 ---
 
 # Tasksource, P3 y DocNLI adapters
