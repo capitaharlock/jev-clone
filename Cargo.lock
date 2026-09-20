@@ -414,7 +414,10 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 name = "jev-bench"
 version = "0.1.0"
 dependencies = [
+ "jev-model",
  "jev-runtime",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -423,7 +426,9 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "jev-core",
+ "jev-model",
  "jev-server",
+ "serde_json",
  "tokio",
 ]
 

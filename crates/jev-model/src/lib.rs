@@ -4,6 +4,9 @@
 // `tests/parity.rs` runs both and asserts agreement across the stack §30
 // matrix (short/long states, 2–32 options, choice/boolean × FP32/FP16).
 // INT8 runs only when a quantized fixture exists (none yet → skip).
+//
+// Local inference backends live in [`backend`] (#T-local-infer).
+pub mod backend;
 
 /// Deterministic pseudo-random source shared with the Python reference.
 /// LCG: state = (1103515245 * state + 12345) mod 2^31, value in [-1, 1).

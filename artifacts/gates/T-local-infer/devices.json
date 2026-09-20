@@ -1,0 +1,19 @@
+{
+  "devices": [
+    {
+      "available": true,
+      "device": "cpu",
+      "reason": null
+    },
+    {
+      "available": false,
+      "device": "metal",
+      "reason": "metal backend not compiled in this workspace build"
+    },
+    {
+      "available": false,
+      "device": "cuda",
+      "reason": "cuda backend not compiled in this workspace build"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ pub struct Runtime {
     cache: HashMap<String, Vec<f32>>,
     pub hits: u64,
     pub misses: u64,
+    device: jev_model::backend::Device,
 }
 
 /// One question inside a batch: its own weights/bias/input over the
@@ -25,7 +26,22 @@ impl Runtime {
             cache: HashMap::new(),
             hits: 0,
             misses: 0,
+            device: jev_model::backend::Device::Cpu,
         }
+    }
+
+    /// Pin this runtime to an already-resolved backend device (#T-local-infer).
+    pub fn with_device(device: jev_model::backend::Device) -> Self {
+        Self {
+            cache: HashMap::new(),
+            hits: 0,
+            misses: 0,
+            device,
+        }
+    }
+
+    pub fn device_name(&self) -> &'static str {
+        self.device.as_str()
     }
 
     pub fn cache_size(&self) -> usize {
@@ -111,5 +127,22 @@ mod tests {
         let out = rt.infer_batch("s", &[item(), item()]);
         assert_eq!(out.len(), 2);
         assert_eq!(out[0], out[1]);
+    }
+
+    #[test]
+    fn single_and_batch_agree() {
+        // Gate requirement: single↔batch parity on the same backend.
+        let (w, b, x) = tiny();
+        let mut rt = Runtime::with_device(jev_model::backend::Device::Cpu);
+        assert_eq!(rt.device_name(), "cpu");
+        let single = rt.infer("solo", &w, &b, &x, 2);
+        let item = BatchItem {
+            weights: &w,
+            bias: &b,
+            input: &x,
+            n_options: 2,
+        };
+        let batch = rt.infer_batch("otro", &[item]);
+        assert_eq!(single, batch[0]);
     }
 }

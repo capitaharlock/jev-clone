@@ -2,16 +2,16 @@
   "format": 1,
   "task": "T-data-schema",
   "pass": true,
-  "commit": "66bf6b8a6753d00f3e0a12f124d69e1448f65b8b",
+  "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
   "config": "cpu",
-  "tree_hash": "3d8343ca9a782891ca263a5aee0bb1f92722be2aa89f728e9201ba5f99707964",
+  "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
   "upstream": {
     "format": 1,
     "task": "T-rust-skel",
     "pass": true,
-    "commit": "66bf6b8a6753d00f3e0a12f124d69e1448f65b8b",
+    "commit": "8865912dc172347c00edc17bc2471ad5801aeafb",
     "config": "cpu",
-    "tree_hash": "3d8343ca9a782891ca263a5aee0bb1f92722be2aa89f728e9201ba5f99707964",
+    "tree_hash": "a9051e69e7f090e8c02a2acd07fcb5c5339bb8f7c1520aef29d0bbd5cf2f5cf5",
     "upstream": null,
     "upstream_msg": "no upstream (root gate)",
     "metrics": {
@@ -29,9 +29,10 @@
       "python-curriculum": "pass",
       "python-distillation": "pass",
       "python-gold": "pass",
-      "python-calib": "pass"
+      "python-calib": "pass",
+      "python-local-infer": "pass"
     },
-    "created_utc": "2026-09-20T00:38:47.893773+00:00"
+    "created_utc": "2026-09-20T01:14:32.485407+00:00"
   },
   "upstream_msg": "upstream T-rust-skel PASS, same lineage",
   "metrics": {
@@ -49,7 +50,8 @@
     "python-curriculum": "pass",
     "python-distillation": "pass",
     "python-gold": "pass",
-    "python-calib": "pass"
+    "python-calib": "pass",
+    "python-local-infer": "pass"
   },
-  "created_utc": "2026-09-20T00:38:51.724068+00:00"
+  "created_utc": "2026-09-20T01:14:38.446630+00:00"
 }

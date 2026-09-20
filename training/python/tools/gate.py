@@ -117,6 +117,8 @@ REGRESSION = [
                              "model.test_distillation"]),
     ("python-gold", ["python3", "-m", "unittest", "data.test_gold"]),
     ("python-calib", ["python3", "-m", "unittest", "eval.test_calib"]),
+    ("python-local-infer", ["python3", "-m", "unittest",
+                            "training.python.test_local_infer"]),
 ]
 
 

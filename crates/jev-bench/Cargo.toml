@@ -8,7 +8,10 @@ name = "jev-bench"
 path = "src/main.rs"
 
 [dependencies]
+jev-model = { path = "../jev-model" }
 jev-runtime = { path = "../jev-runtime" }
+serde = { workspace = true }
+serde_json = { workspace = true }
 
 [lib]
 name = "jev_bench"
