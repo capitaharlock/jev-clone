@@ -125,6 +125,8 @@ REGRESSION = [
                            "training.python.test_quant_onnx"]),
     ("python-cloud-api", ["python3", "-m", "unittest",
                           "training.python.test_cloud_api"]),
+    ("python-release", ["python3", "-m", "unittest",
+                        "training.python.test_release"]),
 ]
 
 

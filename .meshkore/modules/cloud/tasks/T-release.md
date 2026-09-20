@@ -1,15 +1,18 @@
 ---
 id: T-release
 title: Research release and observability
-status: next
+status: done
 priority: medium
-owner: unassigned
+owner: general-09192230
 category: cloud
 initiative: cloud-release
 depends_on:
   - T-cloud-api
 created: 2026-09-19
 updated: 2026-09-20
+completed_at: 2026-09-20T12:30:00Z
+resolved_by: A004
+resolved_by_conv: general-09192230
 ---
 
 # Research release and observability
@@ -47,3 +50,16 @@ Fuente: stack §§24, 28; plan §§134, 170.
 
 # 2026-09-20 architect: blocked — chains on T-cloud-api (blocked); revisit after it ships.
 # 2026-09-20 general: T-cloud-api PASS — unblocked, dispatchable.
+
+## Resolution
+
+#T-release terminada con gate PASS: bundle atómico en `artifacts/gates/T-release/release.json`
+(11 evidencias con sha256 re-verificado, ningún claim sin evidencia), model card con
+limitaciones en `.meshkore/docs/model-card.md`, `GET /metrics` con contadores Prometheus
+sin contenido de usuario, flujo train-en-Pod contra stub con destroy garantizado
+(`.meshkore/docs/pod-train.md`). El trabajo nuevo (SPDX en manifests, `metrics.rs`,
+gate `python-release`) rompió el linaje, así que revalidé la cadena entera de 18 gates
+en orden, todos PASS bajo un solo árbol (`cb1a1a35`, config=cpu). Con esto #cloud-release
+queda 2/2 y se cierra.
+
+— T-release · bundle research release verificable, model card, métricas sin contenido y Pod flow con gate PASS

@@ -11,6 +11,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
+pub mod metrics;
 pub mod runpod;
 pub mod v1;
 
@@ -22,6 +23,7 @@ pub struct Inner {
 #[derive(Clone)]
 pub struct AppState {
     pub inner: Arc<Mutex<Inner>>,
+    pub metrics: Arc<metrics::Metrics>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,12 +56,23 @@ pub struct BatchResponse {
 }
 
 pub fn infer(state: &AppState, req: &InferRequest) -> InferResponse {
-    let mut inner = state.inner.lock().expect("runtime lock");
-    let key = jev_runtime::CacheKey::new(&req.model_version, &req.state_hash, &req.tokenizer_hash);
-    let (probs, cached) =
+    let t0 = std::time::Instant::now();
+    let (key, weights, bias, input, n_options) = (
+        jev_runtime::CacheKey::new(&req.model_version, &req.state_hash, &req.tokenizer_hash),
+        req.weights.clone(),
+        req.bias.clone(),
+        req.input.clone(),
+        req.n_options,
+    );
+    let (probs, cached) = {
+        let mut inner = state.inner.lock().expect("runtime lock");
         inner
             .runtime
-            .infer(&key, &req.weights, &req.bias, &req.input, req.n_options);
+            .infer(&key, &weights, &bias, &input, n_options)
+    };
+    state
+        .metrics
+        .record(t0.elapsed().as_micros() as u64, cached, false);
     InferResponse { probs, cached }
 }
 
@@ -142,17 +155,33 @@ async fn choice_route(
     axum::extract::State(state): axum::extract::State<AppState>,
     Json(req): Json<v1::ChoiceRequest>,
 ) -> Result<Json<v1::ChoiceResponse>, (StatusCode, Json<v1::ApiError>)> {
+    let t0 = std::time::Instant::now();
     let fut = async { v1::choose(&state, &req) };
     match tokio::time::timeout(std::time::Duration::from_millis(v1::QUERY_TIMEOUT_MS), fut).await {
-        Ok(Ok(r)) => Ok(Json(r)),
-        Ok(Err(e)) => Err((api_status(&e), Json(e))),
-        Err(_) => Err((
-            StatusCode::REQUEST_TIMEOUT,
-            Json(v1::ApiError {
-                code: "timeout".to_string(),
-                message: "query budget exceeded".to_string(),
-            }),
-        )),
+        Ok(Ok(r)) => {
+            state
+                .metrics
+                .record(t0.elapsed().as_micros() as u64, false, false);
+            Ok(Json(r))
+        }
+        Ok(Err(e)) => {
+            state
+                .metrics
+                .record(t0.elapsed().as_micros() as u64, false, true);
+            Err((api_status(&e), Json(e)))
+        }
+        Err(_) => {
+            state
+                .metrics
+                .record(t0.elapsed().as_micros() as u64, false, true);
+            Err((
+                StatusCode::REQUEST_TIMEOUT,
+                Json(v1::ApiError {
+                    code: "timeout".to_string(),
+                    message: "query budget exceeded".to_string(),
+                }),
+            ))
+        }
     }
 }
 
@@ -160,9 +189,20 @@ async fn batch_choice_route(
     axum::extract::State(state): axum::extract::State<AppState>,
     Json(req): Json<v1::BatchChoiceRequest>,
 ) -> Result<Json<v1::BatchChoiceResponse>, (StatusCode, Json<v1::ApiError>)> {
+    let t0 = std::time::Instant::now();
     match v1::choose_batch(&state, &req) {
-        Ok(r) => Ok(Json(r)),
-        Err(e) => Err((api_status(&e), Json(e))),
+        Ok(r) => {
+            state
+                .metrics
+                .record(t0.elapsed().as_micros() as u64, false, false);
+            Ok(Json(r))
+        }
+        Err(e) => {
+            state
+                .metrics
+                .record(t0.elapsed().as_micros() as u64, false, true);
+            Err((api_status(&e), Json(e)))
+        }
     }
 }
 
@@ -198,10 +238,20 @@ async fn batch_route(
     }
 }
 
+async fn metrics_route(
+    axum::extract::State(state): axum::extract::State<AppState>,
+) -> ([(&'static str, &'static str); 1], String) {
+    (
+        [("content-type", "text/plain; version=0.0.4")],
+        state.metrics.render(),
+    )
+}
+
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
+        .route("/metrics", get(metrics_route))
         .route("/infer", post(infer_route))
         .route("/infer_batch", post(batch_route))
         .route("/v1/choice", post(choice_route))
@@ -216,6 +266,7 @@ pub fn new_state() -> AppState {
             runtime: jev_runtime::Runtime::new(),
             sched: jev_runtime::BatchScheduler::default(),
         })),
+        metrics: Arc::new(metrics::Metrics::default()),
     }
 }
 

@@ -483,6 +483,7 @@ name = "jev-server"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "jev-model",
  "jev-runtime",
  "serde",
  "serde_json",

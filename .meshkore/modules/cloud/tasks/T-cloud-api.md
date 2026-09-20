@@ -1,4 +1,5 @@
 ---
+status: done
 id: T-cloud-api
 title: Public API and cloud prototype
 status: done
@@ -10,11 +11,11 @@ depends_on:
   - T-quant-onnx
 created: 2026-09-19
 updated: 2026-09-20
-completed_at: 2026-09-20T02:45:00.000Z
+completed_at: 2026-09-20T08:13:19.285Z
 resolved_by: A004
 resolved_by_conv: general-09192230
+commit_shas: ['220f7e2d6258509ee982fbf413229bf909a01404']
 ---
-
 # Public API and cloud prototype
 
 API pública de decisiones (V1: `choice` + `boolean` como choice
@@ -52,9 +53,41 @@ Fuente: stack §§21–27, 39; plan §§93–94.
 
 ## Resolution
 
-Gate PASS (config=cpu): API V1 (`/v1/choice`, `/v1/batch`), adapter RunPod
-(envelope→core), Dockerfile multi-stage sin Python, SBOM, health/readiness y
-cold-start medido. Cadena de 9 gates revalidada en un linaje tras el trabajo
-nuevo (T-hardneg → T-curriculum → T-distillation → T-gold → T-calib →
-T-local-infer → T-state-cache → T-quant-onnx → T-cloud-api). T-release queda
-desbloqueada.
+#T-cloud-api terminada con gate PASS (commit `220f7e2`): API V1, adapter RunPod, Docker sin Python, SBOM y cold-start. El trabajo nuevo había roto el linaje, así que revalidé 9 gates en orden, todos PASS bajo un solo árbol. Queda una sola tarea en #cloud-release: #T-release (ya desbloqueada, en `next`).
+<details><summary>Cadena revalidada — 9 gates PASS</summary>
+
+- T-hardneg → T-curriculum → T-distillation → T-gold → T-calib → T-local-infer → T-state-cache → T-quant-onnx → T-cloud-api, config=cpu, árbol `9460986a`.
+- Cada gate corre la regresión acumulada (fmt, clippy, tests Rust + 18 grupos Python); un run rojo nunca deja PASS.
+</details>
+<details><summary>T-cloud-api — qué entrega</summary>
+
+- `POST /v1/choice` y `/v1/batch` (choice + boolean binario + `unknown`, orden e IDs preservados, sin state en logs), `POST /runpod` (envelope→core API).
+- `crates/jev-server/src/v1.rs` + `runpod.rs`, `Dockerfile` multi-stage sin Python, `sbom.json`, `.meshkore/docs/api-v1.md`, cold-start en `artifacts/gates/T-cloud-api/`.
+</details>
+
+— T-cloud-api · API pública V1, adapter RunPod, Docker reproducible y SBOM con gate PASS
+
+**Commit** `220f7e2d6` · 21 files · 17.5M tokens
+
+**Files changed (21):**
+- `.meshkore/docs/api-v1.md`
+- `.meshkore/modules/cloud/tasks/T-cloud-api.md`
+- `.meshkore/modules/cloud/tasks/T-release.md`
+- `Dockerfile`
+- `artifacts/gates/T-calib/gate.json`
+- `artifacts/gates/T-cloud-api/coldstart.json`
+- `artifacts/gates/T-cloud-api/gate.json`
+- `artifacts/gates/T-curriculum/gate.json`
+- `artifacts/gates/T-distillation/gate.json`
+- `artifacts/gates/T-gold/gate.json`
+- `artifacts/gates/T-hardneg/gate.json`
+- `artifacts/gates/T-local-infer/gate.json`
+- `artifacts/gates/T-quant-onnx/gate.json`
+- `artifacts/gates/T-state-cache/gate.json`
+- `crates/jev-server/Cargo.toml`
+- `crates/jev-server/src/lib.rs`
+- `crates/jev-server/src/runpod.rs`
+- `crates/jev-server/src/v1.rs`
+- `sbom.json`
+- `training/python/test_cloud_api.py`
+- `training/python/tools/gate.py`

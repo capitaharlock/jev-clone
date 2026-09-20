@@ -1,14 +1,15 @@
 ---
 id: cloud-release
 title: Cloud service and research release
-status: next
+status: done
 owner: architect-master
 modules:
   - cloud
 created: 2026-09-19
-updated: 2026-09-19
+updated: 2026-09-20
+completed_at: 2026-09-20T10:25:40.479Z
+commit_sha: 220f7e2d6258509ee982fbf413229bf909a01404
 ---
-
 # Cloud service and research release
 
 Del binario local al servicio: API pública de decisiones, contenedor de

@@ -1,0 +1,122 @@
+{
+  "format": 1,
+  "task": "T-release",
+  "commit": "220f7e2d6258509ee982fbf413229bf909a01404",
+  "predictor": {
+    "name": "cosine-char3-softmax",
+    "base_temperature": 1.0,
+    "version": 1
+  },
+  "licenses": {
+    "workspace": "MIT OR Apache-2.0",
+    "evidence": ".meshkore/docs/model-card.md"
+  },
+  "numbers": {
+    "temperature": 0.05,
+    "nll_before": 0.5646935979401707,
+    "nll_after": 0.023480522517238117,
+    "cohen_kappa": 0.0,
+    "exact_agree_rate": 0.852,
+    "top2": [
+      "proxy-L",
+      "proxy-M"
+    ],
+    "cold_verdict": "GO",
+    "cold_budget_s": 30.0
+  },
+  "evidence": [
+    {
+      "claim": "calibration",
+      "path": "artifacts/gates/T-calib/calibration.json",
+      "sha256": "52524db63023334e51b978d33bda2f9c7caa76a0301b9ea8417a0e469ec01725"
+    },
+    {
+      "claim": "calibration-report",
+      "path": "artifacts/gates/T-calib/report.json",
+      "sha256": "afbb7bf878f34e8b9188f95126a7d3a2a23de875af3b643d1eb76db5662d391d"
+    },
+    {
+      "claim": "gold-pilot",
+      "path": "artifacts/gates/T-gold/report.json",
+      "sha256": "c8e3dc22be92b97d4fad4c41204c222e888807b628582a3668077ca9e4d8fb5f"
+    },
+    {
+      "claim": "bakeoff",
+      "path": "artifacts/gates/T-bakeoff/report.json",
+      "sha256": "36afe4ef5c992634e84b940b8cf6403279129ff70b3dfc102a92ec80405afc3c"
+    },
+    {
+      "claim": "cold-start",
+      "path": "artifacts/gates/T-cloud-api/coldstart.json",
+      "sha256": "e11bfbfb9fef3012034ad699c2af56b0391a1adb7e9d42011d26fb7d3bb8b14e"
+    },
+    {
+      "claim": "sbom",
+      "path": "sbom.json",
+      "sha256": "7cda084cae6d91df89932f4b83e25004542163636c93d01d91d1eb897add401c"
+    },
+    {
+      "claim": "model-card",
+      "path": ".meshkore/docs/model-card.md",
+      "sha256": "37850802c6f32195813c3518bdf92699aace6a45dbe0fa263056831b8105fd2b"
+    },
+    {
+      "claim": "pod-train",
+      "path": ".meshkore/docs/pod-train.md",
+      "sha256": "934f302053c3821c247f4d63b669d8cc5e9d522b4134594074568ef8a7ea1e5a"
+    },
+    {
+      "claim": "api-v1",
+      "path": ".meshkore/docs/api-v1.md",
+      "sha256": "d11234a8cd3ba0d7fd88fe3476d3c911628590ae19b9b916cd38dce75a3bcff2"
+    },
+    {
+      "claim": "sources",
+      "path": ".meshkore/docs/source-register.md",
+      "sha256": "10eaa09da50d85055c6f77f693acab4bb0e9f5c2e332817f7fb0a50d9cc1275c"
+    },
+    {
+      "claim": "dataset-registry",
+      "path": "data/registry.py",
+      "sha256": "5824fcff65af934d6febcfc1cdd1906e6a7c524fe059c3baf9b0fb78cd80aced"
+    }
+  ],
+  "golden": [
+    {
+      "name": "short-2-choice",
+      "seed": 11,
+      "dim": 4,
+      "n": 2,
+      "probs": [
+        0.7422995821021801,
+        0.25770041789781994
+      ]
+    },
+    {
+      "name": "short-2b-boolean",
+      "seed": 12,
+      "dim": 4,
+      "n": 2,
+      "probs": [
+        0.30051352305690393,
+        0.6994864769430961
+      ]
+    },
+    {
+      "name": "short-8-choice",
+      "seed": 13,
+      "dim": 4,
+      "n": 8,
+      "probs": [
+        0.19282853787330664,
+        0.0848169716332941,
+        0.1617007529366763,
+        0.31017565188857377,
+        0.08066545054485025,
+        0.043984918618296606,
+        0.06503090935938999,
+        0.060796807145612385
+      ]
+    }
+  ]
+}
