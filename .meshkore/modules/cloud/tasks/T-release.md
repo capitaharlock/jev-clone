@@ -13,6 +13,7 @@ updated: 2026-09-20
 completed_at: 2026-09-20T12:30:00Z
 resolved_by: A004
 resolved_by_conv: general-09192230
+commit_shas: ['4492b30f6655e72222f4e3fd480a3938af4e3668']
 ---
 
 # Research release and observability
