@@ -1,0 +1,886 @@
+{
+  "checks": {
+    "benchmark_fence": {
+      "criterion": "\u00a7\u00a718, 77: zero Banking77 / HelpSteer2 / PubMedQA rows and zero Jevals ids in train, asserted",
+      "pass": true,
+      "report": {
+        "blocked": {
+          "dataset": 0,
+          "jevals_hash": 0,
+          "jevals_id": 0
+        },
+        "clean": true,
+        "enforcement": "tools.mix_1m.fence.FenceBreach \u2014 assembly aborts; a fenced row is never counted, capped or reported as a share",
+        "fenced_datasets": [
+          "banking77",
+          "helpsteer2",
+          "pubmedqa"
+        ],
+        "jevals_hashes_known": 0,
+        "jevals_ids_known": 5000,
+        "jevals_ids_path": "artifacts/gates/T-data-eval/jevals_ids.json",
+        "questions_checked": 39981
+      }
+    },
+    "corpus_1m_rows": {
+      "achievable_rows": 39970,
+      "criterion": "\u00a786: 1,000,000 clean rows",
+      "measured_rows": 39981,
+      "pass": false,
+      "why": "the \u00a7\u00a765-66 caps admit at most 39,970 rows from the fenced registry, 1,000,000 were asked for. Every source but the smallest sits exactly at the 15 % cap, so the only fix is an independent source \u2014 no target size and no seed changes this."
+    },
+    "diversity_dashboard": {
+      "axes": [
+        "dataset",
+        "family",
+        "k_bucket",
+        "lang",
+        "layer",
+        "origin",
+        "qtype",
+        "simpson"
+      ],
+      "criterion": "\u00a765: shares + Simpson by domain/family/type/K/language/layer",
+      "pass": true
+    },
+    "guardrails": {
+      "criterion": "\u00a7\u00a765-66, 68: <=15 % per dataset, <=30 % per family, <=50 % synthetic, >=20 % human, >=10 % hard/OOD",
+      "failed": [
+        "hard>=10%"
+      ],
+      "pass": false,
+      "report": {
+        "checks": {
+          "dataset:boolq<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "dataset:civil-comments<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "dataset:email-triage<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.100048
+          },
+          "dataset:huffpost<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "dataset:massive<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "dataset:prog-gold<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149971
+          },
+          "dataset:synth-v1<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "family:grounded<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "family:intent<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.250044
+          },
+          "family:knowledge<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149971
+          },
+          "family:qa<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "family:topic<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "family:toxicity<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.149996
+          },
+          "hard>=10%": {
+            "bound": 0.1,
+            "kind": "min",
+            "ok": false,
+            "share": 0.076161
+          },
+          "human>=20%": {
+            "bound": 0.2,
+            "kind": "min",
+            "ok": true,
+            "share": 0.599985
+          },
+          "synthetic<=50%": {
+            "bound": 0.5,
+            "kind": "max",
+            "ok": true,
+            "share": 0.250044
+          }
+        },
+        "enforced_by": "data.mix.verify_guardrails, which raises MixGuardrailError on the realised mixture",
+        "failed": [
+          "hard>=10%"
+        ],
+        "pass": false,
+        "total": 39981
+      }
+    },
+    "mix_built": {
+      "criterion": "the clean corpus assembles under the \u00a7\u00a765-66 caps",
+      "error": null,
+      "pass": true
+    },
+    "reproducible": {
+      "criterion": "seed + manifest rebuild the corpus bit for bit",
+      "members_sha256": "0502935723bb5e516e333e1e2a9be8be04f2883f69705b1e4cf050f13b308346",
+      "pass": true
+    },
+    "synthetic_value": {
+      "criterion": "\u00a7128: baseline vs +synthetic on held-out; a verdict either way is the deliverable",
+      "pass": false,
+      "verdict": null
+    },
+    "token_ledger": {
+      "criterion": "\u00a763: examples, state/candidate tokens, mean K per shard",
+      "pass": true,
+      "total": {
+        "candidate_tokens": 325932,
+        "examples": 39981,
+        "mean_k": 3.153,
+        "state_tokens": 1989099,
+        "total_tokens": 2315031,
+        "unit": "whitespace tokens of the state text and of every option text, counted on the rows the mixture actually selected"
+      }
+    },
+    "top2_trained": {
+      "criterion": "\u00a762: both top-2 backbones measured at Stage 0 (250 k) and Stage 1 (1 M) on this corpus by the real trainer",
+      "measured": [],
+      "pass": false,
+      "state": "running"
+    },
+    "type_mix": {
+      "criterion": "\u00a748: Choice 55 / Noul 30 / Score 15 within 5 pp",
+      "pass": false,
+      "report": {
+        "kind": "\u00a748 question type",
+        "max_abs_gap": 0.15,
+        "rows": {
+          "choice": {
+            "gap": 0.002638,
+            "n": 22095,
+            "share": 0.552638,
+            "target": 0.55
+          },
+          "noul": {
+            "gap": 0.147362,
+            "n": 17886,
+            "share": 0.447362,
+            "target": 0.3
+          },
+          "score": {
+            "gap": -0.15,
+            "n": 0,
+            "share": 0.0,
+            "target": 0.15
+          }
+        },
+        "total": 39981,
+        "unsupplied": [
+          "score"
+        ],
+        "why_unsupplied": {
+          "score": "every ordinal-scale corpus (helpsteer2) is fenced out, so the mixture has no Score supply at all"
+        }
+      }
+    }
+  },
+  "composition": {
+    "by_dataset": {
+      "boolq": 5997,
+      "civil-comments": 5997,
+      "email-triage": 4000,
+      "huffpost": 5997,
+      "massive": 5997,
+      "prog-gold": 5996,
+      "synth-v1": 5997
+    },
+    "by_family": {
+      "grounded": 5997,
+      "intent": 9997,
+      "knowledge": 5996,
+      "qa": 5997,
+      "topic": 5997,
+      "toxicity": 5997
+    },
+    "by_k": {
+      "2": 17373,
+      "3": 1348,
+      "4": 19589,
+      "5": 1340,
+      "6": 208,
+      "8": 123
+    },
+    "by_lang": {
+      "de-DE": 235,
+      "en": 29984,
+      "en-US": 1151,
+      "es": 4000,
+      "es-ES": 1179,
+      "fr-FR": 1127,
+      "it-IT": 1151,
+      "pt-PT": 1154
+    },
+    "by_layer": {
+      "grounded-synth": 5997,
+      "human-expert": 11994,
+      "intent-multi": 15994,
+      "programmatic": 5996
+    },
+    "by_origin": {
+      "human": 23988,
+      "programmatic": 5996,
+      "synthetic": 9997
+    },
+    "by_qtype": {
+      "choice": 22095,
+      "noul": 17886
+    },
+    "dynamic_option_rows": 27987,
+    "dynamic_option_share": 0.700008,
+    "hard_rows": 3045,
+    "hard_share": 0.076161,
+    "rows": 39981,
+    "top_dataset_share": 0.149996
+  },
+  "corpus": "decision-mix-clean-1m",
+  "diversity": {
+    "dataset": {
+      "boolq": 0.1499962482179035,
+      "civil-comments": 0.1499962482179035,
+      "email-triage": 0.10004752257322228,
+      "huffpost": 0.1499962482179035,
+      "massive": 0.1499962482179035,
+      "prog-gold": 0.1499712363372602,
+      "synth-v1": 0.1499962482179035
+    },
+    "family": {
+      "grounded": 0.1499962482179035,
+      "intent": 0.2500437707911258,
+      "knowledge": 0.1499712363372602,
+      "qa": 0.1499962482179035,
+      "topic": 0.1499962482179035,
+      "toxicity": 0.1499962482179035
+    },
+    "k_bucket": {
+      "2-4": 0.9582051474450364,
+      "5-8": 0.04179485255496361
+    },
+    "lang": {
+      "de-DE": 0.005877791951176809,
+      "en": 0.7499562292088742,
+      "en-US": 0.02878867462044471,
+      "es": 0.10004752257322228,
+      "es-ES": 0.02948900727845727,
+      "fr-FR": 0.028188389485005377,
+      "it-IT": 0.02878867462044471,
+      "pt-PT": 0.028863710262374626
+    },
+    "layer": {
+      "grounded-synth": 0.1499962482179035,
+      "human-expert": 0.299992496435807,
+      "intent-multi": 0.4000400190090293,
+      "programmatic": 0.1499712363372602
+    },
+    "origin": {
+      "human": 0.599984992871614,
+      "programmatic": 0.1499712363372602,
+      "synthetic": 0.2500437707911258
+    },
+    "qtype": {
+      "choice": 0.5526375028138366,
+      "noul": 0.44736249718616344
+    },
+    "simpson": {
+      "dataset": 0.855,
+      "family": 0.825,
+      "k_bucket": 0.0801,
+      "lang": 0.4234,
+      "layer": 0.705,
+      "origin": 0.555,
+      "qtype": 0.4945
+    }
+  },
+  "failed_checks": [
+    "corpus_1m_rows",
+    "guardrails",
+    "synthetic_value",
+    "top2_trained",
+    "type_mix"
+  ],
+  "feasibility": {
+    "achievable_rows": 39970,
+    "cap_margin": 0.0075,
+    "cap_units": 1.05,
+    "cap_units_with_margin": 0.9975,
+    "corpus": "decision-mix-clean-1m",
+    "datasets": [
+      "boolq",
+      "civil-comments",
+      "email-triage",
+      "huffpost",
+      "massive",
+      "prog-gold",
+      "synth-v1"
+    ],
+    "families": {
+      "grounded": [
+        "synth-v1"
+      ],
+      "intent": [
+        "email-triage",
+        "massive"
+      ],
+      "knowledge": [
+        "prog-gold"
+      ],
+      "qa": [
+        "boolq"
+      ],
+      "topic": [
+        "huffpost"
+      ],
+      "toxicity": [
+        "civil-comments"
+      ]
+    },
+    "max_target_hard_caps": 39970,
+    "max_target_with_margin": 0,
+    "missing_layers": [
+      "adversarial",
+      "nli",
+      "preference"
+    ],
+    "pass": false,
+    "requested_rows": 1000000,
+    "rule": "a family contributes min(family_cap, n x dataset_cap) of any mixture; covering 100 % needs the sum of those to reach 1.0, which no target size can change",
+    "shortfall_rows": 960030,
+    "supply": {
+      "boolq": 9427,
+      "civil-comments": 1804874,
+      "email-triage": 4000,
+      "huffpost": 162935,
+      "massive": 69084,
+      "prog-gold": 60631,
+      "synth-v1": 34847
+    },
+    "supply_total": 2145798,
+    "why": "the \u00a7\u00a765-66 caps admit at most 39,970 rows from the fenced registry, 1,000,000 were asked for. Every source but the smallest sits exactly at the 15 % cap, so the only fix is an independent source \u2014 no target size and no seed changes this."
+  },
+  "fence": {
+    "blocked": {
+      "dataset": 0,
+      "jevals_hash": 0,
+      "jevals_id": 0
+    },
+    "clean": true,
+    "enforcement": "tools.mix_1m.fence.FenceBreach \u2014 assembly aborts; a fenced row is never counted, capped or reported as a share",
+    "fenced_datasets": [
+      "banking77",
+      "helpsteer2",
+      "pubmedqa"
+    ],
+    "jevals_hashes_known": 0,
+    "jevals_ids_known": 5000,
+    "jevals_ids_path": "artifacts/gates/T-data-eval/jevals_ids.json",
+    "questions_checked": 39981
+  },
+  "format": 1,
+  "generated_utc": "2026-09-21T16:14:00Z",
+  "guardrails": {
+    "checks": {
+      "dataset:boolq<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "dataset:civil-comments<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "dataset:email-triage<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.100048
+      },
+      "dataset:huffpost<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "dataset:massive<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "dataset:prog-gold<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149971
+      },
+      "dataset:synth-v1<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "family:grounded<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "family:intent<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.250044
+      },
+      "family:knowledge<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149971
+      },
+      "family:qa<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "family:topic<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "family:toxicity<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.149996
+      },
+      "hard>=10%": {
+        "bound": 0.1,
+        "kind": "min",
+        "ok": false,
+        "share": 0.076161
+      },
+      "human>=20%": {
+        "bound": 0.2,
+        "kind": "min",
+        "ok": true,
+        "share": 0.599985
+      },
+      "synthetic<=50%": {
+        "bound": 0.5,
+        "kind": "max",
+        "ok": true,
+        "share": 0.250044
+      }
+    },
+    "enforced_by": "data.mix.verify_guardrails, which raises MixGuardrailError on the realised mixture",
+    "failed": [
+      "hard>=10%"
+    ],
+    "pass": false,
+    "total": 39981
+  },
+  "layer_plan": {
+    "kind": "\u00a786 layer",
+    "max_abs_gap": 0.30004,
+    "rows": {
+      "adversarial": {
+        "gap": -0.06,
+        "n": 0,
+        "share": 0.0,
+        "target": 0.06
+      },
+      "grounded-synth": {
+        "gap": 0.009996,
+        "n": 5997,
+        "share": 0.149996,
+        "target": 0.14
+      },
+      "human-expert": {
+        "gap": -8e-06,
+        "n": 11994,
+        "share": 0.299992,
+        "target": 0.3
+      },
+      "intent-multi": {
+        "gap": 0.30004,
+        "n": 15994,
+        "share": 0.40004,
+        "target": 0.1
+      },
+      "nli": {
+        "gap": -0.1,
+        "n": 0,
+        "share": 0.0,
+        "target": 0.1
+      },
+      "preference": {
+        "gap": -0.1,
+        "n": 0,
+        "share": 0.0,
+        "target": 0.1
+      },
+      "programmatic": {
+        "gap": -0.050029,
+        "n": 5996,
+        "share": 0.149971,
+        "target": 0.2
+      }
+    },
+    "total": 39981,
+    "unsupplied": [
+      "adversarial",
+      "nli",
+      "preference"
+    ],
+    "why_unsupplied": {
+      "adversarial": "no adversarial/OOD corpus is registered; the OOD items under artifacts/gates/T-data-eval/ are a sealed eval probe, not training supply",
+      "nli": "no NLI/DocNLI corpus is converted or registered yet",
+      "preference": "the only ordinal corpus (helpsteer2) is behind the \u00a7\u00a718/77 benchmark fence"
+    }
+  },
+  "mix": {
+    "error": null,
+    "manifest": "artifacts/mix-1m/decision-mix-clean-1m-seed20260921.manifest.json",
+    "members_sha256": "0502935723bb5e516e333e1e2a9be8be04f2883f69705b1e4cf050f13b308346",
+    "rows": 39981,
+    "status": "built"
+  },
+  "pass": false,
+  "quotas": {
+    "boolq": 5997,
+    "civil-comments": 5997,
+    "email-triage": 4000,
+    "huffpost": 5997,
+    "massive": 5997,
+    "prog-gold": 5997,
+    "synth-v1": 5997
+  },
+  "seed": 20260921,
+  "task": "T-mix-1m",
+  "tokens": {
+    "by_shard": {
+      "artifacts/data-prefetch/boolq.jsonl": {
+        "candidate_tokens": 11994,
+        "dataset": "boolq",
+        "examples": 5997,
+        "k_sum": 11994,
+        "mean_k": 2.0,
+        "state_tokens": 620653,
+        "tokens": 632647
+      },
+      "artifacts/data-prefetch/civil-comments.jsonl": {
+        "candidate_tokens": 17991,
+        "dataset": "civil-comments",
+        "examples": 5997,
+        "k_sum": 11994,
+        "mean_k": 2.0,
+        "state_tokens": 307198,
+        "tokens": 325189
+      },
+      "artifacts/data-prefetch/email-triage.jsonl": {
+        "candidate_tokens": 20000,
+        "dataset": "email-triage",
+        "examples": 4000,
+        "k_sum": 16000,
+        "mean_k": 4.0,
+        "state_tokens": 108266,
+        "tokens": 128266
+      },
+      "artifacts/data-prefetch/huffpost.jsonl": {
+        "candidate_tokens": 28665,
+        "dataset": "huffpost",
+        "examples": 5997,
+        "k_sum": 23988,
+        "mean_k": 4.0,
+        "state_tokens": 185211,
+        "tokens": 213876
+      },
+      "artifacts/data-prefetch/massive.jsonl": {
+        "candidate_tokens": 23988,
+        "dataset": "massive",
+        "examples": 5997,
+        "k_sum": 23988,
+        "mean_k": 4.0,
+        "state_tokens": 46338,
+        "tokens": 70326
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl": {
+        "candidate_tokens": 7736,
+        "dataset": "prog-gold",
+        "examples": 1577,
+        "k_sum": 4416,
+        "mean_k": 2.8,
+        "state_tokens": 25938,
+        "tokens": 33674
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl": {
+        "candidate_tokens": 8229,
+        "dataset": "prog-gold",
+        "examples": 2063,
+        "k_sum": 5643,
+        "mean_k": 2.735,
+        "state_tokens": 36979,
+        "tokens": 45208
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl": {
+        "candidate_tokens": 8701,
+        "dataset": "prog-gold",
+        "examples": 2061,
+        "k_sum": 5698,
+        "mean_k": 2.765,
+        "state_tokens": 36685,
+        "tokens": 45386
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl": {
+        "candidate_tokens": 1156,
+        "dataset": "prog-gold",
+        "examples": 295,
+        "k_sum": 794,
+        "mean_k": 2.692,
+        "state_tokens": 4912,
+        "tokens": 6068
+      },
+      "artifacts/synth/v1/synth-v1-000.jsonl": {
+        "candidate_tokens": 43181,
+        "dataset": "synth-v1",
+        "examples": 1329,
+        "k_sum": 4761,
+        "mean_k": 3.582,
+        "state_tokens": 134819,
+        "tokens": 178000
+      },
+      "artifacts/synth/v1/synth-v1-001.jsonl": {
+        "candidate_tokens": 44783,
+        "dataset": "synth-v1",
+        "examples": 1352,
+        "k_sum": 4862,
+        "mean_k": 3.596,
+        "state_tokens": 140140,
+        "tokens": 184923
+      },
+      "artifacts/synth/v1/synth-v1-002.jsonl": {
+        "candidate_tokens": 45679,
+        "dataset": "synth-v1",
+        "examples": 1381,
+        "k_sum": 4971,
+        "mean_k": 3.6,
+        "state_tokens": 138635,
+        "tokens": 184314
+      },
+      "artifacts/synth/v1/synth-v1-003.jsonl": {
+        "candidate_tokens": 45206,
+        "dataset": "synth-v1",
+        "examples": 1377,
+        "k_sum": 4961,
+        "mean_k": 3.603,
+        "state_tokens": 143271,
+        "tokens": 188477
+      },
+      "artifacts/synth/v1/synth-v1-004.jsonl": {
+        "candidate_tokens": 18623,
+        "dataset": "synth-v1",
+        "examples": 558,
+        "k_sum": 2008,
+        "mean_k": 3.599,
+        "state_tokens": 60054,
+        "tokens": 78677
+      }
+    },
+    "total": {
+      "candidate_tokens": 325932,
+      "examples": 39981,
+      "mean_k": 3.153,
+      "state_tokens": 1989099,
+      "total_tokens": 2315031,
+      "unit": "whitespace tokens of the state text and of every option text, counted on the rows the mixture actually selected"
+    }
+  },
+  "total_tokens": 2315031,
+  "training": {
+    "backbones": {
+      "ettin-68m": {
+        "complete": false,
+        "corpus": "decision-mix-clean-1m",
+        "id": "ettin-68m",
+        "lineage": {
+          "bakeoff_run_id": "bakeoff-ettin-68m-v1",
+          "bakeoff_unseen_accuracy": 0.229388,
+          "license": "MIT",
+          "repo": "jhu-clsp/ettin-encoder-68m",
+          "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+        },
+        "run_id": "mix1m-curve-ettin-68m-s20260921",
+        "run_json": null,
+        "stages": {
+          "stage0": {
+            "status": "pending",
+            "target_samples": 250000,
+            "why": "the run has not reached this point of the curve yet"
+          },
+          "stage1": {
+            "status": "pending",
+            "target_samples": 1000000,
+            "why": "the run has not reached this point of the curve yet"
+          }
+        },
+        "trainer": "training/python/train_decision.py (#T-train-real)"
+      },
+      "modernbert-base": {
+        "complete": false,
+        "corpus": "decision-mix-clean-1m",
+        "id": "modernbert-base",
+        "lineage": {
+          "bakeoff_run_id": "bakeoff-modernbert-base-v1",
+          "bakeoff_unseen_accuracy": 0.242354,
+          "license": "Apache-2.0",
+          "repo": "answerdotai/ModernBERT-base",
+          "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
+        },
+        "run_id": "mix1m-curve-modernbert-base-s20260921",
+        "run_json": "artifacts/runs/mix1m-curve-modernbert-base-s20260921/run.json",
+        "stages": {
+          "stage0": {
+            "status": "pending",
+            "target_samples": 250000,
+            "why": "the run has not reached this point of the curve yet"
+          },
+          "stage1": {
+            "status": "pending",
+            "target_samples": 1000000,
+            "why": "the run has not reached this point of the curve yet"
+          }
+        },
+        "trainer": "training/python/train_decision.py (#T-train-real)"
+      }
+    },
+    "commands": {
+      "ettin-68m": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone ettin-68m --run-id mix1m-curve-ettin-68m-s20260921 --max-samples 1000000 --seed 20260921 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --no-gate --fence-clean",
+      "modernbert-base": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone modernbert-base --run-id mix1m-curve-modernbert-base-s20260921 --max-samples 1000000 --seed 20260921 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --no-gate --fence-clean"
+    },
+    "measured": [],
+    "source": {
+      "from": "artifacts/gates/T-bakeoff/report.json",
+      "task": "T-bakeoff-real",
+      "top2": [
+        "modernbert-base",
+        "ettin-68m"
+      ],
+      "verdict": "Top-2: modernbert-base, ettin-68m.\n1. modernbert-base \u2014 unseen accuracy 0.242 (chance 0.165, CI95 0.227\u20130.258, n=3008), unseen ECE 0.147, seen accuracy 0.513; decision p95 at K=4 171.5 ms CPU / 74.7 ms MPS; 149 M frozen backbone params + 2.90 M trainable head; 576.0 s to the 25024-sample cut-off.\n2. ettin-68m \u2014 unseen accuracy 0.229 (chance 0.165, CI95 0.215\u20130.245, n=3008), unseen ECE 0.148, seen accuracy 0.45; decision p95 at K=4 45.1 ms CPU / 43.6 ms MPS; 68 M frozen backbone params + 2.70 M trainable head; 525.0 s to the 25024-sample cut-off.\nEvery candidate clears chance on unseen labels at this equal budget (Wilson 95 % lower bound above the mean 1/(K+1) rate), so the order above is a real quality ranking and not a tie-break on cost. The gap between the two is small: the cheaper backbone buys most of the quality for less than half the parameters and less than half the CPU latency."
+    },
+    "stages": {
+      "stage0": 250000,
+      "stage1": 1000000
+    },
+    "status": "running",
+    "synthetic_value": {
+      "compare_at_samples": 250000,
+      "design": {
+        "arms": "same corpus size, same cap, same budget; synth-v1 in or out",
+        "dataset_cap": 0.18,
+        "why_not_15": "without synth-v1 the fenced registry covers 90 % of a mixture at the \u00a765 15 % cap, so the baseline arm does not exist there",
+        "why_not_additive": "\u00a7128 words it as baseline vs +50 k, but the caps fix the corpus size: adding synthetic rows on top would breach the very guardrail the arm is meant to respect, so the arms substitute at fixed size instead"
+      },
+      "runs": {
+        "baseline": "mix1m-nosynth-modernbert-base-s20260921",
+        "plus_synthetic": "mix1m-synth-modernbert-base-s20260921"
+      },
+      "status": "pending",
+      "verdict": null,
+      "why": "no stage record at 250,000 samples for ['mix1m-nosynth-modernbert-base-s20260921', 'mix1m-synth-modernbert-base-s20260921']"
+    }
+  },
+  "type_mix": {
+    "kind": "\u00a748 question type",
+    "max_abs_gap": 0.15,
+    "rows": {
+      "choice": {
+        "gap": 0.002638,
+        "n": 22095,
+        "share": 0.552638,
+        "target": 0.55
+      },
+      "noul": {
+        "gap": 0.147362,
+        "n": 17886,
+        "share": 0.447362,
+        "target": 0.3
+      },
+      "score": {
+        "gap": -0.15,
+        "n": 0,
+        "share": 0.0,
+        "target": 0.15
+      }
+    },
+    "total": 39981,
+    "unsupplied": [
+      "score"
+    ],
+    "why_unsupplied": {
+      "score": "every ordinal-scale corpus (helpsteer2) is fenced out, so the mixture has no Score supply at all"
+    }
+  },
+  "upstream": {
+    "T-bakeoff-real": [
+      "modernbert-base",
+      "ettin-68m"
+    ],
+    "T-gen-schemas": "pass (1 152 decision schemas)",
+    "T-halt-contam": "pass (synth-loop quarantined, logiqa/reclor eval-only)",
+    "T-prog-gold": "pass (100 004 Wikidata-grounded questions)"
+  }
+}

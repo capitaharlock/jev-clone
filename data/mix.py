@@ -127,6 +127,10 @@ class Source:
     dynamic_options: bool
     #: relative pull before the caps bite; see `PRODUCT_WEIGHT`
     weight: float
+    #: the §86 layer this corpus belongs to, so the composition of
+    #: `decision-mix-clean-1m` is countable against the strategy's plan
+    #: instead of being re-declared in a second registry (`tools/mix_1m`).
+    layer: str = ""
     shards: tuple = ()
     note: str = ""
 
@@ -152,38 +156,47 @@ PRODUCT_WEIGHT = {"dynamic_large": 1.0, "dynamic_small": 0.7, "fixed": 0.35}
 SOURCES = {
     "banking77": Source(
         "banking77", "intent", "human", "en", True,
-        PRODUCT_WEIGHT["dynamic_large"],
+        PRODUCT_WEIGHT["dynamic_large"], layer="intent-multi",
         note="77 sibling intents — the hardest dynamic pool in the corpus"),
     "massive": Source(
         "massive", "intent", "human", "multi", True,
-        PRODUCT_WEIGHT["dynamic_large"],
+        PRODUCT_WEIGHT["dynamic_large"], layer="intent-multi",
         note="60 intents across 4 locales; carries the multilingual axis"),
     "email-triage": Source(
         "email-triage", "intent", "synthetic", "es", True,
-        PRODUCT_WEIGHT["dynamic_small"],
+        PRODUCT_WEIGHT["dynamic_small"], layer="intent-multi",
         note="4 labels, Spanish only (audit finding D): kept small on purpose"),
     "huffpost": Source(
         "huffpost", "topic", "human", "en", True,
-        PRODUCT_WEIGHT["dynamic_large"],
+        PRODUCT_WEIGHT["dynamic_large"], layer="intent-multi",
         note="41 categories; 11 of them are the unseen-label holdout"),
     "synth-v1": Source(
         "synth-v1", "grounded", "synthetic", "multi", True,
-        PRODUCT_WEIGHT["dynamic_small"],
+        PRODUCT_WEIGHT["dynamic_small"], layer="grounded-synth",
         shards=tuple(f"artifacts/synth/v1/synth-v1-{i:03d}.jsonl"
                      for i in range(6)),
         note="teacher-adjudicated distillation corpus; K varies 2-5"),
     "boolq": Source(
         "boolq", "qa", "human", "en", False, PRODUCT_WEIGHT["fixed"],
+        layer="human-expert",
         note="yes/no: a two-label pool IS the question, never dynamic"),
     "civil-comments": Source(
         "civil-comments", "toxicity", "human", "en", False,
-        PRODUCT_WEIGHT["fixed"],
+        PRODUCT_WEIGHT["fixed"], layer="human-expert",
         note="finding E: 74.6 % of the raw corpus, capped at 15 % here"),
     "helpsteer2": Source(
         "helpsteer2", "preference", "human", "en", False,
-        PRODUCT_WEIGHT["fixed"],
+        PRODUCT_WEIGHT["fixed"], layer="preference",
         note="ordinal score 0-4 shared by 5 attributes; the scale IS the "
              "option set, so it is exempt from the global-label-space check"),
+    "prog-gold": Source(
+        "prog-gold", "knowledge", "programmatic", "multi", True,
+        PRODUCT_WEIGHT["dynamic_large"], layer="programmatic",
+        shards=tuple(f"artifacts/prog_gold/v1/prog-gold-v1-{i:03d}.jsonl"
+                     for i in range(4)),
+        note="#T-prog-gold: Wikidata-grounded gold, every answer verified "
+             "against the graph; the probe shard is a robustness fixture "
+             "and is deliberately NOT a training shard"),
 }
 
 #: every id the mixture may draw from, in registry order
@@ -223,6 +236,60 @@ def families(datasets=None) -> dict:
     return out
 
 
+def layer_of(dataset: str) -> str:
+    """The §86 layer of a source, or `unassigned` if the registry has none."""
+    return SOURCES[dataset].layer or "unassigned"
+
+
+def layers(datasets=None) -> dict:
+    """§86 layer -> the datasets in it."""
+    out: dict = {}
+    for d in (datasets or TRAINABLE_DATASETS):
+        out.setdefault(layer_of(d), []).append(d)
+    return out
+
+
+#: §86 layer proportions of `decision-mix-v1` (the 5 M plan). They are a
+#: PULL, never a cap: `plan_mix(weights=...)` starts the allocator here and
+#: the §§65-66 guardrails clamp whatever comes out.
+LAYER_TARGETS = {
+    "human-expert": 0.30,    # 1.5M Tasksource/P3 human/expert-derived
+    "nli": 0.10,             # 0.5M DocNLI/NLI
+    "intent-multi": 0.10,    # 0.5M intent/topic/multilingual
+    "preference": 0.10,      # 0.5M preference/ordinal
+    "programmatic": 0.20,    # 1.0M Wikidata/rules
+    "grounded-synth": 0.14,  # 0.7M grounded synthetic
+    "adversarial": 0.06,     # 0.3M adversarial/OOD
+}
+
+
+def layer_weights(datasets=None) -> dict:
+    """The §86 plan spread over the sources of each layer.
+
+    A layer's target is split evenly among its members, so the LAYER and
+    not the number of files inside it carries the weight. A source whose
+    layer the strategy never planned for keeps an epsilon pull, so it is
+    drawable but never preferred.
+    """
+    out: dict = {}
+    for layer, members in layers(datasets).items():
+        target = LAYER_TARGETS.get(layer, 0.0)
+        for dataset in members:
+            out[dataset] = (target / len(members)) if target else 1e-6
+    return out
+
+
+def clean_datasets(datasets=None) -> list:
+    """The registry minus the benchmark fence (§§18, 77).
+
+    `decision-mix-clean-1m` is assembled from THIS list; the product mix is
+    not, and `fence_conflicts()` records the disagreement in every manifest
+    rather than resolving it silently.
+    """
+    return [d for d in (datasets or TRAINABLE_DATASETS)
+            if d not in MIX_1M_FENCED]
+
+
 # -- shared stratum axes (also imported by tools/mix_1m) -------------------
 
 _SCORE_OPT = re.compile(r"^score \d+$")
@@ -246,6 +313,40 @@ def lang_of(state: str, scope: str) -> str:
     if m:
         return m.group(1)
     return "en" if scope == "multi" else scope
+
+
+def is_hard(question: dict, layer: str = "") -> bool:
+    """The §68 hard/OOD axis, decided from what a row already carries.
+
+    Every component is observable BEFORE training, which is what makes the
+    ">= 10 % hard" guardrail countable on the assembled mixture instead of
+    being a property nobody measures:
+
+    * the whole `adversarial` layer (§86 layer D) is hard by construction;
+    * a wide option set (K >= 9) — the regime where pointing is not a
+      two-way guess;
+    * a teacher that was not confident (`teacher_conf < 0.7`);
+    * an explicit distractor / "none of these" / "todo lo anterior" option,
+      which is the trust-and-unknown axis of §95;
+    * a question the generator itself labelled `difficulty: hard`
+      (#T-prog-gold writes this per question, verified against the graph).
+    """
+    if layer == "adversarial":
+        return True
+    options = question.get("options", [])
+    if len(options) >= 9:
+        return True
+    conf = question.get("teacher_conf")
+    if isinstance(conf, (int, float)) and not isinstance(conf, bool) \
+            and conf < 0.7:
+        return True
+    quality = question.get("quality")
+    if isinstance(quality, dict) and quality.get("difficulty") == "hard":
+        return True
+    blob = " ".join(f"{o.get('id', '')} {o.get('text', '')}"
+                    for o in options).lower()
+    return ("distractor" in blob or "mal planteada" in blob
+            or "todo lo anterior" in blob or "none of the above" in blob)
 
 
 def k_bucket(k: int) -> str:
@@ -668,16 +769,33 @@ class MixSpec:
 
 def plan_mix(supply: dict, target: int | None = None, seed: int = DEFAULT_SEED,
              seen_labels: dict | None = None, scan: dict | None = None,
-             cap_margin: float = CAP_SAFETY_MARGIN) -> MixSpec:
-    """Quotas + keep fractions. No corpus is read: pure arithmetic."""
-    margin_cap = MAX_DATASET_FRACTION - cap_margin
-    margin_fam = MAX_FAMILY_FRACTION - cap_margin
+             cap_margin: float = CAP_SAFETY_MARGIN,
+             weights: dict | None = None,
+             dataset_cap: float | None = None,
+             family_cap: float | None = None) -> MixSpec:
+    """Quotas + keep fractions. No corpus is read: pure arithmetic.
+
+    `weights` overrides the registry's product weights — `tools/mix_1m`
+    passes the §86 layer targets through it so the clean corpus is pulled
+    towards the strategy's composition. It changes the PULL, never the
+    caps: the same `allocate()` clamps the result either way.
+
+    `dataset_cap`/`family_cap` replace the §§65-66 values outright, for an
+    experiment that has to state a different cap out loud (see
+    `MixtureStream`). `cap_margin` is ignored for whichever of the two is
+    given, so a run cannot end up planning against one pair of caps and
+    being verified against another.
+    """
+    margin_cap = (MAX_DATASET_FRACTION - cap_margin if dataset_cap is None
+                  else dataset_cap)
+    margin_fam = (MAX_FAMILY_FRACTION - cap_margin if family_cap is None
+                  else family_cap)
     if target is None:
         target = max_feasible_target(supply, margin_cap, margin_fam)
         if target <= 0:
             raise MixInfeasible(
                 "no feasible mixture: " + _infeasible_reason(supply))
-    quotas = allocate(target, supply, dataset_cap=margin_cap,
+    quotas = allocate(target, supply, weights=weights, dataset_cap=margin_cap,
                       family_cap=margin_fam)
     keep_fractions = {d: min(1.0, DRAW_HEADROOM * quotas[d] / supply[d])
                       for d in quotas}
@@ -700,17 +818,25 @@ def _infeasible_reason(supply: dict) -> str:
 
 # -- realisation: read the corpus once and count what the caps see ---------
 
-def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
+def realise(spec: MixSpec, root: str = PREFETCH_DIR, on_member=None) -> dict:
     """Enumerate the selected members and count every diversity axis.
 
     This is the pass that proves the plan: `members_sha256` is a digest of
     the ordered `(dataset, row_index, question_id)` keys, so a rebuild from
     the same seed and the same shard shas is comparable bit for bit.
+
+    `on_member(dataset, row_index, row, question)` observes every selected
+    member as it is counted. It exists so a caller that needs another axis
+    — `tools/mix_1m` runs the §§18/77 benchmark fence and the §86 stratum
+    tagging through it — reads the SAME selection this function counts,
+    instead of re-deciding membership in a second loop that can drift.
     """
     digest = hashlib.sha256()
     counts = {"dataset": {}, "family": {}, "origin": {}, "qtype": {},
-              "lang": {}, "k": {}, "k_bucket": {}, "dynamic": 0, "rows": 0}
+              "lang": {}, "k": {}, "k_bucket": {}, "layer": {}, "hard": 0,
+              "dynamic": 0, "rows": 0}
     per_dataset: dict = {}
+    ledger: dict = {}
     for dataset in spec.datasets:
         source = SOURCES[dataset]
         keep = spec.keep(dataset)
@@ -720,6 +846,10 @@ def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
         for path in source.paths(root):
             if not os.path.exists(path) or kept >= quota:
                 continue
+            shard = ledger.setdefault(
+                os.path.relpath(path, ROOT),
+                {"dataset": dataset, "examples": 0, "state_tokens": 0,
+                 "candidate_tokens": 0, "k_sum": 0})
             with open(path) as fh:
                 for line in fh:
                     if kept >= quota:  # drawn with headroom, trimmed here
@@ -742,10 +872,18 @@ def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
                         if kept + len(selected) > quota:
                             break
                         continue
+                    state_tokens = len(state.split())
                     for q in selected:
                         qid = q.get("id", "")
                         options = q.get("options", [])
                         k = len(options)
+                        shard["examples"] += 1
+                        shard["state_tokens"] += state_tokens
+                        shard["candidate_tokens"] += sum(
+                            len(o.get("text", "").split()) for o in options)
+                        shard["k_sum"] += k
+                        if on_member is not None:
+                            on_member(dataset, index, row, q)
                         qt = question_type(
                             q.get("kind", ""),
                             [o.get("text", "") for o in options])
@@ -763,6 +901,10 @@ def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
                         bucket = k_bucket(k)
                         counts["k_bucket"][bucket] = \
                             counts["k_bucket"].get(bucket, 0) + 1
+                        layer = source.layer or "unassigned"
+                        counts["layer"][layer] = \
+                            counts["layer"].get(layer, 0) + 1
+                        counts["hard"] += int(is_hard(q, source.layer))
                         counts["dynamic"] += int(source.dynamic_options)
                         counts["rows"] += 1
                         kept += 1
@@ -774,6 +916,22 @@ def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
             "dynamic_options": source.dynamic_options,
             "weight": source.weight, "note": source.note}
     counts["per_dataset"] = per_dataset
+    for shard in ledger.values():
+        n = max(shard["examples"], 1)
+        shard["mean_k"] = round(shard["k_sum"] / n, 3)
+        shard["tokens"] = shard["state_tokens"] + shard["candidate_tokens"]
+    counts["tokens_by_shard"] = dict(sorted(ledger.items()))
+    counts["tokens"] = {
+        "examples": sum(v["examples"] for v in ledger.values()),
+        "state_tokens": sum(v["state_tokens"] for v in ledger.values()),
+        "candidate_tokens": sum(v["candidate_tokens"] for v in
+                                ledger.values()),
+        "total_tokens": sum(v["tokens"] for v in ledger.values()),
+        "mean_k": round(sum(v["k_sum"] for v in ledger.values())
+                        / max(counts["rows"], 1), 3),
+        "unit": "whitespace tokens of the state text and of every option "
+                "text, counted on the rows the mixture actually selected",
+    }
     counts["members_sha256"] = digest.hexdigest()
     return counts
 
@@ -781,7 +939,8 @@ def realise(spec: MixSpec, root: str = PREFETCH_DIR) -> dict:
 def diversity_dashboard(counts: dict) -> dict:
     """Shares + Simpson index on every axis the strategy asks to publish."""
     axes = {}
-    for axis in ("dataset", "family", "origin", "qtype", "k_bucket", "lang"):
+    for axis in ("dataset", "family", "origin", "qtype", "k_bucket", "lang",
+                 "layer"):
         axes[axis] = shares(counts.get(axis, {}))
     return {"shares": axes,
             "simpson": {a: round(simpson(s), 4) for a, s in axes.items()}}
@@ -799,6 +958,9 @@ def composition_report(counts: dict) -> dict:
         "by_k": dict(sorted(counts.get("k", {}).items(),
                             key=lambda t: int(t[0]))),
         "by_lang": dict(sorted(counts.get("lang", {}).items())),
+        "by_layer": dict(sorted(counts.get("layer", {}).items())),
+        "hard_rows": counts.get("hard", 0),
+        "hard_share": round(counts.get("hard", 0) / total, 6) if total else 0.0,
         "dynamic_option_rows": dynamic,
         "dynamic_option_share": round(dynamic / total, 6) if total else 0.0,
         "top_dataset_share": (round(max(counts.get("dataset", {}).values())
@@ -888,6 +1050,7 @@ def build_manifest(spec: MixSpec, counts: dict, scan: dict | None = None,
                 "share": round(counts["per_dataset"].get(d, {}).get("kept", 0)
                                / max(counts["rows"], 1), 6),
                 "family": SOURCES[d].family,
+                "layer": layer_of(d),
                 "origin": SOURCES[d].origin,
                 "lang_scope": SOURCES[d].lang_scope,
                 "dynamic_options": SOURCES[d].dynamic_options,
@@ -939,12 +1102,14 @@ def spec_from_manifest(manifest: dict) -> MixSpec:
 def build(target: int | None = None, seed: int = DEFAULT_SEED,
           datasets=None, root: str = PREFETCH_DIR,
           seen_labels: dict | None = None, write: bool = True,
-          refresh: bool = False) -> tuple:
+          refresh: bool = False, cap_margin: float = CAP_SAFETY_MARGIN,
+          weights: dict | None = None) -> tuple:
     """Scan, plan, realise, verify, write. Returns `(spec, manifest)`."""
     t0 = time.perf_counter()
     scan = scan_supply(datasets, root, refresh=refresh)
     supply = effective_supply(scan, seen_labels)
-    spec = plan_mix(supply, target, seed, seen_labels, scan)
+    spec = plan_mix(supply, target, seed, seen_labels, scan, cap_margin,
+                    weights)
     counts = realise(spec, root)
     verify_mix(counts["dataset"], counts["rows"])  # hard error, never a flag
     manifest = build_manifest(spec, counts, scan, time.perf_counter() - t0)

@@ -84,7 +84,7 @@ class Guardrails(unittest.TestCase):
     def test_a_balanced_mixture_passes(self):
         counts = {d: 100 for d in SOURCES if d != "email-triage"}
         report = verify_mix(counts)
-        self.assertEqual(report["total"], 700)
+        self.assertEqual(report["total"], 100 * len(counts))
         self.assertTrue(all(c["ok"] for c in report["checks"].values()))
 
     def test_empty_mixture_is_an_error_not_a_pass(self):
@@ -250,9 +250,13 @@ class LoaderAborts(unittest.TestCase):
         scan = mix.scan_supply(root=root,
                                cache_path=os.path.join(root, "cache.json"))
         spec = plan_mix(effective_supply(scan), seed=3, scan=scan)
+        # the quota is half the contract: the selector draws with
+        # `DRAW_HEADROOM` and the loader trims, which is what keeps the
+        # realised share ON the planned one instead of binomially above it
         samplers = {
             d: OptionSetSampler(datasets=(d,), config=SamplerConfig(),
-                                root=root, keep={d: spec.keep(d)})
+                                root=root, keep={d: spec.keep(d)},
+                                quotas={d: spec.quotas[d]})
             for d in spec.datasets}
         stream = MixtureStream(samplers, batch_size=8)
         self.assertIsNotNone(stream.guardrails)

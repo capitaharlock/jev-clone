@@ -118,7 +118,7 @@ ECE_BINS = 15
 EVAL_SPLIT = {"banking77": "test", "massive": "test", "huffpost": "test",
               "boolq": "calibration", "helpsteer2": "calibration",
               "civil-comments": "test", "email-triage": "test",
-              "synth-v1": "test"}
+              "synth-v1": "test", "prog-gold": "test"}
 #: rows an eval sampler loads per dataset. Every P0 eval split is smaller
 #: than this; it exists so `civil-comments` (97 320 test rows) cannot pull
 #: a hundred thousand rows into memory to answer 3 000 eval questions.
@@ -344,7 +344,8 @@ class MixtureStream:
     """
 
     def __init__(self, samplers: dict, batch_size: int = 32,
-                 verify: bool = True):
+                 verify: bool = True, dataset_cap: float | None = None,
+                 family_cap: float | None = None):
         """`verify` runs the corpus guardrails on the REALISED mixture.
 
         Not on the plan: the unseen-label holdout cuts rows after the
@@ -353,12 +354,24 @@ class MixtureStream:
         `data.mix.MixGuardrailError` and the run stops — finding E existed
         because a 74.6 % share was a number in a report instead of an
         error in a pipeline.
+
+        `dataset_cap`/`family_cap` are for an EXPERIMENT that has to state
+        a different cap out loud — the §128 synthetic ablation cannot be
+        built at 15 % because dropping `synth-v1` leaves the fenced
+        registry covering only 90 % of a mixture. They default to the
+        §§65-66 values, they are recorded in `run.json`, and they still
+        abort the run when the realised mixture breaches them.
         """
         self.samplers = samplers
         self.batch_size = batch_size
+        self.dataset_cap = (mixmod.MAX_DATASET_FRACTION if dataset_cap is None
+                            else dataset_cap)
+        self.family_cap = (mixmod.MAX_FAMILY_FRACTION if family_cap is None
+                           else family_cap)
         self.sizes = {d: s.selected_questions(d) for d, s in samplers.items()}
-        self.guardrails = (mixmod.verify_mix(self.sizes) if verify and
-                           self.sizes else None)
+        self.guardrails = (mixmod.verify_mix(self.sizes, None, self.dataset_cap,
+                                             self.family_cap)
+                           if verify and self.sizes else None)
 
     def total(self) -> int:
         return sum(self.sizes.values())
@@ -775,7 +788,9 @@ def data_manifest(datasets, root: str = PREFETCH_DIR) -> dict:
 
 
 def build_mix(seed: int, root: str = PREFETCH_DIR, target: int | None = None,
-              datasets=None) -> tuple:
+              datasets=None, cap_margin: float = mixmod.CAP_SAFETY_MARGIN,
+              weights: dict | None = None, dataset_cap: float | None = None,
+              family_cap: float | None = None) -> tuple:
     """Scan, hold labels out, plan the mixture (#T-corpus-rebalance).
 
     One pass over the corpus answers all three: the label pool of every
@@ -783,6 +798,13 @@ def build_mix(seed: int, root: str = PREFETCH_DIR, target: int | None = None,
     how much supply survives that carving) and the shard sha256 the
     manifest pins. Quotas are then planned on the SURVIVING supply, so the
     share a source is granted is the share it can actually deliver.
+
+    `datasets`, `cap_margin` and `weights` are what `tools/mix_1m` passes
+    to assemble `decision-mix-clean-1m`: the registry minus the §§18/77
+    benchmark fence, the caps at their exact §§65-66 values and the §86
+    layer plan as the allocator's pull. The function is deterministic in
+    its arguments, so the corpus this builds for a training run IS the one
+    the published manifest describes — `members_sha256` proves it.
 
     Returns `(spec, scan, pools, holdout)`.
     """
@@ -794,7 +816,8 @@ def build_mix(seed: int, root: str = PREFETCH_DIR, target: int | None = None,
     holdout = build_holdout(present, root, pools=pools)
     seen_labels = {d: list(h.seen) for d, h in holdout.items() if h.unseen}
     supply = mixmod.effective_supply(scan, seen_labels)
-    spec = mixmod.plan_mix(supply, target, seed, seen_labels, scan)
+    spec = mixmod.plan_mix(supply, target, seed, seen_labels, scan,
+                           cap_margin, weights, dataset_cap, family_cap)
     return spec, scan, pools, holdout
 
 
@@ -879,7 +902,10 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           max_length: int = TRAIN_MAX_LENGTH, root: str = PREFETCH_DIR,
           d_model: int = DEFAULT_D_MODEL, n_layers: int = DEFAULT_LAYERS,
           n_heads: int = DEFAULT_HEADS, write_gate: bool = True,
-          mix_target: int | None = None, use_mix: bool = True) -> dict:
+          mix_target: int | None = None, use_mix: bool = True,
+          fence_clean: bool = False, drop_datasets=(),
+          mix_seed: int | None = None, dataset_cap: float | None = None,
+          family_cap: float | None = None) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -898,7 +924,32 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
             # per row, the intent family has three sources), so it scales
             # the target and the quotas do the dividing.
             mix_target = rows_per_dataset * len(mixmod.SOURCES)
-        spec, _scan, pools, holdout = build_mix(seed, root, mix_target)
+        # `decision-mix-clean-1m` (#T-mix-1m): the registry minus the
+        # §§18/77 benchmark fence, the §86 layer plan as the pull, and the
+        # caps at their exact §§65-66 values — the fenced registry covers
+        # only 99.75 % of a mixture, so the planner's safety margin would
+        # make every clean mixture infeasible instead of merely tight.
+        cap_d = (mixmod.MAX_DATASET_FRACTION if dataset_cap is None
+                 else dataset_cap)
+        cap_f = (mixmod.MAX_FAMILY_FRACTION if family_cap is None
+                 else family_cap)
+        datasets = cap_margin = weights = None
+        if fence_clean:
+            datasets = [d for d in mixmod.clean_datasets()
+                        if d not in set(drop_datasets)]
+            cap_margin = 0.0
+            weights = mixmod.layer_weights(datasets)
+        elif drop_datasets:
+            datasets = [d for d in mixmod.TRAINABLE_DATASETS
+                        if d not in set(drop_datasets)]
+        # an explicit cap replaces the §§65-66 value outright, so the
+        # mixture is planned against exactly the caps `MixtureStream`
+        # verifies it against, and `run.json` records which pair that was
+        spec, _scan, pools, holdout = build_mix(
+            seed if mix_seed is None else mix_seed,
+            root, mix_target, datasets,
+            mixmod.CAP_SAFETY_MARGIN if cap_margin is None else cap_margin,
+            weights, dataset_cap, family_cap)
         train_rows = None  # the quota is the budget
     else:  # the pre-#T-corpus-rebalance path: uncapped, P0 datasets only
         holdout = build_holdout(root=root)
@@ -912,7 +963,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                             pools)
     ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset,
                               root, pools)
-    stream = MixtureStream(tr, batch_size)
+    stream = MixtureStream(tr, batch_size, dataset_cap=cap_d,
+                           family_cap=cap_f)
     epoch_size = stream.total()
     mix_manifest = None
     if spec is not None:
@@ -958,6 +1010,18 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                                       "mix.json")}
                 if mix_manifest else {"enforced": False,
                                       "why": "--no-mix"}),
+        "caps": {"dataset": stream.dataset_cap, "family": stream.family_cap,
+                 "default": [mixmod.MAX_DATASET_FRACTION,
+                             mixmod.MAX_FAMILY_FRACTION],
+                 "overridden": [stream.dataset_cap, stream.family_cap]
+                 != [mixmod.MAX_DATASET_FRACTION, mixmod.MAX_FAMILY_FRACTION]},
+        "fence": {"clean_1m": fence_clean,
+                  "fenced_datasets": sorted(mixmod.MIX_1M_FENCED)
+                  if fence_clean else [],
+                  "dropped": sorted(drop_datasets),
+                  "why": ("§§18, 77: zero Banking77/HelpSteer2/PubMedQA "
+                          "rows in train" if fence_clean else
+                          "product mix: the benchmark fence is not applied")},
         "holdout_path": os.path.relpath(holdout_path, ROOT),
         "epoch_samples": epoch_size,
         "max_samples": max_samples,
@@ -1310,6 +1374,27 @@ def main(argv: list) -> int:
     t.add_argument("--mix-target", type=int, default=None,
                    help=("rows in the capped mixture (#T-corpus-rebalance); "
                          "default: the largest the 15 %%/30 %% caps allow"))
+    t.add_argument("--dataset-cap", type=float, default=None,
+                   help=("state a dataset cap other than the §65 15 %%. The "
+                         "§128 synthetic ablation needs it: without "
+                         "synth-v1 the fenced registry covers only 90 %% of "
+                         "a mixture. The value lands in run.json"))
+    t.add_argument("--family-cap", type=float, default=None,
+                   help="likewise for the §66 30 %% family cap")
+    t.add_argument("--mix-seed", type=int, default=None,
+                   help=("seed of the MIXTURE, when it must differ from the "
+                         "training seed: passing the seed of a published "
+                         "corpus manifest trains exactly that corpus"))
+    t.add_argument("--fence-clean", action="store_true",
+                   help=("train `decision-mix-clean-1m` (#T-mix-1m): the "
+                         "registry minus the §§18/77 benchmark fence "
+                         "(banking77/helpsteer2/pubmedqa), pulled by the "
+                         "§86 layer plan, caps at their exact values"))
+    t.add_argument("--drop-dataset", action="append", default=[],
+                   metavar="ID",
+                   help=("exclude one source from the mixture; repeatable. "
+                         "The §128 synthetic-value arm uses it to build the "
+                         "no-synthetic baseline"))
     t.add_argument("--no-mix", action="store_true",
                    help=("train the raw P0 datasets uncapped — the "
                          "pre-rebalance behaviour. The guardrails still run "
@@ -1350,7 +1435,12 @@ def main(argv: list) -> int:
                         backbone_id=args.backbone,
                         write_gate=not args.no_gate,
                         mix_target=args.mix_target,
-                        use_mix=not args.no_mix)
+                        use_mix=not args.no_mix,
+                        fence_clean=args.fence_clean,
+                        drop_datasets=tuple(args.drop_dataset),
+                        mix_seed=args.mix_seed,
+                        dataset_cap=args.dataset_cap,
+                        family_cap=args.family_cap)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

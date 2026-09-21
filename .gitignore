@@ -46,6 +46,17 @@ artifacts/splits/*/*.ids
 # what makes the corpus verifiable — the bytes are not.
 artifacts/prog_gold/*/*.jsonl
 
+# Supply cache (#T-mix-1m): a derived index of the prefetched corpus, keyed
+# on every shard's (path, size, mtime). It exists so a guardrail check does
+# not re-read a gigabyte of civil-comments; it rebuilds itself in seconds and
+# says nothing git does not already have in the mix manifests.
+artifacts/mix/supply-cache.json
+
+# Corpus assembly (#T-mix-1m): the manifest of `decision-mix-clean-1m` stays
+# in git — seed, per-shard sha256, quotas and members_sha256 are what make
+# the corpus rebuildable. The curve's run log is per-machine noise.
+artifacts/mix-1m/curve.jsonl
+
 # Python
 .venv-train/
 __pycache__/
