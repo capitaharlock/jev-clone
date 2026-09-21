@@ -18,7 +18,7 @@ import random
 import re
 from dataclasses import asdict, dataclass
 
-from .leakage import LeakageDetector
+from .leakage import LeakageDetector, text_hash
 
 FIREWALL_VERSION = 1
 STRESS_SUITE_VERSION = 1
@@ -56,6 +56,14 @@ BENCHMARKS = [
     BenchmarkCard("openbookqa", "rev-2018-09-canary-v1", ""),
     # Transfer-semantics holdout: OOD probe, never train (license unclear).
     BenchmarkCard("clinc150-oos", "rev-holdout-canary-v1", ""),
+    # Reasoning benchmarks: train contamination would void every eval claim.
+    # Frozen out of training by #T-halt-contam (audit-2026-09-21, finding G).
+    BenchmarkCard("logiqa", "rev-logiqa-i-canary-v1", ""),
+    BenchmarkCard("reclor", "rev-reclor-canary-v1", ""),
+    # Quarantined synth-loop corpus (finding C): 190 skeletons, split i%10.
+    # Not a benchmark — registered so a silent re-add to any train JOBS list
+    # fails loudly at the barrier instead of re-contaminating the dashboard.
+    BenchmarkCard("synth-loop", "rev-quarantined-20260921", ""),
 ]
 
 
@@ -161,6 +169,60 @@ class ContaminationScanner(LeakageDetector):
     def __init__(self, sim_threshold: float = SIM_THRESHOLD) -> None:
         super().__init__(canary_texts(), sim_threshold=sim_threshold)
         self.firewall_version = FIREWALL_VERSION
+
+
+def check_job_allowed(job_name: str, registry=None) -> bool:
+    """Refuse to train an eval-only benchmark. Raises ValueError (an error,
+    never a warning) naming the blocked benchmark and role."""
+    reg = registry if registry is not None else BenchmarkRegistry()
+    hits = reg.check_train_barrier([job_name], "train")
+    if hits:
+        raise ValueError("; ".join(hits))
+    return True
+
+
+def blocked_hash_sets(blocked_texts: list[str] | None = None):
+    """O(1) lookup sets for the exact (raw sha256) + normalized layers."""
+    texts = blocked_texts if blocked_texts is not None else canary_texts()
+    raw = {hashlib.sha256(t.encode()).hexdigest() for t in texts}
+    norm = {text_hash(t) for t in texts}
+    return raw, norm
+
+
+def reject_train_rows(
+    texts: list[str],
+    blocked_texts: list[str] | None = None,
+    sim_threshold: float = SIM_THRESHOLD,
+    max_report: int = 10,
+) -> bool:
+    """Reject benchmark content hiding in training rows as a hard error.
+
+    Layers: exact hash, normalized hash (both O(1)), then Jaccard-3gram
+    paraphrase via LeakageDetector. Any hit raises ValueError — a leak is a
+    failure, never a warning. Returns True when the batch is clean.
+    """
+    texts = list(texts)
+    blocked = blocked_texts if blocked_texts is not None else canary_texts()
+    raw_set, norm_set = blocked_hash_sets(blocked)
+    detector = LeakageDetector(blocked, sim_threshold=sim_threshold)
+    hits: list[tuple[str, str]] = []
+    for t in texts:
+        if hashlib.sha256(t.encode()).hexdigest() in raw_set:
+            hits.append((t, "exact match against blocked content"))
+        elif text_hash(t) in norm_set:
+            hits.append((t, "normalized match against blocked content"))
+        else:
+            hit, reason = detector.scan(t)
+            if hit:
+                hits.append((t, reason))
+    if hits:
+        shown = "; ".join(f"{t[:80]!r} ({r})" for t, r in hits[:max_report])
+        extra = f" (+{len(hits) - max_report} more)" if len(hits) > max_report else ""
+        raise ValueError(
+            f"refusing {len(hits)} training row(s) leaking eval-only "
+            f"content: {shown}{extra}"
+        )
+    return True
 
 
 # --- Stress suite: deterministic seeded perturbations ----------------------

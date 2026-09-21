@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-09-21T12:36:52Z",
+  "task": "T-halt-contam",
+  "train_jobs": [
+    "boolq",
+    "helpsteer2",
+    "civil-comments",
+    "huffpost",
+    "banking77",
+    "massive",
+    "email-triage"
+  ],
+  "train_rows_scanned": {
+    "boolq": 9427,
+    "helpsteer2": 20324,
+    "civil-comments": 1804874,
+    "huffpost": 162935,
+    "banking77": 10003,
+    "massive": 69084,
+    "email-triage": 4000
+  },
+  "heldout": {
+    "total": 22752,
+    "per_bench": {
+      "logiqa": 21252,
+      "reclor": 1500
+    },
+    "splits": [
+      "calibration",
+      "test",
+      "valid",
+      "validation"
+    ]
+  },
+  "layers": {
+    "exact": {
+      "hits": 0,
+      "rows": []
+    },
+    "normalized": {
+      "hits": 0,
+      "rows": []
+    },
+    "paraphrase": {
+      "threshold": 0.5,
+      "min_trigrams": 4,
+      "suspects": 0,
+      "listed": []
+    },
+    "semantic": {
+      "status": "stubbed",
+      "reason": "JEV_EMBEDDINGS_ENDPOINT/JEV_EMBEDDINGS_MODEL unset",
+      "scored": 0,
+      "hits": []
+    }
+  },
+  "verdict": "PASS \u2014 no held-out benchmark item in train",
+  "pass": true,
+  "seconds": 174.6
+}

@@ -10,6 +10,7 @@ Usage: .venv-train/bin/python data/train_baseline.py [--sample N]
 """
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -23,6 +24,17 @@ from sklearn.metrics import accuracy_score, log_loss
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "artifacts" / "data-prefetch"
 
+sys.path.insert(0, str(ROOT))
+from data.firewall import (  # noqa: E402  (trainer runs as script or -m)
+    BenchmarkRegistry,
+    blocked_hash_sets,
+    check_job_allowed,
+)
+from data.leakage import text_hash  # noqa: E402
+
+# Eval-only firewall (#T-halt-contam): synth-loop is quarantined (finding C),
+# logiqa + reclor are reasoning benchmarks, never train (finding G). They must
+# not reappear here — main() refuses them as an error via check_job_allowed.
 JOBS = [
     {"name": "boolq", "file": "boolq.jsonl", "kind": "boolean", "sample": None},
     {"name": "helpsteer2", "file": "helpsteer2.jsonl", "kind": "choice", "sample": None},
@@ -30,20 +42,42 @@ JOBS = [
     {"name": "huffpost", "file": "huffpost.jsonl", "kind": "choice", "sample": None},
     {"name": "banking77", "file": "banking77.jsonl", "kind": "choice", "sample": None},
     {"name": "massive", "file": "massive.jsonl", "kind": "choice", "sample": None},
-    {"name": "logiqa", "file": "logiqa.jsonl", "kind": "choice", "sample": None},
-    {"name": "reclor", "file": "reclor.jsonl", "kind": "choice", "sample": None},
     {"name": "email-triage", "file": "email-triage.jsonl", "kind": "choice", "sample": None},
 ]
+
+_BLOCKED_RAW, _BLOCKED_NORM = None, None
+
+
+def _blocked_sets():
+    """Canary hash sets, loaded once per process (fast O(1) row check)."""
+    global _BLOCKED_RAW, _BLOCKED_NORM
+    if _BLOCKED_RAW is None:
+        _BLOCKED_RAW, _BLOCKED_NORM = blocked_hash_sets()
+    return _BLOCKED_RAW, _BLOCKED_NORM
 
 EVAL_SPLITS = {"calibration", "test", "valid", "validation"}
 
 
 def load(job, sample):
     X_train, y_train, X_eval, y_eval = [], [], [], []
-    rng_seed = 7
+    blocked_raw, blocked_norm = _blocked_sets()
     seen = 0
     for line in open(DATA / job["file"]):
         r = json.loads(line)
+        if r.get("split") == "train":
+            # Firewall at row level (#T-halt-contam): benchmark content in a
+            # training row is a hard error, never a warning.
+            state = r.get("state", "")
+            if hashlib.sha256(state.encode()).hexdigest() in blocked_raw:
+                raise ValueError(
+                    f"job {job['name']}: training row matches blocked "
+                    "content (exact layer)"
+                )
+            if text_hash(state) in blocked_norm:
+                raise ValueError(
+                    f"job {job['name']}: training row matches blocked "
+                    "content (normalized layer)"
+                )
         for q in r["questions"]:
             ans = q.get("answer")
             if ans is None or ans == "unknown":
@@ -92,7 +126,7 @@ def run_job(job):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", type=int, default=None)
-    args = ap.parse_args()
+    ap.parse_args()  # validated for argv errors; per-job `sample` rules apply
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     rundir = ROOT / "artifacts" / "runs" / ts
     rundir.mkdir(parents=True, exist_ok=True)
@@ -100,14 +134,21 @@ def main():
         "run": ts,
         "model": "tfidf-logreg-v1",
         "seeds": {"subsample": 7},
-        "data": {j["name"]: (DATA / j["file"]).stat().st_size for j in JOBS},
+        "data": {j["name"]: (DATA / j["file"]).stat().st_size
+                 for j in JOBS if (DATA / j["file"]).exists()},
     }
     results = []
     modeldir = rundir / "models"
     modeldir.mkdir(exist_ok=True)
     import pickle
 
-    for job in JOBS:
+    jobs = [j for j in JOBS if (DATA / j["file"]).exists()]
+    # Job-level barrier (#T-halt-contam): an eval-only benchmark in JOBS is a
+    # hard error, never a warning. Fail before spending hours training.
+    registry = BenchmarkRegistry()
+    for job in jobs:
+        check_job_allowed(job["name"], registry)
+    for job in jobs:
         t0 = time.time()
         res, vec, clf = run_job(job)
         res["seconds"] = round(time.time() - t0, 1)

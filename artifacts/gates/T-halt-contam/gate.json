@@ -1,0 +1,40 @@
+{
+  "task": "T-halt-contam",
+  "pass": true,
+  "quarantine": {
+    "file": "artifacts/data-prefetch/quarantine/synth-loop-20260921.jsonl",
+    "rows": 360700,
+    "sha256": "b118383b09d4778bbae041265928731ac1a94ff4c30da4bd11b984db02c0da76"
+  },
+  "jobs": [
+    "boolq",
+    "helpsteer2",
+    "civil-comments",
+    "huffpost",
+    "banking77",
+    "massive",
+    "email-triage"
+  ],
+  "jobs_removed": [
+    "synth-loop",
+    "logiqa",
+    "reclor"
+  ],
+  "eval_only_registry": [
+    "logiqa",
+    "reclor",
+    "synth-loop"
+  ],
+  "leak_report": {
+    "exact": 0,
+    "normalized": 0,
+    "paraphrase_suspects": 0,
+    "semantic": "stubbed",
+    "train_rows_scanned": 2080647,
+    "heldout_items": 22752
+  },
+  "checks": {
+    "gen_loop_process": false,
+    "synth_loop_in_prefetch": false
+  }
+}
