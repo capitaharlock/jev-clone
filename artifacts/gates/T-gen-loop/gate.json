@@ -1,0 +1,340 @@
+{
+  "task": "T-gen-loop",
+  "pass": true,
+  "state": "running",
+  "generated_at": "2026-09-21T16:15:17Z",
+  "run_id": "gen-loop-v1",
+  "seed": 20260921,
+  "contract": "gen-schemas/v1 (#T-gen-schemas, commit 39e6322)",
+  "stop_criterion": {
+    "primary": "marginal diversity < 250 new unique skeletons per wall-clock hour, averaged over the last 4 rounds",
+    "secondary": "3 consecutive batches rejected by the per-batch gate",
+    "rationale": "Under 250 new skeletons/h a full day of runtime adds fewer than 6 000 skeletons - less than five seconds of the bounded #T-gen-schemas run. The loop #T-halt-contam killed was running at ~17 new skeletons/h (190 skeletons in 11 h), so this floor is ~14x its information rate.",
+    "marginal_new_skeletons_per_hour": 42073.3,
+    "above_floor": true,
+    "stopped": ""
+  },
+  "criteria": {
+    "stop": {
+      "min_new_skeletons_per_hour": 250.0,
+      "rate_window_rounds": 4,
+      "max_consecutive_rejected_batches": 3,
+      "rate_basis": "wall clock, pacing interval included"
+    },
+    "batch": {
+      "min_rows": 48,
+      "min_novelty": 0.3,
+      "max_domain_share": 0.4,
+      "max_language_share": 0.55,
+      "min_k_values": 3,
+      "min_hard_negative_rate": 0.8,
+      "unknown_rate_range": [
+        0.05,
+        0.35
+      ]
+    },
+    "backstops": {
+      "max_rounds": 0,
+      "max_hours": 0.0,
+      "max_rows": 200000
+    }
+  },
+  "checks": {
+    "batch_gate_ran": true,
+    "rejected_batches_are_out_of_corpus": true,
+    "corpus_beats_the_killed_loop": true,
+    "manifest_resumable": true,
+    "no_spin": true,
+    "novelty_is_measured": true,
+    "self_limiting": true
+  },
+  "totals": {
+    "rounds": 11,
+    "batches_accepted": 11,
+    "batches_rejected": 0,
+    "rows_accepted": 4302,
+    "rows_rejected": 0,
+    "unique_skeletons": 4302,
+    "elapsed_sec": 339.3,
+    "skeletons_per_hour": 45640.1,
+    "rows_per_skeleton": 1.0
+  },
+  "corpus_rows_on_disk": 4302,
+  "rows_accepted_vs_rejected": {
+    "accepted": 4302,
+    "rejected": 0,
+    "batches_accepted": 11,
+    "batches_rejected": 0,
+    "rejection_reasons": {}
+  },
+  "novelty": {
+    "first_round": 1.0,
+    "last_round": 0.8218,
+    "decaying": true
+  },
+  "diversity_curve": [
+    {
+      "round": 1,
+      "elapsed_sec": 30.2,
+      "accepted": true,
+      "rows": 432,
+      "skeletons": 432,
+      "new_skeletons": 432,
+      "novelty": 1.0,
+      "marginal_per_hour": 51479.6
+    },
+    {
+      "round": 2,
+      "elapsed_sec": 60.6,
+      "accepted": true,
+      "rows": 860,
+      "skeletons": 860,
+      "new_skeletons": 428,
+      "novelty": 0.9907,
+      "marginal_per_hour": 50710.9
+    },
+    {
+      "round": 3,
+      "elapsed_sec": 91.2,
+      "accepted": true,
+      "rows": 1273,
+      "skeletons": 1273,
+      "new_skeletons": 413,
+      "novelty": 0.956,
+      "marginal_per_hour": 48658.2
+    },
+    {
+      "round": 4,
+      "elapsed_sec": 121.8,
+      "accepted": true,
+      "rows": 1683,
+      "skeletons": 1683,
+      "new_skeletons": 410,
+      "novelty": 0.9491,
+      "marginal_per_hour": 48145.6
+    },
+    {
+      "round": 5,
+      "elapsed_sec": 152.6,
+      "accepted": true,
+      "rows": 2073,
+      "skeletons": 2073,
+      "new_skeletons": 390,
+      "novelty": 0.9028,
+      "marginal_per_hour": 45627.4
+    },
+    {
+      "round": 6,
+      "elapsed_sec": 183.5,
+      "accepted": true,
+      "rows": 2466,
+      "skeletons": 2466,
+      "new_skeletons": 393,
+      "novelty": 0.9097,
+      "marginal_per_hour": 45810.1
+    },
+    {
+      "round": 7,
+      "elapsed_sec": 214.6,
+      "accepted": true,
+      "rows": 2845,
+      "skeletons": 2845,
+      "new_skeletons": 379,
+      "novelty": 0.8773,
+      "marginal_per_hour": 43779.9
+    },
+    {
+      "round": 8,
+      "elapsed_sec": 245.7,
+      "accepted": true,
+      "rows": 3210,
+      "skeletons": 3210,
+      "new_skeletons": 365,
+      "novelty": 0.8449,
+      "marginal_per_hour": 42333.8
+    },
+    {
+      "round": 9,
+      "elapsed_sec": 276.7,
+      "accepted": true,
+      "rows": 3588,
+      "skeletons": 3588,
+      "new_skeletons": 378,
+      "novelty": 0.875,
+      "marginal_per_hour": 43783.8
+    },
+    {
+      "round": 10,
+      "elapsed_sec": 308.0,
+      "accepted": true,
+      "rows": 3947,
+      "skeletons": 3947,
+      "new_skeletons": 359,
+      "novelty": 0.831,
+      "marginal_per_hour": 41403.2
+    },
+    {
+      "round": 11,
+      "elapsed_sec": 339.3,
+      "accepted": true,
+      "rows": 4302,
+      "skeletons": 4302,
+      "new_skeletons": 355,
+      "novelty": 0.8218,
+      "marginal_per_hour": 40786.4
+    }
+  ],
+  "batch_gate_rounds": [
+    {
+      "round": 1,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 432,
+      "produced": 432,
+      "novelty": 1.0,
+      "hard_negative_rate": 0.9792,
+      "unknown_rate": 0.1644,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 2,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 428,
+      "produced": 432,
+      "novelty": 0.9907,
+      "hard_negative_rate": 0.979,
+      "unknown_rate": 0.1168,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 3,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 413,
+      "produced": 432,
+      "novelty": 0.956,
+      "hard_negative_rate": 0.9661,
+      "unknown_rate": 0.1477,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 4,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 410,
+      "produced": 432,
+      "novelty": 0.9491,
+      "hard_negative_rate": 0.9732,
+      "unknown_rate": 0.1488,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 5,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 390,
+      "produced": 432,
+      "novelty": 0.9028,
+      "hard_negative_rate": 0.9821,
+      "unknown_rate": 0.1615,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 6,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 393,
+      "produced": 432,
+      "novelty": 0.9097,
+      "hard_negative_rate": 0.972,
+      "unknown_rate": 0.1603,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 7,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 379,
+      "produced": 432,
+      "novelty": 0.8773,
+      "hard_negative_rate": 0.9763,
+      "unknown_rate": 0.1187,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 8,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 365,
+      "produced": 432,
+      "novelty": 0.8449,
+      "hard_negative_rate": 0.9753,
+      "unknown_rate": 0.1096,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 9,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 378,
+      "produced": 432,
+      "novelty": 0.875,
+      "hard_negative_rate": 0.9788,
+      "unknown_rate": 0.1164,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 10,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 359,
+      "produced": 432,
+      "novelty": 0.831,
+      "hard_negative_rate": 0.9721,
+      "unknown_rate": 0.1226,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    },
+    {
+      "round": 11,
+      "accepted": true,
+      "failed_checks": [],
+      "kept": 355,
+      "produced": 432,
+      "novelty": 0.8218,
+      "hard_negative_rate": 0.9746,
+      "unknown_rate": 0.169,
+      "domains": 6,
+      "languages": 4,
+      "k_values": 6
+    }
+  ],
+  "killed_loop_reference": {
+    "task": "T-halt-contam",
+    "rows": 258700,
+    "skeletons": 190,
+    "hours": 11,
+    "new_skeletons_per_hour": 17.3,
+    "rows_per_skeleton": 1361.6
+  }
+}

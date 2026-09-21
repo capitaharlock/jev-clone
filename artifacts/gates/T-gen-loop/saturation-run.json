@@ -1,0 +1,1631 @@
+{
+  "note": "Saturation run of the #T-gen-loop stop criterion, un-paced (interval 0) so the whole decay could be observed in one sitting. It is the proof that the loop terminates on its own: 185 rounds, stopped by the diversity gate, not by an operator. The production job gen-loop runs the same code paced at 30 s/round.",
+  "command": "python3 tools/data_gen_loop.py --loop --per-cell 3 --interval 0 --max-rounds 400 --run-id saturation",
+  "seed": 20260921,
+  "criteria": {
+    "stop": {
+      "min_new_skeletons_per_hour": 250.0,
+      "rate_window_rounds": 4,
+      "max_consecutive_rejected_batches": 3,
+      "rate_basis": "wall clock, pacing interval included"
+    },
+    "batch": {
+      "min_rows": 48,
+      "min_novelty": 0.3,
+      "max_domain_share": 0.4,
+      "max_language_share": 0.55,
+      "min_k_values": 3,
+      "min_hard_negative_rate": 0.8,
+      "unknown_rate_range": [
+        0.05,
+        0.35
+      ]
+    },
+    "backstops": {
+      "max_rounds": 400,
+      "max_hours": 0.0,
+      "max_rows": 200000
+    }
+  },
+  "stopped": "diversity gate: 3 consecutive rejected batches — the corpus stopped accepting information",
+  "totals": {
+    "rounds": 185,
+    "batches_accepted": 173,
+    "batches_rejected": 12,
+    "rows_accepted": 37216,
+    "rows_rejected": 1520,
+    "unique_skeletons": 37216,
+    "elapsed_sec": 830.6,
+    "skeletons_per_hour": 161297.3,
+    "rows_per_skeleton": 1.0
+  },
+  "rejected_rounds": [
+    {
+      "round": 109,
+      "failed_checks": [
+        "unknown_rate"
+      ],
+      "novelty": 0.4074,
+      "kept": 176
+    },
+    {
+      "round": 144,
+      "failed_checks": [
+        "unknown_rate"
+      ],
+      "novelty": 0.3102,
+      "kept": 134
+    },
+    {
+      "round": 151,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2801,
+      "kept": 121
+    },
+    {
+      "round": 159,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2778,
+      "kept": 120
+    },
+    {
+      "round": 163,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2685,
+      "kept": 116
+    },
+    {
+      "round": 164,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2847,
+      "kept": 123
+    },
+    {
+      "round": 169,
+      "failed_checks": [
+        "novelty",
+        "unknown_rate"
+      ],
+      "novelty": 0.2986,
+      "kept": 129
+    },
+    {
+      "round": 174,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2824,
+      "kept": 122
+    },
+    {
+      "round": 180,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2824,
+      "kept": 122
+    },
+    {
+      "round": 183,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.287,
+      "kept": 124
+    },
+    {
+      "round": 184,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2639,
+      "kept": 114
+    },
+    {
+      "round": 185,
+      "failed_checks": [
+        "novelty"
+      ],
+      "novelty": 0.2755,
+      "kept": 119
+    }
+  ],
+  "curve": [
+    {
+      "round": 1,
+      "rows": 432,
+      "skeletons": 432,
+      "new_skeletons": 432,
+      "novelty": 1.0,
+      "accepted": true
+    },
+    {
+      "round": 2,
+      "rows": 860,
+      "skeletons": 860,
+      "new_skeletons": 428,
+      "novelty": 0.9907,
+      "accepted": true
+    },
+    {
+      "round": 3,
+      "rows": 1273,
+      "skeletons": 1273,
+      "new_skeletons": 413,
+      "novelty": 0.956,
+      "accepted": true
+    },
+    {
+      "round": 4,
+      "rows": 1683,
+      "skeletons": 1683,
+      "new_skeletons": 410,
+      "novelty": 0.9491,
+      "accepted": true
+    },
+    {
+      "round": 5,
+      "rows": 2073,
+      "skeletons": 2073,
+      "new_skeletons": 390,
+      "novelty": 0.9028,
+      "accepted": true
+    },
+    {
+      "round": 6,
+      "rows": 2466,
+      "skeletons": 2466,
+      "new_skeletons": 393,
+      "novelty": 0.9097,
+      "accepted": true
+    },
+    {
+      "round": 7,
+      "rows": 2845,
+      "skeletons": 2845,
+      "new_skeletons": 379,
+      "novelty": 0.8773,
+      "accepted": true
+    },
+    {
+      "round": 8,
+      "rows": 3210,
+      "skeletons": 3210,
+      "new_skeletons": 365,
+      "novelty": 0.8449,
+      "accepted": true
+    },
+    {
+      "round": 9,
+      "rows": 3588,
+      "skeletons": 3588,
+      "new_skeletons": 378,
+      "novelty": 0.875,
+      "accepted": true
+    },
+    {
+      "round": 10,
+      "rows": 3947,
+      "skeletons": 3947,
+      "new_skeletons": 359,
+      "novelty": 0.831,
+      "accepted": true
+    },
+    {
+      "round": 11,
+      "rows": 4302,
+      "skeletons": 4302,
+      "new_skeletons": 355,
+      "novelty": 0.8218,
+      "accepted": true
+    },
+    {
+      "round": 12,
+      "rows": 4644,
+      "skeletons": 4644,
+      "new_skeletons": 342,
+      "novelty": 0.7917,
+      "accepted": true
+    },
+    {
+      "round": 13,
+      "rows": 4981,
+      "skeletons": 4981,
+      "new_skeletons": 337,
+      "novelty": 0.7801,
+      "accepted": true
+    },
+    {
+      "round": 14,
+      "rows": 5320,
+      "skeletons": 5320,
+      "new_skeletons": 339,
+      "novelty": 0.7847,
+      "accepted": true
+    },
+    {
+      "round": 15,
+      "rows": 5650,
+      "skeletons": 5650,
+      "new_skeletons": 330,
+      "novelty": 0.7639,
+      "accepted": true
+    },
+    {
+      "round": 16,
+      "rows": 5988,
+      "skeletons": 5988,
+      "new_skeletons": 338,
+      "novelty": 0.7824,
+      "accepted": true
+    },
+    {
+      "round": 17,
+      "rows": 6341,
+      "skeletons": 6341,
+      "new_skeletons": 353,
+      "novelty": 0.8171,
+      "accepted": true
+    },
+    {
+      "round": 18,
+      "rows": 6667,
+      "skeletons": 6667,
+      "new_skeletons": 326,
+      "novelty": 0.7546,
+      "accepted": true
+    },
+    {
+      "round": 19,
+      "rows": 6990,
+      "skeletons": 6990,
+      "new_skeletons": 323,
+      "novelty": 0.7477,
+      "accepted": true
+    },
+    {
+      "round": 20,
+      "rows": 7307,
+      "skeletons": 7307,
+      "new_skeletons": 317,
+      "novelty": 0.7338,
+      "accepted": true
+    },
+    {
+      "round": 21,
+      "rows": 7610,
+      "skeletons": 7610,
+      "new_skeletons": 303,
+      "novelty": 0.7014,
+      "accepted": true
+    },
+    {
+      "round": 22,
+      "rows": 7912,
+      "skeletons": 7912,
+      "new_skeletons": 302,
+      "novelty": 0.6991,
+      "accepted": true
+    },
+    {
+      "round": 23,
+      "rows": 8227,
+      "skeletons": 8227,
+      "new_skeletons": 315,
+      "novelty": 0.7292,
+      "accepted": true
+    },
+    {
+      "round": 24,
+      "rows": 8529,
+      "skeletons": 8529,
+      "new_skeletons": 302,
+      "novelty": 0.6991,
+      "accepted": true
+    },
+    {
+      "round": 25,
+      "rows": 8826,
+      "skeletons": 8826,
+      "new_skeletons": 297,
+      "novelty": 0.6875,
+      "accepted": true
+    },
+    {
+      "round": 26,
+      "rows": 9122,
+      "skeletons": 9122,
+      "new_skeletons": 296,
+      "novelty": 0.6852,
+      "accepted": true
+    },
+    {
+      "round": 27,
+      "rows": 9425,
+      "skeletons": 9425,
+      "new_skeletons": 303,
+      "novelty": 0.7014,
+      "accepted": true
+    },
+    {
+      "round": 28,
+      "rows": 9694,
+      "skeletons": 9694,
+      "new_skeletons": 269,
+      "novelty": 0.6227,
+      "accepted": true
+    },
+    {
+      "round": 29,
+      "rows": 9984,
+      "skeletons": 9984,
+      "new_skeletons": 290,
+      "novelty": 0.6713,
+      "accepted": true
+    },
+    {
+      "round": 30,
+      "rows": 10262,
+      "skeletons": 10262,
+      "new_skeletons": 278,
+      "novelty": 0.6435,
+      "accepted": true
+    },
+    {
+      "round": 31,
+      "rows": 10550,
+      "skeletons": 10550,
+      "new_skeletons": 288,
+      "novelty": 0.6667,
+      "accepted": true
+    },
+    {
+      "round": 32,
+      "rows": 10849,
+      "skeletons": 10849,
+      "new_skeletons": 299,
+      "novelty": 0.6921,
+      "accepted": true
+    },
+    {
+      "round": 33,
+      "rows": 11127,
+      "skeletons": 11127,
+      "new_skeletons": 278,
+      "novelty": 0.6435,
+      "accepted": true
+    },
+    {
+      "round": 34,
+      "rows": 11392,
+      "skeletons": 11392,
+      "new_skeletons": 265,
+      "novelty": 0.6134,
+      "accepted": true
+    },
+    {
+      "round": 35,
+      "rows": 11682,
+      "skeletons": 11682,
+      "new_skeletons": 290,
+      "novelty": 0.6713,
+      "accepted": true
+    },
+    {
+      "round": 36,
+      "rows": 11950,
+      "skeletons": 11950,
+      "new_skeletons": 268,
+      "novelty": 0.6204,
+      "accepted": true
+    },
+    {
+      "round": 37,
+      "rows": 12224,
+      "skeletons": 12224,
+      "new_skeletons": 274,
+      "novelty": 0.6343,
+      "accepted": true
+    },
+    {
+      "round": 38,
+      "rows": 12503,
+      "skeletons": 12503,
+      "new_skeletons": 279,
+      "novelty": 0.6458,
+      "accepted": true
+    },
+    {
+      "round": 39,
+      "rows": 12770,
+      "skeletons": 12770,
+      "new_skeletons": 267,
+      "novelty": 0.6181,
+      "accepted": true
+    },
+    {
+      "round": 40,
+      "rows": 13034,
+      "skeletons": 13034,
+      "new_skeletons": 264,
+      "novelty": 0.6111,
+      "accepted": true
+    },
+    {
+      "round": 41,
+      "rows": 13310,
+      "skeletons": 13310,
+      "new_skeletons": 276,
+      "novelty": 0.6389,
+      "accepted": true
+    },
+    {
+      "round": 42,
+      "rows": 13561,
+      "skeletons": 13561,
+      "new_skeletons": 251,
+      "novelty": 0.581,
+      "accepted": true
+    },
+    {
+      "round": 43,
+      "rows": 13810,
+      "skeletons": 13810,
+      "new_skeletons": 249,
+      "novelty": 0.5764,
+      "accepted": true
+    },
+    {
+      "round": 44,
+      "rows": 14063,
+      "skeletons": 14063,
+      "new_skeletons": 253,
+      "novelty": 0.5856,
+      "accepted": true
+    },
+    {
+      "round": 45,
+      "rows": 14310,
+      "skeletons": 14310,
+      "new_skeletons": 247,
+      "novelty": 0.5718,
+      "accepted": true
+    },
+    {
+      "round": 46,
+      "rows": 14565,
+      "skeletons": 14565,
+      "new_skeletons": 255,
+      "novelty": 0.5903,
+      "accepted": true
+    },
+    {
+      "round": 47,
+      "rows": 14811,
+      "skeletons": 14811,
+      "new_skeletons": 246,
+      "novelty": 0.5694,
+      "accepted": true
+    },
+    {
+      "round": 48,
+      "rows": 15068,
+      "skeletons": 15068,
+      "new_skeletons": 257,
+      "novelty": 0.5949,
+      "accepted": true
+    },
+    {
+      "round": 49,
+      "rows": 15298,
+      "skeletons": 15298,
+      "new_skeletons": 230,
+      "novelty": 0.5324,
+      "accepted": true
+    },
+    {
+      "round": 50,
+      "rows": 15544,
+      "skeletons": 15544,
+      "new_skeletons": 246,
+      "novelty": 0.5694,
+      "accepted": true
+    },
+    {
+      "round": 51,
+      "rows": 15776,
+      "skeletons": 15776,
+      "new_skeletons": 232,
+      "novelty": 0.537,
+      "accepted": true
+    },
+    {
+      "round": 52,
+      "rows": 16017,
+      "skeletons": 16017,
+      "new_skeletons": 241,
+      "novelty": 0.5579,
+      "accepted": true
+    },
+    {
+      "round": 53,
+      "rows": 16253,
+      "skeletons": 16253,
+      "new_skeletons": 236,
+      "novelty": 0.5463,
+      "accepted": true
+    },
+    {
+      "round": 54,
+      "rows": 16475,
+      "skeletons": 16475,
+      "new_skeletons": 222,
+      "novelty": 0.5139,
+      "accepted": true
+    },
+    {
+      "round": 55,
+      "rows": 16713,
+      "skeletons": 16713,
+      "new_skeletons": 238,
+      "novelty": 0.5509,
+      "accepted": true
+    },
+    {
+      "round": 56,
+      "rows": 16935,
+      "skeletons": 16935,
+      "new_skeletons": 222,
+      "novelty": 0.5139,
+      "accepted": true
+    },
+    {
+      "round": 57,
+      "rows": 17168,
+      "skeletons": 17168,
+      "new_skeletons": 233,
+      "novelty": 0.5394,
+      "accepted": true
+    },
+    {
+      "round": 58,
+      "rows": 17390,
+      "skeletons": 17390,
+      "new_skeletons": 222,
+      "novelty": 0.5139,
+      "accepted": true
+    },
+    {
+      "round": 59,
+      "rows": 17605,
+      "skeletons": 17605,
+      "new_skeletons": 215,
+      "novelty": 0.4977,
+      "accepted": true
+    },
+    {
+      "round": 60,
+      "rows": 17842,
+      "skeletons": 17842,
+      "new_skeletons": 237,
+      "novelty": 0.5486,
+      "accepted": true
+    },
+    {
+      "round": 61,
+      "rows": 18055,
+      "skeletons": 18055,
+      "new_skeletons": 213,
+      "novelty": 0.4931,
+      "accepted": true
+    },
+    {
+      "round": 62,
+      "rows": 18289,
+      "skeletons": 18289,
+      "new_skeletons": 234,
+      "novelty": 0.5417,
+      "accepted": true
+    },
+    {
+      "round": 63,
+      "rows": 18506,
+      "skeletons": 18506,
+      "new_skeletons": 217,
+      "novelty": 0.5023,
+      "accepted": true
+    },
+    {
+      "round": 64,
+      "rows": 18723,
+      "skeletons": 18723,
+      "new_skeletons": 217,
+      "novelty": 0.5023,
+      "accepted": true
+    },
+    {
+      "round": 65,
+      "rows": 18950,
+      "skeletons": 18950,
+      "new_skeletons": 227,
+      "novelty": 0.5255,
+      "accepted": true
+    },
+    {
+      "round": 66,
+      "rows": 19169,
+      "skeletons": 19169,
+      "new_skeletons": 219,
+      "novelty": 0.5069,
+      "accepted": true
+    },
+    {
+      "round": 67,
+      "rows": 19385,
+      "skeletons": 19385,
+      "new_skeletons": 216,
+      "novelty": 0.5,
+      "accepted": true
+    },
+    {
+      "round": 68,
+      "rows": 19605,
+      "skeletons": 19605,
+      "new_skeletons": 220,
+      "novelty": 0.5093,
+      "accepted": true
+    },
+    {
+      "round": 69,
+      "rows": 19807,
+      "skeletons": 19807,
+      "new_skeletons": 202,
+      "novelty": 0.4676,
+      "accepted": true
+    },
+    {
+      "round": 70,
+      "rows": 20016,
+      "skeletons": 20016,
+      "new_skeletons": 209,
+      "novelty": 0.4838,
+      "accepted": true
+    },
+    {
+      "round": 71,
+      "rows": 20231,
+      "skeletons": 20231,
+      "new_skeletons": 215,
+      "novelty": 0.4977,
+      "accepted": true
+    },
+    {
+      "round": 72,
+      "rows": 20424,
+      "skeletons": 20424,
+      "new_skeletons": 193,
+      "novelty": 0.4468,
+      "accepted": true
+    },
+    {
+      "round": 73,
+      "rows": 20643,
+      "skeletons": 20643,
+      "new_skeletons": 219,
+      "novelty": 0.5069,
+      "accepted": true
+    },
+    {
+      "round": 74,
+      "rows": 20862,
+      "skeletons": 20862,
+      "new_skeletons": 219,
+      "novelty": 0.5069,
+      "accepted": true
+    },
+    {
+      "round": 75,
+      "rows": 21065,
+      "skeletons": 21065,
+      "new_skeletons": 203,
+      "novelty": 0.4699,
+      "accepted": true
+    },
+    {
+      "round": 76,
+      "rows": 21281,
+      "skeletons": 21281,
+      "new_skeletons": 216,
+      "novelty": 0.5,
+      "accepted": true
+    },
+    {
+      "round": 77,
+      "rows": 21485,
+      "skeletons": 21485,
+      "new_skeletons": 204,
+      "novelty": 0.4722,
+      "accepted": true
+    },
+    {
+      "round": 78,
+      "rows": 21706,
+      "skeletons": 21706,
+      "new_skeletons": 221,
+      "novelty": 0.5116,
+      "accepted": true
+    },
+    {
+      "round": 79,
+      "rows": 21907,
+      "skeletons": 21907,
+      "new_skeletons": 201,
+      "novelty": 0.4653,
+      "accepted": true
+    },
+    {
+      "round": 80,
+      "rows": 22122,
+      "skeletons": 22122,
+      "new_skeletons": 215,
+      "novelty": 0.4977,
+      "accepted": true
+    },
+    {
+      "round": 81,
+      "rows": 22325,
+      "skeletons": 22325,
+      "new_skeletons": 203,
+      "novelty": 0.4699,
+      "accepted": true
+    },
+    {
+      "round": 82,
+      "rows": 22527,
+      "skeletons": 22527,
+      "new_skeletons": 202,
+      "novelty": 0.4676,
+      "accepted": true
+    },
+    {
+      "round": 83,
+      "rows": 22717,
+      "skeletons": 22717,
+      "new_skeletons": 190,
+      "novelty": 0.4398,
+      "accepted": true
+    },
+    {
+      "round": 84,
+      "rows": 22900,
+      "skeletons": 22900,
+      "new_skeletons": 183,
+      "novelty": 0.4236,
+      "accepted": true
+    },
+    {
+      "round": 85,
+      "rows": 23096,
+      "skeletons": 23096,
+      "new_skeletons": 196,
+      "novelty": 0.4537,
+      "accepted": true
+    },
+    {
+      "round": 86,
+      "rows": 23295,
+      "skeletons": 23295,
+      "new_skeletons": 199,
+      "novelty": 0.4606,
+      "accepted": true
+    },
+    {
+      "round": 87,
+      "rows": 23497,
+      "skeletons": 23497,
+      "new_skeletons": 202,
+      "novelty": 0.4676,
+      "accepted": true
+    },
+    {
+      "round": 88,
+      "rows": 23680,
+      "skeletons": 23680,
+      "new_skeletons": 183,
+      "novelty": 0.4236,
+      "accepted": true
+    },
+    {
+      "round": 89,
+      "rows": 23862,
+      "skeletons": 23862,
+      "new_skeletons": 182,
+      "novelty": 0.4213,
+      "accepted": true
+    },
+    {
+      "round": 90,
+      "rows": 24069,
+      "skeletons": 24069,
+      "new_skeletons": 207,
+      "novelty": 0.4792,
+      "accepted": true
+    },
+    {
+      "round": 91,
+      "rows": 24267,
+      "skeletons": 24267,
+      "new_skeletons": 198,
+      "novelty": 0.4583,
+      "accepted": true
+    },
+    {
+      "round": 92,
+      "rows": 24459,
+      "skeletons": 24459,
+      "new_skeletons": 192,
+      "novelty": 0.4444,
+      "accepted": true
+    },
+    {
+      "round": 93,
+      "rows": 24652,
+      "skeletons": 24652,
+      "new_skeletons": 193,
+      "novelty": 0.4468,
+      "accepted": true
+    },
+    {
+      "round": 94,
+      "rows": 24827,
+      "skeletons": 24827,
+      "new_skeletons": 175,
+      "novelty": 0.4051,
+      "accepted": true
+    },
+    {
+      "round": 95,
+      "rows": 25013,
+      "skeletons": 25013,
+      "new_skeletons": 186,
+      "novelty": 0.4306,
+      "accepted": true
+    },
+    {
+      "round": 96,
+      "rows": 25200,
+      "skeletons": 25200,
+      "new_skeletons": 187,
+      "novelty": 0.4329,
+      "accepted": true
+    },
+    {
+      "round": 97,
+      "rows": 25381,
+      "skeletons": 25381,
+      "new_skeletons": 181,
+      "novelty": 0.419,
+      "accepted": true
+    },
+    {
+      "round": 98,
+      "rows": 25566,
+      "skeletons": 25566,
+      "new_skeletons": 185,
+      "novelty": 0.4282,
+      "accepted": true
+    },
+    {
+      "round": 99,
+      "rows": 25739,
+      "skeletons": 25739,
+      "new_skeletons": 173,
+      "novelty": 0.4005,
+      "accepted": true
+    },
+    {
+      "round": 100,
+      "rows": 25910,
+      "skeletons": 25910,
+      "new_skeletons": 171,
+      "novelty": 0.3958,
+      "accepted": true
+    },
+    {
+      "round": 101,
+      "rows": 26083,
+      "skeletons": 26083,
+      "new_skeletons": 173,
+      "novelty": 0.4005,
+      "accepted": true
+    },
+    {
+      "round": 102,
+      "rows": 26245,
+      "skeletons": 26245,
+      "new_skeletons": 162,
+      "novelty": 0.375,
+      "accepted": true
+    },
+    {
+      "round": 103,
+      "rows": 26433,
+      "skeletons": 26433,
+      "new_skeletons": 188,
+      "novelty": 0.4352,
+      "accepted": true
+    },
+    {
+      "round": 104,
+      "rows": 26596,
+      "skeletons": 26596,
+      "new_skeletons": 163,
+      "novelty": 0.3773,
+      "accepted": true
+    },
+    {
+      "round": 105,
+      "rows": 26775,
+      "skeletons": 26775,
+      "new_skeletons": 179,
+      "novelty": 0.4144,
+      "accepted": true
+    },
+    {
+      "round": 106,
+      "rows": 26952,
+      "skeletons": 26952,
+      "new_skeletons": 177,
+      "novelty": 0.4097,
+      "accepted": true
+    },
+    {
+      "round": 107,
+      "rows": 27129,
+      "skeletons": 27129,
+      "new_skeletons": 177,
+      "novelty": 0.4097,
+      "accepted": true
+    },
+    {
+      "round": 108,
+      "rows": 27298,
+      "skeletons": 27298,
+      "new_skeletons": 169,
+      "novelty": 0.3912,
+      "accepted": true
+    },
+    {
+      "round": 109,
+      "rows": 27298,
+      "skeletons": 27298,
+      "new_skeletons": 0,
+      "novelty": 0.4074,
+      "accepted": false
+    },
+    {
+      "round": 110,
+      "rows": 27457,
+      "skeletons": 27457,
+      "new_skeletons": 159,
+      "novelty": 0.3681,
+      "accepted": true
+    },
+    {
+      "round": 111,
+      "rows": 27629,
+      "skeletons": 27629,
+      "new_skeletons": 172,
+      "novelty": 0.3981,
+      "accepted": true
+    },
+    {
+      "round": 112,
+      "rows": 27798,
+      "skeletons": 27798,
+      "new_skeletons": 169,
+      "novelty": 0.3912,
+      "accepted": true
+    },
+    {
+      "round": 113,
+      "rows": 27972,
+      "skeletons": 27972,
+      "new_skeletons": 174,
+      "novelty": 0.4028,
+      "accepted": true
+    },
+    {
+      "round": 114,
+      "rows": 28144,
+      "skeletons": 28144,
+      "new_skeletons": 172,
+      "novelty": 0.3981,
+      "accepted": true
+    },
+    {
+      "round": 115,
+      "rows": 28322,
+      "skeletons": 28322,
+      "new_skeletons": 178,
+      "novelty": 0.412,
+      "accepted": true
+    },
+    {
+      "round": 116,
+      "rows": 28504,
+      "skeletons": 28504,
+      "new_skeletons": 182,
+      "novelty": 0.4213,
+      "accepted": true
+    },
+    {
+      "round": 117,
+      "rows": 28668,
+      "skeletons": 28668,
+      "new_skeletons": 164,
+      "novelty": 0.3796,
+      "accepted": true
+    },
+    {
+      "round": 118,
+      "rows": 28837,
+      "skeletons": 28837,
+      "new_skeletons": 169,
+      "novelty": 0.3912,
+      "accepted": true
+    },
+    {
+      "round": 119,
+      "rows": 28987,
+      "skeletons": 28987,
+      "new_skeletons": 150,
+      "novelty": 0.3472,
+      "accepted": true
+    },
+    {
+      "round": 120,
+      "rows": 29139,
+      "skeletons": 29139,
+      "new_skeletons": 152,
+      "novelty": 0.3519,
+      "accepted": true
+    },
+    {
+      "round": 121,
+      "rows": 29286,
+      "skeletons": 29286,
+      "new_skeletons": 147,
+      "novelty": 0.3403,
+      "accepted": true
+    },
+    {
+      "round": 122,
+      "rows": 29451,
+      "skeletons": 29451,
+      "new_skeletons": 165,
+      "novelty": 0.3819,
+      "accepted": true
+    },
+    {
+      "round": 123,
+      "rows": 29609,
+      "skeletons": 29609,
+      "new_skeletons": 158,
+      "novelty": 0.3657,
+      "accepted": true
+    },
+    {
+      "round": 124,
+      "rows": 29777,
+      "skeletons": 29777,
+      "new_skeletons": 168,
+      "novelty": 0.3889,
+      "accepted": true
+    },
+    {
+      "round": 125,
+      "rows": 29922,
+      "skeletons": 29922,
+      "new_skeletons": 145,
+      "novelty": 0.3356,
+      "accepted": true
+    },
+    {
+      "round": 126,
+      "rows": 30082,
+      "skeletons": 30082,
+      "new_skeletons": 160,
+      "novelty": 0.3704,
+      "accepted": true
+    },
+    {
+      "round": 127,
+      "rows": 30236,
+      "skeletons": 30236,
+      "new_skeletons": 154,
+      "novelty": 0.3565,
+      "accepted": true
+    },
+    {
+      "round": 128,
+      "rows": 30388,
+      "skeletons": 30388,
+      "new_skeletons": 152,
+      "novelty": 0.3519,
+      "accepted": true
+    },
+    {
+      "round": 129,
+      "rows": 30540,
+      "skeletons": 30540,
+      "new_skeletons": 152,
+      "novelty": 0.3519,
+      "accepted": true
+    },
+    {
+      "round": 130,
+      "rows": 30701,
+      "skeletons": 30701,
+      "new_skeletons": 161,
+      "novelty": 0.3727,
+      "accepted": true
+    },
+    {
+      "round": 131,
+      "rows": 30873,
+      "skeletons": 30873,
+      "new_skeletons": 172,
+      "novelty": 0.3981,
+      "accepted": true
+    },
+    {
+      "round": 132,
+      "rows": 31028,
+      "skeletons": 31028,
+      "new_skeletons": 155,
+      "novelty": 0.3588,
+      "accepted": true
+    },
+    {
+      "round": 133,
+      "rows": 31191,
+      "skeletons": 31191,
+      "new_skeletons": 163,
+      "novelty": 0.3773,
+      "accepted": true
+    },
+    {
+      "round": 134,
+      "rows": 31344,
+      "skeletons": 31344,
+      "new_skeletons": 153,
+      "novelty": 0.3542,
+      "accepted": true
+    },
+    {
+      "round": 135,
+      "rows": 31498,
+      "skeletons": 31498,
+      "new_skeletons": 154,
+      "novelty": 0.3565,
+      "accepted": true
+    },
+    {
+      "round": 136,
+      "rows": 31652,
+      "skeletons": 31652,
+      "new_skeletons": 154,
+      "novelty": 0.3565,
+      "accepted": true
+    },
+    {
+      "round": 137,
+      "rows": 31814,
+      "skeletons": 31814,
+      "new_skeletons": 162,
+      "novelty": 0.375,
+      "accepted": true
+    },
+    {
+      "round": 138,
+      "rows": 31978,
+      "skeletons": 31978,
+      "new_skeletons": 164,
+      "novelty": 0.3796,
+      "accepted": true
+    },
+    {
+      "round": 139,
+      "rows": 32126,
+      "skeletons": 32126,
+      "new_skeletons": 148,
+      "novelty": 0.3426,
+      "accepted": true
+    },
+    {
+      "round": 140,
+      "rows": 32291,
+      "skeletons": 32291,
+      "new_skeletons": 165,
+      "novelty": 0.3819,
+      "accepted": true
+    },
+    {
+      "round": 141,
+      "rows": 32465,
+      "skeletons": 32465,
+      "new_skeletons": 174,
+      "novelty": 0.4028,
+      "accepted": true
+    },
+    {
+      "round": 142,
+      "rows": 32609,
+      "skeletons": 32609,
+      "new_skeletons": 144,
+      "novelty": 0.3333,
+      "accepted": true
+    },
+    {
+      "round": 143,
+      "rows": 32739,
+      "skeletons": 32739,
+      "new_skeletons": 130,
+      "novelty": 0.3009,
+      "accepted": true
+    },
+    {
+      "round": 144,
+      "rows": 32739,
+      "skeletons": 32739,
+      "new_skeletons": 0,
+      "novelty": 0.3102,
+      "accepted": false
+    },
+    {
+      "round": 145,
+      "rows": 32888,
+      "skeletons": 32888,
+      "new_skeletons": 149,
+      "novelty": 0.3449,
+      "accepted": true
+    },
+    {
+      "round": 146,
+      "rows": 33049,
+      "skeletons": 33049,
+      "new_skeletons": 161,
+      "novelty": 0.3727,
+      "accepted": true
+    },
+    {
+      "round": 147,
+      "rows": 33200,
+      "skeletons": 33200,
+      "new_skeletons": 151,
+      "novelty": 0.3495,
+      "accepted": true
+    },
+    {
+      "round": 148,
+      "rows": 33344,
+      "skeletons": 33344,
+      "new_skeletons": 144,
+      "novelty": 0.3333,
+      "accepted": true
+    },
+    {
+      "round": 149,
+      "rows": 33494,
+      "skeletons": 33494,
+      "new_skeletons": 150,
+      "novelty": 0.3472,
+      "accepted": true
+    },
+    {
+      "round": 150,
+      "rows": 33624,
+      "skeletons": 33624,
+      "new_skeletons": 130,
+      "novelty": 0.3009,
+      "accepted": true
+    },
+    {
+      "round": 151,
+      "rows": 33624,
+      "skeletons": 33624,
+      "new_skeletons": 0,
+      "novelty": 0.2801,
+      "accepted": false
+    },
+    {
+      "round": 152,
+      "rows": 33770,
+      "skeletons": 33770,
+      "new_skeletons": 146,
+      "novelty": 0.338,
+      "accepted": true
+    },
+    {
+      "round": 153,
+      "rows": 33913,
+      "skeletons": 33913,
+      "new_skeletons": 143,
+      "novelty": 0.331,
+      "accepted": true
+    },
+    {
+      "round": 154,
+      "rows": 34052,
+      "skeletons": 34052,
+      "new_skeletons": 139,
+      "novelty": 0.3218,
+      "accepted": true
+    },
+    {
+      "round": 155,
+      "rows": 34185,
+      "skeletons": 34185,
+      "new_skeletons": 133,
+      "novelty": 0.3079,
+      "accepted": true
+    },
+    {
+      "round": 156,
+      "rows": 34331,
+      "skeletons": 34331,
+      "new_skeletons": 146,
+      "novelty": 0.338,
+      "accepted": true
+    },
+    {
+      "round": 157,
+      "rows": 34480,
+      "skeletons": 34480,
+      "new_skeletons": 149,
+      "novelty": 0.3449,
+      "accepted": true
+    },
+    {
+      "round": 158,
+      "rows": 34639,
+      "skeletons": 34639,
+      "new_skeletons": 159,
+      "novelty": 0.3681,
+      "accepted": true
+    },
+    {
+      "round": 159,
+      "rows": 34639,
+      "skeletons": 34639,
+      "new_skeletons": 0,
+      "novelty": 0.2778,
+      "accepted": false
+    },
+    {
+      "round": 160,
+      "rows": 34778,
+      "skeletons": 34778,
+      "new_skeletons": 139,
+      "novelty": 0.3218,
+      "accepted": true
+    },
+    {
+      "round": 161,
+      "rows": 34912,
+      "skeletons": 34912,
+      "new_skeletons": 134,
+      "novelty": 0.3102,
+      "accepted": true
+    },
+    {
+      "round": 162,
+      "rows": 35054,
+      "skeletons": 35054,
+      "new_skeletons": 142,
+      "novelty": 0.3287,
+      "accepted": true
+    },
+    {
+      "round": 163,
+      "rows": 35054,
+      "skeletons": 35054,
+      "new_skeletons": 0,
+      "novelty": 0.2685,
+      "accepted": false
+    },
+    {
+      "round": 164,
+      "rows": 35054,
+      "skeletons": 35054,
+      "new_skeletons": 0,
+      "novelty": 0.2847,
+      "accepted": false
+    },
+    {
+      "round": 165,
+      "rows": 35202,
+      "skeletons": 35202,
+      "new_skeletons": 148,
+      "novelty": 0.3426,
+      "accepted": true
+    },
+    {
+      "round": 166,
+      "rows": 35343,
+      "skeletons": 35343,
+      "new_skeletons": 141,
+      "novelty": 0.3264,
+      "accepted": true
+    },
+    {
+      "round": 167,
+      "rows": 35490,
+      "skeletons": 35490,
+      "new_skeletons": 147,
+      "novelty": 0.3403,
+      "accepted": true
+    },
+    {
+      "round": 168,
+      "rows": 35643,
+      "skeletons": 35643,
+      "new_skeletons": 153,
+      "novelty": 0.3542,
+      "accepted": true
+    },
+    {
+      "round": 169,
+      "rows": 35643,
+      "skeletons": 35643,
+      "new_skeletons": 0,
+      "novelty": 0.2986,
+      "accepted": false
+    },
+    {
+      "round": 170,
+      "rows": 35788,
+      "skeletons": 35788,
+      "new_skeletons": 145,
+      "novelty": 0.3356,
+      "accepted": true
+    },
+    {
+      "round": 171,
+      "rows": 35918,
+      "skeletons": 35918,
+      "new_skeletons": 130,
+      "novelty": 0.3009,
+      "accepted": true
+    },
+    {
+      "round": 172,
+      "rows": 36050,
+      "skeletons": 36050,
+      "new_skeletons": 132,
+      "novelty": 0.3056,
+      "accepted": true
+    },
+    {
+      "round": 173,
+      "rows": 36194,
+      "skeletons": 36194,
+      "new_skeletons": 144,
+      "novelty": 0.3333,
+      "accepted": true
+    },
+    {
+      "round": 174,
+      "rows": 36194,
+      "skeletons": 36194,
+      "new_skeletons": 0,
+      "novelty": 0.2824,
+      "accepted": false
+    },
+    {
+      "round": 175,
+      "rows": 36344,
+      "skeletons": 36344,
+      "new_skeletons": 150,
+      "novelty": 0.3472,
+      "accepted": true
+    },
+    {
+      "round": 176,
+      "rows": 36494,
+      "skeletons": 36494,
+      "new_skeletons": 150,
+      "novelty": 0.3472,
+      "accepted": true
+    },
+    {
+      "round": 177,
+      "rows": 36626,
+      "skeletons": 36626,
+      "new_skeletons": 132,
+      "novelty": 0.3056,
+      "accepted": true
+    },
+    {
+      "round": 178,
+      "rows": 36777,
+      "skeletons": 36777,
+      "new_skeletons": 151,
+      "novelty": 0.3495,
+      "accepted": true
+    },
+    {
+      "round": 179,
+      "rows": 36928,
+      "skeletons": 36928,
+      "new_skeletons": 151,
+      "novelty": 0.3495,
+      "accepted": true
+    },
+    {
+      "round": 180,
+      "rows": 36928,
+      "skeletons": 36928,
+      "new_skeletons": 0,
+      "novelty": 0.2824,
+      "accepted": false
+    },
+    {
+      "round": 181,
+      "rows": 37066,
+      "skeletons": 37066,
+      "new_skeletons": 138,
+      "novelty": 0.3194,
+      "accepted": true
+    },
+    {
+      "round": 182,
+      "rows": 37216,
+      "skeletons": 37216,
+      "new_skeletons": 150,
+      "novelty": 0.3472,
+      "accepted": true
+    },
+    {
+      "round": 183,
+      "rows": 37216,
+      "skeletons": 37216,
+      "new_skeletons": 0,
+      "novelty": 0.287,
+      "accepted": false
+    },
+    {
+      "round": 184,
+      "rows": 37216,
+      "skeletons": 37216,
+      "new_skeletons": 0,
+      "novelty": 0.2639,
+      "accepted": false
+    },
+    {
+      "round": 185,
+      "rows": 37216,
+      "skeletons": 37216,
+      "new_skeletons": 0,
+      "novelty": 0.2755,
+      "accepted": false
+    }
+  ],
+  "killed_loop_reference": {
+    "task": "T-halt-contam",
+    "rows": 258700,
+    "skeletons": 190,
+    "hours": 11,
+    "new_skeletons_per_hour": 17.3,
+    "rows_per_skeleton": 1361.6
+  }
+}

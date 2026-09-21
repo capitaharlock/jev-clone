@@ -13,6 +13,8 @@ from .domains import DOMAIN_IDS, DOMAINS, MAX_K, MIN_K, STATE_FORMATS, domain
 from .generator import (DecisionSchema, GenerationResult, build, generate,
                         normalized_text, skeleton_of)
 from .llm import RecordProposer
+from .loop import (ContinuousLoop, CorpusIndex, LoopConfig, build_gate,
+                   judge_batch, measure_batch)
 from .vocab import LANGS
 
 __all__ = [
@@ -20,4 +22,6 @@ __all__ = [
     "RecordProposer", "DOMAINS", "DOMAIN_IDS", "LANGS", "MIN_K", "MAX_K",
     "STATE_FORMATS", "build", "generate", "diversity", "skeleton_curve",
     "domain", "normalized_text", "skeleton_of",
+    "ContinuousLoop", "CorpusIndex", "LoopConfig", "build_gate",
+    "judge_batch", "measure_batch",
 ]

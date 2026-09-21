@@ -21,9 +21,15 @@ Diversity is published to `<out>/diversity.json` and appended to
 `<out>/diversity-history.jsonl`; the gate writes
 `artifacts/gates/T-gen-schemas/gate.json`.
 
+#T-gen-loop adds the CONTINUOUS mode on top of that one-shot run: `--loop`
+keeps generating batches, gates every batch against the corpus that already
+exists, and STOPS when marginal diversity per hour falls under the floor —
+the measurement the old loop never had. See `tools/gen_schemas/loop.py`.
+
 Run (no sklearn or torch needed — this only writes data):
-  python tools/data_gen_loop.py --per-cell 8
-  python tools/data_gen_loop.py --gate            # verification gate only
+  python tools/data_gen_loop.py --per-cell 8      # one bounded run
+  python tools/data_gen_loop.py --gate            # #T-gen-schemas gate only
+  python tools/data_gen_loop.py --loop            # continuous, self-limiting
 Long runs belong to the daemon's job runner, never to a nohup.
 """
 from __future__ import annotations
@@ -42,11 +48,13 @@ from data.firewall import ContaminationScanner  # noqa: E402
 from tools.gen_schemas import (Budget, LANGS, MAX_K, MIN_K,  # noqa: E402
                                DOMAIN_IDS, diversity, generate)
 from tools.gen_schemas import gate as gate_mod  # noqa: E402
+from tools.gen_schemas.loop import ContinuousLoop, LoopConfig  # noqa: E402
 
 # Gitignored, and deliberately NOT artifacts/data-prefetch/manifest.json:
 # nothing here joins a training mix by being written. #T-halt-contam put the
 # previous corpus in quarantine for exactly that reason.
 OUT_DIR = ROOT / "artifacts" / "data-prefetch" / "gen-schemas"
+LOOP_DIR = ROOT / "artifacts" / "data-prefetch" / "gen-loop"
 
 
 def utcnow() -> str:
@@ -95,6 +103,30 @@ def parse_csv(value: str | None, known: tuple, name: str) -> tuple:
     return picked
 
 
+def run_loop(args, log) -> int:
+    """#T-gen-loop: continuous generation, stopped by the diversity gate."""
+    ks = (tuple(int(k) for k in args.ks.split(",")) if args.ks
+          else tuple(range(MIN_K, MAX_K + 1)))
+    cfg = LoopConfig(
+        out=args.loop_out, seed=args.seed, per_cell=args.per_cell,
+        interval=args.interval, unknown_rate=args.unknown_rate,
+        dedup_threshold=args.dedup_threshold,
+        domains=parse_csv(args.domains, DOMAIN_IDS, "domain"),
+        languages=parse_csv(args.languages, LANGS, "language"), ks=ks,
+        max_rounds=args.max_rounds, max_hours=args.max_hours,
+        firewall=not args.no_firewall, run_id=args.run_id,
+    )
+    if args.min_rate is not None:
+        cfg.min_rate = args.min_rate
+    if args.rate_window is not None:
+        cfg.rate_window = args.rate_window
+    loop = ContinuousLoop(cfg, log=log)
+    loop.install_signal_handlers()
+    gate = loop.run()
+    log(f"[loop] corpus {rel(loop.corpus_dir)} · manifest {rel(loop.manifest)}")
+    return 0 if gate["pass"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--per-cell", type=int, default=8,
@@ -111,12 +143,31 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--gate", action="store_true",
                     help="run the #T-gen-schemas verification gate and exit")
+    ap.add_argument("--loop", action="store_true",
+                    help="#T-gen-loop: continuous, diversity-gated generation")
+    ap.add_argument("--loop-out", type=Path, default=LOOP_DIR,
+                    help="corpus root for --loop (corpus/, rejected/, run.json)")
+    ap.add_argument("--interval", type=float, default=30.0,
+                    help="seconds between batches; counted in the rate")
+    ap.add_argument("--min-rate", type=float,
+                    help="stop under this many new skeletons per hour")
+    ap.add_argument("--rate-window", type=int,
+                    help="rounds the marginal rate is averaged over")
+    ap.add_argument("--max-rounds", type=int, default=0, help="0 = unbounded")
+    ap.add_argument("--max-hours", type=float, default=0.0, help="0 = unbounded")
+    ap.add_argument("--run-id", default="gen-loop-v1")
     args = ap.parse_args(argv)
-    log = (lambda *a, **k: None) if args.quiet else print
+    # Flushing: --loop is a daemon job, and a block-buffered stdout leaves the
+    # cockpit's Jobs log empty for minutes at a time.
+    log = ((lambda *a: None) if args.quiet
+           else (lambda *a: print(*a, flush=True)))
 
     if args.gate:
         return gate_mod.main(["--per-cell", str(args.per_cell),
                               "--seed", str(args.seed)])
+
+    if args.loop:
+        return run_loop(args, log)
 
     ks = (tuple(int(k) for k in args.ks.split(",")) if args.ks
           else tuple(range(MIN_K, MAX_K + 1)))
