@@ -17,7 +17,8 @@ import unittest
 
 from data import mix
 from data.test_mix import write_corpus
-from tools.mix_1m import backbones, diversity, run_mix, sampler
+from tools.mix_1m import (backbones, diversity, run_curve, run_mix,
+                          sampler)
 from tools.mix_1m.fence import (
     FENCED_DATASETS,
     Fence,
@@ -43,6 +44,16 @@ from tools.mix_1m.strata import (
 #: that contrast "before" with "now" state the narrow registry as a set to
 #: subtract, not as a number somebody copied down.
 WIDENED = ("dbpedia14", "snli", "goemotions", "detox-attack", "swag")
+
+
+def _plan_without_bakeoff(seed: int = 20260922) -> list:
+    """`run_curve.plan()` with the top-2 stubbed: the ARGV is the subject."""
+    real = backbones.top2
+    backbones.top2 = lambda report=None: ["modernbert-base", "ettin-68m"]
+    try:
+        return run_curve.plan(seed, "cpu", 64)
+    finally:
+        backbones.top2 = real
 
 
 def bool_q(qid="q1", ans="yes", conf=None):
@@ -313,6 +324,61 @@ class TestOneAuthority(unittest.TestCase):
         self.assertEqual(spec.quotas, other.quotas)
         self.assertEqual(spec.keep_fractions, other.keep_fractions)
 
+    def test_one_recipe_builds_the_corpus_and_trains_it(self):
+        """#T-mix-1m: the mixer and the trainer read the SAME three numbers.
+
+        The regression this pins: `run_mix build` asked for 1 000 000 rows
+        at cap margin 0.0001 while `train_decision --fence-clean`
+        defaulted its target to the cap CEILING and planned at margin 0.0.
+        Two corpora, one manifest, and a 1 M-decision curve measured on
+        39 981 rows.
+        """
+        self.assertEqual(run_mix.CORPUS_TARGET, mix.CLEAN_1M_TARGET)
+        self.assertEqual(run_mix.DEFAULT_SEED, mix.CLEAN_1M_SEED)
+        self.assertEqual(sampler.CAP_MARGIN, mix.CLEAN_1M_CAP_MARGIN)
+
+    def test_the_trainer_defaults_to_the_published_recipe(self):
+        """`--fence-clean` alone assembles the manifest's corpus."""
+        import inspect
+
+        from training.python import train_decision as td
+
+        source = inspect.getsource(td.train)
+        head, _, body = source.partition("if fence_clean:")
+        clause = body.split("elif drop_datasets:")[0]
+        self.assertIn("mixmod.CLEAN_1M_CAP_MARGIN", clause)
+        self.assertIn("mixmod.CLEAN_1M_TARGET", clause)
+        self.assertIn("mixmod.CLEAN_1M_SEED", clause)
+        self.assertNotIn("cap_margin = 0.0\n", clause)
+
+    def test_every_curve_run_states_the_corpus_it_trains(self):
+        cmd = backbones.train_command("ettin-68m", "run-x", 1_000_000)
+        self.assertIn("--mix-target", cmd)
+        self.assertEqual(cmd[cmd.index("--mix-target") + 1], "1000000")
+        self.assertEqual(cmd[cmd.index("--mix-seed") + 1],
+                         str(mix.CLEAN_1M_SEED))
+
+    def test_the_128_arms_cover_their_own_budget(self):
+        """250 k decisions over 250 k rows: one pass, not six.
+
+        The pair used to train 250 000 samples over a 39 980-row mixture
+        at a stated 18 % cap. The widening removed the reason for both.
+        """
+        self.assertGreaterEqual(run_curve.ABLATION_ROWS,
+                                run_curve.ABLATION_SAMPLES)
+        for step in ("synth", "nosynth"):
+            cmd = [c["cmd"] for c in _plan_without_bakeoff()
+                   if c["name"] == step][0]
+            self.assertNotIn("--dataset-cap", cmd)
+            self.assertEqual(cmd[cmd.index("--mix-target") + 1],
+                             str(run_curve.ABLATION_ROWS))
+            self.assertEqual(cmd[cmd.index("--max-samples") + 1],
+                             str(run_curve.ABLATION_SAMPLES))
+        without = [d for d in mix.clean_datasets() if d != "synth-v1"]
+        self.assertGreaterEqual(
+            mix.max_feasible_target(
+                {d: 10 ** 7 for d in without}), run_curve.ABLATION_ROWS)
+
     def test_selection_uses_data_mix_and_nothing_else(self):
         """No second keep function may exist in the package."""
         import tools.mix_1m.sampler as mod
@@ -471,6 +537,30 @@ class TestBackbones(unittest.TestCase):
             self.assertEqual(stage["status"], "pending")
             self.assertNotIn("unseen", stage)
         self.assertFalse(row["complete"])
+
+    def test_an_unstarted_run_has_no_progress_number(self):
+        row = backbones.backbone_report("ettin-68m", "no-such-run")
+        self.assertEqual(row["progress"]["status"], "unknown")
+        self.assertNotIn("samples_per_s", row["progress"])
+
+    def test_progress_eta_comes_from_the_runs_own_throughput(self):
+        tmp = tempfile.mkdtemp()
+        old = backbones.RUNS
+        try:
+            backbones.RUNS = tmp
+            os.makedirs(os.path.join(tmp, "live"))
+            with open(os.path.join(tmp, "live", "metrics.jsonl"), "w") as fh:
+                fh.write(json.dumps({"t": "run", "epoch_samples": 1_000_000,
+                                     "epochs_over_corpus": 1.0}) + "\n")
+                fh.write(json.dumps({"t": "step", "step": 100,
+                                     "samples": 50_000, "elapsed_s": 1000.0,
+                                     "samples_per_s": 50.0}) + "\n")
+            out = backbones.progress("live")
+            self.assertEqual(out["status"], "running")
+            self.assertEqual(out["eta_s"]["stage0"], (250_000 - 50_000) / 50.0)
+            self.assertEqual(out["epoch_samples"], 1_000_000)
+        finally:
+            backbones.RUNS = old
 
     def test_a_pending_synthetic_verdict_has_no_verdict(self):
         out = backbones.synthetic_verdict("none-a", "none-b", 250_000)

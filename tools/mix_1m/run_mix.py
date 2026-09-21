@@ -39,8 +39,10 @@ GATE = os.path.join(ROOT, "artifacts", "gates", "T-mix-1m", "gate.json")
 
 CORPUS = "decision-mix-clean-1m"
 #: §86's headline: the first clean cut of `decision-mix-v1` is 1 M rows.
-CORPUS_TARGET = 1_000_000
-DEFAULT_SEED = 20260921
+#: Both numbers come from `data.mix`, which is also where the TRAINER
+#: reads them, so `build` and `--fence-clean` cannot drift apart again.
+CORPUS_TARGET = mixmod.CLEAN_1M_TARGET
+DEFAULT_SEED = mixmod.CLEAN_1M_SEED
 
 #: run ids of the §62 curve, one per top-2 backbone, plus the §128 arms
 RUN_PREFIX = "mix1m"
@@ -101,15 +103,22 @@ def corpus_feasibility(supply: dict, target: int = CORPUS_TARGET) -> dict:
 
 
 def build(target=None, seed: int = DEFAULT_SEED, write: bool = True) -> dict:
-    """Assemble the corpus and return the block the gate publishes."""
+    """Assemble the corpus and return the block the gate publishes.
+
+    `target=None` means §86's 1 M, NOT the cap ceiling. The ceiling is a
+    feasibility fact (`corpus_feasibility`) and it is published as one;
+    building it instead would give the gate a corpus of a different size
+    from the one the trainer assembles, which is the divergence this task
+    exists to remove.
+    """
     t0 = time.perf_counter()
     os.makedirs(OUT, exist_ok=True)
+    target = CORPUS_TARGET if target is None else target
     _raw_scan, raw_supply = sampler.clean_supply()
     feas = corpus_feasibility(raw_supply)
     jevals_ids = fence_mod.load_jevals_ids()
 
-    stage = {"corpus": CORPUS, "seed": seed,
-             "requested_target": target or feas["achievable_rows"]}
+    stage = {"corpus": CORPUS, "seed": seed, "requested_target": target}
     try:
         # planned through the trainer's builder, so the corpus published
         # here is the corpus `--fence-clean --mix-seed <seed>` trains
@@ -138,7 +147,8 @@ def build(target=None, seed: int = DEFAULT_SEED, write: bool = True) -> dict:
                 "builder": ("training.python.train_decision.build_mix "
                             "-> data.mix.plan_mix / realise"),
                 "trained_by": (f"train_decision train --fence-clean "
-                               f"--mix-seed {seed}"),
+                               f"--mix-seed {seed} --mix-target "
+                               f"{spec.target}"),
                 "cap_margin": sampler.CAP_MARGIN,
                 "weights": "data.mix.layer_weights (§86 layer plan)",
                 "note": ("seed + the per-shard sha256 above rebuild this "
@@ -176,6 +186,11 @@ def build(target=None, seed: int = DEFAULT_SEED, write: bool = True) -> dict:
 
 def training_block(seed: int, report=None) -> dict:
     """Whatever the §62 curve and the §128 arms have measured so far."""
+    # imported here, not at module scope: `run_curve` imports this module
+    # to name its runs, and the §128 arm sizes are ITS constants — the
+    # gate must publish the numbers the arms are actually launched with.
+    from . import run_curve as curve_mod
+
     try:
         report = report if report is not None else backbones.load_bakeoff()
         chosen = backbones.top2(report)
@@ -188,17 +203,26 @@ def training_block(seed: int, report=None) -> dict:
     rows = {b: backbones.backbone_report(b, run_id("curve", b, seed), report)
             for b in chosen}
     # the §128 arms are their own equal-budget pair, not the curve run:
-    # a baseline WITHOUT synth-v1 cannot be built at the §65 15 % cap, so
-    # both arms state 18 % and differ only in the synthetic source
+    # same size, same caps, same number of decisions, synth-v1 in or out
     synth = backbones.synthetic_verdict(
         run_id("nosynth", chosen[0], seed), run_id("synth", chosen[0], seed),
         backbones.STAGES["stage0"])
     synth["design"] = {
-        "arms": "same corpus size, same cap, same budget; synth-v1 in or out",
-        "dataset_cap": 0.18,
-        "why_not_15": ("without synth-v1 the fenced registry covers 90 % of "
-                       "a mixture at the §65 15 % cap, so the baseline arm "
-                       "does not exist there"),
+        "arms": "same corpus size, same caps, same budget; synth-v1 in or out",
+        "dataset_cap": mixmod.MAX_DATASET_FRACTION,
+        "corpus_rows": curve_mod.ABLATION_ROWS,
+        "budget_samples": curve_mod.ABLATION_SAMPLES,
+        "epochs_over_corpus": round(curve_mod.ABLATION_SAMPLES
+                                    / curve_mod.ABLATION_ROWS, 4),
+        "why_the_caps_are_standard": (
+            "the #T-mix-1m widening took the registry without synth-v1 to "
+            f"{mixmod.cap_units([d for d in mixmod.clean_datasets() if d != 'synth-v1']):.2f} "
+            "cap units, so the baseline arm is buildable at the §65 15 % "
+            "cap. The 18 % exception the arms used to state is retired"),
+        "why_one_epoch": ("the arms' corpus is as large as their budget, so "
+                          "250 000 decisions are 250 000 DISTINCT decisions. "
+                          "The previous pair trained 250 000 samples over a "
+                          "39 980-row mixture — 6.25 passes reported as one"),
         "why_not_additive": ("§128 words it as baseline vs +50 k, but the "
                              "caps fix the corpus size: adding synthetic "
                              "rows on top would breach the very guardrail "
@@ -213,6 +237,16 @@ def training_block(seed: int, report=None) -> dict:
         "backbones": rows,
         "measured": measured,
         "synthetic_value": synth,
+        "corpus_contract": {
+            "mix_target": CORPUS_TARGET,
+            "mix_seed": mixmod.CLEAN_1M_SEED,
+            "cap_margin": sampler.CAP_MARGIN,
+            "rule": ("every curve run states --mix-target and the trainer "
+                     "aborts (MixShortfallError) if the realised mixture "
+                     "is smaller than --max-samples, so a stage of the §62 "
+                     "curve is decisions SEEN ONCE, never a corpus looped"),
+            "recipe": "data.mix.CLEAN_1M_TARGET / _SEED / _CAP_MARGIN",
+        },
         "commands": {b: " ".join(backbones.train_command(
             b, run_id("curve", b, seed), backbones.STAGES["stage1"], seed))
             for b in chosen},

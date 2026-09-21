@@ -10,8 +10,10 @@ depends_on:
   - T-prog-gold
 created: 2026-09-20
 updated: 2026-09-20
+failed_at: 2026-09-21T16:48:22.933Z
+resolved_by: A027
+resolved_by_conv: work-data-training-T-mix-1m-commit-1790012000
 ---
-
 # decision-mix-clean-1m y entreno top-2
 
 Primer corpus nuevo versionado (§§86, 97, 135): `decision-mix-v1`
@@ -52,3 +54,39 @@ Fuentes: data-training §§48, 61–68, 86, 95–97, 111, 128, 135.
   dashboard; Stage 0 (250 k) y Stage 1 (1 M) de la curva (§62) medidos.
 - Top-2 backbones entrenados y comparados; veredicto synthetic
   escrito (escala o se corrige).
+
+## Corpus contract (A028, 2026-09-21)
+
+`decision-mix-clean-1m` is ONE recipe, held in `data/mix.py`:
+`CLEAN_1M_TARGET = 1_000_000`, `CLEAN_1M_SEED = 20260922`,
+`CLEAN_1M_CAP_MARGIN = 0.0001`. `tools/mix_1m/run_mix.py` publishes the
+manifest from those three and `train_decision --fence-clean` assembles
+from the same three, so both land on one `members_sha256`.
+
+Before this they were two paths: the trainer defaulted its mixture
+target to the cap CEILING and planned at `cap_margin=0.0`, so
+`--max-samples 1000000` built a 39 981-row mixture and looped it ~25
+times while `run.json` reported a 1 M-decision curve.
+
+The loop is now an abort. `--max-samples` is decisions SEEN; if the
+realised mixture holds fewer, the trainer raises `MixShortfallError`.
+`--allow-repeat` is the only way to loop, and it publishes
+`epochs_over_corpus` in `run.json`, `metrics.jsonl` line 0 and the run's
+`mix.json`.
+
+The §128 ablation arms lost their 18 % cap exception with the widening:
+without `synth-v1` the registry now covers 1.65 cap units, so both arms
+build at the §§65-66 caps over 250 000 rows for a 250 000-decision
+budget — one pass each, not 6.25.
+
+## Resolution
+
+**Failed — exit 143.**
+
+Now I'll write the converter for the four new sources.Now the full 1M build (this streams ~2.5 GB, so I'll run it in the background):
+
+# architect: 2026-09-21 — A026 widened the registry and the 1M corpus builds
+# (gate: 8/10 checks green, measured_rows=1000000). It died on SIGTERM before
+# committing; A027 is committing that work. The last two checks (synthetic_value,
+# top2_trained) are owned by the live job `mix1m-curve` (pid 11028) — nobody
+# relaunches training, the task closes when that curve lands its verdicts.

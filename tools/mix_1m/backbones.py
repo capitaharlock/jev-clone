@@ -28,6 +28,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from data.mix import CLEAN_1M_SEED as CORPUS_SEED  # noqa: E402
+
 BAKEOFF = os.path.join(ROOT, "artifacts", "gates", "T-bakeoff", "report.json")
 RUNS = os.path.join(ROOT, "artifacts", "runs")
 VENV = os.path.join(ROOT, ".venv-train", "bin", "python")
@@ -89,13 +91,30 @@ def lineage(report: dict, backbone: str) -> dict:
 def train_command(backbone: str, run_id: str, max_samples: int,
                   seed: int = 1789, device: str = "cpu",
                   batch_size: int = 64, eval_samples: int = 3000,
-                  drop: tuple = (), fence_clean: bool = True) -> list:
-    """The real trainer's argv for one curve run. No mock loop exists here."""
+                  drop: tuple = (), fence_clean: bool = True,
+                  mix_target: int | None = None,
+                  mix_seed: int | None = None) -> list:
+    """The real trainer's argv for one curve run. No mock loop exists here.
+
+    `--mix-target` and `--mix-seed` are always stated, never defaulted:
+    the corpus a curve run trains is the number a reader of `curve.jsonl`
+    and of the gate's `commands` block can check against the published
+    manifest. The trainer would reach the same recipe on its own now, but
+    a command that says which corpus it trains is the point.
+
+    `--mix-target` defaults to `max_samples`: one pass over the corpus is
+    the budget, so the mixture has to be at least as large as the number
+    of decisions the run claims to have seen. If it is not, the trainer
+    aborts with `MixShortfallError` rather than looping the corpus.
+    """
+    target = max_samples if mix_target is None else mix_target
     cmd = [VENV, "-m", "training.python.train_decision", "train",
            "--backbone", backbone, "--run-id", run_id,
            "--max-samples", str(max_samples), "--seed", str(seed),
            "--device", device, "--batch-size", str(batch_size),
            "--eval-samples", str(eval_samples), "--log-every", "25",
+           "--mix-target", str(target),
+           "--mix-seed", str(CORPUS_SEED if mix_seed is None else mix_seed),
            "--no-gate"]
     if fence_clean:
         cmd.append("--fence-clean")
@@ -153,6 +172,47 @@ def stage_metrics(record: dict) -> dict:
     }
 
 
+def progress(run_id: str, stages: dict | None = None) -> dict:
+    """Where a live run is on the curve, and when each stage lands.
+
+    Measured, never assumed: the throughput is the run's own
+    `samples_per_s` at its last logged step, and the ETA of a stage is
+    the decisions still owed divided by it. A run that has not logged a
+    step yet reports `unknown` rather than a guess — #T-mix-1m exists
+    because a number nobody measured was published as one that was.
+    """
+    stages = stages if stages is not None else STAGES
+    path = os.path.join(run_dir(run_id), "metrics.jsonl")
+    last = run = None
+    if os.path.exists(path):
+        with open(path) as fh:
+            for line in fh:
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                if rec.get("t") == "step":
+                    last = rec
+                elif rec.get("t") == "run":
+                    run = rec
+    if last is None:
+        return {"status": "unknown",
+                "why": (f"{run_id} has logged no training step yet"
+                        if run is None else
+                        f"{run_id} is still assembling its mixture")}
+    rate = last.get("samples_per_s") or 0.0
+    out = {"status": "running", "samples": last.get("samples"),
+           "step": last.get("step"), "elapsed_s": last.get("elapsed_s"),
+           "samples_per_s": rate,
+           "epoch_samples": (run or {}).get("epoch_samples"),
+           "epochs_over_corpus": (run or {}).get("epochs_over_corpus"),
+           "eta_s": {}}
+    for name, target in stages.items():
+        owed = max(0, target - (last.get("samples") or 0))
+        out["eta_s"][name] = round(owed / rate, 1) if rate > 0 else None
+    return out
+
+
 def backbone_report(backbone: str, run_id: str, report: dict | None = None,
                     stages: dict | None = None) -> dict:
     """One row of the #T-mix-1m top-2 table."""
@@ -179,6 +239,8 @@ def backbone_report(backbone: str, run_id: str, report: dict | None = None,
                                         "of the curve yet")})
     out["complete"] = all(s.get("status") == "measured"
                           for s in out["stages"].values())
+    if not out["complete"]:
+        out["progress"] = progress(run_id, stages)
     return out
 
 

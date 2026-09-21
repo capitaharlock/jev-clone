@@ -16,12 +16,20 @@ gate.json` always states what has actually been measured and what is
 still running. Nothing here invents a number: a run that has not reached
 a stage leaves that stage `pending`.
 
-Why the §128 arms carry `--dataset-cap 0.18`: without `synth-v1` the
-fenced registry covers only 90 % of a mixture at the §65 15 % cap, so the
-baseline arm cannot be built at all. Both arms therefore use the SAME
-stated cap and the SAME corpus size, and the ablation is a substitution
-at fixed budget — which is the decision the operator actually faces,
-since the corpus budget and the caps are both fixed.
+The §128 arms used to carry `--dataset-cap 0.18` over a 39 980-row
+corpus, because without `synth-v1` the seven-source registry covered only
+90 % of a mixture at the §65 15 % cap. The #T-mix-1m widening ended that:
+dropping `synth-v1` now leaves 1.65 cap units and a 1 150 382-row
+ceiling, so both arms are built at the §§65-66 caps themselves, at
+250 000 rows each — ONE pass over the corpus for a 250 000-decision
+budget. The ablation is still a substitution at fixed budget, which is
+the decision the operator actually faces, but it is now made under one
+rule instead of two.
+
+Every run here states `--mix-target` and asserts the mixture covers its
+`--max-samples`: the trainer aborts with `MixShortfallError` rather than
+looping a short corpus, which is how a 1 M-decision curve came to be
+measured on 39 981 rows.
 """
 from __future__ import annotations
 
@@ -38,10 +46,11 @@ if ROOT not in sys.path:
 
 from tools.mix_1m import backbones, run_mix  # noqa: E402
 
-#: the §128 arms need a cap the baseline can actually be built at
-ABLATION_DATASET_CAP = 0.18
+#: §128 at the §§65-66 caps: the widening bought the baseline arm its
+#: standard cap, so there is no cap exception left to state.
 ABLATION_SAMPLES = backbones.STAGES["stage0"]
-ABLATION_ROWS = 39_980
+#: one epoch, not six: the arms' corpus is as large as their budget
+ABLATION_ROWS = ABLATION_SAMPLES
 
 LOG = os.path.join(ROOT, "artifacts", "mix-1m", "curve.jsonl")
 
@@ -61,17 +70,14 @@ def plan(seed: int, device: str, batch_size: int) -> list:
          "run_id": run_mix.run_id("synth", top[0], seed),
          "cmd": backbones.train_command(
              top[0], run_mix.run_id("synth", top[0], seed),
-             ABLATION_SAMPLES, **common)
-         + ["--dataset-cap", str(ABLATION_DATASET_CAP),
-            "--mix-target", str(ABLATION_ROWS)],
+             ABLATION_SAMPLES, mix_target=ABLATION_ROWS, **common),
          "why": "§128 arm WITH grounded synthetic"},
         {"name": "nosynth", "backbone": top[0],
          "run_id": run_mix.run_id("nosynth", top[0], seed),
          "cmd": backbones.train_command(
              top[0], run_mix.run_id("nosynth", top[0], seed),
-             ABLATION_SAMPLES, drop=("synth-v1",), **common)
-         + ["--dataset-cap", str(ABLATION_DATASET_CAP),
-            "--mix-target", str(ABLATION_ROWS)],
+             ABLATION_SAMPLES, drop=("synth-v1",),
+             mix_target=ABLATION_ROWS, **common),
          "why": "§128 arm WITHOUT it — the baseline"},
         {"name": "curve", "backbone": top[1],
          "run_id": run_mix.run_id("curve", top[1], seed),

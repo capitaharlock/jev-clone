@@ -32,6 +32,8 @@ if ROOT not in sys.path:
 
 from data.mix import (  # noqa: E402
     CAP_SAFETY_MARGIN,
+    CLEAN_1M_CAP_MARGIN,
+    CLEAN_1M_TARGET,
     MAX_DATASET_FRACTION,
     MAX_FAMILY_FRACTION,
     MAX_SYNTHETIC_FRACTION,
@@ -73,7 +75,12 @@ CapViolation = MixGuardrailError
 #: on the loss is (questions per row - 1) per source, a few dozen rows;
 #: this margin covers it two orders of magnitude over and moves a
 #: published share by at most 0.01 pp.
-CAP_MARGIN = 0.0001
+#:
+#: It is an ALIAS, not a second value: the trainer plans the same corpus
+#: from `data.mix.CLEAN_1M_CAP_MARGIN`, and a margin that lived in only
+#: one of the two paths is what made the published manifest describe a
+#: corpus no training run had ever assembled.
+CAP_MARGIN = CLEAN_1M_CAP_MARGIN
 
 
 class SupplyShortfall(Exception):
@@ -261,7 +268,8 @@ def layer_gap(supply: dict) -> dict:
                         for d, w in sorted(layer_weights(sorted(supply)).items())}}
 
 
-__all__ = ["CAP_MARGIN", "CapViolation", "MixInfeasible",
+__all__ = ["CAP_MARGIN", "CLEAN_1M_TARGET", "CapViolation",
+           "MixInfeasible",
            "SupplyShortfall", "assemble",
            "assert_feasible", "check_guardrails", "clean_supply", "feasibility",
            "guardrail_report", "layer_gap", "plan_clean", "verify_guardrails"]

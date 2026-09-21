@@ -251,6 +251,57 @@ class TestTrainingRun(unittest.TestCase):
                          [r["loss"] for r in other])
         self.assertEqual(self.summary["tokens_seen"], again["tokens_seen"])
 
+    def test_a_budget_larger_than_the_mixture_aborts(self):
+        """#T-mix-1m: repetition is never the silent fallback."""
+        with self.assertRaises(td.MixShortfallError) as ctx:
+            td.train(max_samples=1_000_000, batch_size=32,
+                     rows_per_dataset=self.ROWS, eval_samples=120,
+                     log_every=1, run_id=self.RUN + "-short", device="cpu",
+                     write_gate=False)
+        message = str(ctx.exception)
+        self.assertIn("epochs over the same corpus", message)
+        self.assertIn("--allow-repeat", message)
+        shutil.rmtree(os.path.join(td.RUNS_DIR, self.RUN + "-short"),
+                      ignore_errors=True)
+
+    def test_allow_repeat_publishes_the_epochs_it_took(self):
+        """Repetition is allowed out loud, and then it is a number."""
+        run = self.RUN + "-rep"
+        budget = self.SAMPLES * 8
+        try:
+            summary = td.train(max_samples=budget, batch_size=32,
+                               rows_per_dataset=20, eval_samples=120,
+                               log_every=8, run_id=run, device="cpu",
+                               write_gate=False, allow_repeat=True,
+                               stages=(budget,))
+            run_dir = os.path.join(td.RUNS_DIR, run)
+            with open(os.path.join(run_dir, "run.json")) as fh:
+                record = json.load(fh)
+            with open(os.path.join(run_dir, "mix.json")) as fh:
+                mix_manifest = json.load(fh)
+            self.assertTrue(record["allow_repeat"])
+            self.assertGreater(record["epochs_over_corpus"], 1.0)
+            self.assertFalse(record["budget"]["covers_budget"])
+            self.assertEqual(mix_manifest["budget"]["epochs_over_corpus"],
+                             record["epochs_over_corpus"])
+            # the metrics log carries it too: line 0 is what a reader of a
+            # published curve checks before trusting its x axis
+            with open(os.path.join(run_dir, "metrics.jsonl")) as fh:
+                line0 = json.loads(fh.readline())
+            self.assertEqual(line0["epochs_over_corpus"],
+                             record["epochs_over_corpus"])
+            self.assertGreater(summary["epochs_run"], 1)
+        finally:
+            shutil.rmtree(os.path.join(td.RUNS_DIR, run), ignore_errors=True)
+            shutil.rmtree(os.path.join(td.CKPT_DIR, run), ignore_errors=True)
+
+    def test_a_covered_budget_reports_one_pass(self):
+        run = self.records("run")[0]
+        self.assertTrue(run["budget"]["covers_budget"])
+        self.assertFalse(run["allow_repeat"])
+        self.assertLessEqual(run["epochs_over_corpus"], 1.0)
+        self.assertGreaterEqual(run["epoch_samples"], run["max_samples"])
+
     def test_the_mixture_obeys_the_corpus_guardrails(self):
         """#T-corpus-rebalance, enforced where the batches are built."""
         with open(os.path.join(self.run_dir, "mix.json")) as fh:

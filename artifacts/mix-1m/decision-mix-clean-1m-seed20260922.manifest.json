@@ -1,5 +1,5 @@
 {
-  "built_utc": "2026-09-21T16:46:54Z",
+  "built_utc": "2026-09-21T17:26:58Z",
   "checks": {
     "checks": {
       "dynamic_options_are_the_majority": {
@@ -387,7 +387,7 @@
       "qtype": 0.5772
     }
   },
-  "elapsed_s": 20.3,
+  "elapsed_s": 19.8,
   "excluded": {
     "logiqa": "reasoning benchmark, eval-only (finding G)",
     "reclor": "reasoning benchmark, eval-only (finding G)",
@@ -944,7 +944,7 @@
     "cap_margin": 0.0001,
     "command": "python -m tools.mix_1m.run_mix build --target 1000000 --seed 20260922",
     "note": "seed + the per-shard sha256 above rebuild this corpus; members_sha256 proves the rebuild matched",
-    "trained_by": "train_decision train --fence-clean --mix-seed 20260922",
+    "trained_by": "train_decision train --fence-clean --mix-seed 20260922 --mix-target 1000000",
     "weights": "data.mix.layer_weights (\u00a786 layer plan)"
   },
   "seed": 20260922,

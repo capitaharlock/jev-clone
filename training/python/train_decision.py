@@ -191,6 +191,23 @@ def normalise_label(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
 
 
+class MixShortfallError(RuntimeError):
+    """The mixture is smaller than the budget the run was asked to train.
+
+    `--max-samples` is DECISIONS SEEN and the mixture is DECISIONS THAT
+    EXIST; nothing used to connect the two, so a run whose corpus was
+    39 981 rows and whose budget was 1 000 000 quietly took 25 epochs over
+    it and reported a 1 M-decision curve. Twenty-five passes over 4 % of a
+    corpus is not the same measurement as one pass over all of it, and the
+    difference does not show up in any metric the run publishes.
+
+    So a shortfall is now an abort. `--allow-repeat` is the way to say
+    "yes, repeat" out loud, and it writes `epochs_over_corpus` into
+    `run.json`, `metrics.jsonl` and the run's `mix.json` so the repetition
+    is a published number rather than an absence.
+    """
+
+
 # -- label holdout ---------------------------------------------------------
 
 @dataclass
@@ -905,7 +922,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           mix_target: int | None = None, use_mix: bool = True,
           fence_clean: bool = False, drop_datasets=(),
           mix_seed: int | None = None, dataset_cap: float | None = None,
-          family_cap: float | None = None) -> dict:
+          family_cap: float | None = None,
+          allow_repeat: bool = False) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -937,8 +955,17 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         if fence_clean:
             datasets = [d for d in mixmod.clean_datasets()
                         if d not in set(drop_datasets)]
-            cap_margin = 0.0
+            # the §86 corpus is ONE recipe, and `data.mix` holds it: the
+            # same target, seed and cap margin `tools.mix_1m.run_mix`
+            # publishes the manifest from. Defaulting the target to the
+            # cap CEILING here and planning at margin 0.0 is what made the
+            # trainer assemble a different corpus from the published one.
+            cap_margin = mixmod.CLEAN_1M_CAP_MARGIN
             weights = mixmod.layer_weights(datasets)
+            if mix_target is None:
+                mix_target = mixmod.CLEAN_1M_TARGET
+            if mix_seed is None:
+                mix_seed = mixmod.CLEAN_1M_SEED
         elif drop_datasets:
             datasets = [d for d in mixmod.TRAINABLE_DATASETS
                         if d not in set(drop_datasets)]
@@ -966,10 +993,33 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     stream = MixtureStream(tr, batch_size, dataset_cap=cap_d,
                            family_cap=cap_f)
     epoch_size = stream.total()
+    # -- the shortfall guardrail (#T-mix-1m) ---------------------------
+    # `stream.stream()` loops the mixture forever, so a budget larger than
+    # the corpus used to be filled by silently re-reading it. It is an
+    # abort now, because the silent version already happened: a run asked
+    # for 1 000 000 decisions, got a 39 981-row mixture and published a
+    # curve as though it had seen a million distinct ones.
+    epochs_over_corpus = round(max_samples / max(epoch_size, 1), 6)
+    if epoch_size < max_samples and not allow_repeat:
+        raise MixShortfallError(
+            f"the mixture realises {epoch_size:,} decisions but "
+            f"--max-samples asked to train on {max_samples:,}: the run "
+            f"would take {epochs_over_corpus:.2f} epochs over the same "
+            f"corpus and report it as {max_samples:,} distinct decisions. "
+            f"Build a corpus that covers the budget (--mix-target "
+            f"{max_samples:,} or larger), lower --max-samples to "
+            f"{epoch_size:,}, or pass --allow-repeat to state the "
+            f"repetition out loud — it is then published as "
+            f"epochs_over_corpus in run.json, metrics.jsonl and mix.json.")
+    budget = {"max_samples": max_samples, "epoch_samples": epoch_size,
+              "epochs_over_corpus": epochs_over_corpus,
+              "allow_repeat": bool(allow_repeat),
+              "covers_budget": epoch_size >= max_samples}
     mix_manifest = None
     if spec is not None:
         mix_manifest = mixmod.build_manifest(
             spec, _realised_counts(tr, stream), _scan)
+        mix_manifest["budget"] = budget
         with open(os.path.join(run_dir, "mix.json"), "w") as fh:
             json.dump(mix_manifest, fh, indent=2, sort_keys=True)
             fh.write("\n")
@@ -1025,6 +1075,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         "holdout_path": os.path.relpath(holdout_path, ROOT),
         "epoch_samples": epoch_size,
         "max_samples": max_samples,
+        "budget": budget,
+        "epochs_over_corpus": epochs_over_corpus,
+        "allow_repeat": bool(allow_repeat),
         "batch_size": batch_size, "lr": lr, "max_length": max_length,
         "device": str(engine.device),
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -1044,10 +1097,12 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     metrics = RunningMetrics()
     seen_samples = tokens_seen = step = 0
     last_ckpt = None
+    epochs_run = 0
 
     for epoch, batch in stream.stream():
         if seen_samples >= max_samples:
             break
+        epochs_run = epoch + 1
         step += 1
         for group in opt.param_groups:
             group["lr"] = lr_at(step, total_steps, lr)
@@ -1106,6 +1161,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     summary = {
         "run_id": run_id, "steps": step, "samples_seen": seen_samples,
         "tokens_seen": tokens_seen, "epoch_samples": epoch_size,
+        "epochs_over_corpus": epochs_over_corpus,
+        "epochs_run": epochs_run,
         "train": metrics.report(),
         "train_loss": round(metrics.loss_sum / max(metrics.n, 1), 6),
         "scale_curve": curve, "stages": stage_records,
@@ -1389,12 +1446,24 @@ def main(argv: list) -> int:
                    help=("train `decision-mix-clean-1m` (#T-mix-1m): the "
                          "registry minus the §§18/77 benchmark fence "
                          "(banking77/helpsteer2/pubmedqa), pulled by the "
-                         "§86 layer plan, caps at their exact values"))
+                         "§86 layer plan, caps at their exact values. It "
+                         "defaults --mix-target and --mix-seed to the "
+                         "published recipe (data.mix.CLEAN_1M_*), so this "
+                         "flag alone assembles the corpus whose manifest "
+                         "tools/mix_1m publishes"))
     t.add_argument("--drop-dataset", action="append", default=[],
                    metavar="ID",
                    help=("exclude one source from the mixture; repeatable. "
                          "The §128 synthetic-value arm uses it to build the "
                          "no-synthetic baseline"))
+    t.add_argument("--allow-repeat", action="store_true",
+                   help=("train more decisions than the mixture holds, by "
+                         "looping it. Without this a budget larger than the "
+                         "corpus is a MixShortfallError, because the silent "
+                         "version of it published a 1 M-decision curve "
+                         "measured on 39 981 rows. With it, "
+                         "`epochs_over_corpus` is written to run.json, "
+                         "metrics.jsonl and the run's mix.json"))
     t.add_argument("--no-mix", action="store_true",
                    help=("train the raw P0 datasets uncapped — the "
                          "pre-rebalance behaviour. The guardrails still run "
@@ -1440,7 +1509,8 @@ def main(argv: list) -> int:
                         drop_datasets=tuple(args.drop_dataset),
                         mix_seed=args.mix_seed,
                         dataset_cap=args.dataset_cap,
-                        family_cap=args.family_cap)
+                        family_cap=args.family_cap,
+                        allow_repeat=args.allow_repeat)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

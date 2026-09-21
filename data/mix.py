@@ -260,6 +260,30 @@ NEVER_TRAINABLE = {
     "reclor": "reasoning benchmark, eval-only (finding G)",
 }
 
+# -- `decision-mix-clean-1m`: ONE recipe, two consumers (#T-mix-1m) -------
+#: `tools/mix_1m/run_mix.py` publishes the manifest from these three
+#: numbers and `train_decision --fence-clean` assembles the corpus from
+#: the same three, so both land on the same `members_sha256`.
+#:
+#: They are here, in the mixture authority, because the alternative was
+#: measured: the trainer used to default its mixture target to the cap
+#: CEILING and plan at `cap_margin=0.0`, while the mixer asked for exactly
+#: `CLEAN_1M_TARGET` at `CLEAN_1M_CAP_MARGIN`. Two construction paths, two
+#: corpora — and a `--max-samples 1000000` run trained 39 981 rows 25
+#: times over while its manifest said 1 M.
+CLEAN_1M_TARGET = 1_000_000
+#: the seed of the published manifest (`artifacts/mix-1m/
+#: decision-mix-clean-1m-seed20260922.manifest.json`)
+CLEAN_1M_SEED = 20260922
+#: 100 rows in a million: `realise()` trims at ROW granularity, so a
+#: source whose rows carry two or three questions stops a member or two
+#: short of its quota and the realised total lands just under the target.
+#: A source planned at exactly 15 % of the target is then over 15 % of
+#: that smaller total. Planning against a cap this much tighter is what
+#: makes the HARD caps hold on what was actually built.
+CLEAN_1M_CAP_MARGIN = 0.0001
+
+
 #: `tools/mix_1m/fence.py` fences these out of its own §86 assembly because
 #: they overlap the Jevals suite. The product path (`data/firewall.py`) does
 #: not, and already trains banking77. The disagreement is recorded in every

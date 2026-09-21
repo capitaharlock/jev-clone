@@ -541,7 +541,7 @@
     "questions_checked": 1000000
   },
   "format": 1,
-  "generated_utc": "2026-09-21T16:46:54Z",
+  "generated_utc": "2026-09-21T17:26:58Z",
   "guardrails": {
     "checks": {
       "dataset:boolq<=15%": {
@@ -959,7 +959,7 @@
     }
   },
   "total_tokens": 48505989,
-  "train_seed": 20260921,
+  "train_seed": 20260922,
   "training": {
     "backbones": {
       "ettin-68m": {
@@ -973,7 +973,11 @@
           "repo": "jhu-clsp/ettin-encoder-68m",
           "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
         },
-        "run_id": "mix1m-curve-ettin-68m-s20260921",
+        "progress": {
+          "status": "unknown",
+          "why": "mix1m-curve-ettin-68m-s20260922 has logged no training step yet"
+        },
+        "run_id": "mix1m-curve-ettin-68m-s20260922",
         "run_json": null,
         "stages": {
           "stage0": {
@@ -1000,8 +1004,12 @@
           "repo": "answerdotai/ModernBERT-base",
           "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
         },
-        "run_id": "mix1m-curve-modernbert-base-s20260921",
-        "run_json": "artifacts/runs/mix1m-curve-modernbert-base-s20260921/run.json",
+        "progress": {
+          "status": "unknown",
+          "why": "mix1m-curve-modernbert-base-s20260922 has logged no training step yet"
+        },
+        "run_id": "mix1m-curve-modernbert-base-s20260922",
+        "run_json": null,
         "stages": {
           "stage0": {
             "status": "pending",
@@ -1018,8 +1026,15 @@
       }
     },
     "commands": {
-      "ettin-68m": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone ettin-68m --run-id mix1m-curve-ettin-68m-s20260921 --max-samples 1000000 --seed 20260921 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --no-gate --fence-clean",
-      "modernbert-base": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone modernbert-base --run-id mix1m-curve-modernbert-base-s20260921 --max-samples 1000000 --seed 20260921 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --no-gate --fence-clean"
+      "ettin-68m": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone ettin-68m --run-id mix1m-curve-ettin-68m-s20260922 --max-samples 1000000 --seed 20260922 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --mix-target 1000000 --mix-seed 20260922 --no-gate --fence-clean",
+      "modernbert-base": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-train/bin/python -m training.python.train_decision train --backbone modernbert-base --run-id mix1m-curve-modernbert-base-s20260922 --max-samples 1000000 --seed 20260922 --device cpu --batch-size 64 --eval-samples 3000 --log-every 25 --mix-target 1000000 --mix-seed 20260922 --no-gate --fence-clean"
+    },
+    "corpus_contract": {
+      "cap_margin": 0.0001,
+      "mix_seed": 20260922,
+      "mix_target": 1000000,
+      "recipe": "data.mix.CLEAN_1M_TARGET / _SEED / _CAP_MARGIN",
+      "rule": "every curve run states --mix-target and the trainer aborts (MixShortfallError) if the realised mixture is smaller than --max-samples, so a stage of the \u00a762 curve is decisions SEEN ONCE, never a corpus looped"
     },
     "measured": [],
     "source": {
@@ -1039,18 +1054,22 @@
     "synthetic_value": {
       "compare_at_samples": 250000,
       "design": {
-        "arms": "same corpus size, same cap, same budget; synth-v1 in or out",
-        "dataset_cap": 0.18,
-        "why_not_15": "without synth-v1 the fenced registry covers 90 % of a mixture at the \u00a765 15 % cap, so the baseline arm does not exist there",
-        "why_not_additive": "\u00a7128 words it as baseline vs +50 k, but the caps fix the corpus size: adding synthetic rows on top would breach the very guardrail the arm is meant to respect, so the arms substitute at fixed size instead"
+        "arms": "same corpus size, same caps, same budget; synth-v1 in or out",
+        "budget_samples": 250000,
+        "corpus_rows": 250000,
+        "dataset_cap": 0.15,
+        "epochs_over_corpus": 1.0,
+        "why_not_additive": "\u00a7128 words it as baseline vs +50 k, but the caps fix the corpus size: adding synthetic rows on top would breach the very guardrail the arm is meant to respect, so the arms substitute at fixed size instead",
+        "why_one_epoch": "the arms' corpus is as large as their budget, so 250 000 decisions are 250 000 DISTINCT decisions. The previous pair trained 250 000 samples over a 39 980-row mixture \u2014 6.25 passes reported as one",
+        "why_the_caps_are_standard": "the #T-mix-1m widening took the registry without synth-v1 to 1.65 cap units, so the baseline arm is buildable at the \u00a765 15 % cap. The 18 % exception the arms used to state is retired"
       },
       "runs": {
-        "baseline": "mix1m-nosynth-modernbert-base-s20260921",
-        "plus_synthetic": "mix1m-synth-modernbert-base-s20260921"
+        "baseline": "mix1m-nosynth-modernbert-base-s20260922",
+        "plus_synthetic": "mix1m-synth-modernbert-base-s20260922"
       },
       "status": "pending",
       "verdict": null,
-      "why": "no stage record at 250,000 samples for ['mix1m-nosynth-modernbert-base-s20260921', 'mix1m-synth-modernbert-base-s20260921']"
+      "why": "no stage record at 250,000 samples for ['mix1m-nosynth-modernbert-base-s20260922', 'mix1m-synth-modernbert-base-s20260922']"
     }
   },
   "type_mix": {
