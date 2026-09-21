@@ -47,6 +47,18 @@ eight toy rows. It proves the mechanism (gradient reaches the `unknown`
 parameters and the logit can win an unanswerable row); abstention quality
 on real data is measured by `#T-train-real`, not here.
 
+**Training (`#T-train-real`).** The product trainer is
+`training/python/train_decision.py`: one model over the whole clean mixture
+(banking77 + massive + huffpost + boolq), listwise cross-entropy over the
+row's own `K + 1` logits, frozen sha256-verified backbone, checkpoints as
+`model.safetensors` + `tokenizer.json` + a manifest carrying the
+`model_version` / `tokenizer_hash` pair `jev_runtime` caches on.
+`data/train_baseline.py` (TF-IDF + LogisticRegression, one pickle per
+dataset) is a **historical baseline only** and feeds no green gate. The
+first scale point of the run is `pass: false` — unseen-label accuracy
+0.058 against a chance rate of 0.165 — so no unseen-label claim is made in
+this card; see `artifacts/gates/T-train-real/gate.json`.
+
 ## Evidence (raw artifacts)
 
 - Backbone selection: `artifacts/gates/T-bakeoff/report.json` — top-2

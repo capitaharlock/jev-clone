@@ -1,0 +1,17 @@
+# .meshkore/public/jobs.yaml — Jobs registry (initiative jobs-and-links).
+# Definitions only: a job is a command the daemon runs as its own child.
+# Runtime state (pid/status/logs) lives in .meshkore/.runtime/ — never here.
+# Agent-maintained via POST /jobs. Do not check in secrets.
+
+version: 1
+
+jobs:
+  - id: train-decision
+    name: "Listwise decision training (#T-train-real)"
+    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --device cpu --eval-samples 3000 --log-every 25 --run-id train-real-v1"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: training-monitor
+    name: "Dashboard :8794 (titular etiquetas no vistas)"
+    command: ".venv-train/bin/python tools/training_monitor.py --interval 60 --tick 20 --port 8794"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+    port: 8794

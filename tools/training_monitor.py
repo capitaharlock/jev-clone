@@ -141,6 +141,70 @@ def scan_runs():
     return ts, trained, jobs
 
 
+def scan_decision_run():
+    """#T-train-real: the listwise run that OWNS the headline.
+
+    Reads `artifacts/runs/<run_id>/metrics.jsonl` (one json object per
+    step / eval / stage) and returns the last step, the last stage and the
+    250 k -> 1 M scale curve. The primary metric of #I-honest-eval is the
+    UNSEEN-label accuracy against its own chance rate — row accuracy over
+    a label space the model was fitted on is not a capability number and
+    is not what this panel headlines.
+    """
+    best = None
+    for m in sorted(RUNS.glob("*/metrics.jsonl")):
+        if m.stat().st_size == 0:
+            continue
+        if best is None or m.stat().st_mtime > best.stat().st_mtime:
+            best = m
+    if best is None:
+        return None
+    run = last_step = last_stage = None
+    curve = []
+    try:
+        with best.open() as fh:
+            for line in fh:
+                try:
+                    rec = json.loads(line)
+                except Exception:
+                    continue
+                kind = rec.get("t")
+                if kind == "run":
+                    run = rec
+                elif kind == "step":
+                    last_step = rec
+                elif kind == "stage":
+                    last_stage = rec
+                    u = rec.get("unseen") or {}
+                    curve.append({
+                        "samples": rec.get("samples"),
+                        "tokens": rec.get("tokens"),
+                        "unseen": u.get("accuracy"),
+                        "chance": u.get("chance"),
+                        "unseen_ece": u.get("ece"),
+                        "rank": u.get("accuracy_options_only"),
+                        "rank_chance": u.get("chance_options_only"),
+                        "abstain": u.get("abstain_rate"),
+                        "seen": (rec.get("seen") or {}).get("accuracy"),
+                        "seen_ece": (rec.get("seen") or {}).get("ece"),
+                    })
+    except OSError:
+        return None
+    if run is None and last_step is None:
+        return None
+    gate = None
+    gp = ROOT / "artifacts" / "gates" / "T-train-real" / "gate.json"
+    if gp.exists():
+        try:
+            gate = json.loads(gp.read_text())
+        except Exception:
+            gate = None
+    return {"run_id": best.parent.name, "run": run, "step": last_step,
+            "stage": last_stage, "curve": curve, "gate": gate,
+            "age_s": max(0.0, time.time() - best.stat().st_mtime),
+            "path": str(best.relative_to(ROOT))}
+
+
 def live_lines(p):
     """Fast live row count (manifest can lag a running generator)."""
     try:
@@ -391,6 +455,7 @@ def build_state():
     qwen_sets, qwen_total, qwen_templates = scan_qwen_sets()
     gen_train = scan_gen_train()
     forward_hist = scan_forward_history()
+    decision = scan_decision_run()
     synth_rows = next(
         (s.get("frozen_rows") or s["examples"] for s in sets
          if s["name"] == "synth-loop"), 0)
@@ -399,6 +464,7 @@ def build_state():
     pending = max(total_ex - trained, 0)
     pct = (100.0 * trained / total_ex) if total_ex else 0.0
     state = {
+        "decision_run": decision,
         "synth_rows_live": synth_rows,
         "synth_trained": synth_trained,
         "qwen_sets": qwen_sets,
@@ -471,6 +537,7 @@ footer{{color:var(--dim);font-size:12px;margin-top:16px}}
 </style>
 </head><body>
 <header class="top"><h1><span class="live-dot"></span>JEv training monitor</h1><small>{ts} · ciclo {cycle} · latido {tick_ts} (cada {tick}s)</small></header>
+{decision_sec}
 <section class="panel"><h2>Q-W-E-N · entrenamiento en vivo (modelo local)</h2>
 <div class="cards">
 <div class="card"><div class="k">synth-loop en disco</div><div class="v">{synth_live}</div><div class="s">entrenadas {synth_tr} · {rate}/min</div></div>
@@ -487,16 +554,89 @@ footer{{color:var(--dim);font-size:12px;margin-top:16px}}
 <div class="card"><div class="k">entrenados</div><div class="v">{trained:,}</div><div class="s">run {run}</div></div>
 <div class="card"><div class="k">total ejemplos</div><div class="v">{total:,}</div><div class="s">volumen {size}</div></div>
 <div class="card"><div class="k">pendiente</div><div class="v">{pending:,}</div><div class="s">{pct}% completado</div></div>
-<div class="card"><div class="k">params baseline</div><div class="v">≈ {params:,}</div><div class="s">TF-IDF 50k × clases</div></div>
+<div class="card"><div class="k">params baseline histórico</div><div class="v">≈ {params:,}</div><div class="s">TF-IDF 50k × clases · no es el producto</div></div>
 </div>
 <div class="bar"><div class="fill" style="width:{pct}%"></div></div>
 </section>
 <div class="grid2">
 <section class="panel"><h2>Datasets</h2><table><tr><th>dataset</th><th class="num">ejemplos</th><th class="num">tamaño</th><th>estado</th></tr>{rows}</table></section>
-<section class="panel"><h2>Por tarea · último run</h2><table><tr><th>tarea</th><th class="num">n_train</th><th class="num">acc</th><th class="num">segs</th></tr>{trows}</table></section>
+<section class="panel"><h2>Por tarea · baseline histórico TF-IDF (#T-train-real: fuera de la ruta de producto)</h2><table><tr><th>tarea</th><th class="num">n_train</th><th class="num">acc</th><th class="num">segs</th></tr>{trows}</table></section>
 </div>
 <section class="panel"><h2>Log de entrenamiento</h2><pre>{train_tail}</pre><p><span class="pill">{procs}</span></p><p><i>{note}</i></p></section>
 <footer>este html se regenera en cada latido · sirve desde artifacts/runs/training-monitor/</footer></body></html>"""
+
+
+def decision_panel(state):
+    """The headline: unseen-label accuracy of the listwise run, or nothing.
+
+    #I-honest-eval's primary metric is accuracy + ECE on labels never seen
+    in training. Until a run publishes one, this panel says so instead of
+    promoting a row-accuracy number to the headline (#T-halt-contam).
+    """
+    d = state.get("decision_run")
+    if not d:
+        return ('<section class="panel"><h2>Modelo de decisión · #T-train-real'
+                '</h2><p>sin run listwise todavía — arranca el job '
+                '<tt>train-decision</tt>. El titular de este dashboard es la '
+                'accuracy sobre <b>etiquetas no vistas</b>, no la accuracy de '
+                'fila del baseline TF-IDF.</p></section>')
+    step = d.get("step") or {}
+    stage = d.get("stage") or {}
+    run = d.get("run") or {}
+    gate = d.get("gate") or {}
+    unseen = (stage.get("unseen") or {})
+    seen = (stage.get("seen") or {})
+    acc = unseen.get("accuracy")
+    chance = unseen.get("chance")
+    if acc is None:
+        head_v, head_s = "midiendo…", "primer stage aún sin evaluar"
+        pill = '<span class="pill off">sin veredicto</span>'
+    else:
+        head_v = f"{acc:.4f}"
+        delta = (acc - chance) if chance is not None else None
+        head_s = (f"azar {chance:.4f}"
+                  + (f" · {'+' if delta >= 0 else ''}{delta:.4f}" if delta is not None else ""))
+        ok = bool(gate.get("pass"))
+        pill = (f'<span class="pill {"on" if ok else "off"}">'
+                f'{gate.get("verdict", "sin gate")}</span>')
+    live = "EN MARCHA" if d.get("age_s", 1e9) < 300 else "parado"
+    def cell(v):
+        return v if v is not None else "?"
+
+    rows = "".join(
+        f"<tr><td class=\"num\">{(c['samples'] or 0):,}</td>"
+        f"<td class=\"num\">{(c['tokens'] or 0):,}</td>"
+        f"<td class=\"num\">{cell(c['unseen'])}</td>"
+        f"<td class=\"num\">{cell(c['chance'])}</td>"
+        f"<td class=\"num\">{cell(c.get('rank'))}</td>"
+        f"<td class=\"num\">{cell(c.get('rank_chance'))}</td>"
+        f"<td class=\"num\">{cell(c.get('abstain'))}</td>"
+        f"<td class=\"num\">{cell(c['unseen_ece'])}</td>"
+        f"<td class=\"num\">{cell(c['seen'])}</td>"
+        f"<td class=\"num\">{cell(c['seen_ece'])}</td></tr>"
+        for c in d.get("curve", []))
+    return f'''<section class="panel"><h2>TITULAR · etiquetas NO VISTAS en entrenamiento
+ (#T-train-real · #T-unseen-labels)</h2>
+<div class="cards">
+<div class="card"><div class="k">accuracy etiquetas no vistas</div><div class="v">{head_v}</div><div class="s">{head_s}</div></div>
+<div class="card"><div class="k">ranking sin unknown (diagnóstico)</div><div class="v">{unseen.get("accuracy_options_only", "?")}</div><div class="s">azar {unseen.get("chance_options_only", "?")} · abstención {unseen.get("abstain_rate", "?")}</div></div>
+<div class="card"><div class="k">ECE no vistas</div><div class="v">{unseen.get("ece", "?")}</div><div class="s">Brier {unseen.get("brier", "?")}</div></div>
+<div class="card"><div class="k">accuracy vistas</div><div class="v">{seen.get("accuracy", "?")}</div><div class="s">ECE {seen.get("ece", "?")}</div></div>
+<div class="card"><div class="k">muestras · tokens</div><div class="v">{(step.get("samples") or 0):,}</div><div class="s">{(step.get("tokens") or 0):,} tokens de estado</div></div>
+<div class="card"><div class="k">run listwise</div><div class="v">{live}</div><div class="s">{d.get("run_id", "?")} · {run.get("device", "?")}</div></div>
+</div>
+<p>{pill} pérdida <b>{run.get("architecture", {}).get("loss", "listwise CE")}</b> ·
+un solo modelo sobre {", ".join(run.get("datasets", [])) or "la mezcla limpia"} ·
+model_version <tt>{gate.get("model_version") or stage.get("model_version") or "—"}</tt> ·
+último step loss <b>{step.get("loss", "?")}</b> acc_batch <b>{step.get("accuracy", "?")}</b>
+ECE <b>{step.get("ece", "?")}</b> · {step.get("samples_per_s", "?")} muestras/s</p>
+<p><i>La accuracy de fila del baseline TF-IDF (panel de abajo) es historia: mide
+memorización de un espacio de etiquetas fijo. El número de arriba es el que decide.</i></p>
+<table><tr><th class="num">muestras</th><th class="num">tokens</th><th class="num">acc no vistas</th>
+<th class="num">azar</th><th class="num">ranking s/unknown</th><th class="num">azar ranking</th>
+<th class="num">abstención</th><th class="num">ECE no vistas</th><th class="num">acc vistas</th>
+<th class="num">ECE vistas</th></tr>{rows or '<tr><td colspan="10">aún sin stages</td></tr>'}</table>
+</section>'''
 
 
 def write_outputs(state, train_note="", train_live="", train_tail="",
@@ -565,7 +705,7 @@ def write_outputs(state, train_note="", train_live="", train_tail="",
     import html as _html
     pr = state.get("procs", {})
     (STATE_DIR / "index.html").write_text(DASH_TMPL.format(
-        fwd_sec=fwd_sec,
+        fwd_sec=fwd_sec, decision_sec=decision_panel(state),
         ts=state["ts"], trained=state["trained_examples"], total=state["total_examples"],
         pct=state["pct_trained"], pending=state["pending_examples"], size=state["total_size"],
         params=state["baseline_params_est"], run=state["last_run"], rows=rows,
@@ -616,6 +756,25 @@ def train_status(state, trainer):
 
 def print_block(state, train_note=""):
     print(f"=== training-monitor {state['ts']} ===", flush=True)
+    d = state.get("decision_run")
+    if d:
+        stage = d.get("stage") or {}
+        unseen = stage.get("unseen") or {}
+        seen = stage.get("seen") or {}
+        step = d.get("step") or {}
+        gate = d.get("gate") or {}
+        print(f"TITULAR #T-train-real ({d['run_id']}): acc etiquetas NO VISTAS="
+              f"{unseen.get('accuracy')} (azar {unseen.get('chance')}) "
+              f"ECE={unseen.get('ece')} ranking_s/unknown="
+              f"{unseen.get('accuracy_options_only')} (azar "
+              f"{unseen.get('chance_options_only')}) abstencion="
+              f"{unseen.get('abstain_rate')} | vistas acc={seen.get('accuracy')} "
+              f"ECE={seen.get('ece')} | muestras={step.get('samples')} "
+              f"tokens={step.get('tokens')} | gate={gate.get('verdict', '—')}",
+              flush=True)
+    else:
+        print("TITULAR #T-train-real: sin run listwise todavía "
+              "(job train-decision parado)", flush=True)
     print(f"datasets: {state['n_datasets']}  volumen: {state['total_size']} "
           f"({state['total_examples']:,} ejemplos según manifest)", flush=True)
     for s in state["datasets"]:
@@ -637,8 +796,9 @@ def print_block(state, train_note=""):
         print(f"forward-test Q-W-E-N/synth: acc={gt.get('accuracy')} "
               f"n_train={gt.get('n_train'):,} n_eval={gt.get('n_eval'):,} "
               f"hace {gt['age_s'] / 60.0:.1f} min (run {gt['ts']})", flush=True)
-    print(f"PARAMS baseline (TF-IDF 50k x clases, estimado): {state['baseline_params_est']:,}",
-          flush=True)
+    print(f"PARAMS baseline HISTORICO (TF-IDF 50k x clases, estimado): "
+          f"{state['baseline_params_est']:,} — fuera de la ruta de producto "
+          f"(#T-train-real)", flush=True)
     for t in state["per_task"]:
         acc = t["flag"] or t["accuracy"]
         print(f"  - {t['task']:15s} n={t['n_train']:>7,} acc={acc} s={t['seconds']}",

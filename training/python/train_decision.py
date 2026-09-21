@@ -1,0 +1,1185 @@
+"""Listwise training of the pointer decision head (#T-train-real).
+
+This replaces `data/train_baseline.py` on the product path. The baseline
+learned `state -> clf.classes_`: a fixed global label space, one pickle
+per dataset, the question and the option TEXTS thrown away. Here the
+output space of a row IS that row's option set, and there is exactly one
+model over the whole clean mixture.
+
+The pieces are the upstream ones, used as they are:
+
+* `model.decision_head.PointerDecisionHead` (#T-pointer-head) is the only
+  scorer — `K + 1` logits per row, the last one the learned `unknown`.
+  No `num_labels x d` matrix exists anywhere; `label_free_report()` is a
+  gate check here too.
+* `data.optset.OptionSetSampler.batches()` (#T-optset-sampler) is the only
+  dataloader — variable K, counted hard negatives, `unknown` rows, option
+  order reshuffled per epoch, `synth-loop`/`logiqa`/`reclor` refused by
+  the firewall.
+* `model.encoder` (#T-torch-stack) is the only backbone, loaded from
+  sha256-verified bytes. It stays FROZEN: the trainable surface is the
+  2.7 M-parameter head. That is what makes ~1 M samples fit a Mac, and it
+  is also why an unseen option text is scored at all — its embedding
+  comes from a backbone that was never fitted to this label space.
+
+Loss
+----
+Listwise cross-entropy over the row's `[K + 1]` logits against
+`Sample.gold_index` (which is `K` for an `unknown` row). Never a global
+multiclass head. Brier and ECE are logged from step 1, not bolted on at
+the end.
+
+Unseen labels
+-------------
+The metric that decides this project is accuracy on labels whose TEXT
+never appeared in training (#T-unseen-labels, finding F). So the trainer
+itself carves the label space first:
+
+* a per-dataset holdout of sibling labels (chosen by the same
+  `data.optset.difficulty` ranking that builds hard negatives, so the
+  holdout is the hard half, not the easy half);
+* held-out labels are removed from the training pool AND every row whose
+  gold is one of them is removed from training, so the text is absent
+  from train both as a gold and as a distractor;
+* the unseen eval set offers option sets drawn ONLY from held-out labels,
+  so the model cannot win by elimination. Chance is `mean(1 / (K + 1))`.
+
+`boolq` has a two-label pool (yes/no): a holdout is impossible by
+construction, so it trains and is reported as `seen`-only, explicitly.
+
+Gate criteria — written before the first measurement
+----------------------------------------------------
+1. `unseen_beats_chance`: the Wilson 95 % lower bound of unseen accuracy
+   is strictly above the mean chance rate of the unseen eval set.
+   If it is not, the gate is `pass: false` and the run does NOT scale.
+2. `holdout_clean`: no held-out label text (normalised) appears in any
+   training sample, as gold or as distractor.
+3. `label_free`: the trained head still contains no label-space parameter.
+4. `checkpoint_cold_load`: a fresh process loads the safetensors
+   checkpoint and answers a real decision with p95 < 500 ms.
+5. `manifest_model_version`: the checkpoint manifest carries the
+   `model_version` + `tokenizer_hash` pair that `crates/jev-runtime`
+   composes its state-cache key from.
+
+Artifacts
+---------
+* `artifacts/runs/<run_id>/metrics.jsonl` — one line per step, per eval
+  and per stage. The `:8794` dashboard headlines the unseen number.
+* `artifacts/checkpoints/decision/<run_id>/stage-<samples>/` —
+  `model.safetensors` + `tokenizer.json` + `manifest.json`.
+* `artifacts/gates/T-train-real/gate.json` — rewritten at every stage
+  from the real numbers of that stage.
+
+CLI
+---
+    .venv-train/bin/python -m training.python.train_decision train \
+        --max-samples 1000000
+    .venv-train/bin/python -m training.python.train_decision gate \
+        --checkpoint artifacts/checkpoints/decision/<run>/stage-<n>
+    .venv-train/bin/python -m training.python.train_decision holdout
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import os
+import re
+import shutil
+import sys
+import time
+from dataclasses import asdict, dataclass, field
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if ROOT not in sys.path:  # the trainer runs both as -m and as a script
+    sys.path.insert(0, ROOT)
+
+from data.optset import (ALLOWED_DATASETS, DistractorIndex,  # noqa: E402
+                         OptionSetSampler, SamplerConfig, difficulty)
+
+RUNS_DIR = os.path.join(ROOT, "artifacts", "runs")
+CKPT_DIR = os.path.join(ROOT, "artifacts", "checkpoints", "decision")
+GATE_DIR = os.path.join(ROOT, "artifacts", "gates", "T-train-real")
+PREFETCH_DIR = os.path.join(ROOT, "artifacts", "data-prefetch")
+
+DEFAULT_SEED = 1789
+#: training truncation; inference keeps `encoder.DEFAULT_MAX_LENGTH`
+TRAIN_MAX_LENGTH = 256
+#: MPS recompiles on every new shape — bucket T to keep the variant count low
+PAD_MULTIPLE = 32
+#: the 250 k -> 1 M scale curve the operator decides on, plus two early points
+DEFAULT_STAGES = (62_500, 125_000, 250_000, 500_000, 1_000_000)
+#: rolling window (samples) for ECE, so a bin estimate exists from step 1
+ECE_WINDOW = 2048
+ECE_BINS = 15
+#: the eval split of each dataset; boolq ships `calibration`, not `test`
+EVAL_SPLIT = {"banking77": "test", "massive": "test", "huffpost": "test",
+              "boolq": "calibration"}
+#: share of each label pool held out as "never seen in training"
+UNSEEN_LABEL_FRACTION = {"huffpost": 11 / 41, "banking77": 0.25,
+                         "massive": 0.25, "boolq": 0.0}
+LATENCY_BUDGET_MS = 500.0
+
+_QID_TAIL = re.compile(r"-\d+$")
+
+
+# -- small numeric helpers -------------------------------------------------
+
+def wilson_interval(successes: int, n: int, z: float = 1.959964) -> tuple:
+    """95 % Wilson score interval — the honest CI for a small unseen set."""
+    if n <= 0:
+        return (0.0, 1.0)
+    p = successes / n
+    d = 1.0 + z * z / n
+    centre = (p + z * z / (2 * n)) / d
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return (max(0.0, centre - half), min(1.0, centre + half))
+
+
+def expected_calibration_error(pairs: list, bins: int = ECE_BINS) -> float:
+    """ECE over (confidence, correct) pairs, equal-width bins."""
+    if not pairs:
+        return 0.0
+    buckets = [[0, 0.0, 0.0] for _ in range(bins)]
+    for conf, correct in pairs:
+        b = min(bins - 1, int(conf * bins))
+        buckets[b][0] += 1
+        buckets[b][1] += conf
+        buckets[b][2] += float(correct)
+    n = len(pairs)
+    return sum(cnt / n * abs(acc / cnt - cf / cnt)
+               for cnt, cf, acc in buckets if cnt)
+
+
+def brier_score(probs: list, gold: int) -> float:
+    """Multiclass Brier over the row's `K + 1` outcomes (range 0..2)."""
+    return sum((p - (1.0 if i == gold else 0.0)) ** 2
+               for i, p in enumerate(probs))
+
+
+def canonical_question(text: str) -> str:
+    """`banking77-intent-8412` -> `banking77-intent`.
+
+    The converted corpus has no question prose: `question_text()` falls
+    back to the question id, which for banking77/massive carries the ROW
+    INDEX. Feeding that to the encoder is both noise and a memorisation
+    handle (a per-row unique token the head could key on). Stripping the
+    trailing index leaves one stable question token per dataset — and
+    makes the embedding cache hit every time.
+    """
+    return _QID_TAIL.sub("", text) if text else text
+
+
+def sha256_file(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def normalise_label(text: str) -> str:
+    """Comparison form for the holdout-cleanliness check (text, not id)."""
+    return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
+
+
+# -- label holdout ---------------------------------------------------------
+
+@dataclass
+class DatasetHoldout:
+    dataset: str
+    seen: list = field(default_factory=list)
+    unseen: list = field(default_factory=list)
+    texts: dict = field(default_factory=dict)
+    exempt: str | None = None
+
+    def to_dict(self) -> dict:
+        return {"dataset": self.dataset, "n_seen": len(self.seen),
+                "n_unseen": len(self.unseen), "seen": self.seen,
+                "unseen": self.unseen, "exempt": self.exempt}
+
+
+def sibling_holdout(pool: list, fraction: float, cos_weight: float = 0.5
+                    ) -> tuple:
+    """Hold out whole sibling PAIRS, hardest first.
+
+    `#T-unseen-labels` asks for a banking77 holdout of *sibling* intents —
+    the pairs `#T-optset-sampler` mines as hard negatives — so that an
+    unseen number separates "generalises" from "got the easy half". The
+    same rule is applied to every multi-label pool: rank every unordered
+    pair by `data.optset.difficulty` and take the hardest pairs until the
+    quota is met. Deterministic: no rng, ties broken by id.
+    """
+    ids = sorted(o["id"] for o in pool)
+    text = {o["id"]: o["text"] for o in pool}
+    quota = int(round(len(ids) * fraction))
+    if quota < 2 or len(ids) - quota < 2:
+        return ids, []
+    scored = []
+    for i, a in enumerate(ids):
+        for b in ids[i + 1:]:
+            scored.append((difficulty(text[a], text[b], cos_weight), a, b))
+    scored.sort(key=lambda t: (-t[0], t[1], t[2]))
+    unseen: list = []
+    taken: set = set()
+    for _, a, b in scored:
+        if len(unseen) + 2 > quota:
+            break
+        if a in taken or b in taken:
+            continue
+        taken.update((a, b))
+        unseen.extend((a, b))
+    # An odd quota leaves one slot: fill it with the hardest single label
+    # not already held out, so the quota is met exactly.
+    if len(unseen) < quota:
+        for _, a, b in scored:
+            cand = a if a not in taken else (b if b not in taken else None)
+            if cand is None:
+                continue
+            taken.add(cand)
+            unseen.append(cand)
+            if len(unseen) >= quota:
+                break
+    unseen = sorted(unseen)
+    return [i for i in ids if i not in taken], unseen
+
+
+def build_holdout(datasets=ALLOWED_DATASETS, root: str = PREFETCH_DIR,
+                  fractions: dict | None = None) -> dict:
+    """Per-dataset seen/unseen label split. Deterministic, no rng."""
+    from data.optset import label_pool
+
+    fractions = fractions or UNSEEN_LABEL_FRACTION
+    out: dict = {}
+    for name in datasets:
+        pool = label_pool(name, root)
+        frac = fractions.get(name, 0.0)
+        if len(pool) <= 2 or frac <= 0.0:
+            out[name] = DatasetHoldout(
+                name, sorted(o["id"] for o in pool), [],
+                {o["id"]: o["text"] for o in pool},
+                exempt=("a two-label pool (yes/no) IS the question: no "
+                        "label can be held out without deleting the task"
+                        if len(pool) <= 2 else "holdout disabled"))
+            continue
+        seen, unseen = sibling_holdout(pool, frac)
+        out[name] = DatasetHoldout(name, seen, unseen,
+                                   {o["id"]: o["text"] for o in pool})
+    return out
+
+
+def holdout_report(holdout: dict) -> dict:
+    return {"per_dataset": {d: h.to_dict() for d, h in sorted(holdout.items())},
+            "rule": ("sibling pairs ranked by data.optset.difficulty "
+                     "(char-3gram cosine blended with word-Jaccard), "
+                     "hardest first — the holdout is the hard half"),
+            "fractions": dict(sorted(UNSEEN_LABEL_FRACTION.items()))}
+
+
+# -- samplers --------------------------------------------------------------
+
+def restrict(sampler: OptionSetSampler, keep: set) -> OptionSetSampler:
+    """Narrow a single-dataset sampler to `keep` labels, in place.
+
+    Both the POOL (so `keep` is the only text a distractor can come from)
+    and the ROWS (so no row with an out-of-`keep` gold survives) are cut.
+    `DistractorIndex` is rebuilt because its ranking is pool-relative.
+    """
+    dataset = sampler.datasets[0]
+    sampler.pools[dataset] = [o for o in sampler.pools[dataset]
+                              if o["id"] in keep]
+    sampler.pool_ids[dataset] = {o["id"] for o in sampler.pools[dataset]}
+    sampler.index[dataset] = DistractorIndex(sampler.pools[dataset],
+                                             sampler.config)
+    sampler.rows[dataset] = [
+        r for r in sampler.rows[dataset]
+        if r.get("questions") and all(q.get("answer") in keep
+                                      for q in r["questions"])]
+    return sampler
+
+
+def make_sampler(dataset: str, keep: set, split: str, config: SamplerConfig,
+                 rows: int | None = None, root: str = PREFETCH_DIR):
+    """One restricted, firewall-checked sampler for one dataset."""
+    cfg = SamplerConfig(**{**asdict(config), "split": split})
+    sampler = OptionSetSampler(datasets=(dataset,), config=cfg,
+                               rows_per_dataset=rows, root=root)
+    return restrict(sampler, keep)
+
+
+class MixtureStream:
+    """Round-robin over the per-dataset samplers: ONE model, one mixture.
+
+    Each dataset keeps its own `OptionSetSampler.batches()` — which is what
+    makes a batch length-homogeneous (banking77 states are 15 tokens,
+    boolq passages are 200) — and the datasets alternate at batch
+    granularity, so the optimiser never sees 163 k huffpost rows in a row.
+    The dataset with the largest remaining share goes next: deterministic,
+    and every dataset finishes its epoch at the same time.
+    """
+
+    def __init__(self, samplers: dict, batch_size: int = 32):
+        self.samplers = samplers
+        self.batch_size = batch_size
+        self.sizes = {d: sum(len(r.get("questions", []))
+                             for r in s.rows[d])
+                      for d, s in samplers.items()}
+
+    def total(self) -> int:
+        return sum(self.sizes.values())
+
+    def epoch(self, epoch: int = 0):
+        gens = {d: s.batches(epoch, self.batch_size)
+                for d, s in self.samplers.items()}
+        served = {d: 0 for d in gens}
+        while gens:
+            order = sorted(
+                gens, key=lambda d: (-(1.0 - served[d] / max(self.sizes[d], 1)), d))
+            served_any = False
+            for d in order:
+                try:
+                    batch = next(gens[d])
+                except StopIteration:
+                    gens.pop(d, None)
+                    continue
+                served[d] += len(batch)
+                served_any = True
+                yield batch
+                break
+            if not served_any and not gens:
+                return
+
+    def stream(self, epochs: int = 1_000_000):
+        for e in range(epochs):
+            yielded = False
+            for batch in self.epoch(e):
+                yielded = True
+                yield e, batch
+            if not yielded:
+                return
+
+
+def train_samplers(holdout: dict, config: SamplerConfig,
+                   rows: int | None = None, root: str = PREFETCH_DIR) -> dict:
+    return {d: make_sampler(d, set(h.seen), "train", config, rows, root)
+            for d, h in holdout.items() if h.seen}
+
+
+def eval_samplers(holdout: dict, which: str, config: SamplerConfig,
+                  rows: int | None = None, root: str = PREFETCH_DIR) -> dict:
+    """`seen` or `unseen` eval samplers over each dataset's eval split.
+
+    Eval never emits `unknown` rows: the question asked here is "does it
+    point at the right option", and an `unknown` row has no gold position
+    to point at. The abstention rate is reported separately.
+    """
+    cfg = SamplerConfig(**{**asdict(config), "unknown_fraction": 0.0})
+    out = {}
+    for d, h in holdout.items():
+        keep = set(h.seen if which == "seen" else h.unseen)
+        if len(keep) < 2:
+            continue
+        out[d] = make_sampler(d, keep, EVAL_SPLIT.get(d, "test"), cfg,
+                              rows, root)
+    return out
+
+
+# -- torch is optional at import time, never stubbed -----------------------
+
+try:  # pragma: no cover - exercised by the venv, skipped by the suite
+    import torch
+    from safetensors.torch import load_file, save_file
+    from torch import nn
+
+    from model.decision_head import (DEFAULT_D_MODEL, DEFAULT_HEADS,
+                                     DEFAULT_LAYERS, DecisionEngine,
+                                     PointerDecisionHead)
+    from model.encoder import DEFAULT_BACKBONE, load_backbone
+    from model.weights import BACKBONES, weights_dir
+    HAVE_TORCH = True
+except ImportError as _exc:  # pragma: no cover
+    HAVE_TORCH = False
+    _IMPORT_ERROR = _exc
+    DEFAULT_D_MODEL, DEFAULT_LAYERS, DEFAULT_HEADS = 256, 2, 8
+    DEFAULT_BACKBONE = "ettin-68m"
+
+
+def _require_torch() -> None:
+    if not HAVE_TORCH:  # pragma: no cover
+        raise RuntimeError(
+            f"the real stack is missing ({_IMPORT_ERROR}); run with "
+            f".venv-train/bin/python — nothing here is stubbed")
+
+
+# -- batched encoding (the single-row path is `encoder.encode_state`) ------
+
+def encode_states(backbone, states: list, max_length: int = TRAIN_MAX_LENGTH,
+                  pad_multiple: int = PAD_MULTIPLE):
+    """One backbone forward over a whole batch of states.
+
+    `model.encoder.encode_state` is the single-row contract and stays the
+    reference; this is the same forward with a padded batch axis, which is
+    the only way ~1 M rows fit a wallclock. `test_train_decision` asserts
+    the two agree row by row.
+
+    Padding up to a multiple of `pad_multiple` keeps the number of distinct
+    tensor shapes small — MPS recompiles a kernel per shape, and the
+    sampler's variable K already supplies enough variants.
+    """
+    _require_torch()
+    enc = backbone.tokenizer(states, return_tensors="pt", padding=True,
+                             truncation=True, max_length=max_length)
+    ids, mask = enc["input_ids"], enc["attention_mask"]
+    t = ids.shape[1]
+    if pad_multiple > 1 and t % pad_multiple:
+        pad = pad_multiple - t % pad_multiple
+        pad_id = getattr(backbone.tokenizer, "pad_token_id", 0) or 0
+        ids = nn.functional.pad(ids, (0, pad), value=pad_id)
+        mask = nn.functional.pad(mask, (0, pad), value=0)
+    ids = ids.to(backbone.device)
+    mask = mask.to(backbone.device)
+    with torch.no_grad():  # frozen backbone; no_grad (not inference_mode)
+        tokens = backbone.model(input_ids=ids,
+                                attention_mask=mask).last_hidden_state
+    return tokens, mask.bool(), int(mask.sum().item())
+
+
+def batch_embeddings(engine, batch: list):
+    """Question + option embeddings for a batch, through the shared cache.
+
+    One `embed_texts` call per batch: label texts repeat across rows, so
+    after the first few batches this costs a dict lookup, not a forward.
+    """
+    texts, spans = [], []
+    for sample in batch:
+        start = len(texts)
+        texts.append(canonical_question(sample.question))
+        texts.extend(o["text"] for o in sample.options)
+        spans.append((start, len(texts)))
+    embs = engine.embed_texts(texts)
+    return embs, spans
+
+
+def row_logits(engine, tokens, mask, embs, spans, i: int):
+    """`[K + 1]` logits for row `i` of an encoded batch."""
+    start, end = spans[i]
+    return engine.head(tokens[i:i + 1], mask[i:i + 1],
+                       embs[start], embs[start + 1:end])
+
+
+# -- metrics ---------------------------------------------------------------
+
+@dataclass
+class RunningMetrics:
+    """Accuracy/Brier/NLL as sums; ECE over a rolling window of rows."""
+
+    n: int = 0
+    correct: int = 0
+    correct_options: int = 0
+    loss_sum: float = 0.0
+    brier_sum: float = 0.0
+    nll_sum: float = 0.0
+    chance_sum: float = 0.0
+    chance_options_sum: float = 0.0
+    k_sum: int = 0
+    abstain: int = 0
+    window: list = field(default_factory=list)
+    per_dataset: dict = field(default_factory=dict)
+
+    def add(self, probs: list, gold: int, dataset: str = "") -> None:
+        k1 = len(probs)
+        pred = max(range(k1), key=lambda i: probs[i])
+        ok = int(pred == gold)
+        # Diagnostic, NOT the gate criterion: argmax restricted to the K
+        # real options, i.e. "does the pointer RANK the right option first"
+        # with the `unknown` logit taken out of the race. A model that
+        # abstains on every unfamiliar option set scores 0 above and can
+        # still rank well here; the operator needs to see both.
+        pred_opt = max(range(k1 - 1), key=lambda i: probs[i]) if k1 > 1 else 0
+        self.n += 1
+        self.correct += ok
+        self.correct_options += int(pred_opt == gold)
+        self.brier_sum += brier_score(probs, gold)
+        self.nll_sum += -math.log(max(probs[gold], 1e-12))
+        self.chance_sum += 1.0 / k1
+        self.chance_options_sum += 1.0 / max(k1 - 1, 1)
+        self.k_sum += k1 - 1
+        self.abstain += int(pred == k1 - 1)
+        self.window.append((probs[pred], ok))
+        if len(self.window) > ECE_WINDOW:
+            del self.window[:len(self.window) - ECE_WINDOW]
+        if dataset:
+            d = self.per_dataset.setdefault(dataset, [0, 0, 0])
+            d[0] += 1
+            d[1] += ok
+            d[2] += int(pred_opt == gold)
+
+    def report(self) -> dict:
+        n = max(self.n, 1)
+        lo, hi = wilson_interval(self.correct, self.n)
+        olo, ohi = wilson_interval(self.correct_options, self.n)
+        return {
+            "n": self.n,
+            "accuracy": round(self.correct / n, 6),
+            "accuracy_ci95": [round(lo, 6), round(hi, 6)],
+            "chance": round(self.chance_sum / n, 6),
+            "accuracy_options_only": round(self.correct_options / n, 6),
+            "accuracy_options_only_ci95": [round(olo, 6), round(ohi, 6)],
+            "chance_options_only": round(self.chance_options_sum / n, 6),
+            "brier": round(self.brier_sum / n, 6),
+            "nll": round(self.nll_sum / n, 6),
+            "ece": round(expected_calibration_error(self.window), 6),
+            "mean_k": round(self.k_sum / n, 4),
+            "abstain_rate": round(self.abstain / n, 6),
+            "per_dataset": {
+                d: {"n": v[0], "accuracy": round(v[1] / max(v[0], 1), 6),
+                    "accuracy_options_only": round(v[2] / max(v[0], 1), 6)}
+                for d, v in sorted(self.per_dataset.items())},
+        }
+
+
+# -- evaluation ------------------------------------------------------------
+
+def evaluate(engine, samplers: dict, max_samples: int = 4000,
+             batch_size: int = 32, max_length: int = TRAIN_MAX_LENGTH) -> dict:
+    """Accuracy / ECE / Brier over an eval mixture, no gradients."""
+    _require_torch()
+    if not samplers:
+        return {"n": 0, "skipped": "no eval sampler for this cut"}
+    stream = MixtureStream(samplers, batch_size)
+    metrics = RunningMetrics()
+    engine.head.eval()
+    with torch.no_grad():
+        for batch in stream.epoch(0):
+            tokens, mask, _ = encode_states(
+                engine.backbone, [s.state for s in batch], max_length)
+            embs, spans = batch_embeddings(engine, batch)
+            for i, sample in enumerate(batch):
+                logits = row_logits(engine, tokens, mask, embs, spans, i)
+                probs = torch.softmax(logits, dim=-1).tolist()
+                metrics.add(probs, sample.gold_index, sample.dataset)
+            if metrics.n >= max_samples:
+                break
+    engine.head.train()
+    report = metrics.report()
+    report["beats_chance"] = bool(report["accuracy_ci95"][0] > report["chance"])
+    report["ranking_beats_chance"] = bool(
+        report["accuracy_options_only_ci95"][0] > report["chance_options_only"])
+    return report
+
+
+def holdout_cleanliness(holdout: dict, samplers: dict,
+                        max_samples: int = 20000) -> dict:
+    """No held-out label TEXT (normalised) may appear in a train sample.
+
+    Checked on the sampler's own output, not on the config that produced
+    it: a restriction bug would show up here as a hit, which is the point.
+    """
+    banned = {}
+    for d, h in holdout.items():
+        for label in h.unseen:
+            banned.setdefault(normalise_label(h.texts.get(label, label)), []).append(
+                f"{d}:{label}")
+    hits, checked = [], 0
+    per_dataset = max(1, max_samples // max(len(samplers), 1))
+    for d, sampler in samplers.items():
+        seen_here = 0
+        for batch in MixtureStream({d: sampler}, 64).epoch(0):
+            for sample in batch:
+                checked += 1
+                seen_here += 1
+                for opt in sample.options:
+                    key = normalise_label(opt["text"])
+                    if key in banned:
+                        hits.append({"dataset": d, "row_id": sample.row_id,
+                                     "option": opt["id"],
+                                     "label": banned[key][0]})
+            if seen_here >= per_dataset:
+                break
+    return {"pass": not hits, "checked_samples": checked,
+            "banned_texts": len(banned), "hits": hits[:10],
+            "n_hits": len(hits),
+            "note": "compared by normalised TEXT, not by option id"}
+
+
+# -- checkpoints -----------------------------------------------------------
+
+def tokenizer_source(backbone_id: str) -> str:
+    return os.path.join(weights_dir(backbone_id), "tokenizer.json")
+
+
+def model_version(backbone_id: str, arch: dict, seed: int, samples: int,
+                  weights_sha: str) -> str:
+    """The `model_version` half of `jev_runtime::CacheKey`.
+
+    `CacheKey::new(model_version, state_hash, tokenizer_hash)` composes the
+    runtime's state cache; a checkpoint that cannot name its own
+    `model_version` cannot be cached, so it is built here and written into
+    the manifest next to the `tokenizer_hash` the same key needs.
+    """
+    return (f"jev-dec-{backbone_id}-d{arch['d_model']}l{arch['n_layers']}"
+            f"h{arch['n_heads']}-s{seed}-n{samples}-{weights_sha[:12]}")
+
+
+def save_checkpoint(engine, out_dir: str, run: dict, samples: int,
+                    tokens: int, metrics: dict) -> dict:
+    """safetensors + tokenizer.json + manifest, in one directory."""
+    _require_torch()
+    os.makedirs(out_dir, exist_ok=True)
+    weights_path = os.path.join(out_dir, "model.safetensors")
+    save_file({k: v.detach().cpu().contiguous()
+               for k, v in engine.head.state_dict().items()}, weights_path)
+    tok_dst = os.path.join(out_dir, "tokenizer.json")
+    shutil.copyfile(tokenizer_source(run["backbone"]["id"]), tok_dst)
+    weights_sha = sha256_file(weights_path)
+    arch = run["architecture"]
+    manifest = {
+        "task": "T-train-real",
+        "run_id": run["run_id"],
+        "model_version": model_version(run["backbone"]["id"], arch,
+                                       run["seed"], samples, weights_sha),
+        "tokenizer_hash": sha256_file(tok_dst),
+        "weights_sha256": weights_sha,
+        "weights_file": "model.safetensors",
+        "format": "safetensors",
+        "head_params": engine.head.n_params(),
+        "architecture": arch,
+        "backbone": run["backbone"],
+        "seed": run["seed"],
+        "samples_seen": samples,
+        "tokens_seen": tokens,
+        "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+        "datasets": run["datasets"],
+        "data_manifest": run["data_manifest"],
+        "holdout": run["holdout_path"],
+        "metrics": metrics,
+        "runtime_cache_key": ("jev_runtime::CacheKey(model_version, "
+                              "state_hash, tokenizer_hash)"),
+        "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    with open(os.path.join(out_dir, "manifest.json"), "w") as fh:
+        json.dump(manifest, fh, indent=2, sort_keys=True)
+        fh.write("\n")
+    return manifest
+
+
+def load_checkpoint(ckpt_dir: str, device: str = "auto"):
+    """Cold load: fresh backbone, fresh head, weights from safetensors."""
+    _require_torch()
+    with open(os.path.join(ckpt_dir, "manifest.json")) as fh:
+        manifest = json.load(fh)
+    arch = manifest["architecture"]
+    backbone = load_backbone(manifest["backbone"]["id"], device)
+    head = PointerDecisionHead(backbone.hidden_size, arch["d_model"],
+                               arch["n_layers"], arch["n_heads"])
+    head.load_state_dict(load_file(os.path.join(ckpt_dir,
+                                                manifest["weights_file"])))
+    head.eval()
+    return DecisionEngine(backbone=backbone, head=head), manifest
+
+
+def measure_decision_latency(engine, samples: list, n: int = 25) -> dict:
+    """Real rows, cold state AND option caches, encode included."""
+    _require_torch()
+    times = []
+    for sample in samples[:n]:
+        engine._states.clear()
+        engine._texts.clear()
+        t0 = time.perf_counter()
+        mem = engine.encode_state(sample.state)
+        engine.score(mem, canonical_question(sample.question), sample.options)
+        if engine.device.type == "mps":
+            torch.mps.synchronize()
+        times.append((time.perf_counter() - t0) * 1000.0)
+    times.sort()
+    if not times:
+        return {"runs": 0}
+    return {"runs": len(times), "device": str(engine.device),
+            "p50_ms": round(times[len(times) // 2], 3),
+            "p95_ms": round(times[max(0, int(len(times) * 0.95) - 1)], 3),
+            "max_ms": round(times[-1], 3),
+            "budget_ms": LATENCY_BUDGET_MS,
+            "cache": "cleared per row (cold state + cold options)"}
+
+
+# -- the training run ------------------------------------------------------
+
+def data_manifest(datasets, root: str = PREFETCH_DIR) -> dict:
+    """sha256 of the exact corpus bytes: seed + this = reproducible run."""
+    out = {}
+    for d in datasets:
+        path = os.path.join(root, f"{d}.jsonl")
+        out[d] = {"sha256": sha256_file(path),
+                  "bytes": os.path.getsize(path)}
+    return out
+
+
+def lr_at(step: int, total: int, base: float, warmup: int = 200) -> float:
+    """Linear warmup, then cosine decay to 10 % of `base`."""
+    if step < warmup:
+        return base * (step + 1) / warmup
+    progress = min(1.0, (step - warmup) / max(1, total - warmup))
+    return base * (0.1 + 0.9 * 0.5 * (1.0 + math.cos(math.pi * progress)))
+
+
+class MetricsLog:
+    """`artifacts/runs/<run_id>/metrics.jsonl`, one json object per line."""
+
+    def __init__(self, run_dir: str):
+        os.makedirs(run_dir, exist_ok=True)
+        self.path = os.path.join(run_dir, "metrics.jsonl")
+        self.fh = open(self.path, "a", buffering=1)
+
+    def write(self, record: dict) -> None:
+        self.fh.write(json.dumps(record, sort_keys=True) + "\n")
+
+    def close(self) -> None:
+        self.fh.close()
+
+
+def train(max_samples: int = 250_000, batch_size: int = 32,
+          lr: float = 3e-4, seed: int = DEFAULT_SEED, device: str = "auto",
+          run_id: str | None = None, rows_per_dataset: int | None = None,
+          eval_samples: int = 3000, log_every: int = 10,
+          stages: tuple = DEFAULT_STAGES, backbone_id: str = DEFAULT_BACKBONE,
+          max_length: int = TRAIN_MAX_LENGTH, root: str = PREFETCH_DIR,
+          d_model: int = DEFAULT_D_MODEL, n_layers: int = DEFAULT_LAYERS,
+          n_heads: int = DEFAULT_HEADS, write_gate: bool = True) -> dict:
+    """One model, one mixture, listwise loss, stage curve 250 k -> 1 M."""
+    _require_torch()
+    t_start = time.perf_counter()
+    run_id = run_id or time.strftime("dec-%Y%m%dT%H%M%SZ", time.gmtime())
+    run_dir = os.path.join(RUNS_DIR, run_id)
+    os.makedirs(run_dir, exist_ok=True)
+
+    torch.manual_seed(seed)
+    config = SamplerConfig(seed=seed)
+    holdout = build_holdout(root=root)
+    holdout_path = os.path.join(run_dir, "holdout.json")
+    with open(holdout_path, "w") as fh:
+        json.dump(holdout_report(holdout), fh, indent=2, sort_keys=True)
+        fh.write("\n")
+
+    tr = train_samplers(holdout, config, rows_per_dataset, root)
+    ev_seen = eval_samplers(holdout, "seen", config, rows_per_dataset, root)
+    ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset, root)
+    stream = MixtureStream(tr, batch_size)
+    epoch_size = stream.total()
+
+    backbone = load_backbone(backbone_id, device)
+    torch.manual_seed(seed)  # the head's init must not depend on load order
+    head = PointerDecisionHead(backbone.hidden_size, d_model, n_layers,
+                               n_heads)
+    engine = DecisionEngine(backbone=backbone, head=head)
+    engine.head.train()
+    for p in engine.backbone.model.parameters():
+        p.requires_grad_(False)
+    opt = torch.optim.AdamW(engine.head.parameters(), lr=lr,
+                            weight_decay=0.01)
+
+    run = {
+        "run_id": run_id, "seed": seed, "task": "T-train-real",
+        "datasets": sorted(tr),
+        "architecture": {"d_model": d_model, "n_layers": n_layers,
+                         "n_heads": n_heads,
+                         "scorer": "pointer over option text embeddings",
+                         "loss": "listwise cross-entropy over [K + 1]"},
+        "backbone": {"id": backbone.id, "hidden_size": backbone.hidden_size,
+                     "params": backbone.params, "frozen": True,
+                     "revision": BACKBONES[backbone_id]["revision"]},
+        "data_manifest": data_manifest(sorted(tr), root),
+        "holdout_path": os.path.relpath(holdout_path, ROOT),
+        "epoch_samples": epoch_size,
+        "max_samples": max_samples,
+        "batch_size": batch_size, "lr": lr, "max_length": max_length,
+        "device": str(engine.device),
+        "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    with open(os.path.join(run_dir, "run.json"), "w") as fh:
+        json.dump(run, fh, indent=2, sort_keys=True)
+        fh.write("\n")
+
+    log = MetricsLog(run_dir)
+    log.write({"t": "run", **{k: v for k, v in run.items()
+                              if k != "data_manifest"}})
+    total_steps = max(1, max_samples // batch_size)
+    pending = [s for s in sorted(stages) if s <= max_samples]
+    if max_samples not in pending:
+        pending.append(max_samples)
+    curve, stage_records = [], []
+    metrics = RunningMetrics()
+    seen_samples = tokens_seen = step = 0
+    last_ckpt = None
+
+    for epoch, batch in stream.stream():
+        if seen_samples >= max_samples:
+            break
+        step += 1
+        for group in opt.param_groups:
+            group["lr"] = lr_at(step, total_steps, lr)
+        tokens, mask, n_tok = encode_states(engine.backbone,
+                                            [s.state for s in batch],
+                                            max_length)
+        embs, spans = batch_embeddings(engine, batch)
+        opt.zero_grad(set_to_none=True)
+        total = torch.zeros((), device=engine.device)
+        rows = []
+        for i, sample in enumerate(batch):
+            logits = row_logits(engine, tokens, mask, embs, spans, i)
+            gold = torch.tensor([sample.gold_index], device=engine.device)
+            total = total + nn.functional.cross_entropy(logits.unsqueeze(0),
+                                                        gold)
+            rows.append((logits.detach(), sample))
+        loss = total / len(batch)
+        loss.backward()
+        nn.utils.clip_grad_norm_(engine.head.parameters(), 1.0)
+        opt.step()
+
+        batch_metrics = RunningMetrics()
+        for logits, sample in rows:
+            probs = torch.softmax(logits, dim=-1).tolist()
+            metrics.add(probs, sample.gold_index, sample.dataset)
+            batch_metrics.add(probs, sample.gold_index, sample.dataset)
+        seen_samples += len(batch)
+        tokens_seen += n_tok
+        metrics.loss_sum += float(loss.detach()) * len(batch)
+
+        if step % log_every == 0 or step == 1:
+            b = batch_metrics.report()
+            log.write({
+                "t": "step", "step": step, "epoch": epoch,
+                "samples": seen_samples, "tokens": tokens_seen,
+                "loss": round(float(loss.detach()), 6),
+                "accuracy": b["accuracy"], "brier": b["brier"],
+                "ece": round(expected_calibration_error(metrics.window), 6),
+                "mean_k": b["mean_k"], "abstain_rate": b["abstain_rate"],
+                "lr": round(lr_at(step, total_steps, lr), 8),
+                "elapsed_s": round(time.perf_counter() - t_start, 2),
+                "samples_per_s": round(seen_samples /
+                                       max(1e-6, time.perf_counter() - t_start), 2),
+            })
+
+        while pending and seen_samples >= pending[0]:
+            stage = pending.pop(0)
+            record = _stage(engine, run, run_dir, log, stage, seen_samples,
+                            tokens_seen, step, ev_seen, ev_unseen,
+                            eval_samples, batch_size, max_length, t_start,
+                            holdout, tr, write_gate)
+            curve.append(record["curve_point"])
+            stage_records.append(record)
+            last_ckpt = record["checkpoint"]
+
+    summary = {
+        "run_id": run_id, "steps": step, "samples_seen": seen_samples,
+        "tokens_seen": tokens_seen, "epoch_samples": epoch_size,
+        "train": metrics.report(),
+        "train_loss": round(metrics.loss_sum / max(metrics.n, 1), 6),
+        "scale_curve": curve, "stages": stage_records,
+        "checkpoint": last_ckpt,
+        "elapsed_s": round(time.perf_counter() - t_start, 2),
+        "finished_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    log.write({"t": "summary", **{k: v for k, v in summary.items()
+                                  if k != "stages"}})
+    log.close()
+    with open(os.path.join(run_dir, "summary.json"), "w") as fh:
+        json.dump(summary, fh, indent=2, sort_keys=True)
+        fh.write("\n")
+    return summary
+
+
+def _stage(engine, run, run_dir, log, stage, samples, tokens, step,
+           ev_seen, ev_unseen, eval_samples, batch_size, max_length,
+           t_start, holdout, train_sets, write_gate) -> dict:
+    """A point on the 250 k -> 1 M curve: eval both cuts, checkpoint, gate."""
+    seen = evaluate(engine, ev_seen, eval_samples, batch_size, max_length)
+    unseen = evaluate(engine, ev_unseen, eval_samples, batch_size, max_length)
+    ckpt_dir = os.path.join(CKPT_DIR, run["run_id"], f"stage-{stage:09d}")
+    manifest = save_checkpoint(engine, ckpt_dir, run, samples, tokens,
+                               {"seen": seen, "unseen": unseen})
+    record = {
+        "t": "stage", "stage": stage, "step": step, "samples": samples,
+        "tokens": tokens, "seen": seen, "unseen": unseen,
+        "checkpoint": os.path.relpath(ckpt_dir, ROOT),
+        "model_version": manifest["model_version"],
+        "elapsed_s": round(time.perf_counter() - t_start, 2),
+    }
+    log.write(record)
+    record["curve_point"] = {
+        "samples": samples, "tokens": tokens,
+        "unseen_accuracy": unseen.get("accuracy"),
+        "unseen_chance": unseen.get("chance"),
+        "unseen_ece": unseen.get("ece"),
+        "unseen_ranking": unseen.get("accuracy_options_only"),
+        "unseen_ranking_chance": unseen.get("chance_options_only"),
+        "unseen_abstain_rate": unseen.get("abstain_rate"),
+        "seen_accuracy": seen.get("accuracy"),
+        "seen_ece": seen.get("ece"),
+    }
+    if write_gate:
+        try:
+            write_gate_json(ckpt_dir, holdout, train_sets, seen, unseen,
+                            manifest, run, engine)
+        except Exception as exc:  # a gate write must never kill a long run
+            log.write({"t": "gate-error", "stage": stage, "error": str(exc)})
+    return record
+
+
+# -- gate ------------------------------------------------------------------
+
+def scale_curve(run_id: str) -> list:
+    """Read the 250 k -> 1 M curve back out of `metrics.jsonl`."""
+    path = os.path.join(RUNS_DIR, run_id, "metrics.jsonl")
+    curve = []
+    if not os.path.exists(path):
+        return curve
+    with open(path) as fh:
+        for line in fh:
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if rec.get("t") != "stage":
+                continue
+            curve.append({
+                "samples": rec["samples"], "tokens": rec["tokens"],
+                "unseen_accuracy": rec["unseen"].get("accuracy"),
+                "unseen_chance": rec["unseen"].get("chance"),
+                "unseen_ece": rec["unseen"].get("ece"),
+                "unseen_ranking": rec["unseen"].get("accuracy_options_only"),
+                "unseen_ranking_chance":
+                    rec["unseen"].get("chance_options_only"),
+                "unseen_abstain_rate": rec["unseen"].get("abstain_rate"),
+                "seen_accuracy": rec["seen"].get("accuracy"),
+                "seen_ece": rec["seen"].get("ece"),
+                "model_version": rec.get("model_version"),
+            })
+    return curve
+
+
+def probe_samples(samplers: dict, n: int = 25) -> list:
+    out = []
+    for sampler in samplers.values():
+        for batch in MixtureStream({sampler.datasets[0]: sampler}, 16).epoch(0):
+            out.extend(batch)
+            break
+        if len(out) >= n:
+            break
+    return out[:n]
+
+
+def checkpoint_checks(ckpt_dir: str, live_engine, probe: list,
+                      device: str = "cpu") -> dict:
+    """Cold reload: same logits, a real decision inside the 500 ms budget."""
+    _require_torch()
+    cold, manifest = load_checkpoint(ckpt_dir, device)
+    max_diff = 0.0
+    with torch.no_grad():
+        for sample in probe[:8]:
+            question = canonical_question(sample.question)
+            a = live_engine.score(live_engine.encode_state(sample.state),
+                                  question, sample.options)
+            b = cold.score(cold.encode_state(sample.state), question,
+                           sample.options)
+            for x, y in zip(a["logits"] + [a["unknown_logit"]],
+                            b["logits"] + [b["unknown_logit"]]):
+                max_diff = max(max_diff, abs(x - y))
+    latency = measure_decision_latency(cold, probe)
+    ok = (max_diff < 5e-3 and latency.get("p95_ms", 1e9) < LATENCY_BUDGET_MS)
+    return {"pass": bool(ok), "max_logit_diff": round(max_diff, 8),
+            "tolerance": 5e-3, "latency": latency,
+            "loaded_from": os.path.relpath(ckpt_dir, ROOT),
+            "device": str(cold.device),
+            "model_version": manifest["model_version"]}
+
+
+def compose_gate(ckpt_dir: str, manifest: dict, seen: dict, unseen: dict,
+                 holdout: dict, cleanliness: dict, reload_check: dict,
+                 label_free: dict, run: dict, write: bool = True) -> dict:
+    """Assemble `artifacts/gates/T-train-real/gate.json` from real numbers."""
+    unseen_ok = bool(unseen.get("n") and unseen.get("beats_chance"))
+    checks = {
+        "unseen_beats_chance": {
+            "pass": unseen_ok,
+            "criterion": ("Wilson 95 % lower bound of unseen accuracy > "
+                          "mean chance (1 / (K + 1)) — written before the "
+                          "first measurement"),
+            "accuracy": unseen.get("accuracy"),
+            "ci95": unseen.get("accuracy_ci95"),
+            "chance": unseen.get("chance"),
+            "n": unseen.get("n"),
+            "per_dataset": unseen.get("per_dataset"),
+            "abstain_rate": unseen.get("abstain_rate"),
+            "diagnostic_not_a_criterion": {
+                "what": ("argmax over the K options only, with the learned "
+                         "`unknown` logit taken out of the race — it says "
+                         "whether the POINTER ranks an unseen option first, "
+                         "separately from whether the model chose to answer "
+                         "at all. The gate above is decided by the full "
+                         "[K + 1] argmax, as pre-registered."),
+                "accuracy_options_only": unseen.get("accuracy_options_only"),
+                "ci95": unseen.get("accuracy_options_only_ci95"),
+                "chance_options_only": unseen.get("chance_options_only"),
+                "ranking_beats_chance": unseen.get("ranking_beats_chance"),
+            },
+        },
+        "holdout_clean": {**cleanliness},
+        "label_free": {"pass": label_free["label_free"],
+                       "offenders": label_free["offenders"],
+                       "head_params": label_free["n_params"]},
+        "checkpoint_cold_load": {**reload_check},
+        "manifest_model_version": {
+            "pass": bool(manifest.get("model_version")
+                         and manifest.get("tokenizer_hash")),
+            "model_version": manifest.get("model_version"),
+            "tokenizer_hash": manifest.get("tokenizer_hash"),
+            "consumer": manifest.get("runtime_cache_key"),
+        },
+    }
+    gate = {
+        "task": "T-train-real",
+        "pass": all(c["pass"] for c in checks.values()),
+        "run_id": manifest["run_id"],
+        "model_version": manifest["model_version"],
+        "checkpoint": os.path.relpath(ckpt_dir, ROOT),
+        "samples_seen": manifest["samples_seen"],
+        "tokens_seen": manifest["tokens_seen"],
+        "epoch_samples": run.get("epoch_samples"),
+        "device": run.get("device"),
+        "seed": manifest["seed"],
+        "loss": manifest["loss"],
+        "datasets": manifest["datasets"],
+        "seen": seen,
+        "unseen": unseen,
+        "holdout": {d: {"n_seen": len(h.seen), "n_unseen": len(h.unseen),
+                        "unseen": h.unseen, "exempt": h.exempt}
+                    for d, h in sorted(holdout.items())},
+        "scale_curve": scale_curve(manifest["run_id"]),
+        "checks": checks,
+        "historical_baseline": ("data/train_baseline.py (TF-IDF + "
+                                "LogisticRegression, one pickle per dataset) "
+                                "is out of the product path and feeds no "
+                                "gate"),
+        "verdict": ("GO" if all(c["pass"] for c in checks.values())
+                    else "NO-GO"),
+        "torch": torch.__version__ if HAVE_TORCH else None,
+        "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    if not unseen_ok:
+        gate["no_go_reason"] = (
+            "unseen-label accuracy does not beat chance: the model has not "
+            "learned to score an option by its text. Do not scale.")
+    if write:
+        os.makedirs(GATE_DIR, exist_ok=True)
+        with open(os.path.join(GATE_DIR, "gate.json"), "w") as fh:
+            json.dump(gate, fh, indent=2, sort_keys=True)
+            fh.write("\n")
+    return gate
+
+
+def write_gate_json(ckpt_dir, holdout, train_sets, seen, unseen, manifest,
+                    run, engine) -> dict:
+    """Stage hook: the live evals plus a cold reload of what was just saved."""
+    probe = probe_samples(train_sets, 25)
+    return compose_gate(
+        ckpt_dir, manifest, seen, unseen, holdout,
+        holdout_cleanliness(holdout, train_sets, 8000),
+        checkpoint_checks(ckpt_dir, engine, probe),
+        engine.head.label_free_report(), run)
+
+
+def run_gate(ckpt_dir: str, device: str = "auto", eval_samples: int = 3000,
+             rows_per_dataset: int | None = None, root: str = PREFETCH_DIR,
+             write: bool = True) -> dict:
+    """Standalone gate: everything measured from a COLD checkpoint."""
+    _require_torch()
+    engine, manifest = load_checkpoint(ckpt_dir, device)
+    config = SamplerConfig(seed=manifest["seed"])
+    holdout = build_holdout(root=root)
+    tr = train_samplers(holdout, config, rows_per_dataset, root)
+    seen = evaluate(engine, eval_samplers(holdout, "seen", config,
+                                          rows_per_dataset, root),
+                    eval_samples)
+    unseen = evaluate(engine, eval_samplers(holdout, "unseen", config,
+                                            rows_per_dataset, root),
+                      eval_samples)
+    run = {"epoch_samples": None, "device": str(engine.device),
+           "run_id": manifest["run_id"]}
+    return compose_gate(ckpt_dir, manifest, seen, unseen, holdout,
+                        holdout_cleanliness(holdout, tr, 8000),
+                        checkpoint_checks(ckpt_dir, engine,
+                                          probe_samples(tr, 25)),
+                        engine.head.label_free_report(), run, write)
+
+
+# -- CLI -------------------------------------------------------------------
+
+def main(argv: list) -> int:
+    ap = argparse.ArgumentParser(prog="train_decision",
+                                 description=__doc__.split("\n")[0])
+    sub = ap.add_subparsers(dest="cmd")
+
+    t = sub.add_parser("train", help="listwise training run")
+    t.add_argument("--max-samples", type=int, default=250_000)
+    t.add_argument("--batch-size", type=int, default=32)
+    t.add_argument("--lr", type=float, default=3e-4)
+    t.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    t.add_argument("--device", default="auto")
+    t.add_argument("--run-id", default=None)
+    t.add_argument("--rows-per-dataset", type=int, default=None)
+    t.add_argument("--eval-samples", type=int, default=3000)
+    t.add_argument("--log-every", type=int, default=10)
+    t.add_argument("--max-length", type=int, default=TRAIN_MAX_LENGTH)
+    t.add_argument("--no-gate", action="store_true",
+                   help="do not rewrite artifacts/gates/T-train-real")
+
+    g = sub.add_parser("gate", help="cold gate over a saved checkpoint")
+    g.add_argument("--checkpoint", required=True)
+    g.add_argument("--device", default="auto")
+    g.add_argument("--eval-samples", type=int, default=3000)
+
+    h = sub.add_parser("holdout", help="print the unseen-label plan")
+    h.add_argument("--json", action="store_true")
+
+    args = ap.parse_args(argv[1:])
+    cmd = args.cmd or "holdout"
+
+    if cmd == "holdout":
+        report = holdout_report(build_holdout())
+        if getattr(args, "json", False):
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            for d, h in sorted(report["per_dataset"].items()):
+                print(f"{d:10s} seen={h['n_seen']:3d} unseen={h['n_unseen']:3d}"
+                      f"  {h['exempt'] or ''}")
+                if h["unseen"]:
+                    print(f"           held out: {', '.join(h['unseen'])}")
+        return 0
+
+    if cmd == "train":
+        summary = train(max_samples=args.max_samples,
+                        batch_size=args.batch_size, lr=args.lr,
+                        seed=args.seed, device=args.device,
+                        run_id=args.run_id,
+                        rows_per_dataset=args.rows_per_dataset,
+                        eval_samples=args.eval_samples,
+                        log_every=args.log_every,
+                        max_length=args.max_length,
+                        write_gate=not args.no_gate)
+        print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
+                         indent=2, sort_keys=True))
+        return 0
+
+    gate = run_gate(args.checkpoint, device=args.device,
+                    eval_samples=args.eval_samples)
+    print(json.dumps({k: v for k, v in gate.items()
+                      if k not in ("checks", "holdout")},
+                     indent=2, sort_keys=True))
+    for name, check in gate["checks"].items():
+        print(f"[gate] {name}: {'PASS' if check['pass'] else 'FAIL'}")
+    return 0 if gate["pass"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -1,4 +1,28 @@
-"""Baseline trainer v1: TF-IDF + LogisticRegression per task family.
+"""HISTORICAL BASELINE — not the product path (#T-train-real).
+
+    STATUS: superseded on 2026-09-21. Kept for comparison, never deleted,
+    and it feeds NO green gate.
+
+This is the 24 h loop the 2026-09-21 audit took apart (findings A and B):
+`load()` builds `X = r["state"]`, `y = q["answer"]` and THROWS AWAY the
+question and the option set, so the model is fitted to a fixed, global
+label space per dataset — one pickle each, ~1.8 M bag-of-words weights.
+That is why ReClor scored 0.254 (exact chance at K=4) and LogiQA 0.435
+(a positional prior): the option TEXTS are never seen.
+
+The product path is `training/python/train_decision.py`: one multi-dataset
+model, listwise cross-entropy over the row's own `K + 1` option logits,
+scored by `model.decision_head` over each option's text embedding. Its
+headline metric is accuracy on labels never seen in training; this file
+cannot even express that question.
+
+Use this module only to reproduce the historical numbers or to compare
+against them. Anything that promotes its accuracy to a product claim is a
+regression — the `:8794` dashboard labels it as history for that reason.
+
+Original docstring follows.
+
+Baseline trainer v1: TF-IDF + LogisticRegression per task family.
 
 Consumes universal-schema JSONL from artifacts/data-prefetch/:
   - boolean (boolq, civil-comments) -> binary classification on state text
@@ -23,6 +47,11 @@ from sklearn.metrics import accuracy_score, log_loss
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "artifacts" / "data-prefetch"
+
+# Read by the monitor and by anything tempted to call this a result.
+HISTORICAL_BASELINE = True
+SUPERSEDED_BY = "training/python/train_decision.py (#T-train-real)"
+SUPERSEDED_ON = "2026-09-21"
 
 sys.path.insert(0, str(ROOT))
 from data.firewall import (  # noqa: E402  (trainer runs as script or -m)
@@ -127,6 +156,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", type=int, default=None)
     ap.parse_args()  # validated for argv errors; per-job `sample` rules apply
+    print(f"[historical-baseline] superseded {SUPERSEDED_ON} by "
+          f"{SUPERSEDED_BY}: this trainer discards the question and the "
+          f"option set and fits a fixed global label space. Its numbers are "
+          f"history, not a product claim.", file=sys.stderr, flush=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     rundir = ROOT / "artifacts" / "runs" / ts
     rundir.mkdir(parents=True, exist_ok=True)

@@ -1,7 +1,7 @@
 ---
 id: T-train-real
 title: Entrenamiento listwise real que sustituye a train_baseline.py
-status: next
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -11,8 +11,9 @@ depends_on:
   - T-optset-sampler
 created: 2026-09-21
 updated: 2026-09-21
+resolved_by: A014
+resolved_by_conv: work-decision-rebuild-T-train-real-1790005
 ---
-
 # Entrenamiento listwise real que sustituye a train_baseline.py
 
 Reemplaza el bucle de 24 h (TF-IDF 50 k 1-2 gram + LogisticRegression, un
@@ -60,3 +61,28 @@ escala (250 k → 1 M) decide si merece la pena más.
 - El dashboard muestra la métrica de etiquetas no vistas como titular.
 - `train_baseline.py` está marcado como baseline histórico y no alimenta
   ningún gate verde.
+
+## Resolution
+
+**Entregado** — `training/python/train_decision.py` (+ `test_train_decision.py`,
+18/18 verdes con la pila real, sin skips). Los 6 puntos del cuerpo están
+cubiertos: pérdida listwise (cross-entropy sobre los `K + 1` logits de la
+fila, `unknown` el último), un solo modelo sobre banking77 + massive +
+huffpost + boolq, checkpoints `model.safetensors` + `tokenizer.json` +
+`manifest.json` con `model_version` + `tokenizer_hash`, `metrics.jsonl` por
+step en `artifacts/runs/train-real-v1/`, job del daemon `train-decision` y
+`data/train_baseline.py` etiquetado como baseline histórico fuera de la ruta
+de producto.
+
+**El gate está en NO-GO y eso es el resultado, no un fallo del código.**
+`artifacts/gates/T-train-real/gate.json` del primer punto de la curva
+(stage 62 528 muestras) pasa 4 de 5 checks — `holdout_clean`, `label_free`,
+`checkpoint_cold_load` (p95 43 ms, presupuesto 500 ms) y
+`manifest_model_version` — y falla `unseen_beats_chance`: accuracy 0.058 en
+etiquetas no vistas contra un azar de 0.165, con abstención 0.79. El criterio
+se escribió antes de medir, así que el veredicto se queda escrito: no se
+escala por encima del punto actual hasta que la curva lo bata.
+
+El run sigue vivo (job `train-decision`, ~86 k muestras, loss 0.43–0.79,
+accuracy seen 0.72–0.89) y reescribe `gate.json` en cada stage: los puntos
+125 k / 250 k / 500 k / 1 M decidirán si el NO-GO se levanta.

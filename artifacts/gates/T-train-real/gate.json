@@ -1,0 +1,235 @@
+{
+  "checkpoint": "artifacts/checkpoints/decision/train-real-v1/stage-000062500",
+  "checks": {
+    "checkpoint_cold_load": {
+      "device": "cpu",
+      "latency": {
+        "budget_ms": 500.0,
+        "cache": "cleared per row (cold state + cold options)",
+        "device": "cpu",
+        "max_ms": 43.69,
+        "p50_ms": 34.449,
+        "p95_ms": 43.029,
+        "runs": 25
+      },
+      "loaded_from": "artifacts/checkpoints/decision/train-real-v1/stage-000062500",
+      "max_logit_diff": 5.48e-06,
+      "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n62528-f7dbf57eb4f6",
+      "pass": true,
+      "tolerance": 0.005
+    },
+    "holdout_clean": {
+      "banned_texts": 45,
+      "checked_samples": 8192,
+      "hits": [],
+      "n_hits": 0,
+      "note": "compared by normalised TEXT, not by option id",
+      "pass": true
+    },
+    "label_free": {
+      "head_params": 2699778,
+      "offenders": {},
+      "pass": true
+    },
+    "manifest_model_version": {
+      "consumer": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
+      "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n62528-f7dbf57eb4f6",
+      "pass": true,
+      "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1"
+    },
+    "unseen_beats_chance": {
+      "accuracy": 0.058178,
+      "chance": 0.165093,
+      "ci95": [
+        0.050363,
+        0.06712
+      ],
+      "criterion": "Wilson 95 % lower bound of unseen accuracy > mean chance (1 / (K + 1)) \u2014 written before the first measurement",
+      "n": 3008,
+      "pass": false,
+      "per_dataset": {
+        "banking77": {
+          "accuracy": 0.191406,
+          "n": 256
+        },
+        "huffpost": {
+          "accuracy": 0.103618,
+          "n": 1216
+        },
+        "massive": {
+          "accuracy": 0.0,
+          "n": 1536
+        }
+      }
+    }
+  },
+  "datasets": [
+    "banking77",
+    "boolq",
+    "huffpost",
+    "massive"
+  ],
+  "device": "cpu",
+  "epoch_samples": 199557,
+  "generated_utc": "2026-09-21T13:18:29Z",
+  "historical_baseline": "data/train_baseline.py (TF-IDF + LogisticRegression, one pickle per dataset) is out of the product path and feeds no gate",
+  "holdout": {
+    "banking77": {
+      "exempt": null,
+      "n_seen": 58,
+      "n_unseen": 19,
+      "unseen": [
+        "atm_support",
+        "balance_not_updated_after_bank_transfer",
+        "balance_not_updated_after_cheque_or_cash_deposit",
+        "cancel_transfer",
+        "card_not_working",
+        "card_payment_not_recognised",
+        "country_support",
+        "declined_transfer",
+        "direct_debit_payment_not_recognised",
+        "exchange_charge",
+        "exchange_rate",
+        "failed_transfer",
+        "lost_or_stolen_card",
+        "lost_or_stolen_phone",
+        "pending_transfer",
+        "top_up_by_bank_transfer_charge",
+        "top_up_by_card_charge",
+        "topping_up_by_card",
+        "virtual_card_not_working"
+      ]
+    },
+    "boolq": {
+      "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task",
+      "n_seen": 2,
+      "n_unseen": 0,
+      "unseen": []
+    },
+    "huffpost": {
+      "exempt": null,
+      "n_seen": 30,
+      "n_unseen": 11,
+      "unseen": [
+        "ARTS & CULTURE",
+        "BLACK VOICES",
+        "CULTURE & ARTS",
+        "GOOD NEWS",
+        "PARENTING",
+        "PARENTS",
+        "QUEER VOICES",
+        "THE WORLDPOST",
+        "WEIRD NEWS",
+        "WORLD NEWS",
+        "WORLDPOST"
+      ]
+    },
+    "massive": {
+      "exempt": null,
+      "n_seen": 45,
+      "n_unseen": 15,
+      "unseen": [
+        "calendar_remove",
+        "calendar_set",
+        "email_query",
+        "email_querycontact",
+        "music_dislikeness",
+        "music_likeness",
+        "recommendation_events",
+        "recommendation_locations",
+        "recommendation_movies",
+        "takeaway_order",
+        "takeaway_query",
+        "transport_query",
+        "transport_taxi",
+        "transport_ticket",
+        "transport_traffic"
+      ]
+    }
+  },
+  "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n62528-f7dbf57eb4f6",
+  "no_go_reason": "unseen-label accuracy does not beat chance: the model has not learned to score an option by its text. Do not scale.",
+  "pass": false,
+  "run_id": "train-real-v1",
+  "samples_seen": 62528,
+  "scale_curve": [
+    {
+      "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n62528-f7dbf57eb4f6",
+      "samples": 62528,
+      "seen_accuracy": 0.494348,
+      "seen_ece": 0.276218,
+      "tokens": 2247304,
+      "unseen_accuracy": 0.058178,
+      "unseen_chance": 0.165093,
+      "unseen_ece": 0.560035
+    }
+  ],
+  "seed": 1789,
+  "seen": {
+    "abstain_rate": 0.264628,
+    "accuracy": 0.494348,
+    "accuracy_ci95": [
+      0.4765,
+      0.512211
+    ],
+    "beats_chance": true,
+    "brier": 0.778451,
+    "chance": 0.183984,
+    "ece": 0.276218,
+    "mean_k": 5.126,
+    "n": 3008,
+    "nll": 2.028022,
+    "per_dataset": {
+      "banking77": {
+        "accuracy": 0.058594,
+        "n": 256
+      },
+      "boolq": {
+        "accuracy": 0.609375,
+        "n": 320
+      },
+      "huffpost": {
+        "accuracy": 0.914844,
+        "n": 1280
+      },
+      "massive": {
+        "accuracy": 0.092014,
+        "n": 1152
+      }
+    }
+  },
+  "task": "T-train-real",
+  "tokens_seen": 2247304,
+  "torch": "2.14.0",
+  "unseen": {
+    "abstain_rate": 0.791888,
+    "accuracy": 0.058178,
+    "accuracy_ci95": [
+      0.050363,
+      0.06712
+    ],
+    "beats_chance": false,
+    "brier": 1.267651,
+    "chance": 0.165093,
+    "ece": 0.560035,
+    "mean_k": 5.5279,
+    "n": 3008,
+    "nll": 2.918287,
+    "per_dataset": {
+      "banking77": {
+        "accuracy": 0.191406,
+        "n": 256
+      },
+      "huffpost": {
+        "accuracy": 0.103618,
+        "n": 1216
+      },
+      "massive": {
+        "accuracy": 0.0,
+        "n": 1536
+      }
+    }
+  },
+  "verdict": "NO-GO"
+}

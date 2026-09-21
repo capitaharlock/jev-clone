@@ -128,6 +128,7 @@ REGRESSION = [
     ("python-release", ["python3", "-m", "unittest",
                         "training.python.test_release"]),
     ("python-bigsrc", ["python3", "-m", "unittest", "data.test_bigsrc"]),
+    ("python-data-eval", ["python3", "-m", "unittest", "eval.test_data_eval"]),
 ]
 
 

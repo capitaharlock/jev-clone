@@ -1,0 +1,51 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "loss": "listwise cross-entropy over [K + 1]",
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer over option text embeddings"
+  },
+  "backbone": {
+    "frozen": true,
+    "hidden_size": 512,
+    "id": "ettin-68m",
+    "params": 68144640,
+    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+  },
+  "batch_size": 64,
+  "data_manifest": {
+    "banking77": {
+      "bytes": 6360326,
+      "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca"
+    },
+    "boolq": {
+      "bytes": 10279023,
+      "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "huffpost": {
+      "bytes": 88534603,
+      "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "bytes": 40814161,
+      "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    }
+  },
+  "datasets": [
+    "banking77",
+    "boolq",
+    "huffpost",
+    "massive"
+  ],
+  "device": "cpu",
+  "epoch_samples": 199557,
+  "holdout_path": "artifacts/runs/train-real-v1/holdout.json",
+  "lr": 0.0003,
+  "max_length": 256,
+  "max_samples": 1000000,
+  "run_id": "train-real-v1",
+  "seed": 1789,
+  "started_utc": "2026-09-21T13:09:15Z",
+  "task": "T-train-real"
+}
