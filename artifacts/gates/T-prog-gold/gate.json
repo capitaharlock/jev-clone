@@ -1,0 +1,196 @@
+{
+ "build_s": 8.8,
+ "checks": {
+  "clean_row_accepted": true,
+  "difficulty_bands": true,
+  "distractors_same_taxon": true,
+  "every_gold_verifies": true,
+  "firewall_clean": true,
+  "k_mix_within_guideline": true,
+  "one_split_per_group": true,
+  "packs_within_3_10": true,
+  "quality_floor": true,
+  "questions": true,
+  "robust_to_irrelevant_context": true,
+  "tampered_answer_rejected": true,
+  "tampered_gold_rejected": true,
+  "taxon_coverage": true,
+  "transform_share_controlled": true
+ },
+ "config": "cpu",
+ "counterfactual_pairs": 13533,
+ "criteria": {
+  "difficulty_target": {
+   "easy": 0.25,
+   "hard": 0.25,
+   "medium": 0.5
+  },
+  "k_mix": {
+   "2": 0.35,
+   "3": 0.25,
+   "4": 0.2,
+   "5": 0.1,
+   "6": 0.06,
+   "8": 0.04
+  },
+  "max_difficulty_deviation": 0.03,
+  "max_k_deviation": 0.02,
+  "max_top1_shift": 0.05,
+  "max_transform_share": 0.35,
+  "min_quality_score": 0.55,
+  "min_questions": 100000,
+  "min_taxons": 4,
+  "pack_questions": [
+   3,
+   10
+  ]
+ },
+ "dedup": {
+  "checked": 13537,
+  "rejected": 1336,
+  "rejection_rate": 0.0987,
+  "threshold": 0.9
+ },
+ "difficulty": {
+  "easy": 0.25,
+  "hard": 0.25,
+  "medium": 0.5
+ },
+ "elapsed_s": 48.9,
+ "entities_used": 9029,
+ "firewall": {
+  "clean": true,
+  "texts_scanned": 376661
+ },
+ "format": 2,
+ "k_histogram": {
+  "2": 0.351,
+  "3": 0.2535,
+  "4": 0.1966,
+  "5": 0.0996,
+  "6": 0.0583,
+  "8": 0.0411
+ },
+ "k_mix_deviation": 0.0035,
+ "layers": {
+  "B": 59387,
+  "D": 40617
+ },
+ "packs": {
+  "max_questions": 8,
+  "mean_questions": 4.43,
+  "min_questions": 3,
+  "packs": 22568,
+  "parents": 9029,
+  "parents_split_across": 0
+ },
+ "pass": true,
+ "pools": {
+  "book/P364": 1,
+  "book/P50": 2935,
+  "city/P131": 3195,
+  "city/P17": 266,
+  "film/P136": 200,
+  "film/P57": 1024,
+  "human/P106": 561,
+  "human/P27": 152,
+  "mountain/P17": 155
+ },
+ "quality": {
+  "mean_score": 1.0,
+  "min_score": 1.0,
+  "rejected_unverified": 0,
+  "rejected_validator": 0,
+  "validator_reasons": {}
+ },
+ "questions": 100004,
+ "robustness": {
+  "kept": 8656,
+  "moved": 1,
+  "probed": 8657,
+  "top1_shift": 0.0001
+ },
+ "same_taxon_audit": {
+  "examples": [],
+  "options_checked": 184937,
+  "out_of_taxon": 0
+ },
+ "shards": {
+  "probe": [
+   {
+    "file": "prog-gold-v1-probe-000.jsonl",
+    "questions": 13539,
+    "rows": 4513,
+    "sha256": "a6b2f7f39a9e1b19e0f53fa63229a90448ce49a836afc5712e6ac9681afdca5e"
+   }
+  ],
+  "train": [
+   {
+    "file": "prog-gold-v1-000.jsonl",
+    "questions": 20095,
+    "rows": 5000,
+    "sha256": "c2494d0c93582ac7a91897b23bea8140ae7373f8c042a32044f0f8e189a133c7"
+   },
+   {
+    "file": "prog-gold-v1-001.jsonl",
+    "questions": 25181,
+    "rows": 5000,
+    "sha256": "42b0f576ca23d6a90de5c66c989ff88786daf3f47944ca01693f24721a1f57e1"
+   },
+   {
+    "file": "prog-gold-v1-002.jsonl",
+    "questions": 26061,
+    "rows": 5000,
+    "sha256": "22d5eb2c67b5ea3c8a55e556a6af3d6b2798c35750a92b35e3dc635c04431a0b"
+   },
+   {
+    "file": "prog-gold-v1-003.jsonl",
+    "questions": 15128,
+    "rows": 3055,
+    "sha256": "6879fa5d9b68f84a4be496924d6875ac7eb3bc363ea19d800a4a1f27cc58bd7e"
+   }
+  ]
+ },
+ "state_cap_waived": 4513,
+ "tamper_probe": {
+  "altered_answer_errors": [
+   "answer points at 'Lituania' but the graph gold is 'Alemania'"
+  ],
+  "altered_answer_rejected": true,
+  "altered_gold_errors": [
+   "gold not in graph: Q1000564 P17 Q1006",
+   "answer points at 'Alemania' but the graph gold is 'Guinea'"
+  ],
+  "altered_gold_rejected": true,
+  "clean_row_accepted": true,
+  "ran": true
+ },
+ "target_questions": 100000,
+ "task": "T-prog-gold",
+ "taxons": {
+  "book": 1835,
+  "city": 2789,
+  "film": 1125,
+  "human": 653,
+  "mountain": 2627
+ },
+ "teacher": {
+  "adversary_kept": 24797,
+  "adversary_reordered": 2269,
+  "gold_decider": "graph",
+  "mode": "local-fixture"
+ },
+ "transform_share": 0.1707,
+ "ts": "20260921T153954Z",
+ "upstream": {
+  "pass": true,
+  "task": "T-synth-factory"
+ },
+ "variants": {
+  "base": 45854,
+  "counterfactual": 13533,
+  "irrelevant-context": 13539,
+  "option-shuffle": 13539,
+  "paraphrase": 13539
+ }
+}

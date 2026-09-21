@@ -12,31 +12,45 @@
 .meshkore/roadmap/state.json
 .meshkore/roadmap/state.js
 .meshkore/scripts/
-artifacts/logs/
+
+# Build output (#T-repo-clean): `cargo build` reproduces every byte of this
+# from Cargo.toml + Cargo.lock. 9 145 files / 788 MiB of it were versioned.
+target/
+
+# Heavy artifacts (#T-repo-clean): weights, per-run models and prefetched
+# datasets never enter git — not even their manifests. What makes them
+# reproducible is `.meshkore/docs/source-register.md`: repo, revision, sha256
+# and where the bytes live. Re-fetch with `python -m model.weights fetch`
+# and `make prefetch`.
+artifacts/runs/
+artifacts/weights/
+artifacts/data-prefetch/
+artifacts/data-raw/
 artifacts/data-qwen/
+artifacts/logs/
+*.pkl
 
-# Model weights (#T-torch-stack): bytes stay out of git, manifests stay in.
-artifacts/weights/*
-!artifacts/weights/*/
-artifacts/weights/*/*
-!artifacts/weights/*/manifest.json
-
-# Listwise decision training (#T-train-real): the live step curve and the
-# checkpoint bytes stay out of git; gate.json, the run manifest and the
-# checkpoint manifest.json (which carry model_version + tokenizer_hash)
-# stay in.
-artifacts/runs/*/metrics.jsonl
+# Checkpoints (#T-train-real): the bytes stay out, the manifest.json stays in —
+# it carries model_version, tokenizer_hash and weights_sha256, which is what
+# lets a gate name the checkpoint it scored.
 artifacts/checkpoints/*/*/*/model.safetensors
 artifacts/checkpoints/*/*/*/tokenizer.json
-
-# Generated / heavy — never in git (#T-train-real)
-__pycache__/
-*.pyc
-artifacts/data-raw/
-artifacts/data-prefetch/*.jsonl
-artifacts/data-prefetch/quarantine/
 
 # Sealed splits (#T-split-domain): the id lists are megabytes of row ids;
 # git carries the manifest (seed + sha256 of every ids file), which is what
 # makes a split verifiable, not the bytes.
 artifacts/splits/*/*.ids
+
+# Programmatic gold shards (#T-prog-gold): 115 MB of rows rebuilt from the
+# cached graph in ~50 s. git carries gate.json, whose per-shard sha256 is
+# what makes the corpus verifiable — the bytes are not.
+artifacts/prog_gold/*/*.jsonl
+
+# Python
+.venv-train/
+__pycache__/
+*.pyc
+.ruff_cache/
+
+# macOS
+.DS_Store
