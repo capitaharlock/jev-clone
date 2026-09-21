@@ -1,6 +1,6 @@
 ---
 title: Coverage matrix
-updated: 2026-09-20
+updated: 2026-09-21
 owner: architect-master
 ---
 
@@ -148,7 +148,7 @@ porque publicar antes de tener modelo sería publicar un baseline léxico).
 
 | Hallazgo | Severidad | Coverage |
 |---|---|---|
-| A · El modelo en entrenamiento no es el del plan (sin torch, sin Candle, proxies aleatorios) | BLOQUEANTE | #decision-rebuild: T-torch-stack, T-bakeoff-real |
+| A · El modelo en entrenamiento no es el del plan (sin torch, sin Candle, proxies aleatorios) | BLOQUEANTE | #decision-rebuild: T-torch-stack `done` (torch 2.14 + transformers 5.17 en `.venv-train` con `requirements-train.txt` hash-pinned; ettin-68m y modernbert-base descargados y verificados por sha256 en `artifacts/weights/`; `model/encoder.py::encode_state` hace forward real MPS+CPU, gate `artifacts/gates/T-torch-stack/gate.json`; los proxies aleatorios del bake-off quedan `not_comparable`), T-bakeoff-real |
 | B · El trainer descarta preguntas y opciones (`X = state`, `y = answer`, label space fijo) | BLOQUEANTE | #decision-rebuild: T-pointer-head, T-optset-sampler, T-train-real |
 | C · acc=1,0000 es contaminación train/test (190 esqueletos, split `i % 10`) | BLOQUEANTE | #decision-rebuild: T-halt-contam · #honest-eval: T-split-domain |
 | D · Q-W-E-N aporta casi cero originalidad (5 plantillas en 11 h, un solo dominio) | ALTO | #data-training: T-gen-schemas (+ T-gen-loop bloqueada) |

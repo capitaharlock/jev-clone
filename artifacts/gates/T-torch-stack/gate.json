@@ -1,0 +1,148 @@
+{
+  "backbones": [
+    {
+      "devices": {
+        "cpu": {
+          "latency": {
+            "mean_ms": 10.285,
+            "p50_ms": 10.411,
+            "p95_ms": 12.491,
+            "runs": 20
+          },
+          "pooled_shape": [
+            1,
+            512
+          ],
+          "shape_ok": true,
+          "tokens_shape": [
+            1,
+            10,
+            512
+          ]
+        },
+        "mps": {
+          "latency": {
+            "mean_ms": 6.455,
+            "p50_ms": 6.405,
+            "p95_ms": 7.804,
+            "runs": 20
+          },
+          "pooled_shape": [
+            1,
+            512
+          ],
+          "shape_ok": true,
+          "tokens_shape": [
+            1,
+            10,
+            512
+          ]
+        }
+      },
+      "hash_check": true,
+      "hidden_size": 512,
+      "id": "ettin-68m",
+      "license": "MIT",
+      "mps_vs_cpu": {
+        "cosine": 1.0000001192092896,
+        "max_abs_diff": 2.288818359375e-05,
+        "tol": 0.001,
+        "within_tol": true
+      },
+      "n_tokens": 10,
+      "params": 68144640,
+      "reason": null,
+      "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2",
+      "sha256": {
+        "config.json": "0b8f2e4c6bff549b5c3fcfcb5da4265d1d24acd7e5159ae6956c7e85ac2de14e",
+        "pytorch_model.bin": "97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d",
+        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+      }
+    },
+    {
+      "devices": {
+        "cpu": {
+          "latency": {
+            "mean_ms": 19.779,
+            "p50_ms": 19.593,
+            "p95_ms": 21.038,
+            "runs": 20
+          },
+          "pooled_shape": [
+            1,
+            768
+          ],
+          "shape_ok": true,
+          "tokens_shape": [
+            1,
+            10,
+            768
+          ]
+        },
+        "mps": {
+          "latency": {
+            "mean_ms": 9.284,
+            "p50_ms": 9.162,
+            "p95_ms": 10.65,
+            "runs": 20
+          },
+          "pooled_shape": [
+            1,
+            768
+          ],
+          "shape_ok": true,
+          "tokens_shape": [
+            1,
+            10,
+            768
+          ]
+        }
+      },
+      "hash_check": true,
+      "hidden_size": 768,
+      "id": "modernbert-base",
+      "license": "Apache-2.0",
+      "mps_vs_cpu": {
+        "cosine": 0.9999997019767761,
+        "max_abs_diff": 3.129243850708008e-06,
+        "tol": 0.001,
+        "within_tol": true
+      },
+      "n_tokens": 10,
+      "params": 149014272,
+      "reason": null,
+      "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+      "sha256": {
+        "config.json": "1609d59e627c33eaed524b4f01e546d42e84190a079a5a5ded84b212c41c324f",
+        "model.safetensors": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9",
+        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+      }
+    }
+  ],
+  "device": {
+    "cuda_available": false,
+    "mps_available": true,
+    "mps_built": true,
+    "selected": "mps",
+    "torch": "2.14.0"
+  },
+  "pass": true,
+  "sample": {
+    "dataset": "banking77",
+    "n_options": 4,
+    "question_id": "banking77-intent-0",
+    "schema_v1_errors": [],
+    "state": "I am still waiting on my card?"
+  },
+  "task": "T-torch-stack",
+  "ts": "2026-09-21T12:31:01Z",
+  "versions": {
+    "python": "3.14.6",
+    "torch": "2.14.0",
+    "transformers": "5.17.0"
+  }
+}

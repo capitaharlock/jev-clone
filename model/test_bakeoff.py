@@ -83,19 +83,43 @@ class TestLicenseGate(unittest.TestCase):
 
 
 class TestReport(unittest.TestCase):
-    def test_top2_explicit_and_pending_excluded(self):
+    def test_rank_explicit_and_real_candidates_excluded(self):
         rep = run_bakeoff()
-        self.assertEqual(len(rep["top2"]), 2)
-        self.assertTrue(all(m["status"] == "measured"
+        self.assertEqual(len(rep["harness_rank"]), len(SMOKE_PROXIES))
+        self.assertTrue(all(m["status"] == "harness_only"
                             for m in rep["measured"]))
         self.assertEqual({m["id"] for m in rep["measured"]},
                          {p["id"] for p in SMOKE_PROXIES})
         for p in rep["pending_real"]:
-            self.assertEqual(p["status"], "pending_weights")
+            self.assertIn(p["status"], ("pending_weights", "weights_local"))
             self.assertIn(p["id"], rep["why_others_lose"])
         for m in rep["measured"]:
             for k in ("accuracy", "nll", "p50_ms", "p95_ms"):
                 self.assertIn(k, m)
+
+    def test_proxies_can_never_enter_a_pareto(self):
+        """#T-torch-stack: a random-weight proxy is not a backbone."""
+        rep = run_bakeoff()
+        self.assertFalse(rep["comparable"])
+        self.assertEqual(rep["pareto"]["eligible"], [])
+        self.assertNotIn("top2", rep)
+        for m in rep["measured"]:
+            self.assertFalse(m["comparable"])
+            self.assertFalse(m["pareto_eligible"])
+            self.assertIn("not_comparable_because", m)
+            self.assertIn(m["id"], rep["why_others_lose"])
+
+    def test_local_weights_reported_with_hash(self):
+        """A materialised backbone shows its sha256, never a metric."""
+        rep = run_bakeoff()
+        local = [p for p in rep["pending_real"]
+                 if p["status"] == "weights_local"]
+        for p in local:
+            self.assertTrue(p["weights_sha256"])
+            self.assertTrue(all(len(h) == 64
+                                for h in p["weights_sha256"].values()))
+            for metric in ("accuracy", "nll", "p50_ms"):
+                self.assertNotIn(metric, p)
 
 
 if __name__ == "__main__":

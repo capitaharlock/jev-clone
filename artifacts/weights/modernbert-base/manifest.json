@@ -1,0 +1,30 @@
+{
+  "fetched_utc": "2026-09-21T12:30:16Z",
+  "files": {
+    "config.json": {
+      "bytes": 1193,
+      "sha256": "1609d59e627c33eaed524b4f01e546d42e84190a079a5a5ded84b212c41c324f"
+    },
+    "model.safetensors": {
+      "bytes": 598635032,
+      "sha256": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9"
+    },
+    "special_tokens_map.json": {
+      "bytes": 694,
+      "sha256": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049"
+    },
+    "tokenizer.json": {
+      "bytes": 2132967,
+      "sha256": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1"
+    },
+    "tokenizer_config.json": {
+      "bytes": 20810,
+      "sha256": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+    }
+  },
+  "id": "modernbert-base",
+  "license": "Apache-2.0",
+  "params_m": 149,
+  "repo": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
+}

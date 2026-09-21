@@ -5,63 +5,97 @@
     {
       "id": "proxy-S",
       "dim": 256,
-      "status": "measured",
+      "status": "harness_only",
+      "comparable": false,
+      "pareto_eligible": false,
+      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
       "accuracy": 0.7708333333333334,
       "nll": 2.4766982959250887,
-      "p50_ms": 0.6219579372555017,
-      "p95_ms": 1.040959032252431,
+      "p50_ms": 0.5311659770086408,
+      "p95_ms": 0.8910000324249268,
       "n": 48
     },
     {
       "id": "proxy-M",
       "dim": 1024,
-      "status": "measured",
+      "status": "harness_only",
+      "comparable": false,
+      "pareto_eligible": false,
+      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
       "accuracy": 0.8125,
       "nll": 2.440770198913631,
-      "p50_ms": 1.7906250432133675,
-      "p95_ms": 2.959250006824732,
+      "p50_ms": 1.5451250365003943,
+      "p95_ms": 2.6729999808594584,
       "n": 48
     },
     {
       "id": "proxy-L",
       "dim": 4096,
-      "status": "measured",
+      "status": "harness_only",
+      "comparable": false,
+      "pareto_eligible": false,
+      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
       "accuracy": 0.8541666666666666,
       "nll": 2.432944046791218,
-      "p50_ms": 6.2930830754339695,
-      "p95_ms": 10.547708021476865,
+      "p50_ms": 5.474290926940739,
+      "p95_ms": 9.36370890121907,
       "n": 48
     }
   ],
-  "top2": [
+  "harness_rank": [
     "proxy-L",
-    "proxy-M"
+    "proxy-M",
+    "proxy-S"
   ],
+  "pareto": {
+    "eligible": [],
+    "verdict": "no comparable candidate measured yet: only harness proxies ran. A Pareto needs at least one real backbone forward pass (#T-bakeoff-real)"
+  },
   "why_others_lose": {
-    "proxy-S": "lower accuracy at higher latency vs top-2 (smoke proxy axis)",
-    "ettin-68m": "not runnable here (clear: permissive license); excluded from Pareto, not imputed",
-    "modernbert-base": "not runnable here (clear: permissive license); excluded from Pareto, not imputed",
-    "lfm2.5-230m": "not runnable here (conditional: commercial use pending LFM Open v1.0 review); excluded from Pareto, not imputed",
-    "neobert-250m": "not runnable here (blocked: trust_remote_code unaudited); excluded from Pareto, not imputed"
+    "proxy-S": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
+    "proxy-M": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
+    "proxy-L": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
+    "ettin-68m": "weights_local (clear: permissive license); excluded from Pareto, not imputed",
+    "modernbert-base": "weights_local (clear: permissive license); excluded from Pareto, not imputed",
+    "lfm2.5-230m": "pending_weights (conditional: commercial use pending LFM Open v1.0 review); excluded from Pareto, not imputed",
+    "neobert-250m": "pending_weights (blocked: trust_remote_code unaudited); excluded from Pareto, not imputed"
   },
   "pending_real": [
     {
       "id": "ettin-68m",
-      "status": "pending_weights",
+      "status": "weights_local",
       "gate": {
         "id": "ettin-68m",
         "verdict": "clear",
         "reason": "permissive license"
-      }
+      },
+      "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2",
+      "weights_sha256": {
+        "config.json": "0b8f2e4c6bff549b5c3fcfcb5da4265d1d24acd7e5159ae6956c7e85ac2de14e",
+        "pytorch_model.bin": "97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d",
+        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+      },
+      "fetched_utc": "2026-09-21T12:26:13Z"
     },
     {
       "id": "modernbert-base",
-      "status": "pending_weights",
+      "status": "weights_local",
       "gate": {
         "id": "modernbert-base",
         "verdict": "clear",
         "reason": "permissive license"
-      }
+      },
+      "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+      "weights_sha256": {
+        "config.json": "1609d59e627c33eaed524b4f01e546d42e84190a079a5a5ded84b212c41c324f",
+        "model.safetensors": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9",
+        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+      },
+      "fetched_utc": "2026-09-21T12:26:13Z"
     },
     {
       "id": "lfm2.5-230m",
@@ -82,5 +116,5 @@
       }
     }
   ],
-  "comparable": true
+  "comparable": false
 }

@@ -1,0 +1,30 @@
+{
+  "fetched_utc": "2026-09-21T12:30:16Z",
+  "files": {
+    "config.json": {
+      "bytes": 1239,
+      "sha256": "0b8f2e4c6bff549b5c3fcfcb5da4265d1d24acd7e5159ae6956c7e85ac2de14e"
+    },
+    "pytorch_model.bin": {
+      "bytes": 273868198,
+      "sha256": "97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d"
+    },
+    "special_tokens_map.json": {
+      "bytes": 694,
+      "sha256": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049"
+    },
+    "tokenizer.json": {
+      "bytes": 2132967,
+      "sha256": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1"
+    },
+    "tokenizer_config.json": {
+      "bytes": 20810,
+      "sha256": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+    }
+  },
+  "id": "ettin-68m",
+  "license": "MIT",
+  "params_m": 68,
+  "repo": "jhu-clsp/ettin-encoder-68m",
+  "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+}

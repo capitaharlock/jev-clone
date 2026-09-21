@@ -12,3 +12,11 @@
 .meshkore/roadmap/state.json
 .meshkore/roadmap/state.js
 .meshkore/scripts/
+artifacts/logs/
+artifacts/data-qwen/
+
+# Model weights (#T-torch-stack): bytes stay out of git, manifests stay in.
+artifacts/weights/*
+!artifacts/weights/*/
+artifacts/weights/*/*
+!artifacts/weights/*/manifest.json

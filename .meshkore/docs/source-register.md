@@ -1,6 +1,6 @@
 ---
 title: Source register — models and datasets
-updated: 2026-09-19
+updated: 2026-09-21
 owner: architect-master
 ---
 
@@ -103,6 +103,28 @@ fin del proyecto. No redescargar una revisión ya cacheada.
   Venv del prefetch: `/tmp/prefetch-env` (efímero; recrear con
   `python3 -m venv` + `pip install datasets huggingface_hub`).
   Logs: `artifacts/logs/` (ignorados en git).
+
+## Pesos locales verificados (#T-torch-stack)
+
+Descargados de verdad el **2026-09-21** a `artifacts/weights/<id>/` (fuera de
+git; el `manifest.json` de cada uno sí se versiona). La revisión está fijada
+por commit, no por rama, y `model/weights.py::verify` re-hashea cada fichero
+antes de permitir cargarlo: un sha que no cuadra **impide** la carga, no avisa.
+
+| Modelo | Repo @ revisión | Licencia | Fichero de pesos · sha256 | tokenizer.json · sha256 |
+|---|---|---|---|---|
+| ettin-68m (68,1 M params) | `jhu-clsp/ettin-encoder-68m` @ `ac19ae4bc51093b31c475665ac872a936d056cc2` | MIT | `pytorch_model.bin` · `97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d` (273,9 MB) | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| modernbert-base (149,0 M params) | `answerdotai/ModernBERT-base` @ `8949b909ec900327062f0ebf497f51aef5e6f0c8` | Apache-2.0 | `model.safetensors` · `340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9` (598,6 MB) | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+
+`config.json`, `tokenizer_config.json` y `special_tokens_map.json` van en el
+mismo manifest con su sha. Rehacer la descarga:
+`.venv-train/bin/python -m model.weights fetch` (gated por
+`JEV_ALLOW_DOWNLOAD`/`JEV_OFFLINE`; `HF_TOKEN` solo haría falta para un repo
+gated — estos dos son públicos). Verificar: `... -m model.weights verify`.
+
+LFM2.5-230M y NeoBERT-250M siguen SIN descargar: el primero por licencia
+condicionada, el segundo por `trust_remote_code` sin auditar. Ninguno de los
+dos entra en un Pareto hasta que se resuelva eso (#T-bakeoff-real).
 
 ## Veredicto de adecuación
 

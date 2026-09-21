@@ -2,13 +2,21 @@
 
 Compares candidates through ONE identical harness: same splits, same
 seed, same provisional decision head (dynamic option markers + pointer
-scorer). Real backbone weights (Ettin, ModernBERT, LFM2.5, NeoBERT) are
-not runnable in this stdlib-only env, so they are carried as
-``pending_weights`` with their license/export pre-gate resolved from
-``.meshkore/docs/source-register.md`` — never imputed into the Pareto.
-What IS measured here: three smoke proxy encoders (S/M/L dims) that
-validate the harness methodology (markers, masks, variable K, fixed
-benchmark before/after) and produce a real quality/latency Pareto.
+scorer).
+
+What runs here are three hash-ngram *proxy* encoders (S/M/L dims). They
+exercise the harness methodology — markers, masks, variable K, fixed
+benchmark before/after — and NOTHING ELSE. Since #T-torch-stack they are
+explicitly **not comparable** to a backbone and can never enter a Pareto:
+their weights are random hashes, so any accuracy they report measures the
+harness, not a model. `run_bakeoff` marks every proxy row
+``not_comparable`` and ships an EMPTY Pareto until a real backbone is
+measured (#T-bakeoff-real).
+
+Real candidates carry their license/export pre-gate from
+``.meshkore/docs/source-register.md`` plus, for the two backbones already
+materialised by #T-torch-stack, the sha256 of the local weights — still
+never imputed with a number they have not produced.
 """
 from __future__ import annotations
 
@@ -18,6 +26,8 @@ import math
 import os
 import random
 import time
+
+from .weights import BACKBONES, load_manifest
 
 BAKEOFF_SEED = 173
 
@@ -34,8 +44,13 @@ REAL_CANDIDATES = (
      "license": "MIT", "params_m": 250, "remote_code": True},
 )
 
-# Smoke proxies: hash char-ngram encoders at three dims. They stand in
-# for the size axis (17M->400M methodology check), NOT for any backbone.
+# Harness-only proxies: hash char-ngram encoders at three dims with
+# random (hashed) weights. They check the HARNESS across a dimension
+# axis. They do NOT stand in for any backbone and are barred from the
+# Pareto by `NOT_COMPARABLE` below.
+NOT_COMPARABLE = ("random hash-ngram encoder, no trained weights: "
+                  "measures the harness, not a model; barred from the "
+                  "Pareto (#T-torch-stack)")
 SMOKE_PROXIES = (
     {"id": "proxy-S", "dim": 256},
     {"id": "proxy-M", "dim": 1024},
@@ -168,6 +183,33 @@ def run_candidate(bench: list[dict], dim: int, seed: int) -> dict:
             "n": len(bench)}
 
 
+PARETO_EMPTY = ("no comparable candidate measured yet: only harness "
+                "proxies ran. A Pareto needs at least one real backbone "
+                "forward pass (#T-bakeoff-real)")
+
+
+def real_candidate_status(candidate: dict) -> dict:
+    """Where a real backbone stands: license gate + local weights.
+
+    ``weights_local`` means the sha256-verified bytes are on disk
+    (#T-torch-stack) and the candidate is ready for a real run; it is
+    NOT a result and carries no metrics.
+    """
+    cid = candidate["id"]
+    entry = {"id": cid, "status": "pending_weights",
+             "gate": license_gate(candidate)}
+    if cid in BACKBONES:
+        manifest = load_manifest(cid)
+        if manifest:
+            entry["status"] = "weights_local"
+            entry["revision"] = manifest.get("revision")
+            entry["weights_sha256"] = {
+                f: v.get("sha256") for f, v in
+                sorted(manifest.get("files", {}).items())}
+            entry["fetched_utc"] = manifest.get("fetched_utc")
+    return entry
+
+
 def fixed_benchmark_hash(bench: list[dict]) -> str:
     h = hashlib.sha256()
     for it in bench:
@@ -186,25 +228,27 @@ def run_bakeoff(seed: int = BAKEOFF_SEED) -> dict:
         after = fixed_benchmark_hash(build_bench(seed))
         assert before == after == bench_hash, "bench moved mid-run"
         measured.append({"id": proxy["id"], "dim": proxy["dim"],
-                         "status": "measured", **m})
-    # Pareto on (accuracy, p50): top-2 by accuracy, latency breaks ties.
+                         "status": "harness_only", "comparable": False,
+                         "pareto_eligible": False,
+                         "not_comparable_because": NOT_COMPARABLE, **m})
+    # Harness ordering only. This is NOT a Pareto: a random-weight proxy
+    # ranking above another says nothing about any backbone.
     ranked = sorted(measured, key=lambda m: (-m["accuracy"], m["p50_ms"]))
-    top2 = [m["id"] for m in ranked[:2]]
-    losers = [m["id"] for m in ranked[2:]]
-    pending = [{"id": c["id"], "status": "pending_weights",
-                "gate": license_gate(c)} for c in REAL_CANDIDATES]
-    why = {lid: ("lower accuracy at higher latency vs top-2 "
-                 "(smoke proxy axis)") for lid in losers}
+    harness_rank = [m["id"] for m in ranked]
+    pending = [real_candidate_status(c) for c in REAL_CANDIDATES]
+    why = {m["id"]: NOT_COMPARABLE for m in measured}
     for p in pending:
-        why[p["id"]] = (f"not runnable here ({p['gate']['verdict']}: "
+        why[p["id"]] = (f"{p['status']} ({p['gate']['verdict']}: "
                         f"{p['gate']['reason']}); excluded from Pareto, "
                         f"not imputed")
     report = {
         "seed": seed, "bench_hash": bench_hash,
-        "measured": measured, "top2": top2,
+        "measured": measured,
+        "harness_rank": harness_rank,
+        "pareto": {"eligible": [], "verdict": PARETO_EMPTY},
         "why_others_lose": why,
         "pending_real": pending,
-        "comparable": True,
+        "comparable": False,
     }
     out_dir = os.path.join(os.path.dirname(os.path.dirname(
         os.path.abspath(__file__))), "artifacts", "gates", "T-bakeoff")
