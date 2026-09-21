@@ -1,0 +1,229 @@
+{
+  "after": {
+    "by_dataset": {
+      "banking77": 9767,
+      "boolq": 9427,
+      "civil-comments": 9767,
+      "email-triage": 515,
+      "helpsteer2": 9767,
+      "huffpost": 9767,
+      "massive": 9767,
+      "synth-v1": 9767
+    },
+    "by_family": {
+      "grounded": 9767,
+      "intent": 20049,
+      "preference": 9767,
+      "qa": 9427,
+      "topic": 9767,
+      "toxicity": 9767
+    },
+    "by_k": {
+      "2": 21601,
+      "3": 807,
+      "4": 34680,
+      "5": 11456
+    },
+    "by_lang": {
+      "de-DE": 282,
+      "en": 58262,
+      "en-US": 1853,
+      "es": 515,
+      "es-ES": 1941,
+      "fr-FR": 1867,
+      "it-IT": 1918,
+      "pt-PT": 1906
+    },
+    "by_origin": {
+      "human": 58262,
+      "synthetic": 10282
+    },
+    "by_qtype": {
+      "choice": 36369,
+      "noul": 22408,
+      "score": 9767
+    },
+    "dynamic_option_rows": 39583,
+    "dynamic_option_share": 0.577483,
+    "guardrail_verdict": "within the caps",
+    "rows": 68544,
+    "top_dataset_share": 0.142492
+  },
+  "before": {
+    "audit_finding_e": {
+      "civil_comments": 1999514,
+      "civil_comments_share": 0.746,
+      "source": ".meshkore/docs/audit-2026-09-21.md finding E",
+      "total_examples": 2681195
+    },
+    "by_dataset": {
+      "banking77": 10003,
+      "boolq": 9427,
+      "civil-comments": 1804874,
+      "email-triage": 4000,
+      "helpsteer2": 101620,
+      "huffpost": 162935,
+      "massive": 69084,
+      "synth-v1": 34847
+    },
+    "by_family": {
+      "grounded": 34847,
+      "intent": 83087,
+      "preference": 101620,
+      "qa": 9427,
+      "topic": 162935,
+      "toxicity": 1804874
+    },
+    "dynamic_option_share": 0.127854,
+    "guardrail_verdict": "dataset 'civil-comments' is 82.16 % of the mixture (1,804,874/2,196,790 rows), hard cap 15.00 %; family 'toxicity' is 82.16 % of the mixture (1,804,874/2,196,790 rows), hard cap 30.00 %",
+    "rows": 2196790,
+    "top_dataset": "civil-comments",
+    "top_dataset_share": 0.821596,
+    "what": "every trainable source, whole, as the trainer would read it"
+  },
+  "checks": {
+    "civil_comments_is_no_longer_the_corpus": {
+      "after_share": 0.1424924136321195,
+      "before_share": 0.8215960560636201,
+      "cap": 0.15,
+      "pass": true
+    },
+    "dynamic_options_are_the_majority": {
+      "floor": 0.5,
+      "pass": true,
+      "share": 0.577483,
+      "why": "the product property is choosing among options that vary per row; fixed-label binaries must not be most of what the head sees"
+    },
+    "guardrails_hold": {
+      "breaches": [],
+      "enforced_by": "data.mix.verify_mix (raises MixGuardrailError)",
+      "pass": true
+    },
+    "manifest_reproduces_the_mixture": {
+      "members_sha256": "65f9156b467b629db84daa8497f91390d5a29f67e3cac028401cc1ca6eac1cab",
+      "pass": true,
+      "rebuilt_from": "seed + keep fractions + the shard sha256 in the manifest; no member list was read",
+      "rebuilt_sha256": "65f9156b467b629db84daa8497f91390d5a29f67e3cac028401cc1ca6eac1cab"
+    },
+    "no_dataset_over_cap": {
+      "cap": 0.15,
+      "pass": true,
+      "shares": {
+        "banking77": 0.142492,
+        "boolq": 0.137532,
+        "civil-comments": 0.142492,
+        "email-triage": 0.007513,
+        "helpsteer2": 0.142492,
+        "huffpost": 0.142492,
+        "massive": 0.142492,
+        "synth-v1": 0.142492
+      }
+    },
+    "no_family_over_cap": {
+      "cap": 0.3,
+      "pass": true,
+      "shares": {
+        "grounded": 0.142492,
+        "intent": 0.292498,
+        "preference": 0.142492,
+        "qa": 0.137532,
+        "topic": 0.142492,
+        "toxicity": 0.142492
+      }
+    },
+    "synthetic_is_a_minority": {
+      "cap": 0.5,
+      "pass": true,
+      "share": 0.150006
+    }
+  },
+  "diversity": {
+    "shares": {
+      "dataset": {
+        "banking77": 0.142492,
+        "boolq": 0.137532,
+        "civil-comments": 0.142492,
+        "email-triage": 0.007513,
+        "helpsteer2": 0.142492,
+        "huffpost": 0.142492,
+        "massive": 0.142492,
+        "synth-v1": 0.142492
+      },
+      "family": {
+        "grounded": 0.142492,
+        "intent": 0.292498,
+        "preference": 0.142492,
+        "qa": 0.137532,
+        "topic": 0.142492,
+        "toxicity": 0.142492
+      },
+      "k_bucket": {
+        "2-4": 0.832866,
+        "5-8": 0.167134
+      },
+      "lang": {
+        "de-DE": 0.004114,
+        "en": 0.849994,
+        "en-US": 0.027034,
+        "es": 0.007513,
+        "es-ES": 0.028318,
+        "fr-FR": 0.027238,
+        "it-IT": 0.027982,
+        "pt-PT": 0.027807
+      },
+      "origin": {
+        "human": 0.849994,
+        "synthetic": 0.150006
+      },
+      "qtype": {
+        "choice": 0.530593,
+        "noul": 0.326914,
+        "score": 0.142492
+      }
+    },
+    "simpson": {
+      "dataset": 0.8592,
+      "family": 0.8143,
+      "k_bucket": 0.2784,
+      "lang": 0.2736,
+      "origin": 0.255,
+      "qtype": 0.5913
+    }
+  },
+  "elapsed_s": 13.2,
+  "excluded": {
+    "logiqa": "reasoning benchmark, eval-only (finding G)",
+    "reclor": "reasoning benchmark, eval-only (finding G)",
+    "synth-loop": "quarantined (finding C): 190 skeletons, split by i % 10"
+  },
+  "fence_conflicts": [
+    {
+      "dataset": "banking77",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    },
+    {
+      "dataset": "helpsteer2",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    }
+  ],
+  "format": 1,
+  "generated_utc": "2026-09-21T15:46:24Z",
+  "guardrails": {
+    "cap_safety_margin": 0.0075,
+    "cap_units": 1.05,
+    "enforcement": "hard error: data.mix.verify_mix raises MixGuardrailError and mix construction aborts",
+    "max_dataset_fraction": 0.15,
+    "max_family_fraction": 0.3,
+    "max_synthetic_fraction": 0.5,
+    "min_dynamic_fraction": 0.5
+  },
+  "manifest": "artifacts/mix/decision-mix-v2/manifest.json",
+  "mix_version": "decision-mix-v2",
+  "pass": true,
+  "seed": 20260921,
+  "task": "T-corpus-rebalance"
+}

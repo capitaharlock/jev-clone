@@ -60,9 +60,14 @@ from dataclasses import asdict, dataclass, field
 from .firewall import check_job_allowed
 from .hardneg import _cos, _embed
 from .leakage import jaccard, trigrams
+from .mix import SOURCES as MIX_SOURCES
+from .mix import TRAINABLE_DATASETS
 
 # Clean, converted, train-approved P0 corpus. NOT synth-loop (quarantined,
-# finding C) and NOT logiqa/reclor (eval-only, finding G).
+# finding C) and NOT logiqa/reclor (eval-only, finding G). This is the
+# DEFAULT set of a bare `OptionSetSampler()`, not the limit of what may be
+# trained: the mixture a run consumes is decided by `data.mix` (which caps
+# every source at 15 %, #T-corpus-rebalance) and named explicitly.
 ALLOWED_DATASETS = ("banking77", "massive", "huffpost", "boolq")
 
 UNKNOWN_ID = "unknown"
@@ -155,39 +160,61 @@ def dataset_path(dataset: str, root: str = PREFETCH_DIR) -> str:
 
 
 def assert_trainable(datasets: list[str] | tuple[str, ...]) -> list[str]:
-    """Allowlist + firewall barrier. Raises, never warns.
+    """Registry + firewall barrier. Raises, never warns.
 
     `check_job_allowed` is the same barrier `#T-halt-contam` installed, so
-    a silent re-add of `synth-loop`, `logiqa` or `reclor` fails here.
+    a silent re-add of `synth-loop`, `logiqa` or `reclor` fails here. The
+    registry is `data.mix.SOURCES`: a corpus that is not in it has no
+    family, no origin and no weight, which means the 15 %/30 % caps cannot
+    be computed for it — training on it would be unguarded by construction.
     """
     out = []
     for name in datasets:
-        if name not in ALLOWED_DATASETS:
+        if name not in TRAINABLE_DATASETS:
             raise ValueError(
-                f"{name!r} is not a trainable P0 dataset; allowed: "
-                f"{list(ALLOWED_DATASETS)} (synth-loop is quarantined, "
+                f"{name!r} is not a registered trainable corpus; registry: "
+                f"{list(TRAINABLE_DATASETS)} (synth-loop is quarantined, "
                 f"logiqa/reclor are eval-only)")
         check_job_allowed(name)
         out.append(name)
     return out
 
 
+def source_paths(dataset: str, root: str = PREFETCH_DIR) -> list[str]:
+    """Every shard of a source: `synth-v1` is six files, the rest are one."""
+    source = MIX_SOURCES.get(dataset)
+    paths = (source.paths(root) if source is not None
+             else [dataset_path(dataset, root)])
+    return [p for p in paths if os.path.exists(p)]
+
+
 def iter_rows(dataset: str, split: str = "train", limit: int | None = None,
-              root: str = PREFETCH_DIR):
-    """Stream V1 rows of one split. Read-only, one json parse per line."""
+              root: str = PREFETCH_DIR, keep=None):
+    """Stream V1 rows of one split. Read-only, one json parse per line.
+
+    `keep(index, row) -> bool` is the mixture's seeded selector
+    (`data.mix.MixSpec.keep`): `index` counts the rows of this split in file
+    order, so the decision does not depend on how many rows were kept
+    before it. A source with several shards is read in registry order.
+    """
     n = 0
-    with open(dataset_path(dataset, root)) as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            row = json.loads(line)
-            if split is not None and row.get("split") != split:
-                continue
-            yield row
-            n += 1
-            if limit is not None and n >= limit:
-                return
+    index = -1
+    for path in source_paths(dataset, root):
+        with open(path) as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                if split is not None and row.get("split") != split:
+                    continue
+                index += 1
+                if keep is not None and not keep(index, row):
+                    continue
+                yield row
+                n += 1
+                if limit is not None and n >= limit:
+                    return
 
 
 def label_pool(dataset: str, root: str = PREFETCH_DIR) -> list[dict]:
@@ -286,20 +313,127 @@ class OptionSetSampler:
     def __init__(self, datasets: list[str] | tuple[str, ...] = ALLOWED_DATASETS,
                  config: SamplerConfig | None = None,
                  rows_per_dataset: int | None = None,
-                 root: str = PREFETCH_DIR):
+                 root: str = PREFETCH_DIR,
+                 pools: dict | None = None,
+                 keep: dict | None = None,
+                 quotas: dict | None = None):
+        """`pools` and `keep` are what a `data.mix.MixSpec` injects.
+
+        `pools[d]` skips the full-file scan `label_pool` would do — for
+        `civil-comments` that is a gigabyte re-read per sampler. `keep[d]`
+        is the mixture's seeded row selector, so a source enters at its
+        capped share instead of at whatever its first N rows happen to be.
+        `quotas[d]` is that source's exact sample budget: the selector
+        draws with headroom (`data.mix.DRAW_HEADROOM`) and the rows are
+        trimmed here in file order, so the realised share IS the planned
+        one instead of a binomial draw around it.
+        """
         self.config = config or SamplerConfig()
         self.datasets = assert_trainable(datasets)
         self.root = root
         self.rows_per_dataset = rows_per_dataset
+        self.keep = dict(keep or {})
+        self.quotas = dict(quotas or {})
+        #: split-relative index of every row kept, parallel to `self.rows`
+        self.row_index: dict[str, list[int]] = {}
         self.pools: dict[str, list[dict]] = {
-            d: label_pool(d, root) for d in self.datasets}
+            d: list((pools or {}).get(d) or label_pool(d, root))
+            for d in self.datasets}
         self.pool_ids: dict[str, set[str]] = {
             d: {o["id"] for o in p} for d, p in self.pools.items()}
         self.index: dict[str, DistractorIndex] = {
             d: DistractorIndex(p, self.config) for d, p in self.pools.items()}
         self.rows: dict[str, list[dict]] = {
-            d: list(iter_rows(d, self.config.split, rows_per_dataset, root))
+            d: list(iter_rows(d, self.config.split, rows_per_dataset, root,
+                              keep=self._row_keep(d)))
             for d in self.datasets}
+        for d in self.datasets:
+            if self.quotas.get(d):
+                self.trim_to_quota(d, self.quotas[d])
+
+    def trim_to_quota(self, dataset: str, quota: int) -> int:
+        """Cut the row list at the last row that fits `quota` samples.
+
+        Row granularity, the same rule `data.mix.realise()` applies, so a
+        manifest built from the corpus and a stream built by this loader
+        stop on exactly the same member.
+        """
+        selector = self.keep.get(dataset)
+        indices = self.row_index.get(dataset, [])
+        kept, cut = 0, 0
+        for n, row in enumerate(self.rows[dataset]):
+            index = indices[n] if indices else n
+            if selector is None:
+                selected = len(row.get("questions", []))
+            else:
+                selected = sum(1 for q in row.get("questions", [])
+                               if selector(index, q.get("id", ""),
+                                           q.get("answer")))
+            if not selected:
+                continue
+            if kept + selected > quota:
+                break
+            kept += selected
+            cut = n + 1
+        self.rows[dataset] = self.rows[dataset][:cut]
+        if indices:
+            self.row_index[dataset] = indices[:cut]
+        return kept
+
+    def selected_questions(self, dataset: str) -> int:
+        """How many samples this source really emits per epoch.
+
+        Not `sum(len(row.questions))`: a mixture selector decides per
+        QUESTION, and `helpsteer2` ships five per row. The caps count
+        samples, so this is the number they must be computed on.
+        """
+        selector = self.keep.get(dataset)
+        rows = self.rows.get(dataset, [])
+        if selector is None:
+            return sum(len(r.get("questions", [])) for r in rows)
+        indices = self.row_index.get(dataset, [])
+        return sum(1 for n, row in enumerate(rows)
+                   for q in row.get("questions", [])
+                   if selector(indices[n], q.get("id", ""), q.get("answer")))
+
+    def filter_rows(self, dataset: str, predicate) -> int:
+        """Drop rows failing `predicate`, keeping `row_index` in lockstep.
+
+        `#T-train-real`'s holdout cuts rows after loading; if the parallel
+        index were not cut with them, the mixture selector would be asked
+        about the wrong row and the realised shares would stop matching the
+        manifest. Returns how many rows survived.
+        """
+        rows = self.rows.get(dataset, [])
+        index = self.row_index.get(dataset)
+        if not index:
+            self.rows[dataset] = [r for r in rows if predicate(r)]
+        else:
+            pairs = [(i, r) for i, r in zip(index, rows) if predicate(r)]
+            self.row_index[dataset] = [i for i, _ in pairs]
+            self.rows[dataset] = [r for _, r in pairs]
+        return len(self.rows[dataset])
+
+    def _row_keep(self, dataset: str):
+        """Adapt a mix selector — which decides per QUESTION — to a row.
+
+        A row survives when any of its questions is selected; questions the
+        selector drops are filtered again in `epoch()`, so a multi-question
+        source (helpsteer2 ships five) is sampled at the question level and
+        still counted once per question by the caps.
+        """
+        selector = self.keep.get(dataset)
+        if selector is None:
+            return None
+        kept = self.row_index.setdefault(dataset, [])
+
+        def _keep(index: int, row: dict) -> bool:
+            if not any(selector(index, q.get("id", ""), q.get("answer"))
+                       for q in row.get("questions", [])):
+                return False
+            kept.append(index)
+            return True
+        return _keep
 
     # -- per-question composition (seeded by the row, not by the epoch) --
     def _set_rng(self, dataset: str, row_id: str, qid: str) -> random.Random:
@@ -356,9 +490,15 @@ class OptionSetSampler:
     def epoch(self, epoch: int = 0):
         """Yield every sample of one epoch, options reshuffled for `epoch`."""
         for dataset in self.datasets:
+            selector = self.keep.get(dataset)
+            indices = self.row_index.get(dataset, [])
             for n, row in enumerate(self.rows[dataset]):
                 row_id = f"{dataset}-{n}"
                 for question in row.get("questions", []):
+                    if selector is not None and not selector(
+                            indices[n], question.get("id", ""),
+                            question.get("answer")):
+                        continue
                     sample = self.compose(dataset, row, question, row_id)
                     self._shuffle(sample, epoch)
                     yield sample
@@ -394,10 +534,11 @@ class OptionSetSampler:
         (boolq: yes/no) cannot satisfy it and are exempt — see
         `binary_exempt_datasets()`; every other dataset must be empty here.
         """
+        exempt = set(self.fixed_option_datasets())
         out = []
         for s in samples:
             pool = self.pool_ids[s.dataset]
-            if len(pool) <= BINARY_POOL_SIZE:
+            if s.dataset in exempt:
                 continue
             if set(s.option_ids()) == pool:
                 out.append({"dataset": s.dataset, "row_id": s.row_id,
@@ -407,6 +548,20 @@ class OptionSetSampler:
     def binary_exempt_datasets(self) -> list[str]:
         return [d for d in self.datasets
                 if len(self.pool_ids[d]) <= BINARY_POOL_SIZE]
+
+    def fixed_option_datasets(self) -> list[str]:
+        """Sources whose option set IS their label space, by construction.
+
+        Two kinds, both declared rather than inferred: a binary pool
+        (boolq's yes/no) and an ordinal scale (`helpsteer2`'s score 0-4,
+        registered with `dynamic_options=False` in `data.mix`). Sampling a
+        subset of a scale would not make it dynamic, it would make it wrong,
+        so these are exempt from the global-label-space check — and their
+        share of the mixture is exactly what the 15 % cap exists to bound.
+        """
+        return [d for d in self.datasets
+                if len(self.pool_ids[d]) <= BINARY_POOL_SIZE
+                or (d in MIX_SOURCES and not MIX_SOURCES[d].dynamic_options)]
 
     def composition(self, samples: list[Sample]) -> dict:
         """Counted composition: K distribution, % hard, % unknown."""
@@ -575,6 +730,7 @@ def firewall_report() -> dict:
         else:  # pragma: no cover - a pass here is a firewall regression
             blocked[name] = ""
     return {"allowed": list(ALLOWED_DATASETS),
+            "trainable": list(TRAINABLE_DATASETS),
             "blocked": blocked,
             "all_blocked": all(bool(v) for v in blocked.values())}
 
@@ -611,9 +767,11 @@ def run_gate(rows_per_dataset: int = 4000, config: SamplerConfig | None = None,
             "violations": len(violations),
             "examples": violations[:5],
             "exempt_binary_datasets": sampler.binary_exempt_datasets(),
+            "exempt_datasets": sampler.fixed_option_datasets(),
             "exempt_reason": (
-                "a pool of 2 (boolq yes/no) IS the question: its option set "
-                "cannot differ from its global label space"),
+                "a pool of 2 (boolq yes/no) or an ordinal scale IS the "
+                "question: its option set cannot differ from its global "
+                "label space"),
             "pool_sizes": {d: len(ids)
                            for d, ids in sorted(sampler.pool_ids.items())},
         },

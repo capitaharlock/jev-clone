@@ -1,0 +1,508 @@
+{
+  "built_utc": "2026-09-21T15:46:17Z",
+  "checks": {
+    "checks": {
+      "dynamic_options_are_the_majority": {
+        "floor": 0.5,
+        "pass": true,
+        "share": 0.577483,
+        "why": "the product property is choosing among options that vary per row; fixed-label binaries must not be most of what the head sees"
+      },
+      "guardrails_hold": {
+        "breaches": [],
+        "enforced_by": "data.mix.verify_mix (raises MixGuardrailError)",
+        "pass": true
+      },
+      "no_dataset_over_cap": {
+        "cap": 0.15,
+        "pass": true,
+        "shares": {
+          "banking77": 0.142492,
+          "boolq": 0.137532,
+          "civil-comments": 0.142492,
+          "email-triage": 0.007513,
+          "helpsteer2": 0.142492,
+          "huffpost": 0.142492,
+          "massive": 0.142492,
+          "synth-v1": 0.142492
+        }
+      },
+      "no_family_over_cap": {
+        "cap": 0.3,
+        "pass": true,
+        "shares": {
+          "grounded": 0.142492,
+          "intent": 0.292498,
+          "preference": 0.142492,
+          "qa": 0.137532,
+          "topic": 0.142492,
+          "toxicity": 0.142492
+        }
+      },
+      "synthetic_is_a_minority": {
+        "cap": 0.5,
+        "pass": true,
+        "share": 0.150006
+      }
+    },
+    "guardrails": {
+      "breaches": [],
+      "by_family": {
+        "grounded": 9767,
+        "intent": 20049,
+        "preference": 9767,
+        "qa": 9427,
+        "topic": 9767,
+        "toxicity": 9767
+      },
+      "checks": {
+        "dataset:banking77": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "dataset:boolq": {
+          "cap": 0.15,
+          "n": 9427,
+          "ok": true,
+          "share": 0.137532
+        },
+        "dataset:civil-comments": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "dataset:email-triage": {
+          "cap": 0.15,
+          "n": 515,
+          "ok": true,
+          "share": 0.007513
+        },
+        "dataset:helpsteer2": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "dataset:huffpost": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "dataset:massive": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "dataset:synth-v1": {
+          "cap": 0.15,
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "family:grounded": {
+          "cap": 0.3,
+          "datasets": [
+            "synth-v1"
+          ],
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "family:intent": {
+          "cap": 0.3,
+          "datasets": [
+            "banking77",
+            "email-triage",
+            "massive"
+          ],
+          "n": 20049,
+          "ok": true,
+          "share": 0.292498
+        },
+        "family:preference": {
+          "cap": 0.3,
+          "datasets": [
+            "helpsteer2"
+          ],
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "family:qa": {
+          "cap": 0.3,
+          "datasets": [
+            "boolq"
+          ],
+          "n": 9427,
+          "ok": true,
+          "share": 0.137532
+        },
+        "family:topic": {
+          "cap": 0.3,
+          "datasets": [
+            "huffpost"
+          ],
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        },
+        "family:toxicity": {
+          "cap": 0.3,
+          "datasets": [
+            "civil-comments"
+          ],
+          "n": 9767,
+          "ok": true,
+          "share": 0.142492
+        }
+      },
+      "total": 68544
+    },
+    "pass": true
+  },
+  "composition": {
+    "by_dataset": {
+      "banking77": 9767,
+      "boolq": 9427,
+      "civil-comments": 9767,
+      "email-triage": 515,
+      "helpsteer2": 9767,
+      "huffpost": 9767,
+      "massive": 9767,
+      "synth-v1": 9767
+    },
+    "by_family": {
+      "grounded": 9767,
+      "intent": 20049,
+      "preference": 9767,
+      "qa": 9427,
+      "topic": 9767,
+      "toxicity": 9767
+    },
+    "by_k": {
+      "2": 21601,
+      "3": 807,
+      "4": 34680,
+      "5": 11456
+    },
+    "by_lang": {
+      "de-DE": 282,
+      "en": 58262,
+      "en-US": 1853,
+      "es": 515,
+      "es-ES": 1941,
+      "fr-FR": 1867,
+      "it-IT": 1918,
+      "pt-PT": 1906
+    },
+    "by_origin": {
+      "human": 58262,
+      "synthetic": 10282
+    },
+    "by_qtype": {
+      "choice": 36369,
+      "noul": 22408,
+      "score": 9767
+    },
+    "dynamic_option_rows": 39583,
+    "dynamic_option_share": 0.577483,
+    "rows": 68544,
+    "top_dataset_share": 0.142492
+  },
+  "diversity": {
+    "shares": {
+      "dataset": {
+        "banking77": 0.142492,
+        "boolq": 0.137532,
+        "civil-comments": 0.142492,
+        "email-triage": 0.007513,
+        "helpsteer2": 0.142492,
+        "huffpost": 0.142492,
+        "massive": 0.142492,
+        "synth-v1": 0.142492
+      },
+      "family": {
+        "grounded": 0.142492,
+        "intent": 0.292498,
+        "preference": 0.142492,
+        "qa": 0.137532,
+        "topic": 0.142492,
+        "toxicity": 0.142492
+      },
+      "k_bucket": {
+        "2-4": 0.832866,
+        "5-8": 0.167134
+      },
+      "lang": {
+        "de-DE": 0.004114,
+        "en": 0.849994,
+        "en-US": 0.027034,
+        "es": 0.007513,
+        "es-ES": 0.028318,
+        "fr-FR": 0.027238,
+        "it-IT": 0.027982,
+        "pt-PT": 0.027807
+      },
+      "origin": {
+        "human": 0.849994,
+        "synthetic": 0.150006
+      },
+      "qtype": {
+        "choice": 0.530593,
+        "noul": 0.326914,
+        "score": 0.142492
+      }
+    },
+    "simpson": {
+      "dataset": 0.8592,
+      "family": 0.8143,
+      "k_bucket": 0.2784,
+      "lang": 0.2736,
+      "origin": 0.255,
+      "qtype": 0.5913
+    }
+  },
+  "elapsed_s": 6.7,
+  "excluded": {
+    "logiqa": "reasoning benchmark, eval-only (finding G)",
+    "reclor": "reasoning benchmark, eval-only (finding G)",
+    "synth-loop": "quarantined (finding C): 190 skeletons, split by i % 10"
+  },
+  "fence_conflicts": [
+    {
+      "dataset": "banking77",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    },
+    {
+      "dataset": "helpsteer2",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    }
+  ],
+  "format": 2,
+  "guardrails": {
+    "cap_safety_margin": 0.0075,
+    "cap_units": 1.05,
+    "enforcement": "hard error: data.mix.verify_mix raises MixGuardrailError and mix construction aborts",
+    "max_dataset_fraction": 0.15,
+    "max_family_fraction": 0.3,
+    "max_synthetic_fraction": 0.5,
+    "min_dynamic_fraction": 0.5
+  },
+  "members_sha256": "65f9156b467b629db84daa8497f91390d5a29f67e3cac028401cc1ca6eac1cab",
+  "seed": 20260921,
+  "seen_labels": {},
+  "selection": {
+    "function": "data.mix.keep_row",
+    "keep_fractions": {
+      "banking77": 1.0,
+      "boolq": 1.0,
+      "civil-comments": 0.00622318,
+      "email-triage": 0.1480625,
+      "helpsteer2": 0.11052992,
+      "huffpost": 0.06893577,
+      "massive": 0.1625854,
+      "synth-v1": 0.32232473
+    },
+    "key": "sha256(seed \\0 dataset \\0 row_index \\0 question_id)",
+    "note": "stateless: seed + keep fractions + the shard sha256 below rebuild this mixture without a member list"
+  },
+  "sources": {
+    "banking77": {
+      "dynamic_options": true,
+      "family": "intent",
+      "kept": 9767,
+      "lang_scope": "en",
+      "note": "77 sibling intents \u2014 the hardest dynamic pool in the corpus",
+      "origin": "human",
+      "pool_size": 77,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 6360326,
+          "path": "artifacts/data-prefetch/banking77.jsonl",
+          "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 10003,
+      "weight": 1.0
+    },
+    "boolq": {
+      "dynamic_options": false,
+      "family": "qa",
+      "kept": 9427,
+      "lang_scope": "en",
+      "note": "yes/no: a two-label pool IS the question, never dynamic",
+      "origin": "human",
+      "pool_size": 2,
+      "quota": 9427,
+      "shards": [
+        {
+          "bytes": 10279023,
+          "path": "artifacts/data-prefetch/boolq.jsonl",
+          "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+        }
+      ],
+      "share": 0.137532,
+      "supply": 9427,
+      "weight": 0.35
+    },
+    "civil-comments": {
+      "dynamic_options": false,
+      "family": "toxicity",
+      "kept": 9767,
+      "lang_scope": "en",
+      "note": "finding E: 74.6 % of the raw corpus, capped at 15 % here",
+      "origin": "human",
+      "pool_size": 2,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 1062302574,
+          "path": "artifacts/data-prefetch/civil-comments.jsonl",
+          "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 1804874,
+      "weight": 0.35
+    },
+    "email-triage": {
+      "dynamic_options": true,
+      "family": "intent",
+      "kept": 515,
+      "lang_scope": "es",
+      "note": "4 labels, Spanish only (audit finding D): kept small on purpose",
+      "origin": "synthetic",
+      "pool_size": 4,
+      "quota": 515,
+      "shards": [
+        {
+          "bytes": 2820195,
+          "path": "artifacts/data-prefetch/email-triage.jsonl",
+          "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+        }
+      ],
+      "share": 0.007513,
+      "supply": 4000,
+      "weight": 0.7
+    },
+    "helpsteer2": {
+      "dynamic_options": false,
+      "family": "preference",
+      "kept": 9767,
+      "lang_scope": "en",
+      "note": "ordinal score 0-4 shared by 5 attributes; the scale IS the option set, so it is exempt from the global-label-space check",
+      "origin": "human",
+      "pool_size": 5,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 76977430,
+          "path": "artifacts/data-prefetch/helpsteer2.jsonl",
+          "sha256": "5fefac5fe5ec09344ea9658b4ad1fae741a11f1771bb4d01a385958b0b89cab8"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 101620,
+      "weight": 0.35
+    },
+    "huffpost": {
+      "dynamic_options": true,
+      "family": "topic",
+      "kept": 9767,
+      "lang_scope": "en",
+      "note": "41 categories; 11 of them are the unseen-label holdout",
+      "origin": "human",
+      "pool_size": 41,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 88534603,
+          "path": "artifacts/data-prefetch/huffpost.jsonl",
+          "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 162935,
+      "weight": 1.0
+    },
+    "massive": {
+      "dynamic_options": true,
+      "family": "intent",
+      "kept": 9767,
+      "lang_scope": "multi",
+      "note": "60 intents across 4 locales; carries the multilingual axis",
+      "origin": "human",
+      "pool_size": 60,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 40814161,
+          "path": "artifacts/data-prefetch/massive.jsonl",
+          "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 69084,
+      "weight": 1.0
+    },
+    "synth-v1": {
+      "dynamic_options": true,
+      "family": "grounded",
+      "kept": 9767,
+      "lang_scope": "multi",
+      "note": "teacher-adjudicated distillation corpus; K varies 2-5",
+      "origin": "synthetic",
+      "pool_size": 7,
+      "quota": 9767,
+      "shards": [
+        {
+          "bytes": 11596670,
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "bytes": 11712197,
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "bytes": 11681874,
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "bytes": 11695007,
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "bytes": 11634129,
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "bytes": 2409,
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ],
+      "share": 0.142492,
+      "supply": 34847,
+      "weight": 0.7
+    }
+  },
+  "target": 68544,
+  "task": "T-corpus-rebalance",
+  "version": "decision-mix-v2"
+}

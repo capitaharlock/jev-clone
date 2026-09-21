@@ -95,6 +95,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 if ROOT not in sys.path:  # the trainer runs both as -m and as a script
     sys.path.insert(0, ROOT)
 
+from data import mix as mixmod  # noqa: E402
 from data.optset import (ALLOWED_DATASETS, DistractorIndex,  # noqa: E402
                          OptionSetSampler, SamplerConfig, difficulty)
 
@@ -113,9 +114,15 @@ DEFAULT_STAGES = (62_500, 125_000, 250_000, 500_000, 1_000_000)
 #: rolling window (samples) for ECE, so a bin estimate exists from step 1
 ECE_WINDOW = 2048
 ECE_BINS = 15
-#: the eval split of each dataset; boolq ships `calibration`, not `test`
+#: the eval split of each dataset; boolq and helpsteer2 ship `calibration`
 EVAL_SPLIT = {"banking77": "test", "massive": "test", "huffpost": "test",
-              "boolq": "calibration"}
+              "boolq": "calibration", "helpsteer2": "calibration",
+              "civil-comments": "test", "email-triage": "test",
+              "synth-v1": "test"}
+#: rows an eval sampler loads per dataset. Every P0 eval split is smaller
+#: than this; it exists so `civil-comments` (97 320 test rows) cannot pull
+#: a hundred thousand rows into memory to answer 3 000 eval questions.
+EVAL_ROWS_CAP = 20_000
 #: share of each label pool held out as "never seen in training"
 UNSEEN_LABEL_FRACTION = {"huffpost": 11 / 41, "banking77": 0.25,
                          "massive": 0.25, "boolq": 0.0}
@@ -246,14 +253,20 @@ def sibling_holdout(pool: list, fraction: float, cos_weight: float = 0.5
 
 
 def build_holdout(datasets=ALLOWED_DATASETS, root: str = PREFETCH_DIR,
-                  fractions: dict | None = None) -> dict:
-    """Per-dataset seen/unseen label split. Deterministic, no rng."""
+                  fractions: dict | None = None,
+                  pools: dict | None = None) -> dict:
+    """Per-dataset seen/unseen label split. Deterministic, no rng.
+
+    `pools` comes from `data.mix.scan_supply`, which already walked every
+    shard: without it this re-reads a gigabyte of `civil-comments` to
+    rediscover that its label space is {toxic, not_toxic}.
+    """
     from data.optset import label_pool
 
     fractions = fractions or UNSEEN_LABEL_FRACTION
     out: dict = {}
     for name in datasets:
-        pool = label_pool(name, root)
+        pool = (pools or {}).get(name) or label_pool(name, root)
         frac = fractions.get(name, 0.0)
         if len(pool) <= 2 or frac <= 0.0:
             out[name] = DatasetHoldout(
@@ -292,19 +305,30 @@ def restrict(sampler: OptionSetSampler, keep: set) -> OptionSetSampler:
     sampler.pool_ids[dataset] = {o["id"] for o in sampler.pools[dataset]}
     sampler.index[dataset] = DistractorIndex(sampler.pools[dataset],
                                              sampler.config)
-    sampler.rows[dataset] = [
-        r for r in sampler.rows[dataset]
-        if r.get("questions") and all(q.get("answer") in keep
-                                      for q in r["questions"])]
+    sampler.filter_rows(
+        dataset,
+        lambda r: bool(r.get("questions")) and all(q.get("answer") in keep
+                                                   for q in r["questions"]))
     return sampler
 
 
 def make_sampler(dataset: str, keep: set, split: str, config: SamplerConfig,
-                 rows: int | None = None, root: str = PREFETCH_DIR):
-    """One restricted, firewall-checked sampler for one dataset."""
+                 rows: int | None = None, root: str = PREFETCH_DIR,
+                 pools: dict | None = None, mix_keep=None,
+                 quota: int | None = None):
+    """One restricted, firewall-checked sampler for one dataset.
+
+    `mix_keep` is `data.mix.MixSpec.keep(dataset)` — the seeded selector
+    that brings the source in at its CAPPED share. Without it a source
+    enters at its first `rows` rows, which for `civil-comments` is 1.8 M and
+    for everyone else is whatever the file happens to start with.
+    """
     cfg = SamplerConfig(**{**asdict(config), "split": split})
     sampler = OptionSetSampler(datasets=(dataset,), config=cfg,
-                               rows_per_dataset=rows, root=root)
+                               rows_per_dataset=rows, root=root,
+                               pools=pools,
+                               keep={dataset: mix_keep} if mix_keep else None,
+                               quotas={dataset: quota} if quota else None)
     return restrict(sampler, keep)
 
 
@@ -319,12 +343,22 @@ class MixtureStream:
     and every dataset finishes its epoch at the same time.
     """
 
-    def __init__(self, samplers: dict, batch_size: int = 32):
+    def __init__(self, samplers: dict, batch_size: int = 32,
+                 verify: bool = True):
+        """`verify` runs the corpus guardrails on the REALISED mixture.
+
+        Not on the plan: the unseen-label holdout cuts rows after the
+        quotas are computed, so the only composition worth checking is the
+        one these samplers will actually emit. A breach raises
+        `data.mix.MixGuardrailError` and the run stops — finding E existed
+        because a 74.6 % share was a number in a report instead of an
+        error in a pipeline.
+        """
         self.samplers = samplers
         self.batch_size = batch_size
-        self.sizes = {d: sum(len(r.get("questions", []))
-                             for r in s.rows[d])
-                      for d, s in samplers.items()}
+        self.sizes = {d: s.selected_questions(d) for d, s in samplers.items()}
+        self.guardrails = (mixmod.verify_mix(self.sizes) if verify and
+                           self.sizes else None)
 
     def total(self) -> int:
         return sum(self.sizes.values())
@@ -361,13 +395,31 @@ class MixtureStream:
 
 
 def train_samplers(holdout: dict, config: SamplerConfig,
-                   rows: int | None = None, root: str = PREFETCH_DIR) -> dict:
-    return {d: make_sampler(d, set(h.seen), "train", config, rows, root)
-            for d, h in holdout.items() if h.seen}
+                   rows: int | None = None, root: str = PREFETCH_DIR,
+                   spec=None, pools: dict | None = None) -> dict:
+    """One sampler per source of the MIXTURE, not per file on disk.
+
+    With a `data.mix.MixSpec` the datasets, their row budgets and their
+    seeded selectors all come from the descriptor, so what trains is what
+    the manifest says trains. Without one this keeps the old behaviour:
+    every dataset with a seen-label pool, whole, in file order.
+    """
+    datasets = spec.datasets if spec is not None else list(holdout)
+    out = {}
+    for d in datasets:
+        h = holdout.get(d)
+        if h is None or not h.seen:
+            continue
+        mix_keep = spec.keep(d) if spec is not None else None
+        quota = spec.quotas.get(d) if spec is not None else None
+        out[d] = make_sampler(d, set(h.seen), "train", config, rows, root,
+                              pools=pools, mix_keep=mix_keep, quota=quota)
+    return out
 
 
 def eval_samplers(holdout: dict, which: str, config: SamplerConfig,
-                  rows: int | None = None, root: str = PREFETCH_DIR) -> dict:
+                  rows: int | None = None, root: str = PREFETCH_DIR,
+                  pools: dict | None = None) -> dict:
     """`seen` or `unseen` eval samplers over each dataset's eval split.
 
     Eval never emits `unknown` rows: the question asked here is "does it
@@ -381,7 +433,8 @@ def eval_samplers(holdout: dict, which: str, config: SamplerConfig,
         if len(keep) < 2:
             continue
         out[d] = make_sampler(d, keep, EVAL_SPLIT.get(d, "test"), cfg,
-                              rows, root)
+                              rows if rows is not None else EVAL_ROWS_CAP,
+                              root, pools=pools)
     return out
 
 
@@ -547,7 +600,8 @@ def evaluate(engine, samplers: dict, max_samples: int = 4000,
     _require_torch()
     if not samplers:
         return {"n": 0, "skipped": "no eval sampler for this cut"}
-    stream = MixtureStream(samplers, batch_size)
+    # eval mixtures are not the training corpus: no cap applies
+    stream = MixtureStream(samplers, batch_size, verify=False)
     metrics = RunningMetrics()
     engine.head.eval()
     with torch.no_grad():
@@ -585,7 +639,8 @@ def holdout_cleanliness(holdout: dict, samplers: dict,
     per_dataset = max(1, max_samples // max(len(samplers), 1))
     for d, sampler in samplers.items():
         seen_here = 0
-        for batch in MixtureStream({d: sampler}, 64).epoch(0):
+        for batch in MixtureStream({d: sampler}, 64,
+                                   verify=False).epoch(0):
             for sample in batch:
                 checked += 1
                 seen_here += 1
@@ -709,10 +764,38 @@ def data_manifest(datasets, root: str = PREFETCH_DIR) -> dict:
     """sha256 of the exact corpus bytes: seed + this = reproducible run."""
     out = {}
     for d in datasets:
-        path = os.path.join(root, f"{d}.jsonl")
-        out[d] = {"sha256": sha256_file(path),
-                  "bytes": os.path.getsize(path)}
+        shards = mixmod.SOURCES[d].paths(root) if d in mixmod.SOURCES else [
+            os.path.join(root, f"{d}.jsonl")]
+        shards = [p for p in shards if os.path.exists(p)]
+        out[d] = {"sha256": sha256_file(shards[0]) if len(shards) == 1 else [
+            {"path": os.path.relpath(p, ROOT), "sha256": sha256_file(p)}
+            for p in shards],
+            "bytes": sum(os.path.getsize(p) for p in shards)}
     return out
+
+
+def build_mix(seed: int, root: str = PREFETCH_DIR, target: int | None = None,
+              datasets=None) -> tuple:
+    """Scan, hold labels out, plan the mixture (#T-corpus-rebalance).
+
+    One pass over the corpus answers all three: the label pool of every
+    source (which the holdout carves), the per-label gold counts (which say
+    how much supply survives that carving) and the shard sha256 the
+    manifest pins. Quotas are then planned on the SURVIVING supply, so the
+    share a source is granted is the share it can actually deliver.
+
+    Returns `(spec, scan, pools, holdout)`.
+    """
+    scan = mixmod.scan_supply(datasets, root)
+    present = [d for d, s in scan.items() if not s.get("missing")]
+    pools = {d: [{"id": i, "text": t}
+                 for i, t in sorted(scan[d]["pool"].items())]
+             for d in present if scan[d]["pool"]}
+    holdout = build_holdout(present, root, pools=pools)
+    seen_labels = {d: list(h.seen) for d, h in holdout.items() if h.unseen}
+    supply = mixmod.effective_supply(scan, seen_labels)
+    spec = mixmod.plan_mix(supply, target, seed, seen_labels, scan)
+    return spec, scan, pools, holdout
 
 
 def lr_at(step: int, total: int, base: float, warmup: int = 200) -> float:
@@ -738,6 +821,56 @@ class MetricsLog:
         self.fh.close()
 
 
+def _realised_counts(samplers: dict, stream) -> dict:
+    """Count the diversity axes of what the samplers will really emit.
+
+    Same shape and same member digest as `data.mix.realise()`, but read off
+    the rows already in memory instead of walking the corpus a second time
+    — so the mixture the manifest describes is literally the one this run
+    is about to train on, holdout cuts included.
+    """
+    digest = hashlib.sha256()
+    counts = {"dataset": {}, "family": {}, "origin": {}, "qtype": {},
+              "lang": {}, "k": {}, "k_bucket": {}, "dynamic": 0, "rows": 0,
+              "per_dataset": {}}
+    for dataset in sorted(samplers):
+        sampler = samplers[dataset]
+        source = mixmod.SOURCES[dataset]
+        selector = sampler.keep.get(dataset)
+        indices = sampler.row_index.get(dataset, [])
+        kept = 0
+        for n, row in enumerate(sampler.rows[dataset]):
+            index = indices[n] if indices else n
+            lang = mixmod.lang_of(row.get("state", ""), source.lang_scope)
+            for q in row.get("questions", []):
+                qid = q.get("id", "")
+                if selector is not None and not selector(index, qid,
+                                                         q.get("answer")):
+                    continue
+                options = q.get("options", [])
+                k = len(options)
+                qtype = mixmod.question_type(
+                    q.get("kind", ""), [o.get("text", "") for o in options])
+                digest.update(f"{dataset}\x00{index}\x00{qid}\n".encode())
+                for axis, key in (("dataset", dataset),
+                                  ("family", source.family),
+                                  ("origin", source.origin),
+                                  ("qtype", qtype), ("lang", lang),
+                                  ("k", str(k)),
+                                  ("k_bucket", mixmod.k_bucket(k))):
+                    counts[axis][key] = counts[axis].get(key, 0) + 1
+                counts["dynamic"] += int(source.dynamic_options)
+                counts["rows"] += 1
+                kept += 1
+        counts["per_dataset"][dataset] = {
+            "kept": kept, "family": source.family, "origin": source.origin,
+            "dynamic_options": source.dynamic_options,
+            "weight": source.weight, "note": source.note}
+    counts["members_sha256"] = digest.hexdigest()
+    counts["stream_sizes"] = dict(sorted(stream.sizes.items()))
+    return counts
+
+
 def train(max_samples: int = 250_000, batch_size: int = 32,
           lr: float = 3e-4, seed: int = DEFAULT_SEED, device: str = "auto",
           run_id: str | None = None, rows_per_dataset: int | None = None,
@@ -745,8 +878,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           stages: tuple = DEFAULT_STAGES, backbone_id: str = DEFAULT_BACKBONE,
           max_length: int = TRAIN_MAX_LENGTH, root: str = PREFETCH_DIR,
           d_model: int = DEFAULT_D_MODEL, n_layers: int = DEFAULT_LAYERS,
-          n_heads: int = DEFAULT_HEADS, write_gate: bool = True) -> dict:
-    """One model, one mixture, listwise loss, stage curve 250 k -> 1 M."""
+          n_heads: int = DEFAULT_HEADS, write_gate: bool = True,
+          mix_target: int | None = None, use_mix: bool = True) -> dict:
+    """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
     run_id = run_id or time.strftime("dec-%Y%m%dT%H%M%SZ", time.gmtime())
@@ -755,17 +889,38 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
 
     torch.manual_seed(seed)
     config = SamplerConfig(seed=seed)
-    holdout = build_holdout(root=root)
+    spec = pools = None
+    train_rows = rows_per_dataset
+    if use_mix:
+        if mix_target is None and rows_per_dataset is not None:
+            # a smoke run: the same SHARES, a smaller mixture. The row
+            # budget cannot be split evenly (helpsteer2 ships five samples
+            # per row, the intent family has three sources), so it scales
+            # the target and the quotas do the dividing.
+            mix_target = rows_per_dataset * len(mixmod.SOURCES)
+        spec, _scan, pools, holdout = build_mix(seed, root, mix_target)
+        train_rows = None  # the quota is the budget
+    else:  # the pre-#T-corpus-rebalance path: uncapped, P0 datasets only
+        holdout = build_holdout(root=root)
     holdout_path = os.path.join(run_dir, "holdout.json")
     with open(holdout_path, "w") as fh:
         json.dump(holdout_report(holdout), fh, indent=2, sort_keys=True)
         fh.write("\n")
 
-    tr = train_samplers(holdout, config, rows_per_dataset, root)
-    ev_seen = eval_samplers(holdout, "seen", config, rows_per_dataset, root)
-    ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset, root)
+    tr = train_samplers(holdout, config, train_rows, root, spec, pools)
+    ev_seen = eval_samplers(holdout, "seen", config, rows_per_dataset, root,
+                            pools)
+    ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset,
+                              root, pools)
     stream = MixtureStream(tr, batch_size)
     epoch_size = stream.total()
+    mix_manifest = None
+    if spec is not None:
+        mix_manifest = mixmod.build_manifest(
+            spec, _realised_counts(tr, stream), _scan)
+        with open(os.path.join(run_dir, "mix.json"), "w") as fh:
+            json.dump(mix_manifest, fh, indent=2, sort_keys=True)
+            fh.write("\n")
 
     backbone = load_backbone(backbone_id, device)
     torch.manual_seed(seed)  # the head's init must not depend on load order
@@ -789,6 +944,20 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                      "params": backbone.params, "frozen": True,
                      "revision": BACKBONES[backbone_id]["revision"]},
         "data_manifest": data_manifest(sorted(tr), root),
+        "mix": ({"version": mix_manifest["version"],
+                 "seed": mix_manifest["seed"],
+                 "target": mix_manifest["target"],
+                 "rows": mix_manifest["composition"]["rows"],
+                 "by_dataset": mix_manifest["composition"]["by_dataset"],
+                 "by_family": mix_manifest["composition"]["by_family"],
+                 "dynamic_option_share":
+                     mix_manifest["composition"]["dynamic_option_share"],
+                 "members_sha256": mix_manifest["members_sha256"],
+                 "pass": mix_manifest["checks"]["pass"],
+                 "path": os.path.join("artifacts", "runs", run_id,
+                                      "mix.json")}
+                if mix_manifest else {"enforced": False,
+                                      "why": "--no-mix"}),
         "holdout_path": os.path.relpath(holdout_path, ROOT),
         "epoch_samples": epoch_size,
         "max_samples": max_samples,
@@ -961,7 +1130,8 @@ def scale_curve(run_id: str) -> list:
 def probe_samples(samplers: dict, n: int = 25) -> list:
     out = []
     for sampler in samplers.values():
-        for batch in MixtureStream({sampler.datasets[0]: sampler}, 16).epoch(0):
+        for batch in MixtureStream({sampler.datasets[0]: sampler},
+                                   16, verify=False).epoch(0):
             out.extend(batch)
             break
         if len(out) >= n:
@@ -1131,8 +1301,19 @@ def main(argv: list) -> int:
     t.add_argument("--eval-samples", type=int, default=3000)
     t.add_argument("--log-every", type=int, default=10)
     t.add_argument("--max-length", type=int, default=TRAIN_MAX_LENGTH)
+    t.add_argument("--backbone", default=DEFAULT_BACKBONE,
+                   help=("which sha256-verified backbone to train the head "
+                         "on; #T-bakeoff-real trains one short run per "
+                         "candidate to fill the Pareto"))
     t.add_argument("--no-gate", action="store_true",
                    help="do not rewrite artifacts/gates/T-train-real")
+    t.add_argument("--mix-target", type=int, default=None,
+                   help=("rows in the capped mixture (#T-corpus-rebalance); "
+                         "default: the largest the 15 %%/30 %% caps allow"))
+    t.add_argument("--no-mix", action="store_true",
+                   help=("train the raw P0 datasets uncapped — the "
+                         "pre-rebalance behaviour. The guardrails still run "
+                         "and will abort on the imbalance they find"))
 
     g = sub.add_parser("gate", help="cold gate over a saved checkpoint")
     g.add_argument("--checkpoint", required=True)
@@ -1166,7 +1347,10 @@ def main(argv: list) -> int:
                         eval_samples=args.eval_samples,
                         log_every=args.log_every,
                         max_length=args.max_length,
-                        write_gate=not args.no_gate)
+                        backbone_id=args.backbone,
+                        write_gate=not args.no_gate,
+                        mix_target=args.mix_target,
+                        use_mix=not args.no_mix)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

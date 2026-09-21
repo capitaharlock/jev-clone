@@ -60,18 +60,34 @@ from data.firewall import (  # noqa: E402  (trainer runs as script or -m)
     check_job_allowed,
 )
 from data.leakage import text_hash  # noqa: E402
+from data.mix import keep_row, scan_supply  # noqa: E402
+
+#: seed of the per-job downsample; the manifest already published `7`
+SUBSAMPLE_SEED = 7
 
 # Eval-only firewall (#T-halt-contam): synth-loop is quarantined (finding C),
 # logiqa + reclor are reasoning benchmarks, never train (finding G). They must
 # not reappear here — main() refuses them as an error via check_job_allowed.
+#
+# #T-corpus-rebalance: every `sample` below is the quota `data.mix` grants
+# that source under the 15 %-per-dataset / 30 %-per-family caps. SAMPLING IS
+# THE RULE, not the exception civil-comments used to be — `None` here used to
+# mean "take all of it", which is how one binary dataset became 74.6 % of the
+# corpus (finding E). `data/test_mix.py::JobsRegistry` fails if any of them
+# grows past what the descriptor grants, so they cannot drift back.
+#
+# This trainer reads ONE file per job and so has no `synth-v1` entry: seven
+# sources cover only 90 % of any mixture under the caps (six cap units), so
+# the JOBS list itself cannot be cap-clean. The product path
+# (`training/python/train_decision.py`) is the one the caps are enforced on.
 JOBS = [
-    {"name": "boolq", "file": "boolq.jsonl", "kind": "boolean", "sample": None},
-    {"name": "helpsteer2", "file": "helpsteer2.jsonl", "kind": "choice", "sample": None},
-    {"name": "civil-comments", "file": "civil-comments.jsonl", "kind": "boolean", "sample": 50000},
-    {"name": "huffpost", "file": "huffpost.jsonl", "kind": "choice", "sample": None},
-    {"name": "banking77", "file": "banking77.jsonl", "kind": "choice", "sample": None},
-    {"name": "massive", "file": "massive.jsonl", "kind": "choice", "sample": None},
-    {"name": "email-triage", "file": "email-triage.jsonl", "kind": "choice", "sample": None},
+    {"name": "boolq", "file": "boolq.jsonl", "kind": "boolean", "sample": 9427},
+    {"name": "helpsteer2", "file": "helpsteer2.jsonl", "kind": "choice", "sample": 9767},
+    {"name": "civil-comments", "file": "civil-comments.jsonl", "kind": "boolean", "sample": 9767},
+    {"name": "huffpost", "file": "huffpost.jsonl", "kind": "choice", "sample": 9767},
+    {"name": "banking77", "file": "banking77.jsonl", "kind": "choice", "sample": 9767},
+    {"name": "massive", "file": "massive.jsonl", "kind": "choice", "sample": 9767},
+    {"name": "email-triage", "file": "email-triage.jsonl", "kind": "choice", "sample": 515},
 ]
 
 _BLOCKED_RAW, _BLOCKED_NORM = None, None
@@ -87,10 +103,25 @@ def _blocked_sets():
 EVAL_SPLITS = {"calibration", "test", "valid", "validation"}
 
 
+def keep_fraction(job) -> float:
+    """`job["sample"] / this file's train supply`, from the cached scan.
+
+    The quota is a row COUNT; the selector needs a rate. `data.mix` already
+    counted the supply of every registered source (and cached it), so this
+    costs nothing and stays true when a corpus grows.
+    """
+    if job["sample"] is None:
+        return 1.0
+    supply = scan_supply([job["name"]]).get(job["name"], {})
+    return min(1.0, job["sample"] / max(supply.get("train_questions", 0), 1))
+
+
 def load(job, sample):
     X_train, y_train, X_eval, y_eval = [], [], [], []
     blocked_raw, blocked_norm = _blocked_sets()
-    seen = 0
+    budget = sample or job["sample"]
+    fraction = keep_fraction({**job, "sample": budget})
+    index = -1
     for line in open(DATA / job["file"]):
         r = json.loads(line)
         if r.get("split") == "train":
@@ -107,25 +138,27 @@ def load(job, sample):
                     f"job {job['name']}: training row matches blocked "
                     "content (normalized layer)"
                 )
+        if r.get("split") == "train":
+            index += 1
         for q in r["questions"]:
             ans = q.get("answer")
             if ans is None or ans == "unknown":
                 continue  # hidden-gold clean-room rows never train
-            if job["sample"] is not None and r.get("split") == "train":
-                # deterministic reservoir-ish subsample: hash on id
-                if (hash(q["id"]) % (10**9)) % 100 >= int(
-                    100 * job["sample"] / 2000000
-                ) and seen >= (sample or job["sample"]):
-                    continue
             if r.get("split") == "train":
-                if job["sample"] is not None and len(X_train) >= job["sample"]:
+                # Seeded, reproducible downsample keyed on the ROW. The old
+                # key was `hash(q["id"])`: salted per process, and constant
+                # across all 1 999 514 civil-comments rows (they share the
+                # id `civil-toxicity-all-0`), so it kept everything.
+                if not keep_row(SUBSAMPLE_SEED, job["name"], index,
+                                q["id"], fraction):
+                    continue
+                if budget is not None and len(X_train) >= budget:
                     continue
                 X_train.append(r["state"])
                 y_train.append(ans)
             elif r.get("split") in EVAL_SPLITS:
                 X_eval.append(r["state"])
                 y_eval.append(ans)
-            seen += 1
     # cap eval for speed
     if len(X_eval) > 20000:
         X_eval, y_eval = X_eval[:20000], y_eval[:20000]

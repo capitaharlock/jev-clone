@@ -21,6 +21,7 @@ import os
 import shutil
 import unittest
 
+from data import mix
 from data.optset import SamplerConfig
 
 from . import train_decision as td
@@ -184,8 +185,11 @@ class TestTrainingRun(unittest.TestCase):
 
     def test_one_multi_dataset_model_not_one_pickle_per_dataset(self):
         run = self.records("run")[0]
-        self.assertEqual(run["datasets"],
-                         ["banking77", "boolq", "huffpost", "massive"])
+        # the mixture, not the P0 four: #T-corpus-rebalance caps every
+        # source at 15 % and brings the rest in at that share
+        self.assertEqual(run["datasets"], sorted(mix.SOURCES))
+        self.assertTrue(run["mix"]["pass"], run["mix"])
+        self.assertGreater(run["mix"]["dynamic_option_share"], 0.5)
         stages = self.records("stage")
         self.assertEqual(len(stages), 1, "one checkpoint, not one per dataset")
         self.assertTrue(os.path.exists(
@@ -200,7 +204,10 @@ class TestTrainingRun(unittest.TestCase):
         self.assertEqual(len(manifest["tokenizer_hash"]), 64)
         self.assertEqual(len(manifest["weights_sha256"]), 64)
         self.assertIn("CacheKey", manifest["runtime_cache_key"])
-        self.assertEqual(manifest["samples_seen"], self.SAMPLES)
+        # the loop stops at the first batch boundary past max_samples, and
+        # a source whose quota is smaller than the batch ends short
+        self.assertGreaterEqual(manifest["samples_seen"], self.SAMPLES)
+        self.assertLess(manifest["samples_seen"], self.SAMPLES + 32)
         self.assertGreater(manifest["tokens_seen"], 0)
 
     def test_the_head_stays_label_free_after_training(self):
@@ -243,6 +250,20 @@ class TestTrainingRun(unittest.TestCase):
         self.assertEqual([r["loss"] for r in mine],
                          [r["loss"] for r in other])
         self.assertEqual(self.summary["tokens_seen"], again["tokens_seen"])
+
+    def test_the_mixture_obeys_the_corpus_guardrails(self):
+        """#T-corpus-rebalance, enforced where the batches are built."""
+        with open(os.path.join(self.run_dir, "mix.json")) as fh:
+            manifest = json.load(fh)
+        composition = manifest["composition"]
+        for dataset, n in composition["by_dataset"].items():
+            self.assertLessEqual(n / composition["rows"],
+                                 mix.MAX_DATASET_FRACTION + 1e-9, dataset)
+        for family, n in composition["by_family"].items():
+            self.assertLessEqual(n / composition["rows"],
+                                 mix.MAX_FAMILY_FRACTION + 1e-9, family)
+        self.assertGreater(composition["dynamic_option_share"], 0.5)
+        self.assertEqual(len(manifest["members_sha256"]), 64)
 
 
 if __name__ == "__main__":
