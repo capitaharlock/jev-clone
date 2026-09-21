@@ -6,6 +6,13 @@ DeepSets-style mixer, 1-layer Set-Transformer mixer — on identical
 seeds and budget, including hard semantic siblings. Winner is picked
 on measured robustness + latency; if no mixer wins, the simple
 baseline is selected explicitly instead of blocking the chain.
+
+SUPERSEDED by `model.decision_head` (#T-pointer-head): the set-attention
+mixer and the order-invariance property are now implemented for real, on
+the torch backbone, instead of with random projections in pure Python.
+This module is kept only as the evidence behind
+`artifacts/gates/T-option-mixer/report.json` (the release bundle
+re-hashes it); no new code should score options through it.
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 ---
 title: Model card — jev-clone V1 research release
-updated: 2026-09-20
+updated: 2026-09-21
 owner: general-09192230
 ---
 
@@ -17,6 +17,36 @@ Decision engine state→distributions: V1 answers `choice` (plus `boolean`
 as binary choice) with explicit `unknown` abstention. No text generation.
 Served by the same Rust binary locally and in Docker (`T-cloud-api` parity).
 
+## How the model scores an option (V2 decision head)
+
+Since `#T-pointer-head` the output space of a row **is that row's option
+set**. `model/decision_head.py` encodes the state once (`H_s`), lets 2
+cross-attention blocks read it per (question, option), and scores each
+option with a pointer dot product whose key comes from the **embedding of
+the option's own text**. `unknown` is one extra learned logit inside the
+same softmax, computed from a permutation-invariant summary of the row —
+not a threshold applied afterwards.
+
+What this buys: K varies per row with no padding to a fixed maximum;
+permuting the options moves the probabilities with them (20 permutations,
+max KL 1.0e-07 — `artifacts/gates/T-pointer-head/gate.json`); and an
+option whose text never appeared in training is scored like any other.
+
+**What stops existing**: there is no `clf.classes_`, no `num_labels x d`
+matrix and no global label vocabulary to look a label up in. The old
+`train_baseline.py` path learned `state -> clf.classes_` and never saw
+the option texts — that is the 2026-09-21 audit's finding B and the
+reason ReClor scored 0.254 (exact chance at K=4). Nothing downstream may
+ask the model "which labels do you know": the answer is "whichever ones
+you pass me in this row". Head is 2 699 778 params on a 68 M backbone;
+measured p50 37.6 ms per row at K=4 on CPU, cold state and cold option
+cache.
+
+**Limitation, stated**: the `unknown` gate check is a head-only fit on
+eight toy rows. It proves the mechanism (gradient reaches the `unknown`
+parameters and the logit can win an unanswerable row); abstention quality
+on real data is measured by `#T-train-real`, not here.
+
 ## Evidence (raw artifacts)
 
 - Backbone selection: `artifacts/gates/T-bakeoff/report.json` — top-2
@@ -31,6 +61,9 @@ Served by the same Rust binary locally and in Docker (`T-cloud-api` parity).
   per-locale en-US / es-ES; GO criteria in
   `artifacts/gates/T-calib/report.json` (ece_target 0.05,
   accuracy_preserved true).
+- Decision head: `artifacts/gates/T-pointer-head/gate.json` — pass
+  true, 2 699 778 head params, order invariance max KL 1.0e-07 over 20
+  permutations, K in {2,4,9}, p50 37.573 ms/row at K=4 (cpu, 30 runs).
 - Serving: `artifacts/gates/T-cloud-api/coldstart.json` — verdict GO
   against a 30.0 s budget; API contract in `.meshkore/docs/api-v1.md`.
 - Bill of materials: `sbom.json` (also baked into the image as

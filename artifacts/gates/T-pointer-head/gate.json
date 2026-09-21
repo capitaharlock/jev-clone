@@ -1,0 +1,86 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer dot-product over option text embeddings; no num_labels matrix",
+    "unknown": "learned logit over a permutation-invariant row summary"
+  },
+  "backbone": {
+    "hidden_size": 512,
+    "id": "ettin-68m",
+    "params": 68144640
+  },
+  "checks": {
+    "label_free": {
+      "offenders": {},
+      "pass": true
+    },
+    "order_invariance": {
+      "argmax_stable": true,
+      "max_kl": 8.940699161348723e-08,
+      "n_perms": 20,
+      "pass": true,
+      "tolerance": 0.0001
+    },
+    "unknown_logit": {
+      "answerable_not_abstained": true,
+      "first_loss": 1.2853728532791138,
+      "last_loss": 2.6850531867239624e-05,
+      "limitation": "toy head-only fit: mechanism only, abstention quality is measured by #T-train-real",
+      "pass": true,
+      "unknown_grad_step0": 129.63238525390625,
+      "unknown_wins_unanswerable": true
+    },
+    "unseen_label": {
+      "pass": true,
+      "rank": 4,
+      "unseen_logit": -0.6535637378692627
+    },
+    "variable_k": {
+      "detail": {
+        "2": {
+          "argmax_id": "unknown",
+          "finite": true,
+          "k": 2,
+          "n_logits": 3,
+          "sums_to_one": true
+        },
+        "4": {
+          "argmax_id": "unknown",
+          "finite": true,
+          "k": 4,
+          "n_logits": 5,
+          "sums_to_one": true
+        },
+        "9": {
+          "argmax_id": "unknown",
+          "finite": true,
+          "k": 9,
+          "n_logits": 10,
+          "sums_to_one": true
+        }
+      },
+      "ks": [
+        2,
+        4,
+        9
+      ],
+      "pass": true
+    }
+  },
+  "generated_utc": "2026-09-21T12:38:59Z",
+  "head_params": 2699778,
+  "latency_k4": {
+    "cache": "cleared between runs (cold state + cold options)",
+    "device": "cpu",
+    "k": 4,
+    "mean_ms": 37.787,
+    "p50_ms": 37.573,
+    "p95_ms": 40.07,
+    "runs": 30
+  },
+  "pass": true,
+  "task": "T-pointer-head",
+  "torch": "2.14.0"
+}
