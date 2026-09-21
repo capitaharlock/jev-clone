@@ -1,0 +1,229 @@
+{
+  "format": 1,
+  "task": "T-release-gate",
+  "generated_utc": "2026-09-21T14:57:23Z",
+  "verdict": "NO-GO",
+  "verdict_line": "NO-GO \u2014 failed [unseen_accuracy_all_min, unseen_accuracy_cut_min, unseen_above_chance_every_cut, seen_unseen_accuracy_drop_max, seen_ece_max, teacher_cohen_kappa_min, coverage_min_at_risk, latency_p95_max_ms]; absent evidence [teacher_cohen_kappa_min]; evidence marked incoherent [T-pointer-head]",
+  "criteria_path": ".meshkore/docs/release-criteria.md",
+  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
+  "criteria_version": 1,
+  "criteria_signed": false,
+  "signature": {
+    "signed_by": "pending-operator",
+    "signed_utc": null,
+    "criteria_version": 1
+  },
+  "signature_note": "an unsigned criterion still produces a verdict: signing pins the criterion, it does not enable it",
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9",
+  "evidence": {
+    "unseen": {
+      "path": "artifacts/gates/T-unseen-labels/gate.json",
+      "present": true,
+      "sha256": "3f68c4577809763aba3d54f8d447dde12abfb47010f253f7eaa7d298e8c58ad6",
+      "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9"
+    },
+    "latency": {
+      "path": "artifacts/gates/T-pointer-head/gate.json",
+      "present": true,
+      "sha256": "2b56853fd63a11c0c2dfcbbbd6b4c26fa3805a6b1ac1d827fbba2facbbfac347",
+      "model_version": null
+    },
+    "teacher": {
+      "path": null,
+      "present": false,
+      "sha256": null,
+      "model_version": null
+    }
+  },
+  "n_criteria": 12,
+  "n_failed": 8,
+  "failed_criteria": [
+    "unseen_accuracy_all_min",
+    "unseen_accuracy_cut_min",
+    "unseen_above_chance_every_cut",
+    "seen_unseen_accuracy_drop_max",
+    "seen_ece_max",
+    "teacher_cohen_kappa_min",
+    "coverage_min_at_risk",
+    "latency_p95_max_ms"
+  ],
+  "absent_evidence": [
+    "teacher_cohen_kappa_min"
+  ],
+  "criteria_results": [
+    {
+      "criterion": "unseen_accuracy_all_min",
+      "threshold": 0.5,
+      "why_this_number": "3x el azar (mean_k~5.5 => chance 0.166); por debajo el operador revisa mas de lo que acepta",
+      "measured": 0.220306,
+      "pass": false,
+      "evidence": "present",
+      "detail": "ALL cut, unseen labels, uncalibrated accuracy"
+    },
+    {
+      "criterion": "unseen_accuracy_cut_min",
+      "threshold": 0.35,
+      "why_this_number": "algo mas del doble del azar del peor corte; impide que la media tape un dominio muerto",
+      "measured": {
+        "banking77": 0.114603,
+        "huffpost": 0.027,
+        "massive": 0.364256,
+        "massive@eval-locales": 0.342466,
+        "massive@train-locales": 0.375061
+      },
+      "pass": false,
+      "evidence": "present",
+      "detail": "every non-exempt cut on its own",
+      "worst_cut": [
+        "huffpost",
+        0.027
+      ]
+    },
+    {
+      "criterion": "unseen_above_chance_every_cut",
+      "threshold": true,
+      "why_this_number": "sin IC95 por encima del azar la afirmacion no es falsable",
+      "measured": {
+        "banking77": false,
+        "huffpost": false,
+        "massive": true,
+        "massive@eval-locales": true,
+        "massive@train-locales": true
+      },
+      "pass": false,
+      "evidence": "present",
+      "detail": "CI95 lower bound above the cut's own chance rate",
+      "below_chance": [
+        "banking77",
+        "huffpost"
+      ]
+    },
+    {
+      "criterion": "seen_unseen_accuracy_drop_max",
+      "threshold": 0.1,
+      "why_this_number": "los cortes no son igual de dificiles; mas de 10 puntos es vender generalizacion y entregar memorizacion",
+      "measured": 0.121805,
+      "pass": false,
+      "evidence": "present",
+      "detail": "accuracy_seen - accuracy_unseen on the ALL cut"
+    },
+    {
+      "criterion": "unseen_ece_max",
+      "threshold": 0.1,
+      "why_this_number": "doble holgura que el corte donde si se ajusto la temperatura, porque sobre unseen se extrapola",
+      "measured": 0.049957,
+      "pass": true,
+      "evidence": "present",
+      "detail": "calibrated ECE of the unseen cut, ALL",
+      "raw_ece": 0.412531,
+      "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature"
+    },
+    {
+      "criterion": "seen_ece_max",
+      "threshold": 0.05,
+      "why_this_number": "es el ece_target que el repo ya fijo en #T-calib, en el corte donde la temperatura si se ajusto",
+      "measured": 0.072876,
+      "pass": false,
+      "evidence": "present",
+      "detail": "calibrated ECE of the seen cut, ALL",
+      "raw_ece": 0.310443,
+      "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature"
+    },
+    {
+      "criterion": "teacher_cohen_kappa_min",
+      "threshold": 0.6,
+      "why_this_number": "frontera Landis-Koch moderado/sustancial; por debajo destilar del profesor anade ruido",
+      "measured": null,
+      "pass": false,
+      "evidence": "ABSENT",
+      "detail": "Cohen kappa of the release candidate against the distillation teacher on the unseen cut",
+      "evidence_artifact": null,
+      "note": "no artifact in the repo measures the trained checkpoint against the teacher; by \u00a72 absent evidence is a FAILED criterion, not a skipped one. The repo's only kappa (T-gold, 0.0) is synthetic-pilot inter-annotator agreement, not model-vs-teacher"
+    },
+    {
+      "criterion": "coverage_min_at_risk",
+      "threshold": 0.5,
+      "why_this_number": "riesgo 0.20 = 80% de precision en lo contestado (minimo para dejar de revisar); cubrir menos de la mitad del trafico no ahorra nada",
+      "measured": 0.0,
+      "pass": false,
+      "evidence": "present",
+      "detail": "max coverage on the unseen cut at selective risk <= 0.2 with the `unknown` strategy",
+      "risk_max": 0.2,
+      "strategy": "unknown",
+      "best_risk_on_curve": 0.68932
+    },
+    {
+      "criterion": "latency_p95_max_ms",
+      "threshold": 150.0,
+      "why_this_number": "presupuesto de 200 ms por salto de decision; 150 para el modelo y 50 para transporte y serializacion",
+      "measured": 40.07,
+      "pass": false,
+      "evidence": "present",
+      "detail": "latency_k4.p95_ms of artifacts/gates/T-pointer-head/gate.json",
+      "under_budget": true,
+      "model_version_present": false,
+      "note": "the number is under budget but the artifact names no model_version: by C2 an unattributable metric cannot sustain a release"
+    },
+    {
+      "criterion": "unknown_abstain_band",
+      "threshold": [
+        0.05,
+        0.8
+      ],
+      "why_this_number": "fuera de la banda la abstencion es degenerada y la accuracy deja de significar nada",
+      "measured": 0.505868,
+      "pass": true,
+      "evidence": "present",
+      "detail": "abstention rate on the unseen cut must sit inside [0.05, 0.8]"
+    },
+    {
+      "criterion": "unknown_ranks_best",
+      "threshold": true,
+      "why_this_number": "si maxprob descarta mejor que el logit unknown, la cabeza de abstencion no aprendio a abstenerse",
+      "measured": {
+        "unknown": 0.721541,
+        "maxprob": 0.772082,
+        "margin": 0.807491
+      },
+      "pass": true,
+      "evidence": "present",
+      "detail": "avg_selective_risk of `unknown` vs every rival strategy"
+    },
+    {
+      "criterion": "unknown_beats_random",
+      "threshold": true,
+      "why_this_number": "suelo absoluto: una cabeza de abstencion que no bate al azar elige al azar a que callarse",
+      "measured": true,
+      "pass": true,
+      "evidence": "present",
+      "detail": "the `unknown` risk-coverage curve must beat random selection"
+    }
+  ],
+  "coherence": {
+    "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u2014 all ERRORS, never warnings",
+    "n_gates": 32,
+    "n_invalid": 14,
+    "invalid": [
+      "T-bakeoff",
+      "T-calib",
+      "T-curriculum",
+      "T-distillation",
+      "T-firewall",
+      "T-gold",
+      "T-local-infer",
+      "T-option-mixer",
+      "T-pointer-head",
+      "T-release",
+      "T-split-domain",
+      "T-state-cache",
+      "T-synth-factory",
+      "T-torch-stack"
+    ],
+    "blocking_this_release": [
+      "T-pointer-head"
+    ],
+    "artifact": "artifacts/gates/T-release-gate/coherence-audit.json"
+  },
+  "honesty": "thresholds are read from the markdown, never from constants in the code; numbers are read from the artifacts of #T-unseen-labels and #T-pointer-head unchanged. A NO-GO is the correct outcome of this gate, not a failure of it",
+  "pass": false
+}

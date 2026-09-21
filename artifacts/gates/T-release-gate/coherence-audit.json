@@ -1,0 +1,1400 @@
+{
+  "format": 1,
+  "generated_utc": "2026-09-21T14:57:23Z",
+  "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u2014 all ERRORS, never warnings",
+  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
+  "n_gates": 32,
+  "n_invalid": 14,
+  "invalid": [
+    "T-bakeoff",
+    "T-calib",
+    "T-curriculum",
+    "T-distillation",
+    "T-firewall",
+    "T-gold",
+    "T-local-infer",
+    "T-option-mixer",
+    "T-pointer-head",
+    "T-release",
+    "T-split-domain",
+    "T-state-cache",
+    "T-synth-factory",
+    "T-torch-stack"
+  ],
+  "marked": [
+    "artifacts/gates/T-bakeoff/coherence-invalid.json",
+    "artifacts/gates/T-calib/coherence-invalid.json",
+    "artifacts/gates/T-curriculum/coherence-invalid.json",
+    "artifacts/gates/T-distillation/coherence-invalid.json",
+    "artifacts/gates/T-firewall/coherence-invalid.json",
+    "artifacts/gates/T-gold/coherence-invalid.json",
+    "artifacts/gates/T-local-infer/coherence-invalid.json",
+    "artifacts/gates/T-option-mixer/coherence-invalid.json",
+    "artifacts/gates/T-pointer-head/coherence-invalid.json",
+    "artifacts/gates/T-release/coherence-invalid.json",
+    "artifacts/gates/T-split-domain/coherence-invalid.json",
+    "artifacts/gates/T-state-cache/coherence-invalid.json",
+    "artifacts/gates/T-synth-factory/coherence-invalid.json",
+    "artifacts/gates/T-torch-stack/coherence-invalid.json"
+  ],
+  "results": [
+    {
+      "gate": "T-bakeoff",
+      "path": "artifacts/gates/T-bakeoff",
+      "files": [
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        },
+        "report.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 12,
+        "latency_metrics": 14
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json",
+            "report.json"
+          ],
+          "quality_metrics": [
+            "accuracy",
+            "nll"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-bigsrc",
+      "path": "artifacts/gates/T-bigsrc",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-calib",
+      "path": "artifacts/gates/T-calib",
+      "files": [
+        "calibration.json",
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        },
+        "report.json": {
+          "green": true,
+          "by": "/verdict",
+          "value": "GO"
+        }
+      },
+      "publishes": {
+        "quality_metrics": 38,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": true,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json",
+            "report.json"
+          ],
+          "metrics": {
+            "report.json": {
+              "quality": {
+                "nll": [
+                  "/test/pre/nll",
+                  "/test/post/nll",
+                  "/ood/pre/nll",
+                  "/ood/post/nll"
+                ],
+                "brier": [
+                  "/test/pre/brier",
+                  "/test/post/brier",
+                  "/ood/pre/brier",
+                  "/ood/post/brier"
+                ],
+                "ece": [
+                  "/test/pre/ece",
+                  "/test/post/ece",
+                  "/test/post/reliability/ece",
+                  "/ood/pre/ece"
+                ],
+                "accuracy": [
+                  "/test/pre/accuracy",
+                  "/test/post/accuracy",
+                  "/ood/pre/accuracy",
+                  "/ood/post/accuracy"
+                ],
+                "overall_error": [
+                  "/test/risk_coverage/maxprob/overall_error",
+                  "/test/risk_coverage/energy/overall_error",
+                  "/test/risk_coverage/margin/overall_error",
+                  "/ood/risk_coverage/maxprob/overall_error"
+                ],
+                "avg_selective_risk": [
+                  "/test/risk_coverage/maxprob/avg_selective_risk",
+                  "/test/risk_coverage/energy/avg_selective_risk",
+                  "/test/risk_coverage/margin/avg_selective_risk",
+                  "/ood/risk_coverage/maxprob/avg_selective_risk"
+                ]
+              },
+              "latency": {},
+              "n_quality": 38,
+              "n_latency": 0
+            }
+          }
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-cloud-api",
+      "path": "artifacts/gates/T-cloud-api",
+      "files": [
+        "coldstart.json",
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "coldstart.json": {
+          "green": true,
+          "by": "/verdict",
+          "value": "GO"
+        },
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-curriculum",
+      "path": "artifacts/gates/T-curriculum",
+      "files": [
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 4,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "report.json": {
+              "quality": {
+                "ece": [
+                  "/stages/s0-warmup/ece",
+                  "/stages/s1-multi/ece",
+                  "/stages/s2-semantic/ece",
+                  "/stages/s3-hardneg/ece"
+                ]
+              },
+              "latency": {},
+              "n_quality": 4,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "ece"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-data-eval",
+      "path": "artifacts/gates/T-data-eval",
+      "files": [
+        "calibration_manifest.json",
+        "eval.json",
+        "general_manifest.json",
+        "jevals_ids.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 18,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-data-p0",
+      "path": "artifacts/gates/T-data-p0",
+      "files": [
+        "gate.json",
+        "summary.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": true,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-data-schema",
+      "path": "artifacts/gates/T-data-schema",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-distillation",
+      "path": "artifacts/gates/T-distillation",
+      "files": [
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 12,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "report.json": {
+              "quality": {
+                "nll": [
+                  "/hard/nll",
+                  "/soft/nll",
+                  "/zero_shot_hard/nll",
+                  "/zero_shot_soft/nll"
+                ],
+                "brier": [
+                  "/hard/brier",
+                  "/soft/brier",
+                  "/zero_shot_hard/brier",
+                  "/zero_shot_soft/brier"
+                ],
+                "ece": [
+                  "/hard/ece",
+                  "/soft/ece",
+                  "/zero_shot_hard/ece",
+                  "/zero_shot_soft/ece"
+                ]
+              },
+              "latency": {},
+              "n_quality": 12,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "brier",
+            "ece",
+            "nll"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-firewall",
+      "path": "artifacts/gates/T-firewall",
+      "files": [
+        "gate.json",
+        "raw_results.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        },
+        "raw_results.json": {
+          "green": true,
+          "by": "/verdict",
+          "value": "GO"
+        }
+      },
+      "publishes": {
+        "quality_metrics": 2,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json",
+            "raw_results.json"
+          ],
+          "metrics": {
+            "raw_results.json": {
+              "quality": {
+                "detection_rate": [
+                  "/detection_rate"
+                ],
+                "false_positive_rate": [
+                  "/false_positive_rate"
+                ]
+              },
+              "latency": {},
+              "n_quality": 2,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json",
+            "raw_results.json"
+          ],
+          "quality_metrics": [
+            "detection_rate",
+            "false_positive_rate"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-gold",
+      "path": "artifacts/gates/T-gold",
+      "files": [
+        "gate.json",
+        "pilot.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 2,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [
+        {
+          "file": "report.json",
+          "at": "/iaa/cohen_kappa",
+          "value": 0.0
+        }
+      ],
+      "errors": [
+        {
+          "rule": "C1",
+          "severity": "error",
+          "why": "green claim with cohen_kappa <= 0.1: agreement indistinguishable from chance cannot sit next to a PASS",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "offending": [
+            {
+              "file": "report.json",
+              "at": "/iaa/cohen_kappa",
+              "cohen_kappa": 0.0
+            }
+          ]
+        },
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "report.json": {
+              "quality": {
+                "cohen_kappa": [
+                  "/iaa/cohen_kappa"
+                ],
+                "exact_agree_rate": [
+                  "/iaa/exact_agree_rate"
+                ]
+              },
+              "latency": {},
+              "n_quality": 2,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "cohen_kappa",
+            "exact_agree_rate"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-halt-contam",
+      "path": "artifacts/gates/T-halt-contam",
+      "files": [
+        "gate.json",
+        "leak-report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        },
+        "leak-report.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-hardneg",
+      "path": "artifacts/gates/T-hardneg",
+      "files": [
+        "gate.json",
+        "ood_registry.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-local-infer",
+      "path": "artifacts/gates/T-local-infer",
+      "files": [
+        "bench.json",
+        "devices.json",
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 3
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "bench.json": {
+              "quality": {},
+              "latency": {
+                "p50_ms": [
+                  "/p50_ms"
+                ],
+                "p95_ms": [
+                  "/p95_ms"
+                ],
+                "p99_ms": [
+                  "/p99_ms"
+                ]
+              },
+              "n_quality": 0,
+              "n_latency": 3
+            }
+          }
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-massive-huff",
+      "path": "artifacts/gates/T-massive-huff",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-mix-1m",
+      "path": "artifacts/gates/T-mix-1m",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-option-mixer",
+      "path": "artifacts/gates/T-option-mixer",
+      "files": [
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 3,
+        "latency_metrics": 3
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "report.json": {
+              "quality": {
+                "accuracy": [
+                  "/results/independent/accuracy",
+                  "/results/deepsets/accuracy",
+                  "/results/set_transformer/accuracy"
+                ]
+              },
+              "latency": {
+                "p50_ms": [
+                  "/results/independent/p50_ms",
+                  "/results/deepsets/p50_ms",
+                  "/results/set_transformer/p50_ms"
+                ]
+              },
+              "n_quality": 3,
+              "n_latency": 3
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "accuracy"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-optset-sampler",
+      "path": "artifacts/gates/T-optset-sampler",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-pointer-head",
+      "path": "artifacts/gates/T-pointer-head",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 3
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "gate.json": {
+              "quality": {},
+              "latency": {
+                "mean_ms": [
+                  "/latency_k4/mean_ms"
+                ],
+                "p50_ms": [
+                  "/latency_k4/p50_ms"
+                ],
+                "p95_ms": [
+                  "/latency_k4/p95_ms"
+                ]
+              },
+              "n_quality": 0,
+              "n_latency": 3
+            }
+          }
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-prog-gold",
+      "path": "artifacts/gates/T-prog-gold",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-quant-onnx",
+      "path": "artifacts/gates/T-quant-onnx",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-recon",
+      "path": "artifacts/gates/T-recon",
+      "files": [
+        "gate.json",
+        "recon-report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-release",
+      "path": "artifacts/gates/T-release",
+      "files": [
+        "gate.json",
+        "release.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        },
+        "release.json": {
+          "green": true,
+          "by": "/numbers/cold_verdict",
+          "value": "GO"
+        }
+      },
+      "publishes": {
+        "quality_metrics": 2,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [
+        {
+          "file": "release.json",
+          "at": "/numbers/cohen_kappa",
+          "value": 0.0
+        }
+      ],
+      "errors": [
+        {
+          "rule": "C1",
+          "severity": "error",
+          "why": "green claim with cohen_kappa <= 0.1: agreement indistinguishable from chance cannot sit next to a PASS",
+          "green_claimed_by": [
+            "gate.json",
+            "release.json"
+          ],
+          "offending": [
+            {
+              "file": "release.json",
+              "at": "/numbers/cohen_kappa",
+              "cohen_kappa": 0.0
+            }
+          ]
+        },
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json",
+            "release.json"
+          ],
+          "metrics": {
+            "release.json": {
+              "quality": {
+                "cohen_kappa": [
+                  "/numbers/cohen_kappa"
+                ],
+                "exact_agree_rate": [
+                  "/numbers/exact_agree_rate"
+                ]
+              },
+              "latency": {},
+              "n_quality": 2,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json",
+            "release.json"
+          ],
+          "quality_metrics": [
+            "cohen_kappa",
+            "exact_agree_rate"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-release-gate",
+      "path": "artifacts/gates/T-release-gate",
+      "files": [
+        "coherence-audit.json",
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 2,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [
+        {
+          "file": "coherence-audit.json",
+          "at": "/results[10]/errors[0]/offending[0]/cohen_kappa",
+          "value": 0.0
+        },
+        {
+          "file": "coherence-audit.json",
+          "at": "/results[22]/errors[0]/offending[0]/cohen_kappa",
+          "value": 0.0
+        }
+      ],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-rust-skel",
+      "path": "artifacts/gates/T-rust-skel",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-shared-state",
+      "path": "artifacts/gates/T-shared-state",
+      "files": [
+        "gate.json",
+        "report.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-split-domain",
+      "path": "artifacts/gates/T-split-domain",
+      "files": [
+        "audit.json",
+        "contrast.json",
+        "gate.json",
+        "invalidated.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 4,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "contrast.json": {
+              "quality": {
+                "accuracy": [
+                  "/before_index_split/accuracy",
+                  "/after_group_split/accuracy"
+                ]
+              },
+              "latency": {},
+              "n_quality": 2,
+              "n_latency": 0
+            },
+            "gate.json": {
+              "quality": {
+                "accuracy": [
+                  "/contrast/before_index_split/accuracy",
+                  "/contrast/after_group_split/accuracy"
+                ]
+              },
+              "latency": {},
+              "n_quality": 2,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "accuracy"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-state-cache",
+      "path": "artifacts/gates/T-state-cache",
+      "files": [
+        "bench.json",
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "bench.json": {
+          "green": true,
+          "by": "/verdict",
+          "value": "GO"
+        },
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 4
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "bench.json",
+            "gate.json"
+          ],
+          "metrics": {
+            "bench.json": {
+              "quality": {},
+              "latency": {
+                "cold_ms": [
+                  "/cold_ms"
+                ],
+                "warm_p50_ms": [
+                  "/warm_p50_ms"
+                ],
+                "warm_p95_ms": [
+                  "/warm_p95_ms"
+                ],
+                "warm_p99_ms": [
+                  "/warm_p99_ms"
+                ]
+              },
+              "n_quality": 0,
+              "n_latency": 4
+            }
+          }
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-synth-factory",
+      "path": "artifacts/gates/T-synth-factory",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 4,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "gate.json": {
+              "quality": {
+                "agreement_rate": [
+                  "/agreement_rate",
+                  "/summary/metrics/agreement_rate"
+                ],
+                "reject_rate": [
+                  "/reject_rate",
+                  "/summary/metrics/reject_rate"
+                ]
+              },
+              "latency": {},
+              "n_quality": 4,
+              "n_latency": 0
+            }
+          }
+        },
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "agreement_rate",
+            "reject_rate"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-torch-stack",
+      "path": "artifacts/gates/T-torch-stack",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 12
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C2",
+          "severity": "error",
+          "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "metrics": {
+            "gate.json": {
+              "quality": {},
+              "latency": {
+                "mean_ms": [
+                  "/backbones[0]/devices/cpu/latency/mean_ms",
+                  "/backbones[0]/devices/mps/latency/mean_ms",
+                  "/backbones[1]/devices/cpu/latency/mean_ms",
+                  "/backbones[1]/devices/mps/latency/mean_ms"
+                ],
+                "p50_ms": [
+                  "/backbones[0]/devices/cpu/latency/p50_ms",
+                  "/backbones[0]/devices/mps/latency/p50_ms",
+                  "/backbones[1]/devices/cpu/latency/p50_ms",
+                  "/backbones[1]/devices/mps/latency/p50_ms"
+                ],
+                "p95_ms": [
+                  "/backbones[0]/devices/cpu/latency/p95_ms",
+                  "/backbones[0]/devices/mps/latency/p95_ms",
+                  "/backbones[1]/devices/cpu/latency/p95_ms",
+                  "/backbones[1]/devices/mps/latency/p95_ms"
+                ]
+              },
+              "n_quality": 0,
+              "n_latency": 12
+            }
+          }
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-train-real",
+      "path": "artifacts/gates/T-train-real",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 19,
+        "latency_metrics": 2
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-unseen-labels",
+      "path": "artifacts/gates/T-unseen-labels",
+      "files": [
+        "calibration.json",
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 224,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": true,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    }
+  ],
+  "pass": false,
+  "criteria_source": ".meshkore/docs/release-criteria.md"
+}

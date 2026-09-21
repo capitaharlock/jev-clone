@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "marked_by": "T-release-gate",
+  "marked_utc": "2026-09-21T14:57:23Z",
+  "gate": "T-state-cache",
+  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3)",
+  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
+  "verdict": "INVALID \u2014 published green against a coherence rule",
+  "kept": "this artifact is MARKED, not deleted: a bad published number is part of the record",
+  "green_claimed_by": [
+    "bench.json",
+    "gate.json"
+  ],
+  "errors": [
+    {
+      "rule": "C2",
+      "severity": "error",
+      "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+      "green_claimed_by": [
+        "bench.json",
+        "gate.json"
+      ],
+      "metrics": {
+        "bench.json": {
+          "quality": {},
+          "latency": {
+            "cold_ms": [
+              "/cold_ms"
+            ],
+            "warm_p50_ms": [
+              "/warm_p50_ms"
+            ],
+            "warm_p95_ms": [
+              "/warm_p95_ms"
+            ],
+            "warm_p99_ms": [
+              "/warm_p99_ms"
+            ]
+          },
+          "n_quality": 0,
+          "n_latency": 4
+        }
+      }
+    }
+  ]
+}

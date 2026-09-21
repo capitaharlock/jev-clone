@@ -1,0 +1,53 @@
+{
+  "format": 1,
+  "marked_by": "T-release-gate",
+  "marked_utc": "2026-09-21T14:57:23Z",
+  "gate": "T-firewall",
+  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3)",
+  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
+  "verdict": "INVALID \u2014 published green against a coherence rule",
+  "kept": "this artifact is MARKED, not deleted: a bad published number is part of the record",
+  "green_claimed_by": [
+    "gate.json",
+    "raw_results.json"
+  ],
+  "errors": [
+    {
+      "rule": "C2",
+      "severity": "error",
+      "why": "green claim publishes metrics with no model_version: the numbers are not attributable to any checkpoint",
+      "green_claimed_by": [
+        "gate.json",
+        "raw_results.json"
+      ],
+      "metrics": {
+        "raw_results.json": {
+          "quality": {
+            "detection_rate": [
+              "/detection_rate"
+            ],
+            "false_positive_rate": [
+              "/false_positive_rate"
+            ]
+          },
+          "latency": {},
+          "n_quality": 2,
+          "n_latency": 0
+        }
+      }
+    },
+    {
+      "rule": "C3",
+      "severity": "error",
+      "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+      "green_claimed_by": [
+        "gate.json",
+        "raw_results.json"
+      ],
+      "quality_metrics": [
+        "detection_rate",
+        "false_positive_rate"
+      ]
+    }
+  ]
+}
