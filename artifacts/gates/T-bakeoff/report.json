@@ -1,120 +1,401 @@
 {
-  "seed": 173,
-  "bench_hash": "b531ca6e4003cb1c9a2cef83274791dcbe7fcaece5526a5b8bb9d290bae4016e",
-  "measured": [
-    {
-      "id": "proxy-S",
-      "dim": 256,
-      "status": "harness_only",
-      "comparable": false,
-      "pareto_eligible": false,
-      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-      "accuracy": 0.7708333333333334,
-      "nll": 2.4766982959250887,
-      "p50_ms": 0.5311659770086408,
-      "p95_ms": 0.8910000324249268,
-      "n": 48
+  "checks": {
+    "latency_budget": {
+      "criterion": "p95 at K=4 inside the product's 70.0-500.0 ms budget on at least one device",
+      "offenders": [],
+      "pass": true
     },
-    {
-      "id": "proxy-M",
-      "dim": 1024,
-      "status": "harness_only",
-      "comparable": false,
-      "pareto_eligible": false,
-      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-      "accuracy": 0.8125,
-      "nll": 2.440770198913631,
-      "p50_ms": 1.5451250365003943,
-      "p95_ms": 2.6729999808594584,
-      "n": 48
+    "measured_not_imputed": {
+      "criterion": "unseen accuracy + ECE, p50/p95 at K=4 on MPS and CPU, params, memory and train time are real numbers on every row",
+      "offenders": [],
+      "pass": true
     },
-    {
-      "id": "proxy-L",
-      "dim": 4096,
-      "status": "harness_only",
-      "comparable": false,
-      "pareto_eligible": false,
-      "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-      "accuracy": 0.8541666666666666,
-      "nll": 2.432944046791218,
-      "p50_ms": 5.474290926940739,
-      "p95_ms": 9.36370890121907,
-      "n": 48
+    "minimum_real_scope": {
+      "criterion": "ettin-68m and modernbert-base are both trained and measured",
+      "offenders": [],
+      "pass": true
+    },
+    "no_proxy_in_pareto": {
+      "criterion": "no row with pending_weights / random_init / harness_only may be published on the Pareto",
+      "offenders": [],
+      "pass": true
+    },
+    "pareto_lineage": {
+      "criterion": "every Pareto row names a run_id, a checkpoint, the sha256 of its backbone bytes and the sha256 of its head weights",
+      "offenders": [],
+      "pass": true
+    },
+    "top2_stated": {
+      "criterion": "the top-2 choice and its prose verdict are written into the report",
+      "offenders": [],
+      "pass": true
     }
-  ],
-  "harness_rank": [
-    "proxy-L",
-    "proxy-M",
-    "proxy-S"
-  ],
-  "pareto": {
-    "eligible": [],
-    "verdict": "no comparable candidate measured yet: only harness proxies ran. A Pareto needs at least one real backbone forward pass (#T-bakeoff-real)"
   },
-  "why_others_lose": {
-    "proxy-S": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-    "proxy-M": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-    "proxy-L": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack)",
-    "ettin-68m": "weights_local (clear: permissive license); excluded from Pareto, not imputed",
-    "modernbert-base": "weights_local (clear: permissive license); excluded from Pareto, not imputed",
-    "lfm2.5-230m": "pending_weights (conditional: commercial use pending LFM Open v1.0 review); excluded from Pareto, not imputed",
-    "neobert-250m": "pending_weights (blocked: trust_remote_code unaudited); excluded from Pareto, not imputed"
-  },
-  "pending_real": [
+  "comparable": true,
+  "generated_utc": "2026-09-21T13:54:59Z",
+  "not_available": [
     {
-      "id": "ettin-68m",
-      "status": "weights_local",
-      "gate": {
-        "id": "ettin-68m",
-        "verdict": "clear",
-        "reason": "permissive license"
-      },
-      "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2",
-      "weights_sha256": {
-        "config.json": "0b8f2e4c6bff549b5c3fcfcb5da4265d1d24acd7e5159ae6956c7e85ac2de14e",
-        "pytorch_model.bin": "97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d",
-        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
-        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
-        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
-      },
-      "fetched_utc": "2026-09-21T12:26:13Z"
-    },
-    {
-      "id": "modernbert-base",
-      "status": "weights_local",
-      "gate": {
-        "id": "modernbert-base",
-        "verdict": "clear",
-        "reason": "permissive license"
-      },
-      "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
-      "weights_sha256": {
-        "config.json": "1609d59e627c33eaed524b4f01e546d42e84190a079a5a5ded84b212c41c324f",
-        "model.safetensors": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9",
-        "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
-        "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
-        "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
-      },
-      "fetched_utc": "2026-09-21T12:26:13Z"
-    },
-    {
-      "id": "lfm2.5-230m",
-      "status": "pending_weights",
       "gate": {
         "id": "lfm2.5-230m",
-        "verdict": "conditional",
-        "reason": "commercial use pending LFM Open v1.0 review"
-      }
+        "reason": "commercial use pending LFM Open v1.0 review",
+        "verdict": "conditional"
+      },
+      "id": "lfm2.5-230m",
+      "reason": "weights not materialised under artifacts/weights/lfm2.5-230m/ (#T-torch-stack pins no revision for it)",
+      "status": "not_available"
     },
     {
-      "id": "neobert-250m",
-      "status": "pending_weights",
       "gate": {
         "id": "neobert-250m",
-        "verdict": "blocked",
-        "reason": "trust_remote_code unaudited"
-      }
+        "reason": "trust_remote_code unaudited",
+        "verdict": "blocked"
+      },
+      "id": "neobert-250m",
+      "reason": "licence/export gate blocked: trust_remote_code unaudited",
+      "status": "not_available"
     }
   ],
-  "comparable": false
+  "pareto": {
+    "rows": [
+      {
+        "architecture": {
+          "d_model": 256,
+          "loss": "listwise cross-entropy over [K + 1]",
+          "n_heads": 8,
+          "n_layers": 2,
+          "scorer": "pointer over option text embeddings"
+        },
+        "budget": {
+          "samples_seen": 25024,
+          "seed": 1789,
+          "tokens_seen": 916135
+        },
+        "cost": {
+          "backbone_params": 68144640,
+          "cold_load_s": {
+            "cpu": 0.55,
+            "mps": 0.914
+          },
+          "head_params": 2699778,
+          "inference_memory_mb": {
+            "cpu": 982.2,
+            "mps": 978.1
+          },
+          "samples_seen": 25024,
+          "steps": 391,
+          "tokens_seen": 916135,
+          "train_seconds_to_cutoff": 524.95,
+          "trainable_note": "backbone frozen; only the pointer head trains",
+          "trainable_params": 2699778
+        },
+        "gate": {
+          "id": "ettin-68m",
+          "reason": "permissive license",
+          "verdict": "clear"
+        },
+        "id": "ettin-68m",
+        "latency": {
+          "cpu": {
+            "budget_ms": [
+              70.0,
+              500.0
+            ],
+            "budget_note": "70.0-500.0 ms is what the product ALLOWS a decision to take; a p95 under the floor is head-room, not a miss",
+            "k": 4,
+            "max_ms": 45.397,
+            "p50_ms": 39.83,
+            "p95_ms": 45.076,
+            "runs": 25,
+            "state": "real corpus row, state cache AND option cache cleared per decision",
+            "warmup_runs": 3,
+            "within_budget": true
+          },
+          "mps": {
+            "budget_ms": [
+              70.0,
+              500.0
+            ],
+            "budget_note": "70.0-500.0 ms is what the product ALLOWS a decision to take; a p95 under the floor is head-room, not a miss",
+            "k": 4,
+            "max_ms": 46.081,
+            "p50_ms": 32.533,
+            "p95_ms": 43.561,
+            "runs": 25,
+            "state": "real corpus row, state cache AND option cache cleared per decision",
+            "warmup_runs": 3,
+            "within_budget": true
+          }
+        },
+        "license": "MIT",
+        "lineage": {
+          "checkpoint": "artifacts/checkpoints/decision/bakeoff-ettin-68m-v1/stage-000025000",
+          "head_weights_sha256": "24380159935a154b1fabee940fe57769f5c60b7184b874c8b0aec026ba96aa8c",
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n25024-24380159935a",
+          "run_id": "bakeoff-ettin-68m-v1",
+          "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+          "trainer": "training/python/train_decision.py (#T-train-real)",
+          "weights_sha256": {
+            "config.json": "0b8f2e4c6bff549b5c3fcfcb5da4265d1d24acd7e5159ae6956c7e85ac2de14e",
+            "pytorch_model.bin": "97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d",
+            "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+            "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+            "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+          }
+        },
+        "quality": {
+          "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+          "seen_accuracy": 0.449801,
+          "seen_ece": 0.153366,
+          "seen_n": 3008,
+          "unseen_abstain_rate": 0.157247,
+          "unseen_accuracy": 0.229388,
+          "unseen_accuracy_ci95": [
+            0.214714,
+            0.244753
+          ],
+          "unseen_beats_chance": true,
+          "unseen_brier": 0.893639,
+          "unseen_chance": 0.165072,
+          "unseen_ece": 0.147686,
+          "unseen_n": 3008,
+          "unseen_per_dataset": {
+            "banking77": {
+              "accuracy": 0.274306,
+              "accuracy_options_only": 0.291667,
+              "n": 288
+            },
+            "huffpost": {
+              "accuracy": 0.139358,
+              "accuracy_options_only": 0.182432,
+              "n": 1184
+            },
+            "massive": {
+              "accuracy": 0.290365,
+              "accuracy_options_only": 0.291016,
+              "n": 1536
+            }
+          }
+        },
+        "repo": "jhu-clsp/ettin-encoder-68m",
+        "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2",
+        "status": "trained"
+      },
+      {
+        "architecture": {
+          "d_model": 256,
+          "loss": "listwise cross-entropy over [K + 1]",
+          "n_heads": 8,
+          "n_layers": 2,
+          "scorer": "pointer over option text embeddings"
+        },
+        "budget": {
+          "samples_seen": 25024,
+          "seed": 1789,
+          "tokens_seen": 916135
+        },
+        "cost": {
+          "backbone_params": 149014272,
+          "cold_load_s": {
+            "cpu": 0.648,
+            "mps": 2.225
+          },
+          "head_params": 2896386,
+          "inference_memory_mb": {
+            "cpu": 1059.4,
+            "mps": 1013.0
+          },
+          "samples_seen": 25024,
+          "steps": 391,
+          "tokens_seen": 916135,
+          "train_seconds_to_cutoff": 576.0,
+          "trainable_note": "backbone frozen; only the pointer head trains",
+          "trainable_params": 2896386
+        },
+        "gate": {
+          "id": "modernbert-base",
+          "reason": "permissive license",
+          "verdict": "clear"
+        },
+        "id": "modernbert-base",
+        "latency": {
+          "cpu": {
+            "budget_ms": [
+              70.0,
+              500.0
+            ],
+            "budget_note": "70.0-500.0 ms is what the product ALLOWS a decision to take; a p95 under the floor is head-room, not a miss",
+            "k": 4,
+            "max_ms": 255.404,
+            "p50_ms": 105.692,
+            "p95_ms": 171.46,
+            "runs": 25,
+            "state": "real corpus row, state cache AND option cache cleared per decision",
+            "warmup_runs": 3,
+            "within_budget": true
+          },
+          "mps": {
+            "budget_ms": [
+              70.0,
+              500.0
+            ],
+            "budget_note": "70.0-500.0 ms is what the product ALLOWS a decision to take; a p95 under the floor is head-room, not a miss",
+            "k": 4,
+            "max_ms": 87.654,
+            "p50_ms": 35.265,
+            "p95_ms": 74.715,
+            "runs": 25,
+            "state": "real corpus row, state cache AND option cache cleared per decision",
+            "warmup_runs": 3,
+            "within_budget": true
+          }
+        },
+        "license": "Apache-2.0",
+        "lineage": {
+          "checkpoint": "artifacts/checkpoints/decision/bakeoff-modernbert-base-v1/stage-000025000",
+          "head_weights_sha256": "b8941294da154c5b055beef1c25995e5e7f0e27800cbee37edaa288caa896c87",
+          "model_version": "jev-dec-modernbert-base-d256l2h8-s1789-n25024-b8941294da15",
+          "run_id": "bakeoff-modernbert-base-v1",
+          "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+          "trainer": "training/python/train_decision.py (#T-train-real)",
+          "weights_sha256": {
+            "config.json": "1609d59e627c33eaed524b4f01e546d42e84190a079a5a5ded84b212c41c324f",
+            "model.safetensors": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9",
+            "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+            "tokenizer.json": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+            "tokenizer_config.json": "3cd2017ff46d0a527e5d39cae39272eccfa1f19bb9f89b05d166aab2e38354e2"
+          }
+        },
+        "quality": {
+          "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+          "seen_accuracy": 0.513298,
+          "seen_ece": 0.086161,
+          "seen_n": 3008,
+          "unseen_abstain_rate": 0.025266,
+          "unseen_accuracy": 0.242354,
+          "unseen_accuracy_ci95": [
+            0.227375,
+            0.257989
+          ],
+          "unseen_beats_chance": true,
+          "unseen_brier": 0.826384,
+          "unseen_chance": 0.165072,
+          "unseen_ece": 0.147256,
+          "unseen_n": 3008,
+          "unseen_per_dataset": {
+            "banking77": {
+              "accuracy": 0.204861,
+              "accuracy_options_only": 0.208333,
+              "n": 288
+            },
+            "huffpost": {
+              "accuracy": 0.211149,
+              "accuracy_options_only": 0.228885,
+              "n": 1184
+            },
+            "massive": {
+              "accuracy": 0.273438,
+              "accuracy_options_only": 0.273438,
+              "n": 1536
+            }
+          }
+        },
+        "repo": "answerdotai/ModernBERT-base",
+        "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+        "status": "trained"
+      }
+    ],
+    "top2": [
+      "modernbert-base",
+      "ettin-68m"
+    ],
+    "verdict": "Top-2: modernbert-base, ettin-68m.\n1. modernbert-base \u2014 unseen accuracy 0.242 (chance 0.165, CI95 0.227\u20130.258, n=3008), unseen ECE 0.147, seen accuracy 0.513; decision p95 at K=4 171.5 ms CPU / 74.7 ms MPS; 149 M frozen backbone params + 2.90 M trainable head; 576.0 s to the 25024-sample cut-off.\n2. ettin-68m \u2014 unseen accuracy 0.229 (chance 0.165, CI95 0.215\u20130.245, n=3008), unseen ECE 0.148, seen accuracy 0.45; decision p95 at K=4 45.1 ms CPU / 43.6 ms MPS; 68 M frozen backbone params + 2.70 M trainable head; 525.0 s to the 25024-sample cut-off.\nEvery candidate clears chance on unseen labels at this equal budget (Wilson 95 % lower bound above the mean 1/(K+1) rate), so the order above is a real quality ranking and not a tie-break on cost. The gap between the two is small: the cheaper backbone buys most of the quality for less than half the parameters and less than half the CPU latency."
+  },
+  "pass": true,
+  "production_run_reference": {
+    "available": true,
+    "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9",
+    "pass": true,
+    "run_id": "train-real-v1",
+    "samples_seen": 250053,
+    "snapshot": "read while the run was still going; it moves",
+    "unseen_accuracy": 0.187168,
+    "unseen_chance": 0.165093,
+    "unseen_ece": 0.50813,
+    "verdict": "GO",
+    "why_not_on_the_pareto": "different budget (1 M-sample production run vs the bake-off's equal short budget); comparing them would compare budgets, not backbones"
+  },
+  "protocol": {
+    "cost": "frozen backbone params + trainable head params, peak RSS of a fresh inference process, wall time of the fine-tune to its cut-off",
+    "equal_budget": "one short fine-tune per candidate through training/python/train_decision.py, same seed, same sample cut-off, same mixture, same head architecture, frozen backbone",
+    "eval_samples": 3000,
+    "latency": "whole decision at K=4 on a real corpus state, caches cold, on MPS and CPU, against the 70.0-500.0 ms product budget",
+    "primary_metric": "unseen-label accuracy + ECE \u2014 option texts never seen in training (#T-unseen-labels)",
+    "production_run_untouched": "run_id train-real-v1 (the 1 M production run) is NOT part of this bake-off and its gate was not rewritten",
+    "trainer": "training/python/train_decision.py (#T-train-real)"
+  },
+  "sanity_checks": {
+    "bench_hash": "b531ca6e4003cb1c9a2cef83274791dcbe7fcaece5526a5b8bb9d290bae4016e",
+    "bench_stable_across_runs": true,
+    "harness_proxies": [
+      {
+        "accuracy": 0.7708333333333334,
+        "comparable": false,
+        "dim": 256,
+        "id": "proxy-S",
+        "n": 48,
+        "nll": 2.4766982959250887,
+        "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)",
+        "p50_ms": 0.5405410192906857,
+        "p95_ms": 0.9003749582916498,
+        "pareto_eligible": false,
+        "status": "harness_only"
+      },
+      {
+        "accuracy": 0.8125,
+        "comparable": false,
+        "dim": 1024,
+        "id": "proxy-M",
+        "n": 48,
+        "nll": 2.440770198913631,
+        "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)",
+        "p50_ms": 1.5807499876245856,
+        "p95_ms": 2.6881659869104624,
+        "pareto_eligible": false,
+        "status": "harness_only"
+      },
+      {
+        "accuracy": 0.8541666666666666,
+        "comparable": false,
+        "dim": 4096,
+        "id": "proxy-L",
+        "n": 48,
+        "nll": 2.432944046791218,
+        "not_comparable_because": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)",
+        "p50_ms": 6.581707973964512,
+        "p95_ms": 12.148666894063354,
+        "pareto_eligible": false,
+        "status": "harness_only"
+      }
+    ],
+    "harness_rank": [
+      "proxy-L",
+      "proxy-M",
+      "proxy-S"
+    ],
+    "seed": 173,
+    "what": "hash char-ngram encoders with RANDOM weights. They verify the harness \u2014 dynamic markers restore, masks match variable K, the fixed bench does not move mid-run \u2014 and nothing else. Not comparable to a backbone, never on the Pareto."
+  },
+  "task": "T-bakeoff-real",
+  "top2": [
+    "modernbert-base",
+    "ettin-68m"
+  ],
+  "verdict": "Top-2: modernbert-base, ettin-68m.\n1. modernbert-base \u2014 unseen accuracy 0.242 (chance 0.165, CI95 0.227\u20130.258, n=3008), unseen ECE 0.147, seen accuracy 0.513; decision p95 at K=4 171.5 ms CPU / 74.7 ms MPS; 149 M frozen backbone params + 2.90 M trainable head; 576.0 s to the 25024-sample cut-off.\n2. ettin-68m \u2014 unseen accuracy 0.229 (chance 0.165, CI95 0.215\u20130.245, n=3008), unseen ECE 0.148, seen accuracy 0.45; decision p95 at K=4 45.1 ms CPU / 43.6 ms MPS; 68 M frozen backbone params + 2.70 M trainable head; 525.0 s to the 25024-sample cut-off.\nEvery candidate clears chance on unseen labels at this equal budget (Wilson 95 % lower bound above the mean 1/(K+1) rate), so the order above is a real quality ranking and not a tie-break on cost. The gap between the two is small: the cheaper backbone buys most of the quality for less than half the parameters and less than half the CPU latency.",
+  "why_others_lose": {
+    "lfm2.5-230m": "weights not materialised under artifacts/weights/lfm2.5-230m/ (#T-torch-stack pins no revision for it)",
+    "neobert-250m": "licence/export gate blocked: trust_remote_code unaudited",
+    "proxy-L": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)",
+    "proxy-M": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)",
+    "proxy-S": "random hash-ngram encoder, no trained weights: measures the harness, not a model; barred from the Pareto (#T-torch-stack, #T-bakeoff-real)"
+  }
 }

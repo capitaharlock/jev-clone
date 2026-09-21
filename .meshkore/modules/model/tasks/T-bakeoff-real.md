@@ -1,7 +1,7 @@
 ---
 id: T-bakeoff-real
 title: Bake-off con pesos reales y retirada de los proxies del Pareto
-status: next
+status: done
 priority: medium
 owner: unassigned
 category: model
@@ -10,8 +10,10 @@ depends_on:
   - T-train-real
 created: 2026-09-21
 updated: 2026-09-21
+failed_at: 2026-09-21T13:56:50.962Z
+resolved_by: A015
+resolved_by_conv: work-decision-rebuild-T-bakeoff-real-1790010
 ---
-
 # Bake-off con pesos reales y retirada de los proxies del Pareto
 
 `artifacts/gates/T-bakeoff/report.json` compara hoy encoders hash char-ngram
@@ -49,3 +51,9 @@ si no, se declaran `not_available` con el motivo, como ya se hace.
 - Top-2 de backbone elegido con números medidos, no proxies.
 - El report publica accuracy/ECE unseen + latencia p95 + coste por candidato.
 - La decisión y su porqué están en `.meshkore/docs/model-card.md`.
+
+## Resolution
+
+**Failed — exit 143.**
+
+Now refine the module: split quality-eval from latency-only measurement, and harden the verdict lookups.Both fine-tunes finished. Publishing the report with the full eval.
