@@ -1,0 +1,55 @@
+---
+id: T-candle-infer
+title: Inferencia local real — Candle Metal/CUDA en jev-model con fallback Python
+status: backlog
+priority: medium
+owner: unassigned
+category: runtime
+initiative: oss-release
+depends_on:
+  - T-train-real
+created: 2026-09-21
+updated: 2026-09-21
+---
+
+# Inferencia local real — Candle Metal/CUDA en jev-model con fallback Python
+
+Hallazgo H: **no hay Candle en `Cargo.toml`**. El workspace Rust no tiene
+backend de inferencia neuronal, así que "ejecutar en Metal/CUDA" no existe
+todavía ni como camino. Lo que sí existe y es sólido es
+`crates/jev-runtime`: cache de estado con clave compuesta
+(`model_version`, `state_hash`, `tokenizer_hash`), LRU, batching dinámico con
+ventana 0-2 ms, backpressure y cancelación. Se reutiliza tal cual — le falta
+el motor debajo.
+
+Trabajo:
+
+1. `candle-core` + `candle-nn` en `crates/jev-model`, con features `metal` y
+   `cuda`, y CPU como fallback siempre compilable.
+2. Cargar el checkpoint **safetensors** + `tokenizer.json` de `#T-train-real`
+   e implementar el forward del pointer head: `encode_state` una vez →
+   cross-attention → score por opción. La clave compuesta del cache de
+   `jev-runtime` ya contempla `model_version` y `tokenizer_hash`: se respeta.
+3. **Paridad numérica** contra el runner Python de referencia: mismo prompt →
+   mismo argmax, y diferencia de probabilidades por debajo de tolerancia
+   declarada. El runner Python se conserva como fallback y como oráculo de
+   paridad, no se tira.
+4. Verificación real en hardware: M-series (Metal) y NVIDIA (CUDA), con
+   latencia p50/p95 medida en cada uno dentro del presupuesto 70-500 ms.
+5. `jevclone serve` expone la decisión sobre el modelo real, no sobre un
+   scorer.
+
+## Verification gate
+
+- Test de paridad sobre 1 000 filas: 100 % de coincidencia de argmax con el
+  runner Python, y ECE que no se degrada al cambiar de backend.
+- Benchmark warm y cold publicado por backend (Metal, CUDA, CPU).
+- El gate escribe `artifacts/gates/T-candle-infer/gate.json` con `pass: true`,
+  paridad, latencias por backend y `model_version`.
+
+## Done when
+
+- `crates/jev-model` carga safetensors y ejecuta el pointer head en Metal,
+  CUDA y CPU.
+- La paridad con el runner Python está verificada sobre 1 000 filas.
+- Hay latencias p95 medidas en M-series y en NVIDIA, no estimadas.

@@ -58,6 +58,52 @@ son `eval-only`. Sus URLs canónicas están en el §179 del plan maestro; la
 revisión exacta y hashes se fijan en #T-firewall. La lista se niega por hash y
 por similitud antes de aceptar datos sintéticos o de teacher.
 
+## Local prefetch cache (#T-prefetch)
+
+Todas las fuentes se precargan una sola vez al arrancar el trabajo de modelo
+y se convierten al schema universal en cuanto están en disco, sin esperar al
+fin del proyecto. No redescargar una revisión ya cacheada.
+
+- HF hub cache: `~/.cache/huggingface/hub` (snapshots `models--<org>--<name>`,
+  `datasets--<org>--<name>`; la revisión exacta por fichero la fija
+  `artifacts/data-prefetch/manifest.json`).
+- Convertidos (schema universal, splits train/calibration/test/ood):
+  `artifacts/data-prefetch/<id>.jsonl` (`huffpost`, `banking77`, `boolq`,
+  `civil-comments`, `helpsteer2`); P1 como dump normalizado `<id>.raw.jsonl`
+  (`massive` solo locales `en-US`+`es-ES`, `logiqa20`, `reclor`).
+- Backbones en cache: `jhu-clsp/ettin-encoder-{17m,32m,68m,150m,400m}`,
+  `answerdotai/ModernBERT-base`, `chandar-lab/NeoBERT`,
+  `LiquidAI/LFM2.5-Encoder-230M`.
+- `DeepPavlov/clinc150` se precarga pero es `eval-only`: snapshot sin
+  conversión a train, jamás entra en un manifest de entreno.
+- Conversor: `data/prefetch.py` (adapters P0 de `data/adapters.py`; fence +
+  firewall se revalidan en `T-data-p0`, el prefetch no los sustituye) más
+  conversores snapshot (stdlib, sin datasets/pandas):
+  `data/convert_huffpost.py` (News_Category_Dataset_v2.json del snapshot,
+  universo P0 de 8 categorías, split train/test 90/10 determinista por
+  sha1),
+  `data/convert_banking77.py` (CSVs crudos de GitHub en una sola llamada —
+  el adapter construye el universo de la llamada, por filas fallaría todo),
+  `data/convert_massive.py` (stremea en-US/es-ES del tarball S3 sin
+  extraer; intent v1, slots en crudo para luego).
+- Raw crudos (no redescargar): `artifacts/data-raw/banking77/{train,test}.csv`
+  (github PolyAI-LDN), `artifacts/data-raw/massive/amazon-massive-1.1.tar.gz`
+  (S3), snapshot HuffPost ya en hub cache.
+- Estado 2026-09-20 13:20 UTC: #T-prefetch `done` — manifest 11 jobs
+  (6 convertidos a universal + dumps P1 + snapshots). Baseline v2
+  publicada (boolq 0,68 / helpsteer2 0,32 / civil 0,93) en
+  `artifacts/runs/20260920T110820Z/metrics.json`; v3 en marcha sobre los
+  6 sets (`artifacts/runs-baseline-v3.log`). Conversor Qwen sigue en
+  fondo (`artifacts/data-qwen/`, ~103 variantes).
+- Conversor Qwen en marcha (continuo, `data/qwen_convert.py`,
+  `qwen3.6:27b-mlx` vía ollama localhost:11434, `think:false` — con
+  thinking el content vuelve vacío): lee `artifacts/data-prefetch/*.jsonl`,
+  escribe variantes a `artifacts/data-qwen/<id>.aug.jsonl` con offsets
+  reanudables en `_offsets.json`; CLINC150 excluido por fence.
+  Venv del prefetch: `/tmp/prefetch-env` (efímero; recrear con
+  `python3 -m venv` + `pip install datasets huggingface_hub`).
+  Logs: `artifacts/logs/` (ignorados en git).
+
 ## Veredicto de adecuación
 
 La mezcla es adecuada como punto de partida para un modelo de decisión porque

@@ -1,16 +1,17 @@
 ---
-id: developer
-name: "Developer"
+id: developer-copy
+name: "Developer (duplicate)"
 emoji: "💻"
 color: "#10B981"
 kind: profile
 required: false
 agent_type: custom
-client: muse
+client: claude-code
 provider: anthropic
-model: muse-spark-1.3-contributor
+model: claude-opus-5
 effort: default
-pinned_order: 10
+pinned_order: 11
+exposure: internal
 owns: "Any coding task not tied to one module: features, fixes, refactors, and the tests that cover them."
 delegates_to:
   - tester
@@ -20,7 +21,7 @@ refs:
   - .meshkore/context/stack.md
   - .meshkore/context/architecture.md
 credentials_hint: ".meshkore/credentials/"
-created: 2026-07-03
+created: 2026-09-21
 updated: 2026-09-21
 ---
 # Developer

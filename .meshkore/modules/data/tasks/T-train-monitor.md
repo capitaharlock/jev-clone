@@ -9,6 +9,7 @@ closed: 2026-09-20T22:40:00.000Z
 resolved_by: A004
 resolved_by_conv: general-09192230
 commit_shas: ['e6cab6055d1d7204e034c82560854fee1eb6a455']
+completed_at: 2026-09-21T09:23:16.823Z
 ---
 # T-train-monitor — Live training monitor (terminal + dashboard, 24/7)
 
@@ -65,43 +66,30 @@ Comando correcto:
 
 ## Resolution
 
-**Done — verified 2026-09-20 22:36Z:** `tools/training_monitor.py --once`
-con venv muestra 9 datasets (incl. email-triage, 2.422.995 ejemplos) sin
-cambios de código; suite `data` 117/117 en verde. Pendiente del operador:
-matar el proceso viejo lanzado con `python3` (sigue parado en su terminal)
-y relanzar con `.venv-train/bin/python tools/training_monitor.py --interval
-300 --tick 20 --train --port 8791`.
+No, no estamos a máxima capacidad. El tren anda (1 núcleo al 99%) pero el generador está muerto y Q-W-E-N aporta cero.
 
-Tenías razón en todo: el monitor estaba roto de verdad, ya está corregido y verificado. Eran dos causas, ninguna era falta de datos.
+Lo que veo ahora: `train_baseline.py` corriendo al 98% CPU, monitor vivo en 8794, pero `data_gen_loop.py` sin proceso vivo y `synth-loop.jsonl` congelado en 26.700 filas desde las 08:01. Carga media 7,2 sobre 16 núcleos: la máquina va a medio gas. Y confirmo lo importante: entrenamos encoders de decisión (TF-IDF + regresión por tarea), no un LLM; Q-W-E-N solo inventa plantillas, nunca toca pesos de lenguaje.
 
-Tienes que reiniciar tu terminal (Ctrl+C) y relanzar con este comando — el importante es `.venv-train`, no `python3`:
-`cd /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone && .venv-train/bin/python tools/training_monitor.py --interval 300 --tick 20 --train --port 8791`
-Ahora mismo hay un reentrenamiento completo corriendo que descongelará tus totalizadores al terminar. Y creé #T-teacher-intent en #data-training para los datasets intencionales + teacher barato.
+<details><summary>Estado medido — generador, train, Q-W-E-N</summary>
 
-<details><summary>Causas del "parado" — verificadas, no supuestas</summary>
-
-- Lanzaste con `python3` del sistema, que no tiene sklearn: cada ciclo `--train` moría al instante (`ModuleNotFoundError`, en `artifacts/logs/monitor/train-2026-09-20T214017Z.log`). Los totales llevaban congelados desde el run bueno de las 15:45.
-- Además el entrenamiento bloqueaba el bucle y entre ciclos el monitor dormía 300 s en silencio: ni terminal ni dashboard se movían aunque todo fuera bien.
+- Generador: `make gen-status` dice "(ningún data_gen_loop vivo)". Últimas líneas del log: batch 5 → 26.700 filas (15,1 MB), y ahí se para. Fichero con mtime 08:01, ~3h congelado.
+- Train: pid 77264 con 3 min de CPU al 98,7% en la primera medida; en la segunda ya no listaba (el reentreno completo terminó entre ambas). Es el comportamiento normal: el monitor solo reentrena al detectar datos nuevos, y sin datos nuevos no hay nada que entrenar.
+- Q-W-E-N: `plantillas frescas 0`, `grep qwen synth-loop = 0`, y el arranque registró `qwen-templates-disk=0` sin ninguna línea `[Q-W-E-N]` después. El hook existe (`--qwen-every 24` pide 5 plantillas a `qwen3.6:27b-mlx` en ollama :11434, que sí responde y tiene el modelo), pero en esta vida del generador nunca llegó al batch 24 o el fetch falló en silencio. Resultado: todo lo generado es plantilla programática, cero ideas frescas del modelo.
+- Desfase: 26.700 en disco vs 9.760 entrenadas → hay ~17k filas en cola que el próximo reentreno sí consumirá.
 </details>
 
-<details><summary>Qué cambia el monitor v2 (commit hecho, sin push)</summary>
+<details><summary>Capacidad — cuánto margen hay</summary>
 
-- Elige `.venv-train/bin/python` solo y avisa si falta.
-- Entrena en fondo sin bloquear; el terminal late cada `--tick` (20 s) con líneas `[train]` en streaming y el dashboard se regenera en cada latido, con sección nueva "Entrenamiento en vivo".
-- Verificación: arranque + streaming reales en vivo, `--once` OK, y el propio test cazó un `KeyError: train_note` ya corregido y re-verificado.
-- `coverage.md` actualizado en disco (sin commitear: el fichero trae cambios concurrentes de otros agentes, no los barro en mi commit). Diario escrito.
+- CPU: 1 proceso Python a 1 núcleo de 16. El baseline sklearn es monohilo por tarea; paralelizar por tarea o subir el muestreo lo pondría a 8-16 núcleos sin tocar hardware.
+- Datos: el cuello no es disco (15 MB) sino que el generador lleva 3h parado: cero casos nuevos = cero entrenamiento útil aunque el train diga "EN MARCHA".
+- Q-W-E-N local (27b) da para plantillas cada ~4 min sin frenar nada; hoy aporta 0 por el punto anterior, no por falta de máquina.
 </details>
 
-<details><summary>GPU, más datos y teacher — mi reconsideración</summary>
+<details><summary>Qué haría para ir al máximo — 3 pasos</summary>
 
-- GPU: para el baseline actual (TF-IDF + regresión logística, ~3 min en CPU) no la necesitas. La GPU entra cuando pasemos a afinar encoders de verdad; hasta entonces, gastar GPU es tirar dinero.
-- Más datos: sí, pero intencionales, no más volumen genérico. El 89% Civil Comments no enseña a decidir. #T-teacher-intent propone email-triage (archivar/responder/urgente/spam con pesos) como primer dominio y 2-3 más contigo.
-- Teacher barato (JEv original): usarlo como labeler/juez solo donde Qwen local falle medido (acuerdo < umbral en piloto), con caché para no pagar dos veces y prompts cortos. Todo lo demás, Qwen local primero.
+1. Rearrancar el generador (es lo que te muestra "off"): `cd /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone && nohup .venv-train/bin/python tools/data_gen_loop.py --batch 500 --interval 10 >> /tmp/gen-loop.log 2>&1 &`. Con eso el monitor vuelve a ver `mtime` nuevo y reentrena solo.
+2. Bajar `--qwen-every` de 24 a 6-8 para que Q-W-E-N aporte plantillas desde el primer minuto y comprobar con `tail -f /tmp/gen-loop.log` que aparece `[Q-W-E-N] +N templates live`. Si sigue en +0, el fetch a ollama falla y hay que mirarlo.
+3. Entrenamiento: pasar de reentreno completo ocasional a paralelo por tarea (un worker por núcleo) y subir el muestreo de civil-comments; eso sí pondría la carga cerca de 16. E indexar internet (Wikidata/programático, el #T-prog-gold) es el siguiente volumen real, no más velocidad del loop actual.
 </details>
 
-**Commit** `e6cab6055` · 3 files
-
-**Files changed (3):**
-- `.meshkore/modules/data/tasks/T-teacher-intent.md`
-- `.meshkore/modules/data/tasks/T-train-monitor.md`
-- `tools/training_monitor.py`
+Si quieres lo rearranco yo ahora y te confirmo con `make gen-status` que vuelve a sumar filas.

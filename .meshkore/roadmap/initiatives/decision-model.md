@@ -1,14 +1,16 @@
 ---
+reactivated: 2026-09-20
 id: decision-model
 title: Decision model and training
-status: active
+status: done
 owner: architect-master
 modules:
   - model
 created: 2026-09-19
-updated: 2026-09-19
+updated: 2026-09-20
+completed_at: 2026-09-20T18:39:54.361Z
+commit_sha: 4c2f504ab6bca9cab77b7f8d63fd20dbf1d38584
 ---
-
 # Decision model and training
 
 Tercer tramo de la cadena V1: bake-off, shared state, invariancia de opciones,

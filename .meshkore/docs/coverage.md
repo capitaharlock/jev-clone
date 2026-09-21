@@ -138,3 +138,45 @@ V1 therefore needs one terminal and one computer only.
 | Monitor 24/7 terminal + dashboard (totalizadores, state.json) | #data-training: T-train-monitor (`tools/training_monitor.py`, `artifacts/runs/training-monitor/state.json`; v2: latido `--tick`, train en fondo con venv) |
 | Teacher barato + datasets intencionales de decisión (email-triage v1, juez/labeler) | #data-training: T-teacher-intent `done` (`data/intent/email_triage.py` 5k filas, `data/teacher_client.py` con caché; piloto 500 acuerdo 0,92, coste 0,00 €; train 20260920T223639Z acc=1,0; 14 casos forward-testing) |
 | gRPC / MessagePack / unix sockets | defer: solo si JSON limita |
+
+## Auditoría 2026-09-21 — plan de corrección
+
+Fuente: `.meshkore/docs/audit-2026-09-21.md`. Cada hallazgo mapea a una task.
+Ningún hallazgo queda sin dueño; los tres `#I` nuevos son
+`#decision-rebuild`, `#honest-eval` y `#oss-release` (este último en `next`,
+porque publicar antes de tener modelo sería publicar un baseline léxico).
+
+| Hallazgo | Severidad | Coverage |
+|---|---|---|
+| A · El modelo en entrenamiento no es el del plan (sin torch, sin Candle, proxies aleatorios) | BLOQUEANTE | #decision-rebuild: T-torch-stack, T-bakeoff-real |
+| B · El trainer descarta preguntas y opciones (`X = state`, `y = answer`, label space fijo) | BLOQUEANTE | #decision-rebuild: T-pointer-head, T-optset-sampler, T-train-real |
+| C · acc=1,0000 es contaminación train/test (190 esqueletos, split `i % 10`) | BLOQUEANTE | #decision-rebuild: T-halt-contam · #honest-eval: T-split-domain |
+| D · Q-W-E-N aporta casi cero originalidad (5 plantillas en 11 h, un solo dominio) | ALTO | #data-training: T-gen-schemas (+ T-gen-loop bloqueada) |
+| E · Mezcla dominada por ruido (civil-comments 74,6 %) | ALTO | #data-training: T-corpus-rebalance |
+| F · La evaluación no mide la propiedad del producto (sin unseen, kappa 0 en verde) | ALTO | #honest-eval: T-unseen-labels, T-release-gate |
+| G · LogiQA y ReClor se entrenan en vez de estar en firewall | MEDIO | #decision-rebuild: T-halt-contam |
+| H · El repositorio no es publicable (9 145 ficheros de `target/`, sin README ni inferencia local) | ALTO | #oss-release: T-repo-clean, T-readme-card, T-candle-infer |
+
+Se conserva sin tocar lo que la auditoría dio por bueno: `data/schema.py`,
+los `convert_*.py`, `data/firewall.py` + `data/leakage.py`,
+`crates/jev-runtime` y `start-all.sh` (que deja de arrancar el generador
+viejo).
+
+### Orden de ejecución del plan de corrección
+
+| Orden | Initiative | Task | Desbloquea |
+|---:|---|---|---|
+| 01 | decision-rebuild | T-halt-contam | Para la contaminación; sin esto nada se mide bien |
+| 01' | decision-rebuild | T-torch-stack | Paralelo: sin torch no hay camino al head |
+| 02 | decision-rebuild | T-pointer-head | **El núcleo**: la opción se puntúa por su texto |
+| 02' | decision-rebuild | T-optset-sampler | Paralelo: K dinámica, hard negatives, `unknown` |
+| 03 | honest-eval | T-split-domain | Split por esqueleto/dominio, splits sellados |
+| 04 | decision-rebuild | T-train-real | Entrenamiento listwise, un checkpoint safetensors |
+| 05 | honest-eval | T-unseen-labels | Métrica primaria: accuracy + ECE en etiquetas no vistas |
+| 06 | decision-rebuild | T-bakeoff-real | Top-2 de backbone con pesos reales |
+| 07 | honest-eval | T-release-gate | Criterio de release escrito antes de medir |
+| 08 | data-training | T-gen-schemas | Generador de esquemas de decisión con presupuesto |
+| 09 | data-training | T-corpus-rebalance | Guardrails de mezcla como error duro |
+| 10 | oss-release | T-repo-clean | Repo clonable, historial sin blobs |
+| 11 | oss-release | T-candle-infer | Candle Metal/CUDA con paridad contra Python |
+| 12 | oss-release | T-readme-card | Quickstart de 3 comandos + model card real |

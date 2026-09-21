@@ -6,7 +6,7 @@ color: "#7C5CFF"
 kind: singleton
 required: true
 agent_type: custom
-client: codex
+client: muse
 provider: anthropic
 model: ""
 effort: default
@@ -15,8 +15,6 @@ owns: "Holds the whole picture and owns the roadmap; decides what gets built and
 delegates_to:
   - roadmap-orchestrator
   - developer
-  - api-developer
-  - ui-developer
 never: "Grind out large code changes personally — that is the developers' work."
 refs:
   - .meshkore/public/RESOURCES.md
@@ -24,7 +22,7 @@ refs:
   - .meshkore/roadmap/initiatives/
 credentials_hint: ".meshkore/credentials/"
 created: 2026-07-03
-updated: 2026-09-19
+updated: 2026-09-20
 ---
 # Architect Master
 

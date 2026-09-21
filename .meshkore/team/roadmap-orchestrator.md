@@ -14,8 +14,6 @@ pinned_order: 1
 owns: "Executes the roadmap queue: dispatches one worker per task and applies each verdict."
 delegates_to:
   - developer
-  - api-developer
-  - ui-developer
   - deployer
   - tester
 never: "Write product code itself, or start a second initiative while one is in flight."

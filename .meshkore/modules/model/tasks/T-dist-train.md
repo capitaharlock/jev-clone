@@ -5,11 +5,11 @@ status: backlog
 priority: low
 owner: unassigned
 category: model
-initiative: decision-model
+initiative: train-scaleout
 depends_on:
-  - T-curriculum
+  - T-scaleout-gate
 created: 2026-09-19
-updated: 2026-09-19
+updated: 2026-09-20
 ---
 
 # Optional three-device experiment acceleration
@@ -27,7 +27,12 @@ hacen peor que repartir experimentos. DDP solo se ensaya como gate separado
 si aparecen 2–3 nodos CUDA homogéneos y un run individual domina el calendario.
 
 Fuente: plan §§123–125 (hardware doméstico, no DDP entre Macs, scheduler
-simple) y stack §34.
+simple) y stack §§8–9, §34.
+
+Pertenece a la iniciativa futura `#train-scaleout` (backlog): se ejecuta
+entre `#T-scaleout-gate` (activación/inventario) y `#T-scaleout-data`
+(volumen). La cadena llega transitivamente a `T-curriculum` (done) a
+través del gate.
 
 ## Verification gate
 

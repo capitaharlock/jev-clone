@@ -10,7 +10,7 @@ depends_on:
   - T-recon
 created: 2026-09-19
 updated: 2026-09-20
-completed_at: 2026-09-20T00:21:58Z
+completed_at: 2026-09-20T20:57:25.379Z
 resolved_by: A004
 resolved_by_conv: general-09192230
 commit_shas: ['7f48fd53c7810cb2a66e8402a983ffe97cf4bf13']
@@ -51,16 +51,7 @@ Fuente: plan §§5, 6, 173, 120–121.
 
 ## Resolution
 
-**Failed — exit 1.**
-
-[codex error] You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:06 AM.
-
-5.8M tokens
-
-Unblocked 2026-09-20: el intento previo cayó por límite de uso del agente
-externo, no por causa técnica; su dependencia #T-recon ya está en PASS, así
-que vuelve a `next` como siguiente de la cadena.
-
+Ningún job de entrenamiento corre ahora (ps vacío); el pilot prog-gold falló (rc=1). Hay que relanzarlo; nada activo 24h.
 ## Resolution
 
 #T-bakeoff con gate PASS (linaje 5bba14f9b1c4): harness único con mismos splits/seeds/head provisional; 3 proxies smoke medidos (L 0.854, M 0.812, S 0.771 acc) con top-2 = proxy-L/M; backbones reales como pending_weights (LFM condicional, NeoBERT bloqueado por remote code) excluidos del Pareto sin imputar; 9 tests verdes.

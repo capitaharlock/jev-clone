@@ -50,6 +50,26 @@ auditables (intents, booleanos, scores), on-device o vía API.
 > assumption: se mantiene el título de trabajo `jev-clone` y el binario
 > `jevclone` hasta decidir el nombre comercial antes de la release.
 
+## Model size tracker (actualizar en cada cambio de backbone)
+
+- 2026-09-20 · baseline real entrenado: TF-IDF + regresión logística (~miles de parámetros, no transformer; `artifacts/runs/20260920T154511Z/`). No es el modelo final.
+- 2026-09-20 · bake-off real pendiente de pesos: Ettin-68M (68M) y ModernBERT-base (149M) en `pending_weights`; proxies medidos proxy-S/M/L (dims 256/1024/4096, sin pesos reales).
+- Objetivo V1 (plan §178 + data-strategy §13): 100–250M; rango full fine-tune según ganador 68M–400M (Ettin 17M→1B, ModernBERT-large 395M, LFM2.5-230M/350M si pasa licencia).
+- Regla: cada vez que cambie el backbone o el head, añadir aquí una línea `fecha · backbone · M params` y repetirla en el chat.
+
+## Objetivo operativo actual (2026-09-21, vigente)
+
+Entrenar a máxima capacidad el motor de decisión (NO un LLM): generar
+conjuntos de datos de decisión sin parar y entrenar encoders con ellos,
+24h, desacoplado del terminal. Piezas: `tools/data_gen_loop.py` genera
+filas schema-universal en `artifacts/data-prefetch/synth-loop.jsonl`
+(+ reentreno dirigido + forward test por lote); Q-W-E-N
+(`qwen3.6:27b-mlx` vía Ollama :11434) solo inventa plantillas frescas,
+nunca toca pesos; `tools/training_monitor.py` reentrena el baseline y
+sirve el dashboard. Arranque único: `./start-all.sh [PORT]` (por defecto
+8794). Estado 2026-09-21: Q-W-E-N aporta 0 plantillas (hook sin éxito,
+pendiente revisar) — la generación programática sí avanza.
+
 ## Sources
 
 - `tmp/jev_like_system_one_plan_2026-09-19.md` (plan maestro, 180 §)
