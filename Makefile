@@ -79,29 +79,25 @@ status:
 logs:
 	@tail -n 50 $(LOG) 2>/dev/null || echo "(sin log todavía en $(LOG))"
 
-# Bucle generador continuo de datos + reentreno dirigido (desacoplado).
+# Generador de esquemas de decisión (#T-gen-schemas). Ya no es un bucle
+# infinito desacoplado: la tirada acaba cuando su cuota está llena, así que
+# corre en primer plano y termina. Un run largo es un job del daemon.
 GENLOGDIR := artifacts/logs/genloop
 GENLOG := $(GENLOGDIR)/gen.log
-GENPID := $(GENLOGDIR)/gen.pid
-GENARGS := --batch 500 --interval 10 --retrain-every 12 --qwen-every 24
+GENARGS := --per-cell 8
 
-gen-start:
+gen:
 	@mkdir -p $(GENLOGDIR)
-	@echo "arrancando: $(VENV_PY) tools/data_gen_loop.py $(GENARGS)"
-	@bash -c 'nohup $(VENV_PY) tools/data_gen_loop.py $(GENARGS) </dev/null >>$(GENLOG) 2>&1 & echo $$! > $(GENPID); disown %1 2>/dev/null || true'
-	@echo "desacoplado (puedes cerrar la terminal sin pararlo)"
-	@sleep 2
-	@$(MAKE) -s gen-status
+	@$(VENV_PY) tools/data_gen_loop.py $(GENARGS) 2>&1 | tee -a $(GENLOG)
 
-gen-stop:
-	@if [ -f $(GENPID) ]; then kill `cat $(GENPID)` 2>/dev/null && echo "parado pid `cat $(GENPID)`" || true; rm -f $(GENPID); fi
-	@-pkill -f "data_gen_loop.py" 2>/dev/null && echo "restos data_gen_loop eliminados" || true
+gen-gate:
+	@$(VENV_PY) tools/data_gen_loop.py --gate
+
+GENDIV := artifacts/data-prefetch/gen-schemas/diversity.json
 
 gen-status:
-	@echo "--- gen-loop ---"
-	@(ps aux | grep "[d]ata_gen_loop.py" || echo "(ningún data_gen_loop vivo)")
-	@echo "--- últimas líneas ---"
-	@tail -n 8 $(GENLOG) 2>/dev/null || echo "(sin log todavía en $(GENLOG))"
+	@echo "--- última tirada ---"
+	@$(VENV_PY) -c 'import json,sys;d=json.load(open(sys.argv[1]));print(json.dumps({k:d[k] for k in ("generated_at","rows","unique_skeletons","unknown_rate")},indent=2))' $(GENDIV) 2>/dev/null || echo "(sin tirada todavía: make gen)"
 
 gen-logs:
 	@tail -n 50 $(GENLOG) 2>/dev/null || echo "(sin log todavía en $(GENLOG))"

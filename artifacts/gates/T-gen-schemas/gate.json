@@ -1,0 +1,280 @@
+{
+  "task": "T-gen-schemas",
+  "pass": true,
+  "seed": 20260921,
+  "criteria": {
+    "min_schemas": 1000,
+    "min_unique_skeletons": 200,
+    "min_domains": 5,
+    "min_languages": 2,
+    "min_k_cardinalities": 4,
+    "unknown_rate_range": [
+      0.05,
+      0.35
+    ],
+    "min_hard_negative_rate": 0.8
+  },
+  "checks": {
+    "schemas": true,
+    "unique_skeletons": true,
+    "domains": true,
+    "languages": true,
+    "k_cardinalities": true,
+    "unknown_rate": true,
+    "hard_negative_rate": true,
+    "budget_full": true,
+    "no_quota_overflow": true,
+    "dedup_rejects_duplicate": true,
+    "firewall_clean": true
+  },
+  "diversity": {
+    "schemas": 1152,
+    "unique_skeletons": 1152,
+    "skeletons_per_schema": 1.0,
+    "skeleton_curve": [
+      {
+        "schemas": 115,
+        "unique_skeletons": 115
+      },
+      {
+        "schemas": 230,
+        "unique_skeletons": 230
+      },
+      {
+        "schemas": 345,
+        "unique_skeletons": 345
+      },
+      {
+        "schemas": 460,
+        "unique_skeletons": 460
+      },
+      {
+        "schemas": 575,
+        "unique_skeletons": 575
+      },
+      {
+        "schemas": 690,
+        "unique_skeletons": 690
+      },
+      {
+        "schemas": 805,
+        "unique_skeletons": 805
+      },
+      {
+        "schemas": 920,
+        "unique_skeletons": 920
+      },
+      {
+        "schemas": 1035,
+        "unique_skeletons": 1035
+      },
+      {
+        "schemas": 1150,
+        "unique_skeletons": 1150
+      },
+      {
+        "schemas": 1152,
+        "unique_skeletons": 1152
+      }
+    ],
+    "domains": {
+      "content-moderation": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "devops-release": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "finance-approval": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "it-incident": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "logistics": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "support-routing": {
+        "n": 192,
+        "share": 0.1667
+      }
+    },
+    "languages": {
+      "de": {
+        "n": 288,
+        "share": 0.25
+      },
+      "en": {
+        "n": 288,
+        "share": 0.25
+      },
+      "es": {
+        "n": 288,
+        "share": 0.25
+      },
+      "fr": {
+        "n": 288,
+        "share": 0.25
+      }
+    },
+    "k_distribution": {
+      "3": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "4": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "5": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "6": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "7": {
+        "n": 192,
+        "share": 0.1667
+      },
+      "8": {
+        "n": 192,
+        "share": 0.1667
+      }
+    },
+    "state_formats": {
+      "json": {
+        "n": 241,
+        "share": 0.2092
+      },
+      "kv": {
+        "n": 228,
+        "share": 0.1979
+      },
+      "log": {
+        "n": 226,
+        "share": 0.1962
+      },
+      "prose": {
+        "n": 245,
+        "share": 0.2127
+      },
+      "table": {
+        "n": 212,
+        "share": 0.184
+      }
+    },
+    "queried_fields": {
+      "action": {
+        "n": 52,
+        "share": 0.0451
+      },
+      "cause": {
+        "n": 142,
+        "share": 0.1233
+      },
+      "channel": {
+        "n": 133,
+        "share": 0.1155
+      },
+      "decision": {
+        "n": 107,
+        "share": 0.0929
+      },
+      "owner_team": {
+        "n": 132,
+        "share": 0.1146
+      },
+      "priority": {
+        "n": 138,
+        "share": 0.1198
+      },
+      "queue": {
+        "n": 106,
+        "share": 0.092
+      },
+      "region": {
+        "n": 48,
+        "share": 0.0417
+      },
+      "risk": {
+        "n": 47,
+        "share": 0.0408
+      },
+      "severity": {
+        "n": 51,
+        "share": 0.0443
+      },
+      "stage": {
+        "n": 47,
+        "share": 0.0408
+      },
+      "status": {
+        "n": 149,
+        "share": 0.1293
+      }
+    },
+    "splits": {
+      "test": {
+        "n": 226,
+        "share": 0.1962
+      },
+      "train": {
+        "n": 926,
+        "share": 0.8038
+      }
+    },
+    "sources": {
+      "local": {
+        "n": 1152,
+        "share": 1.0
+      }
+    },
+    "unknown_rate": 0.1467,
+    "hard_negative_rate": 0.9835,
+    "mean_options": 5.5,
+    "rejections": {
+      "answer_visible_in_unknown_case": 1,
+      "duplicate": 52
+    },
+    "rejected_total": 53,
+    "dedup": {
+      "threshold": 0.7,
+      "checked": 1204,
+      "rejected": 52,
+      "rejection_rate": 0.0432
+    },
+    "budget": {
+      "cells": 144,
+      "total": 1152,
+      "taken": 1152,
+      "full": true,
+      "unfilled_cells": 0,
+      "overflow": {}
+    },
+    "proposer": {
+      "configured": false,
+      "endpoint_env": "JEV_GEN_ENDPOINT",
+      "model": "qwen3.6:27b-mlx",
+      "calls": 0,
+      "stubbed_calls": 24,
+      "records_accepted": 0,
+      "records_dropped": 0
+    }
+  },
+  "dedup_probe": {
+    "rejected": true,
+    "similarity": 1.0
+  },
+  "firewall": {
+    "clean": true,
+    "texts_scanned": 8640
+  },
+  "stopped": "quota full",
+  "attempts": 1205
+}
