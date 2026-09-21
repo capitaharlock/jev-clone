@@ -133,3 +133,64 @@ cubre labels dinámicas, booleanos, preferencia, OOD, dominio y transferencia.
 No es suficiente por sí sola: HuffPost solo valida mecánica; la hipótesis de
 "decision foundation model" depende del holdout completo, hard negatives,
 datos programáticos/de dominio y gold humano definidos en el roadmap.
+
+## Ensanche del registro para el corpus 1 M (#T-mix-1m)
+
+Los §§65-66 dicen que ningún dataset pasa del 15 % de una mezcla y ninguna
+familia del 30 %. Con siete fuentes limpias eso es aritmética, no opinión: el
+registro entero admitía **39 970 filas** del millón que pide el §86, porque
+`email-triage` (4 000 preguntas) no llega a llenar su 15 % y su déficit se
+come el 5 % de holgura que dejan los topes. Ninguna semilla y ningún tamaño
+de target mueven ese número — sólo oferta independiente.
+
+Estas cinco fuentes son esa oferta. Ninguna toca la valla de benchmark
+§§18/77 (Banking77 / HelpSteer2 / PubMedQA) ni el registro congelado de ids
+Jevals, ninguna pide credenciales ni token de HF, y todas son lo bastante
+grandes para sentarse **en** el tope en vez de por debajo. Con ellas el techo
+sube a 1 213 741 filas y el corpus de 1 M existe.
+
+| Dataset | Fuente de descarga | Licencia declarada | Transformación V1 | Uso |
+|---|---|---|---|---|
+| dbpedia14 | [`dbpedia_csv.tgz`](https://s3.amazonaws.com/fast-ai-nlp/dbpedia_csv.tgz) (fast.ai NLP mirror; original: DBpedia ontology de Zhang et al. 2015) | CC-BY-SA-3.0 + GFDL | `state=título+abstract`; pregunta de clase entre 14; 45 % en K=4 y 55 % en K 9-13 con distractores de vecindad medida | Train; segunda fuente de la familia `topic`, que es lo que la sube de una unidad de tope a dos |
+| snli | [`snli_1.0.zip`](https://nlp.stanford.edu/projects/snli/snli_1.0.zip) (Stanford NLP) | CC-BY-SA-4.0 | `state=premisa+hipótesis`; dos preguntas por par: la relación a 3 vías y un booleano de entailment; los pares sin mayoría (`-`) se descartan | Train; llena la capa §86 `nli`, que no tenía oferta, y el booleano sostiene la cuota Noul §48 |
+| goemotions | [`goemotions_{1,2,3}.csv`](https://storage.googleapis.com/gresearch/goemotions/data/full_dataset/goemotions_1.csv) (Google Research) | Apache-2.0 | `state=comentario`; gold = emoción ganadora por votos (≥2 y sin empate); una pregunta K=4 y otra K=12 con los vecinos medidos del gold | Train; el pool de 28 labels es donde un option set ancho es pregunta real y no cara o cruz |
+| detox-attack | [comentarios](https://ndownloader.figshare.com/files/7554634) + [anotaciones](https://ndownloader.figshare.com/files/7554637) (Wikipedia Detox, Figshare) | CC0-1.0 | `state=comentario de talk-page`; gold = fracción medida de ~10 anotadores, en cubos `score 0`..`score 4`; el aspecto `third_party_attack` se balancea contra sus ceros | Train; **es la oferta Score del §48**: HelpSteer2 era el único corpus ordinal y está tras la valla, así que Score estaba al 0 % contra un target del 15 % |
+| swag | [`train.csv` / `val.csv`](https://raw.githubusercontent.com/rowanz/swagaf/master/data/train.csv) (repo `rowanz/swagaf`) | MIT | `state=startphrase`; cuatro continuaciones, ids posicionales `o0..o3`; `test.csv` va sin label y se salta | Train; la capa §86 `adversarial`, que no tenía oferta ninguna |
+
+Obligaciones share-alike: dbpedia14 (CC-BY-SA-3.0 + GFDL) y snli
+(CC-BY-SA-4.0) cargan la misma que BoolQ ya cargaba, y quedan anotadas aquí
+al lado de ella. Nada de esto se redistribuye mezclado: se publican el
+conversor y el manifest, no las filas.
+
+**Dureza medida, nunca afirmada.** `data.mix.is_hard` cuenta una pregunta
+como dura con K ≥ 9. Emitir sets anchos llenos de labels al azar cumpliría la
+letra y no enseñaría nada, así que cada fila dura toma sus distractores del
+tope del ranking de `data.optset.difficulty` y se lleva puesta la similitud a
+la que se construyó (`quality.nn_mean` / `nn_min`) — comprobable después, no
+una bandera que el conversor se puso a sí mismo. SWAG es la excepción
+declarada: sus distractores ya pasaron filtrado adversarial contra un
+ensemble (Zellers et al. 2018), así que eso se anota como propiedad **de la
+fuente** (`quality.source = "adversarial filtering (SWAG)"`) y no como una
+dificultad que midiéramos aquí.
+
+Descarga y conversión (stdlib, sin `datasets` ni `pandas`):
+
+```
+python3 -m data.convert_widen fetch      # qué bajar y a qué ruta
+python3 -m data.convert_widen all        # convierte las cinco
+```
+
+Los bytes convertidos viven en `artifacts/data-prefetch/` y están
+gitignorados como el resto (ver la tabla de #T-repo-clean más abajo). Medido
+el 2026-09-21:
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/data-prefetch/dbpedia14.jsonl` | 605.3 | `3dfe940b4ca8e4d6129fe873fbbd7ac5c3133fd04ad67ec9f2a116b6b713e5ba` |
+| `artifacts/data-prefetch/snli.jsonl` | 336.1 | `475081b03c9ba6a2580e10da677d00baa66eb5e00c6dd9895c11cf9f7b2e7bfc` |
+| `artifacts/data-prefetch/goemotions.jsonl` | 66.6 | `b3ecb12219a30bfacd04b1eac1dae7f47b1199c2565e11278ab6bef9fcee2ab2` |
+| `artifacts/data-prefetch/detox-attack.jsonl` | 163.8 | `91e823c38cdc1f03c806a0f3d65c5732a088b6c0d42a7b19056053ec2e0f51f4` |
+| `artifacts/data-prefetch/swag.jsonl` | 67.9 | `058867e9dc06101cf6946facbd1cf21cb75ca590851bd06a713be81f222d5f88` |
+
+Oferta limpia que aportan, en preguntas: dbpedia14 560 000 · snli 1 097 590 ·
+detox-attack 166 012 · goemotions 87 076 · swag 73 546.

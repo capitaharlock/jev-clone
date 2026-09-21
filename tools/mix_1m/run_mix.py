@@ -50,21 +50,49 @@ def run_id(kind: str, backbone: str, seed: int) -> str:
     return f"{RUN_PREFIX}-{kind}-{backbone}-s{seed}"
 
 
+def binding_sources(supply: dict, target: int) -> dict:
+    """Which sources cannot fill their 15 % of `target`, and by how much.
+
+    The ceiling is the largest `T` with `sum_d min(supply_d, 0.15 T) >= T`.
+    A source below `0.15 T` therefore spends someone else's slack, and the
+    total of those shortfalls against the 5 % the caps leave over is the
+    whole of the feasibility question. Naming them is what turns "add more
+    data" into "add this much, of a family that is not already doubled".
+    """
+    cap = int(target * mixmod.MAX_DATASET_FRACTION)
+    short = {d: cap - n for d, n in sorted(supply.items()) if n < cap}
+    return {"dataset_cap_rows": cap,
+            "at_cap": sorted(d for d, n in supply.items() if n >= cap),
+            "short_of_cap": short,
+            "shortfall_total": sum(short.values()),
+            "slack_rows": int(target * (mixmod.cap_units(sorted(supply)) - 1.0))}
+
+
 def corpus_feasibility(supply: dict, target: int = CORPUS_TARGET) -> dict:
     """Can §86's 1 M-row clean corpus exist at all? Arithmetic, not opinion."""
     feas = sampler.feasibility(supply)
     ceiling = feas["max_target_hard_caps"]
+    binding = binding_sources(supply, target)
     feas.update({
         "corpus": CORPUS,
         "requested_rows": target,
         "achievable_rows": ceiling,
         "shortfall_rows": max(0, target - ceiling),
         "pass": ceiling >= target,
+        "binding": binding,
         "why": (f"the §§65-66 caps admit at most {ceiling:,} rows from the "
-                f"fenced registry, {target:,} were asked for. Every source "
-                f"but the smallest sits exactly at the 15 % cap, so the only "
-                f"fix is an independent source — no target size and no seed "
-                f"changes this.") if ceiling < target else "",
+                f"fenced registry, {target:,} were asked for. "
+                f"{len(binding['short_of_cap'])} of {len(supply)} sources "
+                f"cannot fill their {binding['dataset_cap_rows']:,}-row 15 % "
+                f"share ({binding['shortfall_total']:,} rows short in total, "
+                f"against {binding['slack_rows']:,} rows of cap slack), so "
+                f"the only fix is independent supply — no target size and no "
+                f"seed changes this.") if ceiling < target else
+               (f"the §§65-66 caps admit {ceiling:,} rows from the fenced "
+                f"registry, {target:,} were asked for; "
+                f"{len(binding['at_cap'])} sources reach their 15 % share "
+                f"outright and the rest are covered by "
+                f"{binding['slack_rows']:,} rows of cap slack"),
         "missing_layers": sorted(
             layer for layer, target_share in mixmod.LAYER_TARGETS.items()
             if not any(mixmod.layer_of(d) == layer for d in supply)),
@@ -86,7 +114,8 @@ def build(target=None, seed: int = DEFAULT_SEED, write: bool = True) -> dict:
         # planned through the trainer's builder, so the corpus published
         # here is the corpus `--fence-clean --mix-seed <seed>` trains
         spec, scan, holdout = sampler.plan_clean(target, seed)
-        sampler.assert_feasible(target, spec.supply, cap_margin=0.0)
+        sampler.assert_feasible(target, spec.supply,
+                                cap_margin=sampler.CAP_MARGIN)
         counts, fence = sampler.assemble(spec, jevals_ids=jevals_ids)
         guard = sampler.guardrail_report(
             {"dataset": counts["dataset"], "family": counts["family"],
@@ -110,7 +139,7 @@ def build(target=None, seed: int = DEFAULT_SEED, write: bool = True) -> dict:
                             "-> data.mix.plan_mix / realise"),
                 "trained_by": (f"train_decision train --fence-clean "
                                f"--mix-seed {seed}"),
-                "cap_margin": 0.0,
+                "cap_margin": sampler.CAP_MARGIN,
                 "weights": "data.mix.layer_weights (§86 layer plan)",
                 "note": ("seed + the per-shard sha256 above rebuild this "
                          "corpus; members_sha256 proves the rebuild matched"),
@@ -190,7 +219,8 @@ def training_block(seed: int, report=None) -> dict:
     }
 
 
-def compose(stage: dict, training: dict, seed: int) -> dict:
+def compose(stage: dict, training: dict, seed: int,
+            train_seed: int | None = None) -> dict:
     """The gate: corpus + fence + guardrails + top-2 + §128, pass or fail."""
     feas = stage.get("feasibility", {})
     checks = {
@@ -254,6 +284,7 @@ def compose(stage: dict, training: dict, seed: int) -> dict:
         "task": "T-mix-1m",
         "corpus": CORPUS,
         "seed": seed,
+        "train_seed": train_seed if train_seed is not None else seed,
         "generated_utc": datetime.now(timezone.utc).strftime(
             "%Y-%m-%dT%H:%M:%SZ"),
         "pass": not failed,
@@ -300,7 +331,12 @@ def main(argv: list) -> int:
                     choices=("build", "gate", "show"))
     ap.add_argument("--target", type=int, default=None,
                     help="rows in the clean corpus; default: the ceiling")
-    ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    ap.add_argument("--seed", type=int, default=DEFAULT_SEED,
+                    help="corpus seed; also names the manifest it writes")
+    ap.add_argument("--train-seed", type=int, default=None,
+                    help="seed of the §62 curve runs to read, when the "
+                         "corpus is rebuilt under a new seed while those "
+                         "runs are still in flight (default: --seed)")
     ap.add_argument("--no-write", action="store_true")
     args = ap.parse_args(argv[1:])
 
@@ -319,8 +355,9 @@ def main(argv: list) -> int:
     # `gate` and `build` both re-assemble: the corpus is a pure function of
     # seed + shards, so rebuilding it is how the gate proves the manifest it
     # publishes is still the manifest the corpus on disk produces.
+    train_seed = args.train_seed if args.train_seed is not None else args.seed
     stage = build(args.target, args.seed, write=not args.no_write)
-    gate = compose(stage, training_block(args.seed), args.seed)
+    gate = compose(stage, training_block(train_seed), args.seed, train_seed)
     if not args.no_write:
         write_gate(gate)
     print(json.dumps({"pass": gate["pass"], "failed": gate["failed_checks"],

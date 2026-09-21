@@ -39,6 +39,11 @@ from tools.mix_1m.strata import (
     type_report,
 )
 
+#: the #T-mix-1m widening (data/convert_widen.py). Named here so the tests
+#: that contrast "before" with "now" state the narrow registry as a set to
+#: subtract, not as a number somebody copied down.
+WIDENED = ("dbpedia14", "snli", "goemotions", "detox-attack", "swag")
+
 
 def bool_q(qid="q1", ans="yes", conf=None):
     q = {"id": qid, "kind": "boolean", "answer": ans,
@@ -224,13 +229,38 @@ class TestGuardrails(unittest.TestCase):
 class TestFeasibility(unittest.TestCase):
     """The ceiling is arithmetic; the gate has to publish it, not guess it."""
 
-    def test_the_fence_is_what_makes_1m_impossible(self):
+    def test_the_widened_registry_reaches_1m(self):
+        """What #T-mix-1m changed: the ceiling now clears the target.
+
+        It used to be below it, and the gate said so with the arithmetic —
+        seven sources, 1.05 cap units, ~40 k rows admitted, because
+        `email-triage` spent the whole 5 % of slack. Four independent
+        corpora moved the ceiling; no seed ever could.
+        """
+        if "dbpedia14" not in mix.clean_datasets():
+            self.skipTest("registry not widened in this cut")
         _scan, supply = sampler.clean_supply()
+        if "dbpedia14" not in supply:
+            self.skipTest("widened corpus not converted on this machine")
+        feas = run_mix.corpus_feasibility(supply)
+        self.assertGreaterEqual(feas["achievable_rows"],
+                                run_mix.CORPUS_TARGET)
+        self.assertTrue(feas["pass"])
+        self.assertEqual(feas["shortfall_rows"], 0)
+        self.assertIn("cap slack", feas["why"])
+        # and the report still NAMES who cannot fill their 15 %
+        self.assertIn("email-triage", feas["binding"]["short_of_cap"])
+
+    def test_a_shortfall_still_reports_the_binding_sources(self):
+        """The failing branch is not dead code: it is one source away."""
+        supply = {"massive": 50_000, "huffpost": 50_000, "boolq": 9_000,
+                  "civil-comments": 900_000, "synth-v1": 30_000,
+                  "prog-gold": 50_000, "email-triage": 4_000}
         feas = run_mix.corpus_feasibility(supply)
         self.assertLess(feas["achievable_rows"], run_mix.CORPUS_TARGET)
         self.assertFalse(feas["pass"])
         self.assertGreater(feas["shortfall_rows"], 0)
-        self.assertIn("independent source", feas["why"])
+        self.assertIn("independent supply", feas["why"])
 
     def test_a_target_over_the_ceiling_is_refused_with_the_arithmetic(self):
         supply = {"massive": 50_000, "huffpost": 50_000, "boolq": 9_000,
@@ -240,13 +270,25 @@ class TestFeasibility(unittest.TestCase):
             sampler.assert_feasible(5_000_000, supply, cap_margin=0.0)
         self.assertIn("nowhere to come from", str(ctx.exception))
 
-    def test_dropping_the_synthetic_source_breaks_cap_coverage(self):
-        """Why the §128 baseline arm has to state a different cap."""
+    def test_the_128_baseline_arm_no_longer_needs_a_relaxed_cap(self):
+        """The widening bought the §128 baseline arm its standard caps.
+
+        Dropping `synth-v1` used to take the registry to 0.90 cap units —
+        below 1.0, so the no-synthetic arm could only be built by stating
+        an 18 % dataset cap and publishing that it had. With the four new
+        families the same arm clears 1.0 at the §§65-66 caps themselves,
+        which is what lets baseline and +synthetic be compared under one
+        rule instead of two.
+        """
         clean = mix.clean_datasets()
         without = [d for d in clean if d != "synth-v1"]
         self.assertGreaterEqual(mix.cap_units(clean), 1.0)
-        self.assertLess(mix.cap_units(without), 1.0)
-        self.assertGreaterEqual(mix.cap_units(without, 0.18, 0.30), 1.0)
+        self.assertGreaterEqual(mix.cap_units(without), 1.0)
+        # the pre-widening registry is the fact this replaces, kept as the
+        # arithmetic it was and not as a remembered number
+        narrow = [d for d in without if d not in WIDENED]
+        self.assertLess(mix.cap_units(narrow), 1.0)
+        self.assertGreaterEqual(mix.cap_units(narrow, 0.18, 0.30), 1.0)
 
 
 class TestOneAuthority(unittest.TestCase):
@@ -266,7 +308,7 @@ class TestOneAuthority(unittest.TestCase):
         spec, _scan, _holdout = sampler.plan_clean(4000, seed=7)
         datasets = mix.clean_datasets()
         other, _s, _p, _h = build_mix(7, target=4000, datasets=datasets,
-                                      cap_margin=0.0,
+                                      cap_margin=sampler.CAP_MARGIN,
                                       weights=mix.layer_weights(datasets))
         self.assertEqual(spec.quotas, other.quotas)
         self.assertEqual(spec.keep_fractions, other.keep_fractions)

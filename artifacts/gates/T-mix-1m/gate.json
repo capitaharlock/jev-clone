@@ -19,15 +19,15 @@
         "jevals_hashes_known": 0,
         "jevals_ids_known": 5000,
         "jevals_ids_path": "artifacts/gates/T-data-eval/jevals_ids.json",
-        "questions_checked": 39981
+        "questions_checked": 1000000
       }
     },
     "corpus_1m_rows": {
-      "achievable_rows": 39970,
+      "achievable_rows": 1213741,
       "criterion": "\u00a786: 1,000,000 clean rows",
-      "measured_rows": 39981,
-      "pass": false,
-      "why": "the \u00a7\u00a765-66 caps admit at most 39,970 rows from the fenced registry, 1,000,000 were asked for. Every source but the smallest sits exactly at the 15 % cap, so the only fix is an independent source \u2014 no target size and no seed changes this."
+      "measured_rows": 1000000,
+      "pass": true,
+      "why": "the \u00a7\u00a765-66 caps admit 1,213,741 rows from the fenced registry, 1,000,000 were asked for; 5 sources reach their 15 % share outright and the rest are covered by 799,999 rows of cap slack"
     },
     "diversity_dashboard": {
       "axes": [
@@ -45,115 +45,165 @@
     },
     "guardrails": {
       "criterion": "\u00a7\u00a765-66, 68: <=15 % per dataset, <=30 % per family, <=50 % synthetic, >=20 % human, >=10 % hard/OOD",
-      "failed": [
-        "hard>=10%"
-      ],
-      "pass": false,
+      "failed": [],
+      "pass": true,
       "report": {
         "checks": {
           "dataset:boolq<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.009427
           },
           "dataset:civil-comments<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.1499
+          },
+          "dataset:dbpedia14<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.1499
+          },
+          "dataset:detox-attack<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.1499
           },
           "dataset:email-triage<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.100048
+            "share": 0.004
+          },
+          "dataset:goemotions<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.087076
           },
           "dataset:huffpost<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.080119
           },
           "dataset:massive<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.050754
           },
           "dataset:prog-gold<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149971
+            "share": 0.060631
+          },
+          "dataset:snli<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.1499
+          },
+          "dataset:swag<=15%": {
+            "bound": 0.15,
+            "kind": "max",
+            "ok": true,
+            "share": 0.073546
           },
           "dataset:synth-v1<=15%": {
             "bound": 0.15,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.034847
+          },
+          "family:calibration<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.1499
+          },
+          "family:commonsense<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.073546
+          },
+          "family:emotion<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.087076
           },
           "family:grounded<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.034847
           },
           "family:intent<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.250044
+            "share": 0.054754
           },
           "family:knowledge<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.149971
+            "share": 0.060631
+          },
+          "family:nli<=30%": {
+            "bound": 0.3,
+            "kind": "max",
+            "ok": true,
+            "share": 0.1499
           },
           "family:qa<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.009427
           },
           "family:topic<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.230019
           },
           "family:toxicity<=30%": {
             "bound": 0.3,
             "kind": "max",
             "ok": true,
-            "share": 0.149996
+            "share": 0.1499
           },
           "hard>=10%": {
             "bound": 0.1,
             "kind": "min",
-            "ok": false,
-            "share": 0.076161
+            "ok": true,
+            "share": 0.223262
           },
           "human>=20%": {
             "bound": 0.2,
             "kind": "min",
             "ok": true,
-            "share": 0.599985
+            "share": 0.826976
           },
           "synthetic<=50%": {
             "bound": 0.5,
             "kind": "max",
             "ok": true,
-            "share": 0.250044
+            "share": 0.038847
           }
         },
         "enforced_by": "data.mix.verify_guardrails, which raises MixGuardrailError on the realised mixture",
-        "failed": [
-          "hard>=10%"
-        ],
-        "pass": false,
-        "total": 39981
+        "failed": [],
+        "pass": true,
+        "total": 1000000
       }
     },
     "mix_built": {
@@ -163,7 +213,7 @@
     },
     "reproducible": {
       "criterion": "seed + manifest rebuild the corpus bit for bit",
-      "members_sha256": "0502935723bb5e516e333e1e2a9be8be04f2883f69705b1e4cf050f13b308346",
+      "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
       "pass": true
     },
     "synthetic_value": {
@@ -175,11 +225,11 @@
       "criterion": "\u00a763: examples, state/candidate tokens, mean K per shard",
       "pass": true,
       "total": {
-        "candidate_tokens": 325932,
-        "examples": 39981,
-        "mean_k": 3.153,
-        "state_tokens": 1989099,
-        "total_tokens": 2315031,
+        "candidate_tokens": 8754290,
+        "examples": 1000000,
+        "mean_k": 4.443,
+        "state_tokens": 39751699,
+        "total_tokens": 48505989,
         "unit": "whitespace tokens of the state text and of every option text, counted on the rows the mixture actually selected"
       }
     },
@@ -191,179 +241,239 @@
     },
     "type_mix": {
       "criterion": "\u00a748: Choice 55 / Noul 30 / Score 15 within 5 pp",
-      "pass": false,
+      "pass": true,
       "report": {
         "kind": "\u00a748 question type",
-        "max_abs_gap": 0.15,
+        "max_abs_gap": 0.014627,
         "rows": {
           "choice": {
-            "gap": 0.002638,
-            "n": 22095,
-            "share": 0.552638,
+            "gap": 0.014627,
+            "n": 564627,
+            "share": 0.564627,
             "target": 0.55
           },
           "noul": {
-            "gap": 0.147362,
-            "n": 17886,
-            "share": 0.447362,
+            "gap": -0.014527,
+            "n": 285473,
+            "share": 0.285473,
             "target": 0.3
           },
           "score": {
-            "gap": -0.15,
-            "n": 0,
-            "share": 0.0,
+            "gap": -0.0001,
+            "n": 149900,
+            "share": 0.1499,
             "target": 0.15
           }
         },
-        "total": 39981,
-        "unsupplied": [
-          "score"
-        ],
-        "why_unsupplied": {
-          "score": "every ordinal-scale corpus (helpsteer2) is fenced out, so the mixture has no Score supply at all"
-        }
+        "total": 1000000,
+        "unsupplied": [],
+        "why_unsupplied": {}
       }
     }
   },
   "composition": {
     "by_dataset": {
-      "boolq": 5997,
-      "civil-comments": 5997,
+      "boolq": 9427,
+      "civil-comments": 149900,
+      "dbpedia14": 149900,
+      "detox-attack": 149900,
       "email-triage": 4000,
-      "huffpost": 5997,
-      "massive": 5997,
-      "prog-gold": 5996,
-      "synth-v1": 5997
+      "goemotions": 87076,
+      "huffpost": 80119,
+      "massive": 50754,
+      "prog-gold": 60631,
+      "snli": 149900,
+      "swag": 73546,
+      "synth-v1": 34847
     },
     "by_family": {
-      "grounded": 5997,
-      "intent": 9997,
-      "knowledge": 5996,
-      "qa": 5997,
-      "topic": 5997,
-      "toxicity": 5997
+      "calibration": 149900,
+      "commonsense": 73546,
+      "emotion": 87076,
+      "grounded": 34847,
+      "intent": 54754,
+      "knowledge": 60631,
+      "nli": 149900,
+      "qa": 9427,
+      "topic": 230019,
+      "toxicity": 149900
     },
     "by_k": {
-      "2": 17373,
-      "3": 1348,
-      "4": 19589,
-      "5": 1340,
-      "6": 208,
-      "8": 123
+      "10": 16227,
+      "11": 16400,
+      "12": 60032,
+      "13": 16790,
+      "2": 282642,
+      "3": 86075,
+      "4": 343119,
+      "5": 158886,
+      "6": 1853,
+      "8": 1287,
+      "9": 16689
     },
     "by_lang": {
-      "de-DE": 235,
-      "en": 29984,
-      "en-US": 1151,
+      "de-DE": 8459,
+      "en": 945246,
+      "en-US": 8459,
       "es": 4000,
-      "es-ES": 1179,
-      "fr-FR": 1127,
-      "it-IT": 1151,
-      "pt-PT": 1154
+      "es-ES": 8459,
+      "fr-FR": 8459,
+      "it-IT": 8459,
+      "pt-PT": 8459
     },
     "by_layer": {
-      "grounded-synth": 5997,
-      "human-expert": 11994,
-      "intent-multi": 15994,
-      "programmatic": 5996
+      "adversarial": 73546,
+      "grounded-synth": 34847,
+      "human-expert": 396303,
+      "intent-multi": 134873,
+      "nli": 149900,
+      "preference": 149900,
+      "programmatic": 60631
     },
     "by_origin": {
-      "human": 23988,
-      "programmatic": 5996,
-      "synthetic": 9997
+      "human": 826976,
+      "programmatic": 134177,
+      "synthetic": 38847
     },
     "by_qtype": {
-      "choice": 22095,
-      "noul": 17886
+      "choice": 564627,
+      "noul": 285473,
+      "score": 149900
     },
-    "dynamic_option_rows": 27987,
-    "dynamic_option_share": 0.700008,
-    "hard_rows": 3045,
-    "hard_share": 0.076161,
-    "rows": 39981,
-    "top_dataset_share": 0.149996
+    "dynamic_option_rows": 540873,
+    "dynamic_option_share": 0.540873,
+    "hard_rows": 223262,
+    "hard_share": 0.223262,
+    "rows": 1000000,
+    "top_dataset_share": 0.1499
   },
   "corpus": "decision-mix-clean-1m",
   "diversity": {
     "dataset": {
-      "boolq": 0.1499962482179035,
-      "civil-comments": 0.1499962482179035,
-      "email-triage": 0.10004752257322228,
-      "huffpost": 0.1499962482179035,
-      "massive": 0.1499962482179035,
-      "prog-gold": 0.1499712363372602,
-      "synth-v1": 0.1499962482179035
+      "boolq": 0.009427,
+      "civil-comments": 0.1499,
+      "dbpedia14": 0.1499,
+      "detox-attack": 0.1499,
+      "email-triage": 0.004,
+      "goemotions": 0.087076,
+      "huffpost": 0.080119,
+      "massive": 0.050754,
+      "prog-gold": 0.060631,
+      "snli": 0.1499,
+      "swag": 0.073546,
+      "synth-v1": 0.034847
     },
     "family": {
-      "grounded": 0.1499962482179035,
-      "intent": 0.2500437707911258,
-      "knowledge": 0.1499712363372602,
-      "qa": 0.1499962482179035,
-      "topic": 0.1499962482179035,
-      "toxicity": 0.1499962482179035
+      "calibration": 0.1499,
+      "commonsense": 0.073546,
+      "emotion": 0.087076,
+      "grounded": 0.034847,
+      "intent": 0.054754,
+      "knowledge": 0.060631,
+      "nli": 0.1499,
+      "qa": 0.009427,
+      "topic": 0.230019,
+      "toxicity": 0.1499
     },
     "k_bucket": {
-      "2-4": 0.9582051474450364,
-      "5-8": 0.04179485255496361
+      "2-4": 0.711836,
+      "5-8": 0.162026,
+      "9-16": 0.126138
     },
     "lang": {
-      "de-DE": 0.005877791951176809,
-      "en": 0.7499562292088742,
-      "en-US": 0.02878867462044471,
-      "es": 0.10004752257322228,
-      "es-ES": 0.02948900727845727,
-      "fr-FR": 0.028188389485005377,
-      "it-IT": 0.02878867462044471,
-      "pt-PT": 0.028863710262374626
+      "de-DE": 0.008459,
+      "en": 0.945246,
+      "en-US": 0.008459,
+      "es": 0.004,
+      "es-ES": 0.008459,
+      "fr-FR": 0.008459,
+      "it-IT": 0.008459,
+      "pt-PT": 0.008459
     },
     "layer": {
-      "grounded-synth": 0.1499962482179035,
-      "human-expert": 0.299992496435807,
-      "intent-multi": 0.4000400190090293,
-      "programmatic": 0.1499712363372602
+      "adversarial": 0.073546,
+      "grounded-synth": 0.034847,
+      "human-expert": 0.396303,
+      "intent-multi": 0.134873,
+      "nli": 0.1499,
+      "preference": 0.1499,
+      "programmatic": 0.060631
     },
     "origin": {
-      "human": 0.599984992871614,
-      "programmatic": 0.1499712363372602,
-      "synthetic": 0.2500437707911258
+      "human": 0.826976,
+      "programmatic": 0.134177,
+      "synthetic": 0.038847
     },
     "qtype": {
-      "choice": 0.5526375028138366,
-      "noul": 0.44736249718616344
+      "choice": 0.564627,
+      "noul": 0.285473,
+      "score": 0.1499
     },
     "simpson": {
-      "dataset": 0.855,
-      "family": 0.825,
-      "k_bucket": 0.0801,
-      "lang": 0.4234,
-      "layer": 0.705,
-      "origin": 0.555,
-      "qtype": 0.4945
+      "dataset": 0.8831,
+      "family": 0.8587,
+      "k_bucket": 0.4511,
+      "lang": 0.1061,
+      "layer": 0.7695,
+      "origin": 0.2966,
+      "qtype": 0.5772
     }
   },
   "failed_checks": [
-    "corpus_1m_rows",
-    "guardrails",
     "synthetic_value",
-    "top2_trained",
-    "type_mix"
+    "top2_trained"
   ],
   "feasibility": {
-    "achievable_rows": 39970,
+    "achievable_rows": 1213741,
+    "binding": {
+      "at_cap": [
+        "civil-comments",
+        "dbpedia14",
+        "detox-attack",
+        "huffpost",
+        "snli"
+      ],
+      "dataset_cap_rows": 150000,
+      "short_of_cap": {
+        "boolq": 140573,
+        "email-triage": 146000,
+        "goemotions": 62924,
+        "massive": 80916,
+        "prog-gold": 89369,
+        "swag": 76454,
+        "synth-v1": 115153
+      },
+      "shortfall_total": 711389,
+      "slack_rows": 799999
+    },
     "cap_margin": 0.0075,
-    "cap_units": 1.05,
-    "cap_units_with_margin": 0.9975,
+    "cap_units": 1.8,
+    "cap_units_with_margin": 1.71,
     "corpus": "decision-mix-clean-1m",
     "datasets": [
       "boolq",
       "civil-comments",
+      "dbpedia14",
+      "detox-attack",
       "email-triage",
+      "goemotions",
       "huffpost",
       "massive",
       "prog-gold",
+      "snli",
+      "swag",
       "synth-v1"
     ],
     "families": {
+      "calibration": [
+        "detox-attack"
+      ],
+      "commonsense": [
+        "swag"
+      ],
+      "emotion": [
+        "goemotions"
+      ],
       "grounded": [
         "synth-v1"
       ],
@@ -374,38 +484,43 @@
       "knowledge": [
         "prog-gold"
       ],
+      "nli": [
+        "snli"
+      ],
       "qa": [
         "boolq"
       ],
       "topic": [
+        "dbpedia14",
         "huffpost"
       ],
       "toxicity": [
         "civil-comments"
       ]
     },
-    "max_target_hard_caps": 39970,
-    "max_target_with_margin": 0,
-    "missing_layers": [
-      "adversarial",
-      "nli",
-      "preference"
-    ],
-    "pass": false,
+    "max_target_hard_caps": 1213741,
+    "max_target_with_margin": 1166038,
+    "missing_layers": [],
+    "pass": true,
     "requested_rows": 1000000,
     "rule": "a family contributes min(family_cap, n x dataset_cap) of any mixture; covering 100 % needs the sum of those to reach 1.0, which no target size can change",
-    "shortfall_rows": 960030,
+    "shortfall_rows": 0,
     "supply": {
       "boolq": 9427,
       "civil-comments": 1804874,
+      "dbpedia14": 560000,
+      "detox-attack": 166012,
       "email-triage": 4000,
+      "goemotions": 87076,
       "huffpost": 162935,
       "massive": 69084,
       "prog-gold": 60631,
+      "snli": 1097590,
+      "swag": 73546,
       "synth-v1": 34847
     },
-    "supply_total": 2145798,
-    "why": "the \u00a7\u00a765-66 caps admit at most 39,970 rows from the fenced registry, 1,000,000 were asked for. Every source but the smallest sits exactly at the 15 % cap, so the only fix is an independent source \u2014 no target size and no seed changes this."
+    "supply_total": 4130022,
+    "why": "the \u00a7\u00a765-66 caps admit 1,213,741 rows from the fenced registry, 1,000,000 were asked for; 5 sources reach their 15 % share outright and the rest are covered by 799,999 rows of cap slack"
   },
   "fence": {
     "blocked": {
@@ -423,213 +538,280 @@
     "jevals_hashes_known": 0,
     "jevals_ids_known": 5000,
     "jevals_ids_path": "artifacts/gates/T-data-eval/jevals_ids.json",
-    "questions_checked": 39981
+    "questions_checked": 1000000
   },
   "format": 1,
-  "generated_utc": "2026-09-21T16:14:00Z",
+  "generated_utc": "2026-09-21T16:46:54Z",
   "guardrails": {
     "checks": {
       "dataset:boolq<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.009427
       },
       "dataset:civil-comments<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.1499
+      },
+      "dataset:dbpedia14<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:detox-attack<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
       },
       "dataset:email-triage<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.100048
+        "share": 0.004
+      },
+      "dataset:goemotions<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.087076
       },
       "dataset:huffpost<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.080119
       },
       "dataset:massive<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.050754
       },
       "dataset:prog-gold<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149971
+        "share": 0.060631
+      },
+      "dataset:snli<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:swag<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.073546
       },
       "dataset:synth-v1<=15%": {
         "bound": 0.15,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.034847
+      },
+      "family:calibration<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "family:commonsense<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.073546
+      },
+      "family:emotion<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.087076
       },
       "family:grounded<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.034847
       },
       "family:intent<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.250044
+        "share": 0.054754
       },
       "family:knowledge<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.149971
+        "share": 0.060631
+      },
+      "family:nli<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
       },
       "family:qa<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.009427
       },
       "family:topic<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.230019
       },
       "family:toxicity<=30%": {
         "bound": 0.3,
         "kind": "max",
         "ok": true,
-        "share": 0.149996
+        "share": 0.1499
       },
       "hard>=10%": {
         "bound": 0.1,
         "kind": "min",
-        "ok": false,
-        "share": 0.076161
+        "ok": true,
+        "share": 0.223262
       },
       "human>=20%": {
         "bound": 0.2,
         "kind": "min",
         "ok": true,
-        "share": 0.599985
+        "share": 0.826976
       },
       "synthetic<=50%": {
         "bound": 0.5,
         "kind": "max",
         "ok": true,
-        "share": 0.250044
+        "share": 0.038847
       }
     },
     "enforced_by": "data.mix.verify_guardrails, which raises MixGuardrailError on the realised mixture",
-    "failed": [
-      "hard>=10%"
-    ],
-    "pass": false,
-    "total": 39981
+    "failed": [],
+    "pass": true,
+    "total": 1000000
   },
   "layer_plan": {
     "kind": "\u00a786 layer",
-    "max_abs_gap": 0.30004,
+    "max_abs_gap": 0.139369,
     "rows": {
       "adversarial": {
-        "gap": -0.06,
-        "n": 0,
-        "share": 0.0,
+        "gap": 0.013546,
+        "n": 73546,
+        "share": 0.073546,
         "target": 0.06
       },
       "grounded-synth": {
-        "gap": 0.009996,
-        "n": 5997,
-        "share": 0.149996,
+        "gap": -0.105153,
+        "n": 34847,
+        "share": 0.034847,
         "target": 0.14
       },
       "human-expert": {
-        "gap": -8e-06,
-        "n": 11994,
-        "share": 0.299992,
+        "gap": 0.096303,
+        "n": 396303,
+        "share": 0.396303,
         "target": 0.3
       },
       "intent-multi": {
-        "gap": 0.30004,
-        "n": 15994,
-        "share": 0.40004,
+        "gap": 0.034873,
+        "n": 134873,
+        "share": 0.134873,
         "target": 0.1
       },
       "nli": {
-        "gap": -0.1,
-        "n": 0,
-        "share": 0.0,
+        "gap": 0.0499,
+        "n": 149900,
+        "share": 0.1499,
         "target": 0.1
       },
       "preference": {
-        "gap": -0.1,
-        "n": 0,
-        "share": 0.0,
+        "gap": 0.0499,
+        "n": 149900,
+        "share": 0.1499,
         "target": 0.1
       },
       "programmatic": {
-        "gap": -0.050029,
-        "n": 5996,
-        "share": 0.149971,
+        "gap": -0.139369,
+        "n": 60631,
+        "share": 0.060631,
         "target": 0.2
       }
     },
-    "total": 39981,
-    "unsupplied": [
-      "adversarial",
-      "nli",
-      "preference"
-    ],
-    "why_unsupplied": {
-      "adversarial": "no adversarial/OOD corpus is registered; the OOD items under artifacts/gates/T-data-eval/ are a sealed eval probe, not training supply",
-      "nli": "no NLI/DocNLI corpus is converted or registered yet",
-      "preference": "the only ordinal corpus (helpsteer2) is behind the \u00a7\u00a718/77 benchmark fence"
-    }
+    "total": 1000000,
+    "unsupplied": [],
+    "why_unsupplied": {}
   },
   "mix": {
     "error": null,
-    "manifest": "artifacts/mix-1m/decision-mix-clean-1m-seed20260921.manifest.json",
-    "members_sha256": "0502935723bb5e516e333e1e2a9be8be04f2883f69705b1e4cf050f13b308346",
-    "rows": 39981,
+    "manifest": "artifacts/mix-1m/decision-mix-clean-1m-seed20260922.manifest.json",
+    "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+    "rows": 1000000,
     "status": "built"
   },
   "pass": false,
   "quotas": {
-    "boolq": 5997,
-    "civil-comments": 5997,
+    "boolq": 9427,
+    "civil-comments": 149900,
+    "dbpedia14": 149900,
+    "detox-attack": 149900,
     "email-triage": 4000,
-    "huffpost": 5997,
-    "massive": 5997,
-    "prog-gold": 5997,
-    "synth-v1": 5997
+    "goemotions": 87076,
+    "huffpost": 80119,
+    "massive": 50754,
+    "prog-gold": 60631,
+    "snli": 149900,
+    "swag": 73546,
+    "synth-v1": 34847
   },
-  "seed": 20260921,
+  "seed": 20260922,
   "task": "T-mix-1m",
   "tokens": {
     "by_shard": {
       "artifacts/data-prefetch/boolq.jsonl": {
-        "candidate_tokens": 11994,
+        "candidate_tokens": 18854,
         "dataset": "boolq",
-        "examples": 5997,
-        "k_sum": 11994,
+        "examples": 9427,
+        "k_sum": 18854,
         "mean_k": 2.0,
-        "state_tokens": 620653,
-        "tokens": 632647
+        "state_tokens": 970807,
+        "tokens": 989661
       },
       "artifacts/data-prefetch/civil-comments.jsonl": {
-        "candidate_tokens": 17991,
+        "candidate_tokens": 449700,
         "dataset": "civil-comments",
-        "examples": 5997,
-        "k_sum": 11994,
+        "examples": 149900,
+        "k_sum": 299800,
         "mean_k": 2.0,
-        "state_tokens": 307198,
-        "tokens": 325189
+        "state_tokens": 7735241,
+        "tokens": 8184941
+      },
+      "artifacts/data-prefetch/dbpedia14.jsonl": {
+        "candidate_tokens": 1178269,
+        "dataset": "dbpedia14",
+        "examples": 149900,
+        "k_sum": 1178269,
+        "mean_k": 7.86,
+        "state_tokens": 7273580,
+        "tokens": 8451849
+      },
+      "artifacts/data-prefetch/detox-attack.jsonl": {
+        "candidate_tokens": 1499000,
+        "dataset": "detox-attack",
+        "examples": 149900,
+        "k_sum": 749500,
+        "mean_k": 5.0,
+        "state_tokens": 10711895,
+        "tokens": 12210895
       },
       "artifacts/data-prefetch/email-triage.jsonl": {
         "candidate_tokens": 20000,
@@ -640,116 +822,144 @@
         "state_tokens": 108266,
         "tokens": 128266
       },
+      "artifacts/data-prefetch/goemotions.jsonl": {
+        "candidate_tokens": 696608,
+        "dataset": "goemotions",
+        "examples": 87076,
+        "k_sum": 696608,
+        "mean_k": 8.0,
+        "state_tokens": 1102656,
+        "tokens": 1799264
+      },
       "artifacts/data-prefetch/huffpost.jsonl": {
-        "candidate_tokens": 28665,
+        "candidate_tokens": 383010,
         "dataset": "huffpost",
-        "examples": 5997,
-        "k_sum": 23988,
+        "examples": 80119,
+        "k_sum": 320476,
         "mean_k": 4.0,
-        "state_tokens": 185211,
-        "tokens": 213876
+        "state_tokens": 2474967,
+        "tokens": 2857977
       },
       "artifacts/data-prefetch/massive.jsonl": {
-        "candidate_tokens": 23988,
+        "candidate_tokens": 203016,
         "dataset": "massive",
-        "examples": 5997,
-        "k_sum": 23988,
+        "examples": 50754,
+        "k_sum": 203016,
         "mean_k": 4.0,
-        "state_tokens": 46338,
-        "tokens": 70326
+        "state_tokens": 388758,
+        "tokens": 591774
+      },
+      "artifacts/data-prefetch/snli.jsonl": {
+        "candidate_tokens": 375021,
+        "dataset": "snli",
+        "examples": 149900,
+        "k_sum": 375021,
+        "mean_k": 2.502,
+        "state_tokens": 3334502,
+        "tokens": 3709523
+      },
+      "artifacts/data-prefetch/swag.jsonl": {
+        "candidate_tokens": 2523895,
+        "dataset": "swag",
+        "examples": 73546,
+        "k_sum": 294184,
+        "mean_k": 4.0,
+        "state_tokens": 1033909,
+        "tokens": 3557804
       },
       "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl": {
-        "candidate_tokens": 7736,
+        "candidate_tokens": 69646,
         "dataset": "prog-gold",
-        "examples": 1577,
-        "k_sum": 4416,
-        "mean_k": 2.8,
-        "state_tokens": 25938,
-        "tokens": 33674
+        "examples": 14051,
+        "k_sum": 39230,
+        "mean_k": 2.792,
+        "state_tokens": 230129,
+        "tokens": 299775
       },
       "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl": {
-        "candidate_tokens": 8229,
+        "candidate_tokens": 70362,
         "dataset": "prog-gold",
-        "examples": 2063,
-        "k_sum": 5643,
-        "mean_k": 2.735,
-        "state_tokens": 36979,
-        "tokens": 45208
+        "examples": 17625,
+        "k_sum": 48062,
+        "mean_k": 2.727,
+        "state_tokens": 320534,
+        "tokens": 390896
       },
       "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl": {
-        "candidate_tokens": 8701,
+        "candidate_tokens": 76849,
         "dataset": "prog-gold",
-        "examples": 2061,
-        "k_sum": 5698,
-        "mean_k": 2.765,
-        "state_tokens": 36685,
-        "tokens": 45386
+        "examples": 18219,
+        "k_sum": 50072,
+        "mean_k": 2.748,
+        "state_tokens": 325217,
+        "tokens": 402066
       },
       "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl": {
-        "candidate_tokens": 1156,
+        "candidate_tokens": 42432,
         "dataset": "prog-gold",
-        "examples": 295,
-        "k_sum": 794,
-        "mean_k": 2.692,
-        "state_tokens": 4912,
-        "tokens": 6068
+        "examples": 10736,
+        "k_sum": 29089,
+        "mean_k": 2.709,
+        "state_tokens": 175717,
+        "tokens": 218149
       },
       "artifacts/synth/v1/synth-v1-000.jsonl": {
-        "candidate_tokens": 43181,
+        "candidate_tokens": 227040,
         "dataset": "synth-v1",
-        "examples": 1329,
-        "k_sum": 4761,
-        "mean_k": 3.582,
-        "state_tokens": 134819,
-        "tokens": 178000
+        "examples": 6875,
+        "k_sum": 24709,
+        "mean_k": 3.594,
+        "state_tokens": 702553,
+        "tokens": 929593
       },
       "artifacts/synth/v1/synth-v1-001.jsonl": {
-        "candidate_tokens": 44783,
+        "candidate_tokens": 228438,
         "dataset": "synth-v1",
-        "examples": 1352,
-        "k_sum": 4862,
-        "mean_k": 3.596,
-        "state_tokens": 140140,
-        "tokens": 184923
+        "examples": 6985,
+        "k_sum": 25022,
+        "mean_k": 3.582,
+        "state_tokens": 720530,
+        "tokens": 948968
       },
       "artifacts/synth/v1/synth-v1-002.jsonl": {
-        "candidate_tokens": 45679,
+        "candidate_tokens": 229219,
         "dataset": "synth-v1",
-        "examples": 1381,
-        "k_sum": 4971,
-        "mean_k": 3.6,
-        "state_tokens": 138635,
-        "tokens": 184314
+        "examples": 6950,
+        "k_sum": 24977,
+        "mean_k": 3.594,
+        "state_tokens": 708232,
+        "tokens": 937451
       },
       "artifacts/synth/v1/synth-v1-003.jsonl": {
-        "candidate_tokens": 45206,
+        "candidate_tokens": 232192,
         "dataset": "synth-v1",
-        "examples": 1377,
-        "k_sum": 4961,
-        "mean_k": 3.603,
-        "state_tokens": 143271,
-        "tokens": 188477
+        "examples": 7056,
+        "k_sum": 25370,
+        "mean_k": 3.596,
+        "state_tokens": 721176,
+        "tokens": 953368
       },
       "artifacts/synth/v1/synth-v1-004.jsonl": {
-        "candidate_tokens": 18623,
+        "candidate_tokens": 230739,
         "dataset": "synth-v1",
-        "examples": 558,
-        "k_sum": 2008,
-        "mean_k": 3.599,
-        "state_tokens": 60054,
-        "tokens": 78677
+        "examples": 6981,
+        "k_sum": 25095,
+        "mean_k": 3.595,
+        "state_tokens": 713030,
+        "tokens": 943769
       }
     },
     "total": {
-      "candidate_tokens": 325932,
-      "examples": 39981,
-      "mean_k": 3.153,
-      "state_tokens": 1989099,
-      "total_tokens": 2315031,
+      "candidate_tokens": 8754290,
+      "examples": 1000000,
+      "mean_k": 4.443,
+      "state_tokens": 39751699,
+      "total_tokens": 48505989,
       "unit": "whitespace tokens of the state text and of every option text, counted on the rows the mixture actually selected"
     }
   },
-  "total_tokens": 2315031,
+  "total_tokens": 48505989,
+  "train_seed": 20260921,
   "training": {
     "backbones": {
       "ettin-68m": {
@@ -845,34 +1055,30 @@
   },
   "type_mix": {
     "kind": "\u00a748 question type",
-    "max_abs_gap": 0.15,
+    "max_abs_gap": 0.014627,
     "rows": {
       "choice": {
-        "gap": 0.002638,
-        "n": 22095,
-        "share": 0.552638,
+        "gap": 0.014627,
+        "n": 564627,
+        "share": 0.564627,
         "target": 0.55
       },
       "noul": {
-        "gap": 0.147362,
-        "n": 17886,
-        "share": 0.447362,
+        "gap": -0.014527,
+        "n": 285473,
+        "share": 0.285473,
         "target": 0.3
       },
       "score": {
-        "gap": -0.15,
-        "n": 0,
-        "share": 0.0,
+        "gap": -0.0001,
+        "n": 149900,
+        "share": 0.1499,
         "target": 0.15
       }
     },
-    "total": 39981,
-    "unsupplied": [
-      "score"
-    ],
-    "why_unsupplied": {
-      "score": "every ordinal-scale corpus (helpsteer2) is fenced out, so the mixture has no Score supply at all"
-    }
+    "total": 1000000,
+    "unsupplied": [],
+    "why_unsupplied": {}
   },
   "upstream": {
     "T-bakeoff-real": [

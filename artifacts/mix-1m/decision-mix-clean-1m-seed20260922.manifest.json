@@ -1,0 +1,1481 @@
+{
+  "built_utc": "2026-09-21T16:46:54Z",
+  "checks": {
+    "checks": {
+      "dynamic_options_are_the_majority": {
+        "floor": 0.5,
+        "pass": true,
+        "share": 0.540873,
+        "why": "the product property is choosing among options that vary per row; fixed-label binaries must not be most of what the head sees"
+      },
+      "guardrails_hold": {
+        "breaches": [],
+        "enforced_by": "data.mix.verify_mix (raises MixGuardrailError)",
+        "pass": true
+      },
+      "no_dataset_over_cap": {
+        "cap": 0.15,
+        "pass": true,
+        "shares": {
+          "boolq": 0.009427,
+          "civil-comments": 0.1499,
+          "dbpedia14": 0.1499,
+          "detox-attack": 0.1499,
+          "email-triage": 0.004,
+          "goemotions": 0.087076,
+          "huffpost": 0.080119,
+          "massive": 0.050754,
+          "prog-gold": 0.060631,
+          "snli": 0.1499,
+          "swag": 0.073546,
+          "synth-v1": 0.034847
+        }
+      },
+      "no_family_over_cap": {
+        "cap": 0.3,
+        "pass": true,
+        "shares": {
+          "calibration": 0.1499,
+          "commonsense": 0.073546,
+          "emotion": 0.087076,
+          "grounded": 0.034847,
+          "intent": 0.054754,
+          "knowledge": 0.060631,
+          "nli": 0.1499,
+          "qa": 0.009427,
+          "topic": 0.230019,
+          "toxicity": 0.1499
+        }
+      },
+      "synthetic_is_a_minority": {
+        "cap": 0.5,
+        "pass": true,
+        "share": 0.038847
+      }
+    },
+    "guardrails": {
+      "breaches": [],
+      "by_family": {
+        "calibration": 149900,
+        "commonsense": 73546,
+        "emotion": 87076,
+        "grounded": 34847,
+        "intent": 54754,
+        "knowledge": 60631,
+        "nli": 149900,
+        "qa": 9427,
+        "topic": 230019,
+        "toxicity": 149900
+      },
+      "checks": {
+        "dataset:boolq": {
+          "cap": 0.15,
+          "n": 9427,
+          "ok": true,
+          "share": 0.009427
+        },
+        "dataset:civil-comments": {
+          "cap": 0.15,
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "dataset:dbpedia14": {
+          "cap": 0.15,
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "dataset:detox-attack": {
+          "cap": 0.15,
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "dataset:email-triage": {
+          "cap": 0.15,
+          "n": 4000,
+          "ok": true,
+          "share": 0.004
+        },
+        "dataset:goemotions": {
+          "cap": 0.15,
+          "n": 87076,
+          "ok": true,
+          "share": 0.087076
+        },
+        "dataset:huffpost": {
+          "cap": 0.15,
+          "n": 80119,
+          "ok": true,
+          "share": 0.080119
+        },
+        "dataset:massive": {
+          "cap": 0.15,
+          "n": 50754,
+          "ok": true,
+          "share": 0.050754
+        },
+        "dataset:prog-gold": {
+          "cap": 0.15,
+          "n": 60631,
+          "ok": true,
+          "share": 0.060631
+        },
+        "dataset:snli": {
+          "cap": 0.15,
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "dataset:swag": {
+          "cap": 0.15,
+          "n": 73546,
+          "ok": true,
+          "share": 0.073546
+        },
+        "dataset:synth-v1": {
+          "cap": 0.15,
+          "n": 34847,
+          "ok": true,
+          "share": 0.034847
+        },
+        "family:calibration": {
+          "cap": 0.3,
+          "datasets": [
+            "detox-attack"
+          ],
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "family:commonsense": {
+          "cap": 0.3,
+          "datasets": [
+            "swag"
+          ],
+          "n": 73546,
+          "ok": true,
+          "share": 0.073546
+        },
+        "family:emotion": {
+          "cap": 0.3,
+          "datasets": [
+            "goemotions"
+          ],
+          "n": 87076,
+          "ok": true,
+          "share": 0.087076
+        },
+        "family:grounded": {
+          "cap": 0.3,
+          "datasets": [
+            "synth-v1"
+          ],
+          "n": 34847,
+          "ok": true,
+          "share": 0.034847
+        },
+        "family:intent": {
+          "cap": 0.3,
+          "datasets": [
+            "email-triage",
+            "massive"
+          ],
+          "n": 54754,
+          "ok": true,
+          "share": 0.054754
+        },
+        "family:knowledge": {
+          "cap": 0.3,
+          "datasets": [
+            "prog-gold"
+          ],
+          "n": 60631,
+          "ok": true,
+          "share": 0.060631
+        },
+        "family:nli": {
+          "cap": 0.3,
+          "datasets": [
+            "snli"
+          ],
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        },
+        "family:qa": {
+          "cap": 0.3,
+          "datasets": [
+            "boolq"
+          ],
+          "n": 9427,
+          "ok": true,
+          "share": 0.009427
+        },
+        "family:topic": {
+          "cap": 0.3,
+          "datasets": [
+            "dbpedia14",
+            "huffpost"
+          ],
+          "n": 230019,
+          "ok": true,
+          "share": 0.230019
+        },
+        "family:toxicity": {
+          "cap": 0.3,
+          "datasets": [
+            "civil-comments"
+          ],
+          "n": 149900,
+          "ok": true,
+          "share": 0.1499
+        }
+      },
+      "total": 1000000
+    },
+    "pass": true
+  },
+  "composition": {
+    "by_dataset": {
+      "boolq": 9427,
+      "civil-comments": 149900,
+      "dbpedia14": 149900,
+      "detox-attack": 149900,
+      "email-triage": 4000,
+      "goemotions": 87076,
+      "huffpost": 80119,
+      "massive": 50754,
+      "prog-gold": 60631,
+      "snli": 149900,
+      "swag": 73546,
+      "synth-v1": 34847
+    },
+    "by_family": {
+      "calibration": 149900,
+      "commonsense": 73546,
+      "emotion": 87076,
+      "grounded": 34847,
+      "intent": 54754,
+      "knowledge": 60631,
+      "nli": 149900,
+      "qa": 9427,
+      "topic": 230019,
+      "toxicity": 149900
+    },
+    "by_k": {
+      "10": 16227,
+      "11": 16400,
+      "12": 60032,
+      "13": 16790,
+      "2": 282642,
+      "3": 86075,
+      "4": 343119,
+      "5": 158886,
+      "6": 1853,
+      "8": 1287,
+      "9": 16689
+    },
+    "by_lang": {
+      "de-DE": 8459,
+      "en": 945246,
+      "en-US": 8459,
+      "es": 4000,
+      "es-ES": 8459,
+      "fr-FR": 8459,
+      "it-IT": 8459,
+      "pt-PT": 8459
+    },
+    "by_layer": {
+      "adversarial": 73546,
+      "grounded-synth": 34847,
+      "human-expert": 396303,
+      "intent-multi": 134873,
+      "nli": 149900,
+      "preference": 149900,
+      "programmatic": 60631
+    },
+    "by_origin": {
+      "human": 826976,
+      "programmatic": 134177,
+      "synthetic": 38847
+    },
+    "by_qtype": {
+      "choice": 564627,
+      "noul": 285473,
+      "score": 149900
+    },
+    "dynamic_option_rows": 540873,
+    "dynamic_option_share": 0.540873,
+    "hard_rows": 223262,
+    "hard_share": 0.223262,
+    "rows": 1000000,
+    "top_dataset_share": 0.1499
+  },
+  "corpus": "decision-mix-clean-1m",
+  "diversity": {
+    "shares": {
+      "dataset": {
+        "boolq": 0.009427,
+        "civil-comments": 0.1499,
+        "dbpedia14": 0.1499,
+        "detox-attack": 0.1499,
+        "email-triage": 0.004,
+        "goemotions": 0.087076,
+        "huffpost": 0.080119,
+        "massive": 0.050754,
+        "prog-gold": 0.060631,
+        "snli": 0.1499,
+        "swag": 0.073546,
+        "synth-v1": 0.034847
+      },
+      "family": {
+        "calibration": 0.1499,
+        "commonsense": 0.073546,
+        "emotion": 0.087076,
+        "grounded": 0.034847,
+        "intent": 0.054754,
+        "knowledge": 0.060631,
+        "nli": 0.1499,
+        "qa": 0.009427,
+        "topic": 0.230019,
+        "toxicity": 0.1499
+      },
+      "k_bucket": {
+        "2-4": 0.711836,
+        "5-8": 0.162026,
+        "9-16": 0.126138
+      },
+      "lang": {
+        "de-DE": 0.008459,
+        "en": 0.945246,
+        "en-US": 0.008459,
+        "es": 0.004,
+        "es-ES": 0.008459,
+        "fr-FR": 0.008459,
+        "it-IT": 0.008459,
+        "pt-PT": 0.008459
+      },
+      "layer": {
+        "adversarial": 0.073546,
+        "grounded-synth": 0.034847,
+        "human-expert": 0.396303,
+        "intent-multi": 0.134873,
+        "nli": 0.1499,
+        "preference": 0.1499,
+        "programmatic": 0.060631
+      },
+      "origin": {
+        "human": 0.826976,
+        "programmatic": 0.134177,
+        "synthetic": 0.038847
+      },
+      "qtype": {
+        "choice": 0.564627,
+        "noul": 0.285473,
+        "score": 0.1499
+      }
+    },
+    "simpson": {
+      "dataset": 0.8831,
+      "family": 0.8587,
+      "k_bucket": 0.4511,
+      "lang": 0.1061,
+      "layer": 0.7695,
+      "origin": 0.2966,
+      "qtype": 0.5772
+    }
+  },
+  "elapsed_s": 20.3,
+  "excluded": {
+    "logiqa": "reasoning benchmark, eval-only (finding G)",
+    "reclor": "reasoning benchmark, eval-only (finding G)",
+    "synth-loop": "quarantined (finding C): 190 skeletons, split by i % 10"
+  },
+  "fence": {
+    "blocked": {
+      "dataset": 0,
+      "jevals_hash": 0,
+      "jevals_id": 0
+    },
+    "clean": true,
+    "enforcement": "tools.mix_1m.fence.FenceBreach \u2014 assembly aborts; a fenced row is never counted, capped or reported as a share",
+    "fenced_datasets": [
+      "banking77",
+      "helpsteer2",
+      "pubmedqa"
+    ],
+    "jevals_hashes_known": 0,
+    "jevals_ids_known": 5000,
+    "jevals_ids_path": "artifacts/gates/T-data-eval/jevals_ids.json",
+    "questions_checked": 1000000
+  },
+  "fence_conflicts": [
+    {
+      "dataset": "banking77",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    },
+    {
+      "dataset": "helpsteer2",
+      "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+      "in_product_mix": true,
+      "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+    }
+  ],
+  "format": 2,
+  "guardrails": {
+    "cap_safety_margin": 0.0075,
+    "cap_units": 1.8,
+    "enforcement": "hard error: data.mix.verify_mix raises MixGuardrailError and mix construction aborts",
+    "max_dataset_fraction": 0.15,
+    "max_family_fraction": 0.3,
+    "max_synthetic_fraction": 0.5,
+    "min_dynamic_fraction": 0.5
+  },
+  "guardrails_68": {
+    "checks": {
+      "dataset:boolq<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.009427
+      },
+      "dataset:civil-comments<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:dbpedia14<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:detox-attack<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:email-triage<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.004
+      },
+      "dataset:goemotions<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.087076
+      },
+      "dataset:huffpost<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.080119
+      },
+      "dataset:massive<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.050754
+      },
+      "dataset:prog-gold<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.060631
+      },
+      "dataset:snli<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "dataset:swag<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.073546
+      },
+      "dataset:synth-v1<=15%": {
+        "bound": 0.15,
+        "kind": "max",
+        "ok": true,
+        "share": 0.034847
+      },
+      "family:calibration<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "family:commonsense<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.073546
+      },
+      "family:emotion<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.087076
+      },
+      "family:grounded<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.034847
+      },
+      "family:intent<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.054754
+      },
+      "family:knowledge<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.060631
+      },
+      "family:nli<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "family:qa<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.009427
+      },
+      "family:topic<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.230019
+      },
+      "family:toxicity<=30%": {
+        "bound": 0.3,
+        "kind": "max",
+        "ok": true,
+        "share": 0.1499
+      },
+      "hard>=10%": {
+        "bound": 0.1,
+        "kind": "min",
+        "ok": true,
+        "share": 0.223262
+      },
+      "human>=20%": {
+        "bound": 0.2,
+        "kind": "min",
+        "ok": true,
+        "share": 0.826976
+      },
+      "synthetic<=50%": {
+        "bound": 0.5,
+        "kind": "max",
+        "ok": true,
+        "share": 0.038847
+      }
+    },
+    "enforced_by": "data.mix.verify_guardrails, which raises MixGuardrailError on the realised mixture",
+    "failed": [],
+    "pass": true,
+    "total": 1000000
+  },
+  "holdout": {
+    "boolq": {
+      "dataset": "boolq",
+      "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task",
+      "n_seen": 2,
+      "n_unseen": 0,
+      "seen": [
+        "no",
+        "yes"
+      ],
+      "unseen": []
+    },
+    "civil-comments": {
+      "dataset": "civil-comments",
+      "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task",
+      "n_seen": 2,
+      "n_unseen": 0,
+      "seen": [
+        "not_toxic",
+        "toxic"
+      ],
+      "unseen": []
+    },
+    "dbpedia14": {
+      "dataset": "dbpedia14",
+      "exempt": "holdout disabled",
+      "n_seen": 14,
+      "n_unseen": 0,
+      "seen": [
+        "Album",
+        "Animal",
+        "Artist",
+        "Athlete",
+        "Building",
+        "Company",
+        "EducationalInstitution",
+        "Film",
+        "MeanOfTransportation",
+        "NaturalPlace",
+        "OfficeHolder",
+        "Plant",
+        "Village",
+        "WrittenWork"
+      ],
+      "unseen": []
+    },
+    "detox-attack": {
+      "dataset": "detox-attack",
+      "exempt": "holdout disabled",
+      "n_seen": 5,
+      "n_unseen": 0,
+      "seen": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "unseen": []
+    },
+    "email-triage": {
+      "dataset": "email-triage",
+      "exempt": "holdout disabled",
+      "n_seen": 4,
+      "n_unseen": 0,
+      "seen": [
+        "archivar",
+        "responder",
+        "spam",
+        "urgente"
+      ],
+      "unseen": []
+    },
+    "goemotions": {
+      "dataset": "goemotions",
+      "exempt": "holdout disabled",
+      "n_seen": 28,
+      "n_unseen": 0,
+      "seen": [
+        "admiration",
+        "amusement",
+        "anger",
+        "annoyance",
+        "approval",
+        "caring",
+        "confusion",
+        "curiosity",
+        "desire",
+        "disappointment",
+        "disapproval",
+        "disgust",
+        "embarrassment",
+        "excitement",
+        "fear",
+        "gratitude",
+        "grief",
+        "joy",
+        "love",
+        "nervousness",
+        "neutral",
+        "optimism",
+        "pride",
+        "realization",
+        "relief",
+        "remorse",
+        "sadness",
+        "surprise"
+      ],
+      "unseen": []
+    },
+    "huffpost": {
+      "dataset": "huffpost",
+      "exempt": null,
+      "n_seen": 30,
+      "n_unseen": 11,
+      "seen": [
+        "ARTS",
+        "BUSINESS",
+        "COLLEGE",
+        "COMEDY",
+        "CRIME",
+        "DIVORCE",
+        "EDUCATION",
+        "ENTERTAINMENT",
+        "ENVIRONMENT",
+        "FIFTY",
+        "FOOD & DRINK",
+        "GREEN",
+        "HEALTHY LIVING",
+        "HOME & LIVING",
+        "IMPACT",
+        "LATINO VOICES",
+        "MEDIA",
+        "MONEY",
+        "POLITICS",
+        "RELIGION",
+        "SCIENCE",
+        "SPORTS",
+        "STYLE",
+        "STYLE & BEAUTY",
+        "TASTE",
+        "TECH",
+        "TRAVEL",
+        "WEDDINGS",
+        "WELLNESS",
+        "WOMEN"
+      ],
+      "unseen": [
+        "ARTS & CULTURE",
+        "BLACK VOICES",
+        "CULTURE & ARTS",
+        "GOOD NEWS",
+        "PARENTING",
+        "PARENTS",
+        "QUEER VOICES",
+        "THE WORLDPOST",
+        "WEIRD NEWS",
+        "WORLD NEWS",
+        "WORLDPOST"
+      ]
+    },
+    "massive": {
+      "dataset": "massive",
+      "exempt": null,
+      "n_seen": 45,
+      "n_unseen": 15,
+      "seen": [
+        "alarm_query",
+        "alarm_remove",
+        "alarm_set",
+        "audio_volume_down",
+        "audio_volume_mute",
+        "audio_volume_other",
+        "audio_volume_up",
+        "calendar_query",
+        "cooking_query",
+        "cooking_recipe",
+        "datetime_convert",
+        "datetime_query",
+        "email_addcontact",
+        "email_sendemail",
+        "general_greet",
+        "general_joke",
+        "general_quirky",
+        "iot_cleaning",
+        "iot_coffee",
+        "iot_hue_lightchange",
+        "iot_hue_lightdim",
+        "iot_hue_lightoff",
+        "iot_hue_lighton",
+        "iot_hue_lightup",
+        "iot_wemo_off",
+        "iot_wemo_on",
+        "lists_createoradd",
+        "lists_query",
+        "lists_remove",
+        "music_query",
+        "music_settings",
+        "news_query",
+        "play_audiobook",
+        "play_game",
+        "play_music",
+        "play_podcasts",
+        "play_radio",
+        "qa_currency",
+        "qa_definition",
+        "qa_factoid",
+        "qa_maths",
+        "qa_stock",
+        "social_post",
+        "social_query",
+        "weather_query"
+      ],
+      "unseen": [
+        "calendar_remove",
+        "calendar_set",
+        "email_query",
+        "email_querycontact",
+        "music_dislikeness",
+        "music_likeness",
+        "recommendation_events",
+        "recommendation_locations",
+        "recommendation_movies",
+        "takeaway_order",
+        "takeaway_query",
+        "transport_query",
+        "transport_taxi",
+        "transport_ticket",
+        "transport_traffic"
+      ]
+    },
+    "prog-gold": {
+      "dataset": "prog-gold",
+      "exempt": "holdout disabled",
+      "n_seen": 10,
+      "n_unseen": 0,
+      "seen": [
+        "no",
+        "o0",
+        "o1",
+        "o2",
+        "o3",
+        "o4",
+        "o5",
+        "o6",
+        "o7",
+        "yes"
+      ],
+      "unseen": []
+    },
+    "snli": {
+      "dataset": "snli",
+      "exempt": "holdout disabled",
+      "n_seen": 5,
+      "n_unseen": 0,
+      "seen": [
+        "contradiction",
+        "entailment",
+        "neutral",
+        "no",
+        "yes"
+      ],
+      "unseen": []
+    },
+    "swag": {
+      "dataset": "swag",
+      "exempt": "holdout disabled",
+      "n_seen": 4,
+      "n_unseen": 0,
+      "seen": [
+        "o0",
+        "o1",
+        "o2",
+        "o3"
+      ],
+      "unseen": []
+    },
+    "synth-v1": {
+      "dataset": "synth-v1",
+      "exempt": "holdout disabled",
+      "n_seen": 7,
+      "n_unseen": 0,
+      "seen": [
+        "distractor",
+        "no",
+        "opt0",
+        "opt1",
+        "opt2",
+        "opt3",
+        "yes"
+      ],
+      "unseen": []
+    }
+  },
+  "layer_plan": {
+    "kind": "\u00a786 layer",
+    "max_abs_gap": 0.139369,
+    "rows": {
+      "adversarial": {
+        "gap": 0.013546,
+        "n": 73546,
+        "share": 0.073546,
+        "target": 0.06
+      },
+      "grounded-synth": {
+        "gap": -0.105153,
+        "n": 34847,
+        "share": 0.034847,
+        "target": 0.14
+      },
+      "human-expert": {
+        "gap": 0.096303,
+        "n": 396303,
+        "share": 0.396303,
+        "target": 0.3
+      },
+      "intent-multi": {
+        "gap": 0.034873,
+        "n": 134873,
+        "share": 0.134873,
+        "target": 0.1
+      },
+      "nli": {
+        "gap": 0.0499,
+        "n": 149900,
+        "share": 0.1499,
+        "target": 0.1
+      },
+      "preference": {
+        "gap": 0.0499,
+        "n": 149900,
+        "share": 0.1499,
+        "target": 0.1
+      },
+      "programmatic": {
+        "gap": -0.139369,
+        "n": 60631,
+        "share": 0.060631,
+        "target": 0.2
+      }
+    },
+    "total": 1000000,
+    "unsupplied": [],
+    "why_unsupplied": {}
+  },
+  "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+  "reproduce": {
+    "builder": "training.python.train_decision.build_mix -> data.mix.plan_mix / realise",
+    "cap_margin": 0.0001,
+    "command": "python -m tools.mix_1m.run_mix build --target 1000000 --seed 20260922",
+    "note": "seed + the per-shard sha256 above rebuild this corpus; members_sha256 proves the rebuild matched",
+    "trained_by": "train_decision train --fence-clean --mix-seed 20260922",
+    "weights": "data.mix.layer_weights (\u00a786 layer plan)"
+  },
+  "seed": 20260922,
+  "seen_labels": {
+    "huffpost": 30,
+    "massive": 45
+  },
+  "selection": {
+    "function": "data.mix.keep_row",
+    "keep_fractions": {
+      "boolq": 1.0,
+      "civil-comments": 0.09551082,
+      "dbpedia14": 0.30783036,
+      "detox-attack": 1.0,
+      "email-triage": 1.0,
+      "goemotions": 1.0,
+      "huffpost": 0.69915581,
+      "massive": 1.0,
+      "prog-gold": 1.0,
+      "snli": 0.15705774,
+      "swag": 1.0,
+      "synth-v1": 1.0
+    },
+    "key": "sha256(seed \\0 dataset \\0 row_index \\0 question_id)",
+    "note": "stateless: seed + keep fractions + the shard sha256 below rebuild this mixture without a member list"
+  },
+  "sources": {
+    "boolq": {
+      "dynamic_options": false,
+      "family": "qa",
+      "kept": 9427,
+      "lang_scope": "en",
+      "layer": "human-expert",
+      "note": "yes/no: a two-label pool IS the question, never dynamic",
+      "origin": "human",
+      "pool_size": 2,
+      "quota": 9427,
+      "shards": [
+        {
+          "bytes": 10279023,
+          "path": "artifacts/data-prefetch/boolq.jsonl",
+          "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+        }
+      ],
+      "share": 0.009427,
+      "supply": 9427,
+      "weight": 0.35
+    },
+    "civil-comments": {
+      "dynamic_options": false,
+      "family": "toxicity",
+      "kept": 149900,
+      "lang_scope": "en",
+      "layer": "human-expert",
+      "note": "finding E: 74.6 % of the raw corpus, capped at 15 % here",
+      "origin": "human",
+      "pool_size": 2,
+      "quota": 149900,
+      "shards": [
+        {
+          "bytes": 1062302574,
+          "path": "artifacts/data-prefetch/civil-comments.jsonl",
+          "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+        }
+      ],
+      "share": 0.1499,
+      "supply": 1804874,
+      "weight": 0.35
+    },
+    "dbpedia14": {
+      "dynamic_options": true,
+      "family": "topic",
+      "kept": 149900,
+      "lang_scope": "en",
+      "layer": "human-expert",
+      "note": "560 k DBpedia ontology abstracts over 14 curated classes; the SECOND source in the `topic` family, and the wide-K half of it carries measured nearest-label distractors",
+      "origin": "human",
+      "pool_size": 14,
+      "quota": 149900,
+      "shards": [
+        {
+          "bytes": 634742744,
+          "path": "artifacts/data-prefetch/dbpedia14.jsonl",
+          "sha256": "3dfe940b4ca8e4d6129fe873fbbd7ac5c3133fd04ad67ec9f2a116b6b713e5ba"
+        }
+      ],
+      "share": 0.1499,
+      "supply": 560000,
+      "weight": 1.0
+    },
+    "detox-attack": {
+      "dynamic_options": false,
+      "family": "calibration",
+      "kept": 149900,
+      "lang_scope": "en",
+      "layer": "preference",
+      "note": "Wikipedia talk-page comments rated by ~10 annotators each; the gold is the measured share of annotators on a 0-4 scale, which is the \u00a748 Score supply HelpSteer2 was fenced out of \u2014 the scale IS the option set, so it is exempt from the global-label-space check",
+      "origin": "human",
+      "pool_size": 5,
+      "quota": 149900,
+      "shards": [
+        {
+          "bytes": 171736569,
+          "path": "artifacts/data-prefetch/detox-attack.jsonl",
+          "sha256": "91e823c38cdc1f03c806a0f3d65c5732a088b6c0d42a7b19056053ec2e0f51f4"
+        }
+      ],
+      "share": 0.1499,
+      "supply": 166012,
+      "weight": 0.35
+    },
+    "email-triage": {
+      "dynamic_options": true,
+      "family": "intent",
+      "kept": 4000,
+      "lang_scope": "es",
+      "layer": "intent-multi",
+      "note": "4 labels, Spanish only (audit finding D): kept small on purpose",
+      "origin": "synthetic",
+      "pool_size": 4,
+      "quota": 4000,
+      "shards": [
+        {
+          "bytes": 2820195,
+          "path": "artifacts/data-prefetch/email-triage.jsonl",
+          "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+        }
+      ],
+      "share": 0.004,
+      "supply": 4000,
+      "weight": 0.7
+    },
+    "goemotions": {
+      "dynamic_options": true,
+      "family": "emotion",
+      "kept": 87076,
+      "lang_scope": "en",
+      "layer": "human-expert",
+      "note": "28 emotions over 211 k rater judgements; the K=12 question of each row is the measured nearest neighbourhood of its gold, which is where the \u00a768 hard slice comes from",
+      "origin": "human",
+      "pool_size": 28,
+      "quota": 87076,
+      "shards": [
+        {
+          "bytes": 69875904,
+          "path": "artifacts/data-prefetch/goemotions.jsonl",
+          "sha256": "b3ecb12219a30bfacd04b1eac1dae7f47b1199c2565e11278ab6bef9fcee2ab2"
+        }
+      ],
+      "share": 0.087076,
+      "supply": 87076,
+      "weight": 1.0
+    },
+    "huffpost": {
+      "dynamic_options": true,
+      "family": "topic",
+      "kept": 80119,
+      "lang_scope": "en",
+      "layer": "intent-multi",
+      "note": "41 categories; 11 of them are the unseen-label holdout",
+      "origin": "human",
+      "pool_size": 41,
+      "quota": 80119,
+      "shards": [
+        {
+          "bytes": 88534603,
+          "path": "artifacts/data-prefetch/huffpost.jsonl",
+          "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+        }
+      ],
+      "share": 0.080119,
+      "supply": 131783,
+      "weight": 1.0
+    },
+    "massive": {
+      "dynamic_options": true,
+      "family": "intent",
+      "kept": 50754,
+      "lang_scope": "multi",
+      "layer": "intent-multi",
+      "note": "60 intents across 4 locales; carries the multilingual axis",
+      "origin": "human",
+      "pool_size": 60,
+      "quota": 50754,
+      "shards": [
+        {
+          "bytes": 40814161,
+          "path": "artifacts/data-prefetch/massive.jsonl",
+          "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+        }
+      ],
+      "share": 0.050754,
+      "supply": 50754,
+      "weight": 1.0
+    },
+    "prog-gold": {
+      "dynamic_options": true,
+      "family": "knowledge",
+      "kept": 60631,
+      "lang_scope": "multi",
+      "layer": "programmatic",
+      "note": "#T-prog-gold: Wikidata-grounded gold, every answer verified against the graph; the probe shard is a robustness fixture and is deliberately NOT a training shard",
+      "origin": "programmatic",
+      "pool_size": 10,
+      "quota": 60631,
+      "shards": [
+        {
+          "bytes": 11021368,
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+          "sha256": "aba913022be269f3f7579f8cf6212f763e10d4064e15ce97cc2446d910188200"
+        },
+        {
+          "bytes": 12776986,
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+          "sha256": "49fcccd3208a90d0af9c294fb48317a868e6b2697cf829c95061d7ebbdbe5d98"
+        },
+        {
+          "bytes": 13232664,
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+          "sha256": "3b4c7e5ea25d8536fb320e3c8eda2365510a4638c12420c51410fa2d7c036015"
+        },
+        {
+          "bytes": 7624615,
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl",
+          "sha256": "5759201eca2204dcbfe433437d3a2837153b02659dd7c9b6fd128c96d3a65723"
+        }
+      ],
+      "share": 0.060631,
+      "supply": 60631,
+      "weight": 1.0
+    },
+    "snli": {
+      "dynamic_options": false,
+      "family": "nli",
+      "kept": 149900,
+      "lang_scope": "en",
+      "layer": "nli",
+      "note": "550 k premise/hypothesis pairs: the 3-way relation IS the option set, so it is exempt from the global-label-space check; the boolean twin keeps the \u00a748 Noul share alive",
+      "origin": "human",
+      "pool_size": 5,
+      "quota": 149900,
+      "shards": [
+        {
+          "bytes": 352457023,
+          "path": "artifacts/data-prefetch/snli.jsonl",
+          "sha256": "475081b03c9ba6a2580e10da677d00baa66eb5e00c6dd9895c11cf9f7b2e7bfc"
+        }
+      ],
+      "share": 0.1499,
+      "supply": 1097590,
+      "weight": 0.35
+    },
+    "swag": {
+      "dynamic_options": true,
+      "family": "commonsense",
+      "kept": 73546,
+      "lang_scope": "en",
+      "layer": "adversarial",
+      "note": "73 k grounded situations with four continuations; the \u00a786 adversarial layer, which had no supply at all. Its three distractors survived adversarial filtering against a model ensemble (Zellers et al. 2018) \u2014 a property of the corpus, not a difficulty this registry asserted. Origin is programmatic and not human: the gold caption is human, the option SET is machine-constructed",
+      "origin": "programmatic",
+      "pool_size": 4,
+      "quota": 73546,
+      "shards": [
+        {
+          "bytes": 71149592,
+          "path": "artifacts/data-prefetch/swag.jsonl",
+          "sha256": "058867e9dc06101cf6946facbd1cf21cb75ca590851bd06a713be81f222d5f88"
+        }
+      ],
+      "share": 0.073546,
+      "supply": 73546,
+      "weight": 0.7
+    },
+    "synth-v1": {
+      "dynamic_options": true,
+      "family": "grounded",
+      "kept": 34847,
+      "lang_scope": "multi",
+      "layer": "grounded-synth",
+      "note": "teacher-adjudicated distillation corpus; K varies 2-5",
+      "origin": "synthetic",
+      "pool_size": 7,
+      "quota": 34847,
+      "shards": [
+        {
+          "bytes": 11596670,
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "bytes": 11712197,
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "bytes": 11681874,
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "bytes": 11695007,
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "bytes": 11634129,
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "bytes": 2409,
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ],
+      "share": 0.034847,
+      "supply": 34847,
+      "weight": 0.7
+    }
+  },
+  "target": 1000000,
+  "task": "T-mix-1m",
+  "tokens": {
+    "by_shard": {
+      "artifacts/data-prefetch/boolq.jsonl": {
+        "candidate_tokens": 18854,
+        "dataset": "boolq",
+        "examples": 9427,
+        "k_sum": 18854,
+        "mean_k": 2.0,
+        "state_tokens": 970807,
+        "tokens": 989661
+      },
+      "artifacts/data-prefetch/civil-comments.jsonl": {
+        "candidate_tokens": 449700,
+        "dataset": "civil-comments",
+        "examples": 149900,
+        "k_sum": 299800,
+        "mean_k": 2.0,
+        "state_tokens": 7735241,
+        "tokens": 8184941
+      },
+      "artifacts/data-prefetch/dbpedia14.jsonl": {
+        "candidate_tokens": 1178269,
+        "dataset": "dbpedia14",
+        "examples": 149900,
+        "k_sum": 1178269,
+        "mean_k": 7.86,
+        "state_tokens": 7273580,
+        "tokens": 8451849
+      },
+      "artifacts/data-prefetch/detox-attack.jsonl": {
+        "candidate_tokens": 1499000,
+        "dataset": "detox-attack",
+        "examples": 149900,
+        "k_sum": 749500,
+        "mean_k": 5.0,
+        "state_tokens": 10711895,
+        "tokens": 12210895
+      },
+      "artifacts/data-prefetch/email-triage.jsonl": {
+        "candidate_tokens": 20000,
+        "dataset": "email-triage",
+        "examples": 4000,
+        "k_sum": 16000,
+        "mean_k": 4.0,
+        "state_tokens": 108266,
+        "tokens": 128266
+      },
+      "artifacts/data-prefetch/goemotions.jsonl": {
+        "candidate_tokens": 696608,
+        "dataset": "goemotions",
+        "examples": 87076,
+        "k_sum": 696608,
+        "mean_k": 8.0,
+        "state_tokens": 1102656,
+        "tokens": 1799264
+      },
+      "artifacts/data-prefetch/huffpost.jsonl": {
+        "candidate_tokens": 383010,
+        "dataset": "huffpost",
+        "examples": 80119,
+        "k_sum": 320476,
+        "mean_k": 4.0,
+        "state_tokens": 2474967,
+        "tokens": 2857977
+      },
+      "artifacts/data-prefetch/massive.jsonl": {
+        "candidate_tokens": 203016,
+        "dataset": "massive",
+        "examples": 50754,
+        "k_sum": 203016,
+        "mean_k": 4.0,
+        "state_tokens": 388758,
+        "tokens": 591774
+      },
+      "artifacts/data-prefetch/snli.jsonl": {
+        "candidate_tokens": 375021,
+        "dataset": "snli",
+        "examples": 149900,
+        "k_sum": 375021,
+        "mean_k": 2.502,
+        "state_tokens": 3334502,
+        "tokens": 3709523
+      },
+      "artifacts/data-prefetch/swag.jsonl": {
+        "candidate_tokens": 2523895,
+        "dataset": "swag",
+        "examples": 73546,
+        "k_sum": 294184,
+        "mean_k": 4.0,
+        "state_tokens": 1033909,
+        "tokens": 3557804
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl": {
+        "candidate_tokens": 69646,
+        "dataset": "prog-gold",
+        "examples": 14051,
+        "k_sum": 39230,
+        "mean_k": 2.792,
+        "state_tokens": 230129,
+        "tokens": 299775
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl": {
+        "candidate_tokens": 70362,
+        "dataset": "prog-gold",
+        "examples": 17625,
+        "k_sum": 48062,
+        "mean_k": 2.727,
+        "state_tokens": 320534,
+        "tokens": 390896
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl": {
+        "candidate_tokens": 76849,
+        "dataset": "prog-gold",
+        "examples": 18219,
+        "k_sum": 50072,
+        "mean_k": 2.748,
+        "state_tokens": 325217,
+        "tokens": 402066
+      },
+      "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl": {
+        "candidate_tokens": 42432,
+        "dataset": "prog-gold",
+        "examples": 10736,
+        "k_sum": 29089,
+        "mean_k": 2.709,
+        "state_tokens": 175717,
+        "tokens": 218149
+      },
+      "artifacts/synth/v1/synth-v1-000.jsonl": {
+        "candidate_tokens": 227040,
+        "dataset": "synth-v1",
+        "examples": 6875,
+        "k_sum": 24709,
+        "mean_k": 3.594,
+        "state_tokens": 702553,
+        "tokens": 929593
+      },
+      "artifacts/synth/v1/synth-v1-001.jsonl": {
+        "candidate_tokens": 228438,
+        "dataset": "synth-v1",
+        "examples": 6985,
+        "k_sum": 25022,
+        "mean_k": 3.582,
+        "state_tokens": 720530,
+        "tokens": 948968
+      },
+      "artifacts/synth/v1/synth-v1-002.jsonl": {
+        "candidate_tokens": 229219,
+        "dataset": "synth-v1",
+        "examples": 6950,
+        "k_sum": 24977,
+        "mean_k": 3.594,
+        "state_tokens": 708232,
+        "tokens": 937451
+      },
+      "artifacts/synth/v1/synth-v1-003.jsonl": {
+        "candidate_tokens": 232192,
+        "dataset": "synth-v1",
+        "examples": 7056,
+        "k_sum": 25370,
+        "mean_k": 3.596,
+        "state_tokens": 721176,
+        "tokens": 953368
+      },
+      "artifacts/synth/v1/synth-v1-004.jsonl": {
+        "candidate_tokens": 230739,
+        "dataset": "synth-v1",
+        "examples": 6981,
+        "k_sum": 25095,
+        "mean_k": 3.595,
+        "state_tokens": 713030,
+        "tokens": 943769
+      }
+    },
+    "total": {
+      "candidate_tokens": 8754290,
+      "examples": 1000000,
+      "mean_k": 4.443,
+      "state_tokens": 39751699,
+      "total_tokens": 48505989,
+      "unit": "whitespace tokens of the state text and of every option text, counted on the rows the mixture actually selected"
+    }
+  },
+  "type_mix": {
+    "kind": "\u00a748 question type",
+    "max_abs_gap": 0.014627,
+    "rows": {
+      "choice": {
+        "gap": 0.014627,
+        "n": 564627,
+        "share": 0.564627,
+        "target": 0.55
+      },
+      "noul": {
+        "gap": -0.014527,
+        "n": 285473,
+        "share": 0.285473,
+        "target": 0.3
+      },
+      "score": {
+        "gap": -0.0001,
+        "n": 149900,
+        "share": 0.1499,
+        "target": 0.15
+      }
+    },
+    "total": 1000000,
+    "unsupplied": [],
+    "why_unsupplied": {}
+  },
+  "version": "decision-mix-v3"
+}

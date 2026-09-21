@@ -57,6 +57,24 @@ from .strata import layer_supply, layer_weights, tag  # noqa: E402
 #: is `data.mix`'s error, not a second exception type of our own.
 CapViolation = MixGuardrailError
 
+#: 100 rows in a million, and it is not a relaxation of the §§65-66 caps
+#: — it is what makes them hold on the REALISED mixture.
+#:
+#: `data.mix.realise` trims a source at ROW granularity, because the
+#: loader hands out whole rows: a source whose rows carry two or three
+#: questions (snli, goemotions, detox-attack) therefore stops one or two
+#: members short of its quota. The realised total then lands a handful
+#: below the target — and a source planned at EXACTLY 15 % of the target
+#: is above 15 % of that smaller total. A 1 M-row corpus aborted on
+#: 150,000/999,999 = 15.0000015 %.
+#:
+#: So the plan is allocated against a cap this much tighter and the HARD
+#: cap is still checked, unmoved, on what was actually built. The bound
+#: on the loss is (questions per row - 1) per source, a few dozen rows;
+#: this margin covers it two orders of magnitude over and moves a
+#: published share by at most 0.01 pp.
+CAP_MARGIN = 0.0001
+
 
 class SupplyShortfall(Exception):
     """The clean supply cannot fill the requested stage under the caps."""
@@ -95,7 +113,8 @@ def plan_clean(target, seed: int, root=None, drop=()) -> tuple:
     datasets = fence_mod.assert_spec_clean(
         [d for d in clean_datasets() if d not in set(drop)])
     weights = layer_weights(datasets)
-    kwargs = {"datasets": datasets, "cap_margin": 0.0, "weights": weights}
+    kwargs = {"datasets": datasets, "cap_margin": CAP_MARGIN,
+              "weights": weights}
     if root is not None:
         kwargs["root"] = root
     spec, scan, _pools, holdout = build_mix(seed, target=target, **kwargs)
@@ -242,6 +261,7 @@ def layer_gap(supply: dict) -> dict:
                         for d, w in sorted(layer_weights(sorted(supply)).items())}}
 
 
-__all__ = ["CapViolation", "MixInfeasible", "SupplyShortfall", "assemble",
+__all__ = ["CAP_MARGIN", "CapViolation", "MixInfeasible",
+           "SupplyShortfall", "assemble",
            "assert_feasible", "check_guardrails", "clean_supply", "feasibility",
            "guardrail_report", "layer_gap", "plan_clean", "verify_guardrails"]

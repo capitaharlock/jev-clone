@@ -70,13 +70,23 @@ def layer_report(counts: dict) -> dict:
     rep = _gap_report(counts.get("layer", {}), counts.get("rows", 0),
                       LAYER_TARGETS, "§86 layer")
     rep["why_unsupplied"] = {
-        "nli": "no NLI/DocNLI corpus is converted or registered yet",
-        "preference": "the only ordinal corpus (helpsteer2) is behind the "
-                      "§§18/77 benchmark fence",
-        "adversarial": "no adversarial/OOD corpus is registered; the OOD "
-                       "items under artifacts/gates/T-data-eval/ are a "
-                       "sealed eval probe, not training supply",
+        "nli": ("no NLI corpus is present in this cut of the registry; "
+                "the full one carries `snli` (550 k premise/hypothesis "
+                "pairs, CC-BY-SA-4.0)"),
+        "preference": ("helpsteer2, the registry's only ordinal corpus, is "
+                       "behind the §§18/77 fence; `detox-attack` replaces "
+                       "it with annotator-agreement gold that is countable "
+                       "from its raw TSV"),
+        "adversarial": ("no adversarial/OOD corpus is registered as its own "
+                        "layer; the OOD items under "
+                        "artifacts/gates/T-data-eval/ are a sealed eval "
+                        "probe, not training supply. The §68 hard slice is "
+                        "carried INSIDE dbpedia14/goemotions instead, as "
+                        "wide option sets built from the measured nearest "
+                        "labels of each gold"),
     }
+    rep["why_unsupplied"] = {k: v for k, v in rep["why_unsupplied"].items()
+                             if k in rep.get("unsupplied", [])}
     return rep
 
 
@@ -85,9 +95,13 @@ def type_report(counts: dict) -> dict:
     rep = _gap_report(counts.get("qtype", {}), counts.get("rows", 0),
                       TYPE_TARGETS, "§48 question type")
     rep["why_unsupplied"] = {
-        "score": "every ordinal-scale corpus (helpsteer2) is fenced out, so "
-                 "the mixture has no Score supply at all",
+        "score": ("no ordinal corpus is present in this cut: helpsteer2 "
+                  "is fenced out by §§18/77 and `detox-attack` — whose "
+                  "gold is the measured share of ~10 annotators on a 0-4 "
+                  "scale — is the registry's replacement for it"),
     }
+    rep["why_unsupplied"] = {k: v for k, v in rep["why_unsupplied"].items()
+                             if k in rep.get("unsupplied", [])}
     return rep
 
 

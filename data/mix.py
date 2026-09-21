@@ -52,6 +52,15 @@ units". Drop one source from `SOURCES` and the sum falls to 6: no mixture of
 any size satisfies the guardrails, and `build_mix()` says so instead of
 quietly rebalancing to 90 %.
 
+Cap units are necessary and not sufficient, which is the finding #T-mix-1m
+had to pay for. Seven sources cleared 1.05 cap units and still admitted only
+39 970 rows, because a source can only fill its 15 % while it HAS 15 % to
+give: `email-triage` has 4 000 questions, so past a 40 000-row mixture its
+shortfall ate the entire 5 % of slack. The ceiling is therefore the largest
+`T` with `sum_d min(supply_d, 0.15 T) >= T` under the family caps, which is
+what `max_feasible_target()` binary-searches — and why the fix was five more
+independent corpora (`data/convert_widen.py`), not another seed.
+
 CLI::
 
     python3 -m data.mix show              # registry + cached supply
@@ -75,7 +84,7 @@ MIX_DIR = os.path.join(ROOT, "artifacts", "mix")
 
 #: bump when the registry, the caps or the selection function change: a
 #: manifest of an older version describes a mixture this code cannot rebuild.
-MIX_VERSION = "decision-mix-v2"
+MIX_VERSION = "decision-mix-v3"
 MANIFEST_FORMAT = 2
 DEFAULT_SEED = 20260921
 
@@ -197,6 +206,47 @@ SOURCES = {
         note="#T-prog-gold: Wikidata-grounded gold, every answer verified "
              "against the graph; the probe shard is a robustness fixture "
              "and is deliberately NOT a training shard"),
+    # -- the #T-mix-1m widening (data/convert_widen.py) --------------------
+    # Five independent corpora, none of them touching the §§18/77 fence.
+    # They exist because the caps, not the data, were the binding
+    # constraint: with seven sources the registry admitted 39 970 rows of
+    # the 1 M §86 asks for, and only independent supply moves that.
+    "dbpedia14": Source(
+        "dbpedia14", "topic", "human", "en", True,
+        PRODUCT_WEIGHT["dynamic_large"], layer="human-expert",
+        note="560 k DBpedia ontology abstracts over 14 curated classes; "
+             "the SECOND source in the `topic` family, and the wide-K "
+             "half of it carries measured nearest-label distractors"),
+    "snli": Source(
+        "snli", "nli", "human", "en", False, PRODUCT_WEIGHT["fixed"],
+        layer="nli",
+        note="550 k premise/hypothesis pairs: the 3-way relation IS the "
+             "option set, so it is exempt from the global-label-space "
+             "check; the boolean twin keeps the §48 Noul share alive"),
+    "goemotions": Source(
+        "goemotions", "emotion", "human", "en", True,
+        PRODUCT_WEIGHT["dynamic_large"], layer="human-expert",
+        note="28 emotions over 211 k rater judgements; the K=12 question "
+             "of each row is the measured nearest neighbourhood of its "
+             "gold, which is where the §68 hard slice comes from"),
+    "swag": Source(
+        "swag", "commonsense", "programmatic", "en", True,
+        PRODUCT_WEIGHT["dynamic_small"], layer="adversarial",
+        note="73 k grounded situations with four continuations; the §86 "
+             "adversarial layer, which had no supply at all. Its three "
+             "distractors survived adversarial filtering against a model "
+             "ensemble (Zellers et al. 2018) — a property of the corpus, "
+             "not a difficulty this registry asserted. Origin is "
+             "programmatic and not human: the gold caption is human, the "
+             "option SET is machine-constructed"),
+    "detox-attack": Source(
+        "detox-attack", "calibration", "human", "en", False,
+        PRODUCT_WEIGHT["fixed"], layer="preference",
+        note="Wikipedia talk-page comments rated by ~10 annotators each; "
+             "the gold is the measured share of annotators on a 0-4 "
+             "scale, which is the §48 Score supply HelpSteer2 was fenced "
+             "out of — the scale IS the option set, so it is exempt from "
+             "the global-label-space check"),
 }
 
 #: every id the mixture may draw from, in registry order
