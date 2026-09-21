@@ -1,0 +1,287 @@
+{
+  "checks": {
+    "epoch_shuffle": {
+      "compared": 2000,
+      "epochs": [
+        0,
+        1
+      ],
+      "gold_moved": 1379,
+      "pass": true,
+      "reordered": 1928,
+      "reordered_rate": 0.964,
+      "same_set": 2000,
+      "set_stable": true,
+      "shufflable": 2000
+    },
+    "firewall": {
+      "all_blocked": true,
+      "allowed": [
+        "banking77",
+        "massive",
+        "huffpost",
+        "boolq"
+      ],
+      "blocked": {
+        "logiqa": "'logiqa' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quarantine",
+        "reclor": "'reclor' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quarantine",
+        "synth-loop": "'synth-loop' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quaran"
+      },
+      "pass": true
+    },
+    "gold_position_uniform": {
+      "alpha": 0.01,
+      "min_samples": 10000,
+      "n_samples": 14019,
+      "pass": true,
+      "per_k": {
+        "2": {
+          "chi2": 0.0724,
+          "counts": [
+            1775,
+            1759
+          ],
+          "df": 1,
+          "min_expected": 1767.0,
+          "n": 3534,
+          "p": 0.787818
+        },
+        "3": {
+          "chi2": 4.6134,
+          "counts": [
+            637,
+            564,
+            589
+          ],
+          "df": 2,
+          "min_expected": 596.67,
+          "n": 1790,
+          "p": 0.099589
+        },
+        "4": {
+          "chi2": 5.509,
+          "counts": [
+            471,
+            420,
+            415,
+            411
+          ],
+          "df": 3,
+          "min_expected": 429.25,
+          "n": 1717,
+          "p": 0.1381
+        },
+        "5": {
+          "chi2": 8.0808,
+          "counts": [
+            336,
+            398,
+            333,
+            349,
+            342
+          ],
+          "df": 4,
+          "min_expected": 351.6,
+          "n": 1758,
+          "p": 0.088664
+        },
+        "6": {
+          "chi2": 5.9642,
+          "counts": [
+            292,
+            317,
+            284,
+            270,
+            269,
+            273
+          ],
+          "df": 5,
+          "min_expected": 284.17,
+          "n": 1705,
+          "p": 0.309716
+        },
+        "7": {
+          "chi2": 6.5273,
+          "counts": [
+            255,
+            256,
+            270,
+            247,
+            262,
+            268,
+            221
+          ],
+          "df": 6,
+          "min_expected": 254.14,
+          "n": 1779,
+          "p": 0.366783
+        },
+        "8": {
+          "chi2": 3.576,
+          "counts": [
+            220,
+            214,
+            234,
+            205,
+            226,
+            209,
+            205,
+            223
+          ],
+          "df": 7,
+          "min_expected": 217.0,
+          "n": 1736,
+          "p": 0.827107
+        }
+      },
+      "pooled_chi2": 34.3432,
+      "pooled_df": 28,
+      "pooled_p": 0.189802
+    },
+    "mix_counted": {
+      "counted_easy_distractors": 26723,
+      "counted_hard_distractors": 32733,
+      "counted_unknown_rows": 1981,
+      "note": "hard/easy is capped by the pool: boolq has 1 possible distractor, so its mix is counted, not targeted",
+      "pass": true,
+      "pct_hard_negatives": 55.0542,
+      "pct_unknown": 12.3812,
+      "target_hard_pct": 50.0,
+      "target_unknown_pct": 12.0,
+      "tolerance_pp": 2.0
+    },
+    "no_global_label_space": {
+      "examples": [],
+      "exempt_binary_datasets": [
+        "boolq"
+      ],
+      "exempt_reason": "a pool of 2 (boolq yes/no) IS the question: its option set cannot differ from its global label space",
+      "pass": true,
+      "pool_sizes": {
+        "banking77": 77,
+        "boolq": 2,
+        "huffpost": 41,
+        "massive": 60
+      },
+      "violations": 0
+    }
+  },
+  "config": {
+    "cos_weight": 0.5,
+    "hard_fraction": 0.5,
+    "hard_top_min": 4,
+    "hard_top_ratio": 0.25,
+    "k_max": 8,
+    "k_min": 3,
+    "seed": 20260921,
+    "split": "train",
+    "unknown_fraction": 0.12
+  },
+  "contract": "Sample -> DecisionEngine.logits(mem, question, options); gold_index == K means unknown",
+  "datasets": [
+    "banking77",
+    "massive",
+    "huffpost",
+    "boolq"
+  ],
+  "elapsed_s": 1.57,
+  "generated_utc": "2026-09-21T12:49:22Z",
+  "k_distribution": {
+    "1": 466,
+    "2": 3534,
+    "3": 2046,
+    "4": 1966,
+    "5": 2013,
+    "6": 1943,
+    "7": 2040,
+    "8": 1992
+  },
+  "pass": true,
+  "pct_hard_negatives": 55.0542,
+  "pct_unknown": 12.3812,
+  "per_dataset": {
+    "banking77": {
+      "binary_pool": false,
+      "distractors": 18364,
+      "easy": 8879,
+      "hard": 9485,
+      "k_distribution": {
+        "3": 701,
+        "4": 641,
+        "5": 706,
+        "6": 660,
+        "7": 657,
+        "8": 635
+      },
+      "max_k": 8,
+      "pct_hard_negatives": 51.65,
+      "pct_unknown": 13.2,
+      "pool_size": 77,
+      "rows": 4000,
+      "samples": 4000,
+      "unknown": 528
+    },
+    "boolq": {
+      "binary_pool": true,
+      "distractors": 4000,
+      "easy": 0,
+      "hard": 4000,
+      "k_distribution": {
+        "1": 466,
+        "2": 3534
+      },
+      "max_k": 2,
+      "pct_hard_negatives": 100.0,
+      "pct_unknown": 11.65,
+      "pool_size": 2,
+      "rows": 4000,
+      "samples": 4000,
+      "unknown": 466
+    },
+    "huffpost": {
+      "binary_pool": false,
+      "distractors": 18509,
+      "easy": 8898,
+      "hard": 9611,
+      "k_distribution": {
+        "3": 676,
+        "4": 668,
+        "5": 656,
+        "6": 634,
+        "7": 698,
+        "8": 668
+      },
+      "max_k": 8,
+      "pct_hard_negatives": 51.9261,
+      "pct_unknown": 12.375,
+      "pool_size": 41,
+      "rows": 4000,
+      "samples": 4000,
+      "unknown": 495
+    },
+    "massive": {
+      "binary_pool": false,
+      "distractors": 18583,
+      "easy": 8946,
+      "hard": 9637,
+      "k_distribution": {
+        "3": 669,
+        "4": 657,
+        "5": 651,
+        "6": 649,
+        "7": 685,
+        "8": 689
+      },
+      "max_k": 8,
+      "pct_hard_negatives": 51.8592,
+      "pct_unknown": 12.3,
+      "pool_size": 60,
+      "rows": 4000,
+      "samples": 4000,
+      "unknown": 492
+    }
+  },
+  "rows_per_dataset": 4000,
+  "samples": 16000,
+  "task": "T-optset-sampler"
+}
