@@ -58,6 +58,11 @@ INDEX_SPLIT_REASON = ("split por índice de fila (i % 10): la misma plantilla "
                       "caía en train y en test")
 SPLIT_EVIDENCE = "artifacts/gates/T-split-domain/"
 
+# #T-unseen-labels: the primary metric. Accuracy + ECE on labels never seen
+# in training, always published as a seen/unseen PAIR. This is the headline
+# of the dashboard; everything else on this page is context.
+TASK_UNSEEN = "T-unseen-labels"
+
 
 def train_python():
     """Venv first: system python has no sklearn, train would crash instantly."""
@@ -150,6 +155,45 @@ def scan_runs():
     jobs = d.get("jobs", [])
     trained = sum(j.get("n_train", 0) for j in jobs)
     return ts, trained, jobs
+
+
+def scan_unseen_gate():
+    """#T-unseen-labels: the seen/unseen table that OWNS the headline.
+
+    `artifacts/gates/T-unseen-labels/gate.json` is the only artifact in
+    this repo that answers the product's actual promise — accuracy and ECE
+    on labels whose TEXT never appeared in training — and it answers it in
+    PAIRS, because an unseen number without its seen twin cannot tell
+    generalisation from an easy cut. Absent, this panel says so; it never
+    promotes a seen-label number to the headline.
+    """
+    gp = ROOT / "artifacts" / "gates" / TASK_UNSEEN / "gate.json"
+    if not gp.exists():
+        return None
+    try:
+        gate = json.loads(gp.read_text())
+    except Exception:
+        return None
+    return {
+        "pass": gate.get("pass"),
+        "failed": gate.get("failed_criteria") or [],
+        "verdict": gate.get("verdict"),
+        "model_version": gate.get("model_version"),
+        "checkpoint": gate.get("checkpoint"),
+        "generated_utc": gate.get("generated_utc"),
+        "headline": gate.get("headline") or {},
+        "table": gate.get("table") or {},
+        "eval_only": gate.get("eval_only_results") or {},
+        "criteria": {k: bool(v.get("pass"))
+                     for k, v in (gate.get("criteria") or {}).items()},
+        "cross_lingual_blocker": ((gate.get("criteria") or {})
+                                  .get("cross_lingual_holdout") or {})
+        .get("blocker"),
+        "calibration": gate.get("calibration") or {},
+        "n_scored": gate.get("n_scored"),
+        "path": str(gp.relative_to(ROOT)),
+        "age_s": max(0.0, time.time() - gp.stat().st_mtime),
+    }
 
 
 def scan_decision_run():
@@ -467,6 +511,7 @@ def build_state():
     gen_train = scan_gen_train()
     forward_hist = scan_forward_history()
     decision = scan_decision_run()
+    unseen_gate = scan_unseen_gate()
     synth_rows = next(
         (s.get("frozen_rows") or s["examples"] for s in sets
          if s["name"] == "synth-loop"), 0)
@@ -475,6 +520,7 @@ def build_state():
     pending = max(total_ex - trained, 0)
     pct = (100.0 * trained / total_ex) if total_ex else 0.0
     state = {
+        "unseen_gate": unseen_gate,
         "decision_run": decision,
         "synth_rows_live": synth_rows,
         "synth_trained": synth_trained,
@@ -562,6 +608,7 @@ footer{{color:var(--dim);font-size:12px;margin-top:16px}}
 </style>
 </head><body>
 <header class="top"><h1><span class="live-dot"></span>JEv training monitor</h1><small>{ts} · ciclo {cycle} · latido {tick_ts} (cada {tick}s)</small></header>
+{unseen_sec}
 {decision_sec}
 <section class="panel"><h2>Q-W-E-N · entrenamiento en vivo (modelo local)</h2>
 <div class="cards">
@@ -589,6 +636,103 @@ footer{{color:var(--dim);font-size:12px;margin-top:16px}}
 </div>
 <section class="panel"><h2>Log de entrenamiento</h2><pre>{train_tail}</pre><p><span class="pill">{procs}</span></p><p><i>{note}</i></p></section>
 <footer>este html se regenera en cada latido · sirve desde artifacts/runs/training-monitor/</footer></body></html>"""
+
+
+def unseen_panel(state):
+    """THE headline: the seen/unseen table of #T-unseen-labels.
+
+    One row per cut, both halves side by side, plus the eval-only
+    thermometer (LogiQA / ReClor) with its date and its `model_version`. A
+    `pass: false` gate renders its table exactly the same way — the
+    verdict pill says what failed, the numbers are never hidden or
+    rounded in the product's favour.
+    """
+    u = state.get("unseen_gate")
+    if not u:
+        return ('<section class="panel"><h2>TITULAR · etiquetas NO VISTAS '
+                '(#T-unseen-labels)</h2><p>sin <tt>artifacts/gates/'
+                'T-unseen-labels/gate.json</tt> todavía — ejecuta '
+                '<tt>.venv-train/bin/python -m eval.unseen gate '
+                '--checkpoint &lt;ckpt&gt;</tt>. Hasta que exista, este '
+                'dashboard NO tiene titular: la accuracy sobre etiquetas '
+                'ya vistas no mide lo que promete el producto.</p>'
+                '</section>')
+
+    def num(v, nd=4):
+        return f"{v:.{nd}f}" if isinstance(v, (int, float)) else "?"
+
+    ok = bool(u.get("pass"))
+    pill = (f'<span class="pill {"on" if ok else "off"}">'
+            f'{"GATE PASS" if ok else "GATE FAIL: " + ", ".join(u["failed"])}'
+            f'</span>')
+    overall = (u.get("headline") or {}).get("overall") or {}
+    cuts = (u.get("headline") or {}).get("cuts") or {}
+
+    def row(name, cut):
+        table_cut = (u.get("table") or {}).get(name) or {}
+        comp = ((table_cut.get("pair") or {}).get("comparability") or {})
+        acc, ece, brier, n = (cut["accuracy"], cut["ece"], cut["brier"],
+                              cut["n"])
+        beats = ("sí" if cut.get("unseen_beats_chance") else "no")
+        return (f'<tr><td>{name}</td>'
+                f'<td class="num">{num(acc[0])}</td>'
+                f'<td class="num">{num(acc[1])}</td>'
+                f'<td class="num">{num(acc[0] - acc[1])}</td>'
+                f'<td class="num">{num(ece[0])}</td>'
+                f'<td class="num">{num(ece[1])}</td>'
+                f'<td class="num">{num(brier[0], 3)}</td>'
+                f'<td class="num">{num(brier[1], 3)}</td>'
+                f'<td class="num">{n[0]:,} / {n[1]:,}</td>'
+                f'<td class="num">{num(comp.get("mean_k_seen"), 2)} / '
+                f'{num(comp.get("mean_k_unseen"), 2)}</td>'
+                f'<td class="num">{beats}</td></tr>')
+
+    body = "".join(row(k, v) for k, v in sorted(
+        cuts.items(), key=lambda kv: (kv[0] != "ALL", kv[0])))
+    erows = "".join(
+        f'<tr><td>{name}</td><td class="num">{(r.get("n") or 0):,}</td>'
+        f'<td class="num">{num((r.get("raw") or {}).get("accuracy"))}</td>'
+        f'<td class="num">{num((r.get("raw") or {}).get("chance"), 3)}</td>'
+        f'<td class="num">'
+        f'{num((r.get("raw") or {}).get("accuracy_options_only"))}</td>'
+        f'<td class="num">'
+        f'{num((r.get("raw") or {}).get("chance_options_only"), 3)}</td>'
+        f'<td class="num">{num((r.get("raw") or {}).get("ece"))}</td>'
+        f'<td>{r.get("split", "?")}</td><td>{r.get("date", "?")}</td></tr>'
+        for name, r in sorted((u.get("eval_only") or {}).items()))
+    blocker = u.get("cross_lingual_blocker")
+    blocker_html = (f'<p class="warn"><b>arm translingüe NO cumplido</b> — '
+                    f'{blocker}</p>' if blocker else "")
+    cal = u.get("calibration") or {}
+    return f'''<section class="panel"><h2>TITULAR · accuracy y ECE sobre etiquetas
+ NO VISTAS en entrenamiento (#T-unseen-labels)</h2>
+<div class="cards">
+<div class="card"><div class="k">accuracy no vistas</div><div class="v">{num(overall.get("accuracy_unseen"))}</div><div class="s">vistas {num(overall.get("accuracy_seen"))} · caída {num(overall.get("accuracy_drop"))}</div></div>
+<div class="card"><div class="k">ECE no vistas</div><div class="v">{num(overall.get("ece_unseen"))}</div><div class="s">vistas {num(overall.get("ece_seen"))} · sube {num(overall.get("ece_rise"))}</div></div>
+<div class="card"><div class="k">Brier no vistas</div><div class="v">{num(overall.get("brier_unseen"), 3)}</div><div class="s">vistas {num(overall.get("brier_seen"), 3)}</div></div>
+<div class="card"><div class="k">supera el azar</div><div class="v">{"sí" if overall.get("unseen_beats_chance") else "no"}</div><div class="s">ranking s/unknown {"sí" if overall.get("unseen_ranking_beats_chance") else "no"}</div></div>
+<div class="card"><div class="k">filas puntuadas</div><div class="v">{(u.get("n_scored") or 0):,}</div><div class="s">{u.get("generated_utc", "?")}</div></div>
+<div class="card"><div class="k">temperatura</div><div class="v">{num(cal.get("temperature"), 3)}</div><div class="s">NLL {num(cal.get("nll_before"), 3)} → {num(cal.get("nll_after"), 3)} · n={cal.get("n_fit", "?")}</div></div>
+</div>
+<p>{pill} model_version <tt>{u.get("model_version") or "—"}</tt> ·
+checkpoint <tt>{u.get("checkpoint") or "—"}</tt> ·
+evidencia <tt>{u.get("path")}</tt></p>
+{blocker_html}
+<table><tr><th>corte</th><th class="num">acc vistas</th><th class="num">acc NO vistas</th>
+<th class="num">caída</th><th class="num">ECE vistas</th><th class="num">ECE NO vistas</th>
+<th class="num">Brier v.</th><th class="num">Brier n.v.</th><th class="num">n v./n.v.</th>
+<th class="num">K v./n.v.</th><th class="num">&gt; azar</th></tr>
+{body or '<tr><td colspan="11">sin cortes publicados</td></tr>'}</table>
+<h3>Termómetro externo · eval-only, jamás en train (#T-halt-contam)</h3>
+<table><tr><th>benchmark</th><th class="num">n</th><th class="num">acc</th><th class="num">azar</th>
+<th class="num">ranking s/unknown</th><th class="num">azar ranking</th><th class="num">ECE</th>
+<th>split</th><th>fecha</th></tr>
+{erows or '<tr><td colspan="9">sin números eval-only</td></tr>'}</table>
+<p><i>Los pares vistas/no vistas no son igual de difíciles por construcción: el
+corte no visto sortea sus distractores solo entre las etiquetas retenidas (una
+bolsa más pequeña), y por eso se publican K y azar de los dos lados. Un número
+malo se publica malo.</i></p>
+</section>'''
 
 
 def decision_panel(state):
@@ -640,8 +784,8 @@ def decision_panel(state):
         f"<td class=\"num\">{cell(c['seen'])}</td>"
         f"<td class=\"num\">{cell(c['seen_ece'])}</td></tr>"
         for c in d.get("curve", []))
-    return f'''<section class="panel"><h2>TITULAR · etiquetas NO VISTAS en entrenamiento
- (#T-train-real · #T-unseen-labels)</h2>
+    return f'''<section class="panel"><h2>Curva de escala del run listwise
+ (#T-train-real) — el titular es el panel de arriba</h2>
 <div class="cards">
 <div class="card"><div class="k">accuracy etiquetas no vistas</div><div class="v">{head_v}</div><div class="s">{head_s}</div></div>
 <div class="card"><div class="k">ranking sin unknown (diagnóstico)</div><div class="v">{unseen.get("accuracy_options_only", "?")}</div><div class="s">azar {unseen.get("chance_options_only", "?")} · abstención {unseen.get("abstain_rate", "?")}</div></div>
@@ -744,6 +888,7 @@ def write_outputs(state, train_note="", train_live="", train_tail="",
     pr = state.get("procs", {})
     (STATE_DIR / "index.html").write_text(DASH_TMPL.format(
         fwd_sec=fwd_sec, decision_sec=decision_panel(state),
+        unseen_sec=unseen_panel(state),
         ts=state["ts"], trained=state["trained_examples"], total=state["total_examples"],
         pct=state["pct_trained"], pending=state["pending_examples"], size=state["total_size"],
         params=state["baseline_params_est"], run=state["last_run"], rows=rows,
@@ -795,6 +940,32 @@ def train_status(state, trainer):
 
 def print_block(state, train_note=""):
     print(f"=== training-monitor {state['ts']} ===", flush=True)
+    u = state.get("unseen_gate")
+    if u:
+        o = (u.get("headline") or {}).get("overall") or {}
+        print(f"TITULAR #T-unseen-labels: NO VISTAS acc={o.get('accuracy_unseen')} "
+              f"ECE={o.get('ece_unseen')} Brier={o.get('brier_unseen')} | "
+              f"VISTAS acc={o.get('accuracy_seen')} ECE={o.get('ece_seen')} | "
+              f"caida={o.get('accuracy_drop')} supera_azar="
+              f"{o.get('unseen_beats_chance')} | gate="
+              f"{'PASS' if u.get('pass') else 'FAIL:' + ','.join(u.get('failed') or [])} "
+              f"| model_version={u.get('model_version')}", flush=True)
+        for name, cut in sorted(((u.get("headline") or {}).get("cuts")
+                                 or {}).items()):
+            acc, ece = cut["accuracy"], cut["ece"]
+            print(f"  · {name:26s} acc {acc[0]} / {acc[1]}   "
+                  f"ECE {ece[0]} / {ece[1]}   n {cut['n'][0]}/{cut['n'][1]}"
+                  f"   >azar={cut.get('unseen_beats_chance')}", flush=True)
+        for name, r in sorted((u.get("eval_only") or {}).items()):
+            raw = r.get("raw") or {}
+            print(f"  · eval-only {name:14s} n={r.get('n')} "
+                  f"acc={raw.get('accuracy')} (azar {raw.get('chance')}) "
+                  f"ranking={raw.get('accuracy_options_only')} "
+                  f"ECE={raw.get('ece')} split={r.get('split')} "
+                  f"fecha={r.get('date')}", flush=True)
+    else:
+        print("TITULAR #T-unseen-labels: sin gate.json todavía — este "
+              "dashboard no tiene titular hasta que exista", flush=True)
     d = state.get("decision_run")
     if d:
         stage = d.get("stage") or {}
@@ -802,7 +973,7 @@ def print_block(state, train_note=""):
         seen = stage.get("seen") or {}
         step = d.get("step") or {}
         gate = d.get("gate") or {}
-        print(f"TITULAR #T-train-real ({d['run_id']}): acc etiquetas NO VISTAS="
+        print(f"escala #T-train-real ({d['run_id']}): acc etiquetas NO VISTAS="
               f"{unseen.get('accuracy')} (azar {unseen.get('chance')}) "
               f"ECE={unseen.get('ece')} ranking_s/unknown="
               f"{unseen.get('accuracy_options_only')} (azar "
@@ -812,7 +983,7 @@ def print_block(state, train_note=""):
               f"tokens={step.get('tokens')} | gate={gate.get('verdict', '—')}",
               flush=True)
     else:
-        print("TITULAR #T-train-real: sin run listwise todavía "
+        print("escala #T-train-real: sin run listwise todavía "
               "(job train-decision parado)", flush=True)
     print(f"datasets: {state['n_datasets']}  volumen: {state['total_size']} "
           f"({state['total_examples']:,} ejemplos según manifest)", flush=True)

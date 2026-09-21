@@ -1,0 +1,130 @@
+{
+  "format": 2,
+  "calib_version": 2,
+  "predictor": {
+    "name": "pointer-decision-head",
+    "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9",
+    "checkpoint": "artifacts/checkpoints/decision/train-real-v1/stage-000250000",
+    "backbone": "ettin-68m",
+    "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+    "samples_seen": 250053,
+    "architecture": {
+      "d_model": 256,
+      "loss": "listwise cross-entropy over [K + 1]",
+      "n_heads": 8,
+      "n_layers": 2,
+      "scorer": "pointer over option text embeddings"
+    },
+    "version": 2,
+    "supersedes": {
+      "name": "cosine-char3-softmax",
+      "artifact": "artifacts/gates/T-calib/calibration.json",
+      "why": "parameter-free scorer, not the product"
+    }
+  },
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9",
+  "fit_split": "calibration",
+  "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature",
+  "applied_to": [
+    "seen",
+    "unseen",
+    "eval-only"
+  ],
+  "split_sha256": "ee0bf8a274f55cfff68196a1d48edfde5e3036578bc4086fe81abe3f0da8830c",
+  "n_fit": 2924,
+  "global": {
+    "temperature": 4.135185542000139,
+    "nll_before": 2.106088902720073,
+    "nll_after": 1.480956020624115,
+    "n": 2924,
+    "group": "global"
+  },
+  "by_dataset": {
+    "banking77": {
+      "temperature": 10.0,
+      "nll_before": 2.353527251834739,
+      "nll_after": 1.841355805089432,
+      "n": 674
+    },
+    "boolq": {
+      "temperature": 0.45470790305426506,
+      "nll_before": 0.7655971000598335,
+      "nll_after": 0.6897516894465319,
+      "n": 750
+    },
+    "huffpost": {
+      "temperature": 3.465724215775733,
+      "nll_before": 2.168190384788711,
+      "nll_after": 1.3032872155822548,
+      "n": 750
+    },
+    "massive": {
+      "temperature": 7.024218301525188,
+      "nll_before": 3.1621146269072953,
+      "nll_after": 1.7671244107087165,
+      "n": 750
+    }
+  },
+  "by_cardinality": {
+    "2": {
+      "temperature": 0.45470790305426506,
+      "nll_before": 0.7655971000598335,
+      "nll_after": 0.6897516894465319,
+      "n": 750
+    },
+    "3": {
+      "temperature": 7.024218301525188,
+      "nll_before": 2.323268249029587,
+      "nll_after": 1.309774119924286,
+      "n": 370
+    },
+    "4": {
+      "temperature": 4.933964274748139,
+      "nll_before": 2.378238418109913,
+      "nll_after": 1.457590955503894,
+      "n": 352
+    },
+    "5": {
+      "temperature": 4.5169522616122135,
+      "nll_before": 2.4862249574525292,
+      "nll_after": 1.608607843276442,
+      "n": 351
+    },
+    "6": {
+      "temperature": 4.5169522616122135,
+      "nll_before": 2.7373081662972774,
+      "nll_after": 1.7736320032818138,
+      "n": 395
+    },
+    "7": {
+      "temperature": 4.135185542000139,
+      "nll_before": 2.847131849458758,
+      "nll_after": 1.8671044268531045,
+      "n": 361
+    },
+    "8": {
+      "temperature": 3.465724215775733,
+      "nll_before": 2.6247555587974163,
+      "nll_after": 1.8722755467029975,
+      "n": 345
+    }
+  },
+  "thresholds": {
+    "unknown": {
+      "threshold": 0.6675181294039348,
+      "target_coverage": 0.9
+    },
+    "maxprob": {
+      "threshold": 0.2012251556654668,
+      "target_coverage": 0.9
+    },
+    "margin": {
+      "threshold": 0.014108020095173812,
+      "target_coverage": 0.9
+    },
+    "energy": {
+      "threshold": 1.4042670225217102,
+      "target_coverage": 0.9
+    }
+  }
+}
