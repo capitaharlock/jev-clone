@@ -1,0 +1,50 @@
+{
+  "name": "massive",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:14:58Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "massive",
+  "source": {
+    "path": "artifacts/data-prefetch/massive.jsonl",
+    "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07",
+    "rows": 99126
+  },
+  "counts": {
+    "rows": {
+      "test": 19988,
+      "train": 79138
+    },
+    "groups": {
+      "test": 19189,
+      "train": 76295
+    },
+    "groups_total": 95484
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 19988,
+      "sha256": "e2ba592569c5624ad9dca6b82a7fed3e94e905108cb151542cf009f40bd4100c"
+    },
+    "train.ids": {
+      "rows": 79138,
+      "sha256": "43226cc1dc9c116c839186c1ecf4110e76ad544e9a70fa6e04d35481220b2df5"
+    }
+  },
+  "manifest_sha256": "3c07b5389a21bc0a671e6e95de6e39c683f977f4db13798cdbf440048960a30c"
+}

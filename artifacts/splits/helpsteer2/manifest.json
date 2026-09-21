@@ -1,0 +1,50 @@
+{
+  "name": "helpsteer2",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:14:38Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "helpsteer2",
+  "source": {
+    "path": "artifacts/data-prefetch/helpsteer2.jsonl",
+    "sha256": "5fefac5fe5ec09344ea9658b4ad1fae741a11f1771bb4d01a385958b0b89cab8",
+    "rows": 21362
+  },
+  "counts": {
+    "rows": {
+      "test": 4144,
+      "train": 17218
+    },
+    "groups": {
+      "test": 4142,
+      "train": 17211
+    },
+    "groups_total": 21353
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 4144,
+      "sha256": "bec41fec374f47908e08577ddac4f67b5ec119b99de30f19284cc33c795224d5"
+    },
+    "train.ids": {
+      "rows": 17218,
+      "sha256": "0b6d01238b0e88291883e36caf5e1144a776ba429f536afb961600704818244a"
+    }
+  },
+  "manifest_sha256": "259cb654d3d119fa092ca43505ecc89cc53b9a2b797c25ccd23edbb841f30ae9"
+}

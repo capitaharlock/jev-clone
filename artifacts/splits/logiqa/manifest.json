@@ -1,0 +1,50 @@
+{
+  "name": "logiqa",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:14:57Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "logiqa",
+  "source": {
+    "path": "artifacts/data-prefetch/logiqa.jsonl",
+    "sha256": "37531b781ad71d772afbad87eb8598fb89283296e0cfe42ec40c58753c543e92",
+    "rows": 84935
+  },
+  "counts": {
+    "rows": {
+      "test": 17240,
+      "train": 67695
+    },
+    "groups": {
+      "test": 16314,
+      "train": 64172
+    },
+    "groups_total": 80486
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 17240,
+      "sha256": "6ed9a9e77d0e7a327c7edbd4ce3a4b41f69b78135c84e1cb952a5f7f2eb051ad"
+    },
+    "train.ids": {
+      "rows": 67695,
+      "sha256": "2998b9059c36a48634da2c312ed97aa7c712aaf317e8b6f818ad09fc85783dfc"
+    }
+  },
+  "manifest_sha256": "a211841d8ce75378449e138baa7466bbd25c1cb975ae50bb4f106893f0afff2b"
+}

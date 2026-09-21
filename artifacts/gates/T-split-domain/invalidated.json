@@ -1,0 +1,605 @@
+{
+  "task": "T-split-domain",
+  "generated_at": "2026-09-21T14:14:37Z",
+  "invalidated_on": "2026-09-21",
+  "invalidated_by": "T-split-domain",
+  "reason": "split by row index (i % 10): the same skeleton appeared in train and in test, so the metric measured leakage, not capacity (#T-split-domain, audit 2026-09-21 finding C)",
+  "affects": [
+    "synth-loop",
+    "email-triage"
+  ],
+  "replacement": "eval/splits.py — group split by skeleton+domain+language",
+  "artifacts": [
+    {
+      "path": "artifacts/runs/20260920T223639Z/metrics.json",
+      "affects": [
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260920T225355Z/metrics.json",
+      "affects": [
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T001613Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T091848Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T093452Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T093956Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T094459Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T095003Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T095506Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T100009Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T101024Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T101529Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T102035Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T103047Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T104102Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T105131Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T105635Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T110138Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T110642Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T111146Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T111650Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T112154Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T112658Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T113202Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T113707Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T114212Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T114716Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T115220Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T115725Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T120229Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T120734Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T121238Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T121743Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T122248Z/metrics.json",
+      "affects": [
+        "synth-loop",
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs/20260921T123827Z/metrics.json",
+      "affects": [
+        "email-triage"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260920T235822Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T004448Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T004651Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T093644Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T093846Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T094248Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T094450Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T094853Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T095055Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T095459Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T095701Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T100105Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T100311Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T100716Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T100921Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T101330Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T101538Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T101948Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T102156Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T102605Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T102811Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T103220Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T103427Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T103837Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T104046Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T104456Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T104708Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T105117Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T105329Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T105736Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T105943Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T110350Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T110557Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T111003Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T111210Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T111617Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T111824Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T112206Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T112413Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T112822Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T113030Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T113432Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T113640Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T114049Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T114257Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T114707Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T114917Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T115326Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T115535Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T115945Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T120155Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T120606Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T120817Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T121228Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T121439Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T121851Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T122102Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    },
+    {
+      "path": "artifacts/runs-gen/20260921T122514Z.json",
+      "affects": [
+        "synth-loop"
+      ]
+    }
+  ],
+  "dashboard": "tools/training_monitor.py — banner + per-task flag"
+}

@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from data.schema import Example, Option, Question, validate  # noqa: E402
+from eval.splits import group_split_of  # noqa: E402
 
 STATES = ("archivar", "responder", "urgente", "spam")
 LABELS = {
@@ -125,13 +126,17 @@ for _s, _subj, _body in TEMPLATES:
     BY_STATE.setdefault(_s, []).append((_s, _subj, _body))
 
 
-def _split(i: int) -> str:
-    m = i % 10
-    if m < 8:
-        return "train"
-    if m == 8:
-        return "calibration"
-    return "test"
+# 80/10/10 by GROUP, never by row index (#T-split-domain). The old
+# `i % 10` put the same template in train and in test: every row here is
+# minted from one of ~24 templates, so an index split measured leakage.
+TEST_FRAC = 0.1
+CALIB_FRAC = 0.1
+
+
+def _split(text: str) -> str:
+    """Split of the row's TEMPLATE (skeleton+domain+language), not its index."""
+    return group_split_of(text, domain="email-triage",
+                          test_frac=TEST_FRAC, calib_frac=CALIB_FRAC)
 
 
 def generate(n: int, seed: int = 0) -> list[Example]:
@@ -164,7 +169,7 @@ def generate(n: int, seed: int = 0) -> list[Example]:
                 teacher_conf=round(w[state] / tot, 3),
                 weights=dict(w),
             )],
-            split=_split(i),
+            split=_split(text),
         ))
     return out
 

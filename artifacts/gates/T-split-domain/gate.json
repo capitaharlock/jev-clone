@@ -1,0 +1,374 @@
+{
+  "task": "T-split-domain",
+  "generated_at": "2026-09-21T14:18:52Z",
+  "pass": true,
+  "checks": {
+    "group_split_zero_overlap": true,
+    "no_index_modulo_split_in_repo": true,
+    "audit_covers_corpus": true,
+    "splits_sealed": true,
+    "sealed_splits_verify": true,
+    "contrast_accuracy_drops": true,
+    "contrast_subject_sealed_zero_overlap": true
+  },
+  "seed": 20260921,
+  "skeleton_version": 1,
+  "split_version": 1,
+  "per_dataset": {
+    "banking77": {
+      "skeletons": 13062,
+      "rows_scanned": 13083,
+      "largest_group_rows": 2,
+      "shipped_split_jaccard_train_test": 0.000842,
+      "shipped_split_shared_groups": 11,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "boolq": {
+      "skeletons": 12691,
+      "rows_scanned": 12697,
+      "largest_group_rows": 2,
+      "shipped_split_jaccard_train_test": 0.0,
+      "shipped_split_shared_groups": 0,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "civil-comments": {
+      "skeletons": 393876,
+      "rows_scanned": 400000,
+      "largest_group_rows": 501,
+      "shipped_split_jaccard_train_test": 0.0,
+      "shipped_split_shared_groups": 0,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "email-triage": {
+      "skeletons": 64,
+      "rows_scanned": 5000,
+      "largest_group_rows": 232,
+      "shipped_split_jaccard_train_test": 0.96875,
+      "shipped_split_shared_groups": 62,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "helpsteer2": {
+      "skeletons": 21353,
+      "rows_scanned": 21362,
+      "largest_group_rows": 2,
+      "shipped_split_jaccard_train_test": 0.0,
+      "shipped_split_shared_groups": 0,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "huffpost": {
+      "skeletons": 180492,
+      "rows_scanned": 181140,
+      "largest_group_rows": 161,
+      "shipped_split_jaccard_train_test": 0.000349,
+      "shipped_split_shared_groups": 63,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "logiqa": {
+      "skeletons": 80486,
+      "rows_scanned": 84935,
+      "largest_group_rows": 16,
+      "shipped_split_jaccard_train_test": 0.00723,
+      "shipped_split_shared_groups": 510,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "massive": {
+      "skeletons": 95484,
+      "rows_scanned": 99126,
+      "largest_group_rows": 17,
+      "shipped_split_jaccard_train_test": 0.008865,
+      "shipped_split_shared_groups": 745,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "reclor": {
+      "skeletons": 6004,
+      "rows_scanned": 6138,
+      "largest_group_rows": 3,
+      "shipped_split_jaccard_train_test": 0.013694,
+      "shipped_split_shared_groups": 76,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    },
+    "synth-loop": {
+      "skeletons": 74,
+      "rows_scanned": 360700,
+      "largest_group_rows": 14075,
+      "shipped_split_jaccard_train_test": 1.0,
+      "shipped_split_shared_groups": 74,
+      "group_split_jaccard_train_test": 0.0,
+      "group_split_shared_groups": 0
+    }
+  },
+  "index_modulo_exemptions": [
+    {
+      "path": "eval/test_splits.py",
+      "line": 51,
+      "function": "_corpus",
+      "snippet": "i % 10",
+      "pragma": "index-split-fixture"
+    }
+  ],
+  "index_modulo_violations": [],
+  "sealed_splits": [
+    {
+      "name": "banking77",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 2628,
+          "train": 10455
+        },
+        "groups": {
+          "test": 2624,
+          "train": 10438
+        },
+        "groups_total": 13062
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "boolq",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 2570,
+          "train": 10127
+        },
+        "groups": {
+          "test": 2570,
+          "train": 10121
+        },
+        "groups_total": 12691
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "civil-comments",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 402374,
+          "train": 1597140
+        },
+        "groups": {
+          "test": 393355,
+          "train": 1568795
+        },
+        "groups_total": 1962150
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "email-triage",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 1342,
+          "train": 3658
+        },
+        "groups": {
+          "test": 14,
+          "train": 50
+        },
+        "groups_total": 64
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "helpsteer2",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 4144,
+          "train": 17218
+        },
+        "groups": {
+          "test": 4142,
+          "train": 17211
+        },
+        "groups_total": 21353
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "huffpost",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 36117,
+          "train": 145023
+        },
+        "groups": {
+          "test": 36034,
+          "train": 144458
+        },
+        "groups_total": 180492
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "logiqa",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 17240,
+          "train": 67695
+        },
+        "groups": {
+          "test": 16314,
+          "train": 64172
+        },
+        "groups_total": 80486
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "massive",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 19988,
+          "train": 79138
+        },
+        "groups": {
+          "test": 19189,
+          "train": 76295
+        },
+        "groups_total": 95484
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "reclor",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 1242,
+          "train": 4896
+        },
+        "groups": {
+          "test": 1220,
+          "train": 4784
+        },
+        "groups_total": 6004
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    },
+    {
+      "name": "synth-loop-quarantine",
+      "ok": true,
+      "errors": [],
+      "counts": {
+        "rows": {
+          "test": 48673,
+          "train": 312027
+        },
+        "groups": {
+          "test": 12,
+          "train": 62
+        },
+        "groups_total": 74
+      },
+      "overlap": {
+        "shared_groups": 0,
+        "jaccard": 0.0,
+        "examples": []
+      }
+    }
+  ],
+  "contrast": {
+    "task": "T-split-domain",
+    "generated_at": "2026-09-21T14:15:11Z",
+    "source": {
+      "path": "artifacts/data-prefetch/quarantine/synth-loop-20260921.jsonl",
+      "rows_used": 360700
+    },
+    "model": "tfidf-logreg-v1 (data/train_baseline.py recipe)",
+    "caps": {
+      "train": 80000,
+      "eval": 20000
+    },
+    "before_index_split": {
+      "split": "index",
+      "n_train": 80000,
+      "n_eval": 20000,
+      "accuracy": 1.0,
+      "logloss": 0.001851
+    },
+    "after_group_split": {
+      "split": "group",
+      "n_train": 80000,
+      "n_eval": 20000,
+      "accuracy": 0.35025,
+      "logloss": 1.681999
+    },
+    "skeletons": 74,
+    "shipped_split_group_overlap": {
+      "shared_groups": 74,
+      "jaccard": 1.0
+    },
+    "delta_accuracy": -0.64975
+  },
+  "invalidated": {
+    "invalidated_on": "2026-09-21",
+    "invalidated_by": "T-split-domain",
+    "reason": "split by row index (i % 10): the same skeleton appeared in train and in test, so the metric measured leakage, not capacity (#T-split-domain, audit 2026-09-21 finding C)",
+    "affects": [
+      "synth-loop",
+      "email-triage"
+    ],
+    "replacement": "eval/splits.py — group split by skeleton+domain+language"
+  }
+}

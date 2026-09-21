@@ -1,0 +1,50 @@
+{
+  "name": "banking77",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:11:35Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "banking77",
+  "source": {
+    "path": "artifacts/data-prefetch/banking77.jsonl",
+    "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca",
+    "rows": 13083
+  },
+  "counts": {
+    "rows": {
+      "test": 2628,
+      "train": 10455
+    },
+    "groups": {
+      "test": 2624,
+      "train": 10438
+    },
+    "groups_total": 13062
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 2628,
+      "sha256": "635889ebfd53d1ab8b1c388800eabbc5f76c734bbfe6cd1e6d25ec5c235caa0a"
+    },
+    "train.ids": {
+      "rows": 10455,
+      "sha256": "eb672583f02340f7f022cfc05cff6aaf0e6f268f27c2c882e356d9fba18f90e5"
+    }
+  },
+  "manifest_sha256": "ac8a188fa336f89eb3635a6f1a336c9581dde35871953b0e23b4b978ea8f4b6d"
+}

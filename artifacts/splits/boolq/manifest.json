@@ -1,0 +1,50 @@
+{
+  "name": "boolq",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:11:37Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "boolq",
+  "source": {
+    "path": "artifacts/data-prefetch/boolq.jsonl",
+    "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a",
+    "rows": 12697
+  },
+  "counts": {
+    "rows": {
+      "test": 2570,
+      "train": 10127
+    },
+    "groups": {
+      "test": 2570,
+      "train": 10121
+    },
+    "groups_total": 12691
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 2570,
+      "sha256": "b460f80e28b5f1538c2d60a224e7308a3d935b9626da3bebac1d0af0994187d8"
+    },
+    "train.ids": {
+      "rows": 10127,
+      "sha256": "ce8ff2cdbe1d0f6a72cef1e3045cb7e462a37f7269755af5bf1f1ccd10c31967"
+    }
+  },
+  "manifest_sha256": "3d97282f6462b0570dddf3340c834599dcee97128e5fefb5fa786d5d3552e338"
+}

@@ -1,0 +1,718 @@
+{
+  "task": "T-split-domain",
+  "generated_at": "2026-09-21T14:18:52Z",
+  "skeleton_version": 1,
+  "split_version": 1,
+  "seed": 20260921,
+  "max_rows_per_dataset": 400000,
+  "datasets": [
+    {
+      "dataset": "banking77",
+      "path": "artifacts/data-prefetch/banking77.jsonl",
+      "rows_scanned": 13083,
+      "truncated": false,
+      "skeletons": 13062,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 2,
+        "share": 0.000153,
+        "skeleton": "why do <name> see an extra <amount> charge on my statement?"
+      },
+      "top_groups": [
+        {
+          "rows": 2,
+          "skeleton": "why do <name> see an extra <amount> charge on my statement?"
+        },
+        {
+          "rows": 2,
+          "skeleton": "why is there a <amount> charge on my statement?"
+        },
+        {
+          "rows": 2,
+          "skeleton": "i can't seem to be able to use my card"
+        },
+        {
+          "rows": 2,
+          "skeleton": "how can <name> exchange <name> for <name>?"
+        },
+        {
+          "rows": 2,
+          "skeleton": "i put the wrong pin too many times and now it is blocked. can you help me unblock it?"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "test": 3080,
+          "train": 10003
+        },
+        "groups": {
+          "test": 3079,
+          "train": 9994
+        },
+        "shared_groups_train_test": 11,
+        "jaccard_train_test": 0.000842,
+        "test_rows_whose_skeleton_is_in_train": 11,
+        "test_row_leak_rate": 0.003571,
+        "exact_layer_shared_skeletons": 0,
+        "paraphrase_layer": {
+          "checked": 300,
+          "hits": 2,
+          "rate": 0.006667,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 2628,
+          "train": 10455
+        },
+        "groups": {
+          "test": 2624,
+          "train": 10438
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "boolq",
+      "path": "artifacts/data-prefetch/boolq.jsonl",
+      "rows_scanned": 12697,
+      "truncated": false,
+      "skeletons": 12691,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 2,
+        "share": 0.000158,
+        "skeleton": "in the <name> <name> of <name>, <name>, and other countries participating in the <name> <name> <name> <name>, a toll-free telephone number has one of the area c"
+      },
+      "top_groups": [
+        {
+          "rows": 2,
+          "skeleton": "in the <name> <name> of <name>, <name>, and other countries participating in the <name> <name> <name> <name>, a toll-fre"
+        },
+        {
+          "rows": 2,
+          "skeleton": "the next general election in the <name> <name> is scheduled to be held on <num> <month> <num> under the <name>-term <nam"
+        },
+        {
+          "rows": 2,
+          "skeleton": "phase <num> is a card game created in <num> by <name> <name> and sold by <name>, which purchased the rights from <name> "
+        },
+        {
+          "rows": 2,
+          "skeleton": "texas is one of ten states (<name>, <name>, <name>, <name>, <name> <name>, <name>, <name> <name>, <name>, <name>, and <n"
+        },
+        {
+          "rows": 2,
+          "skeleton": "large denominations of <name> <name> currency greater than <amount> were circulated by the <name> <name> <name> until <n"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 3270,
+          "train": 9427
+        },
+        "groups": {
+          "calibration": 3270,
+          "train": 9424
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0,
+        "test_rows_whose_skeleton_is_in_train": 0,
+        "test_row_leak_rate": null,
+        "exact_layer_shared_skeletons": 0,
+        "paraphrase_layer": {
+          "checked": 0,
+          "hits": 0,
+          "rate": 0.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 2570,
+          "train": 10127
+        },
+        "groups": {
+          "test": 2570,
+          "train": 10121
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "civil-comments",
+      "path": "artifacts/data-prefetch/civil-comments.jsonl",
+      "rows_scanned": 400000,
+      "truncated": true,
+      "skeletons": 393876,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 501,
+        "share": 0.001252,
+        "skeleton": "<url>"
+      },
+      "top_groups": [
+        {
+          "rows": 501,
+          "skeleton": "<url>"
+        },
+        {
+          "rows": 135,
+          "skeleton": "sᴛᴀʀᴛ ᴡᴏʀᴋɪɴɢ ғʀᴏᴍ ʜᴏᴍᴇ! gʀᴇᴀᴛ ᴊᴏʙ ғᴏʀ sᴛᴜᴅᴇɴᴛs, sᴛᴀʏ-ᴀᴛ-ʜᴏᴍᴇ ᴍᴏᴍs ᴏʀ ᴀɴʏᴏɴᴇ ɴᴇᴇᴅɪɴɢ ᴀɴ ᴇxᴛʀᴀ ɪɴᴄᴏᴍᴇ... yᴏᴜ ᴏɴʟʏ ɴᴇᴇᴅ ᴀ "
+        },
+        {
+          "rows": 90,
+          "skeleton": "start working at home with <name>! it's by-far the best job <name>'ve had. last <day> <name> got a brand new <name> sinc"
+        },
+        {
+          "rows": 44,
+          "skeleton": "lol"
+        },
+        {
+          "rows": 37,
+          "skeleton": "lol!"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "train": 400000
+        },
+        "groups": {
+          "train": 393876
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0,
+        "test_rows_whose_skeleton_is_in_train": 0,
+        "test_row_leak_rate": null,
+        "exact_layer_shared_skeletons": 0,
+        "paraphrase_layer": {
+          "checked": 0,
+          "hits": 0,
+          "rate": 0.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 80787,
+          "train": 319213
+        },
+        "groups": {
+          "test": 79187,
+          "train": 314689
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "email-triage",
+      "path": "artifacts/data-prefetch/email-triage.jsonl",
+      "rows_scanned": 5000,
+      "truncated": false,
+      "skeletons": 64,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 232,
+        "share": 0.0464,
+        "skeleton": "asunto: recibo del parking <month> adjuntamos el recibo del parking de <month> por <amount> . solo archivo, el cargo ya está domiciliado."
+      },
+      "top_groups": [
+        {
+          "rows": 232,
+          "skeleton": "asunto: recibo del parking <month> adjuntamos el recibo del parking de <month> por <amount> . solo archivo, el cargo ya "
+        },
+        {
+          "rows": 227,
+          "skeleton": "asunto: préstamo pre-aprobado de <amount> sin nómina hola <name>, tienes un <name> <name>-aprobado de <amount> sin nómin"
+        },
+        {
+          "rows": 226,
+          "skeleton": "asunto: tu cuenta será <name> en 24h - verifica <name>, tu cuenta será <name> en <num> horas por actividad extraña. veri"
+        },
+        {
+          "rows": 217,
+          "skeleton": "asunto: presupuesto solicitado nº <num> <name>, aquí tienes el presupuesto nº <num> por <amount> . si te encaja, respónd"
+        },
+        {
+          "rows": 214,
+          "skeleton": "asunto: trabaja desde casa: gana <amount> /mes sin esfuerzo <name>, gana <amount> al mes desde casa sin esfuerzo. solo r"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 500,
+          "test": 500,
+          "train": 4000
+        },
+        "groups": {
+          "calibration": 64,
+          "test": 62,
+          "train": 64
+        },
+        "shared_groups_train_test": 62,
+        "jaccard_train_test": 0.96875,
+        "test_rows_whose_skeleton_is_in_train": 500,
+        "test_row_leak_rate": 1.0,
+        "exact_layer_shared_skeletons": 62,
+        "paraphrase_layer": {
+          "checked": 62,
+          "hits": 62,
+          "rate": 1.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 1342,
+          "train": 3658
+        },
+        "groups": {
+          "test": 14,
+          "train": 50
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "helpsteer2",
+      "path": "artifacts/data-prefetch/helpsteer2.jsonl",
+      "rows_scanned": 21362,
+      "truncated": false,
+      "skeletons": 21353,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 2,
+        "share": 9.4e-05,
+        "skeleton": "hi a: hello! how can <name> help you today?"
+      },
+      "top_groups": [
+        {
+          "rows": 2,
+          "skeleton": "hi a: hello! how can <name> help you today?"
+        },
+        {
+          "rows": 2,
+          "skeleton": "when you given an answer to a question, can you estimate the confidence level of a fact upon request? e.g. if <name> ask"
+        },
+        {
+          "rows": 2,
+          "skeleton": "what is <num> + <num> a: <num> + <num> = <num>"
+        },
+        {
+          "rows": 2,
+          "skeleton": "suppose for example you have a binarystring <num> called <name> take the first <num> digits and append appropriate numbe"
+        },
+        {
+          "rows": 2,
+          "skeleton": "hello a: hello! how can <name> help you today?"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 1038,
+          "train": 20324
+        },
+        "groups": {
+          "calibration": 1038,
+          "train": 20316
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0,
+        "test_rows_whose_skeleton_is_in_train": 0,
+        "test_row_leak_rate": null,
+        "exact_layer_shared_skeletons": 0,
+        "paraphrase_layer": {
+          "checked": 0,
+          "hits": 0,
+          "rate": 0.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 4144,
+          "train": 17218
+        },
+        "groups": {
+          "test": 4142,
+          "train": 17211
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "huffpost",
+      "path": "artifacts/data-prefetch/huffpost.jsonl",
+      "rows_scanned": 181140,
+      "truncated": false,
+      "skeletons": 180492,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 161,
+        "share": 0.000889,
+        "skeleton": ""
+      },
+      "top_groups": [
+        {
+          "rows": 161,
+          "skeleton": ""
+        },
+        {
+          "rows": 46,
+          "skeleton": ""
+        },
+        {
+          "rows": 30,
+          "skeleton": "the <num> funniest tweets from women this week the ladies of <name> never fail to brighten our days with their brilliant"
+        },
+        {
+          "rows": 29,
+          "skeleton": ""
+        },
+        {
+          "rows": 26,
+          "skeleton": ""
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "test": 18205,
+          "train": 162935
+        },
+        "groups": {
+          "test": 18175,
+          "train": 162380
+        },
+        "shared_groups_train_test": 63,
+        "jaccard_train_test": 0.000349,
+        "test_rows_whose_skeleton_is_in_train": 93,
+        "test_row_leak_rate": 0.005108,
+        "exact_layer_shared_skeletons": 1,
+        "paraphrase_layer": {
+          "checked": 87,
+          "hits": 0,
+          "rate": 0.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 36117,
+          "train": 145023
+        },
+        "groups": {
+          "test": 36034,
+          "train": 144458
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "logiqa",
+      "path": "artifacts/data-prefetch/logiqa.jsonl",
+      "rows_scanned": 84935,
+      "truncated": false,
+      "skeletons": 80486,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 16,
+        "share": 0.000188,
+        "skeleton": "there are <num> pieces of blue and white porcelain: <name>, <name>, <name>, <name>, <name>, <name> <name> age of each piece is different, and the exhibition is "
+      },
+      "top_groups": [
+        {
+          "rows": 16,
+          "skeleton": "there are <num> pieces of blue and white porcelain: <name>, <name>, <name>, <name>, <name>, <name> <name> age of each pi"
+        },
+        {
+          "rows": 13,
+          "skeleton": "在移动阅读时代，自媒体的影响力不可小觑。由于拥有更广阔的传播路径和分发渠道，受公众关注度高，自媒体人掌握了一定话语权。有些自媒体人与传统媒体机构相比，确实不落下风，公信力给他们带来了收益。然而，公信力是把双刃剑，自媒体人既要看到流量背后的利"
+        },
+        {
+          "rows": 13,
+          "skeleton": "技术是一把“双刃剑”，应用得当可以造福社会，造福人民，应用不当会危害社会，危害人民。当前，从整个世界范围来看，网络安全威胁不断增加，信息安全问题日益突出。没有网络安全就没有国家安全，没有信息安全就谈不上让信息化更好造福人民。信息时代，人们享"
+        },
+        {
+          "rows": 13,
+          "skeleton": "近来，多家情商教育机构针对不同年龄段推出相应套餐，“情商班”火爆家长圈，情商是控制和驾驭情绪的能力，对人的生活和工作有重要的作用。可是，在很多人的心里，情商的内涵已经被异化，最早的情商概念，和如今流行的情商观念大相径庭。许多人对情商的理解，"
+        },
+        {
+          "rows": 12,
+          "skeleton": "食品添加剂是现代食品工业的重要组成部分，按规定使用食品添加剂对人体无害，而且可以改善食品的品质，起到防腐、保鲜的作用。正是因为有了食品添加剂的发展，才有了大量的方便食品，给人们的生活带来极大的便利。如果不加入食品添加剂，大部分食品要么难看、"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 10907,
+          "test": 10345,
+          "train": 63683
+        },
+        "groups": {
+          "calibration": 10547,
+          "test": 10214,
+          "train": 60831
+        },
+        "shared_groups_train_test": 510,
+        "jaccard_train_test": 0.00723,
+        "test_rows_whose_skeleton_is_in_train": 523,
+        "test_row_leak_rate": 0.050556,
+        "exact_layer_shared_skeletons": 3,
+        "paraphrase_layer": {
+          "checked": 13,
+          "hits": 1,
+          "rate": 0.076923,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 17240,
+          "train": 67695
+        },
+        "groups": {
+          "test": 16314,
+          "train": 64172
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "massive",
+      "path": "artifacts/data-prefetch/massive.jsonl",
+      "rows_scanned": 99126,
+      "truncated": false,
+      "skeletons": 95484,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 17,
+        "share": 0.000171,
+        "skeleton": "[it-it] spegni le luci"
+      },
+      "top_groups": [
+        {
+          "rows": 17,
+          "skeleton": "[it-it] spegni le luci"
+        },
+        {
+          "rows": 16,
+          "skeleton": ""
+        },
+        {
+          "rows": 16,
+          "skeleton": ""
+        },
+        {
+          "rows": 15,
+          "skeleton": "[es-es] apaga las luces"
+        },
+        {
+          "rows": 15,
+          "skeleton": "[fr-fr] quelle heure est-il à paris"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 12198,
+          "test": 17844,
+          "train": 69084
+        },
+        "groups": {
+          "calibration": 12088,
+          "test": 17658,
+          "train": 67125
+        },
+        "shared_groups_train_test": 745,
+        "jaccard_train_test": 0.008865,
+        "test_rows_whose_skeleton_is_in_train": 855,
+        "test_row_leak_rate": 0.047915,
+        "exact_layer_shared_skeletons": 6,
+        "paraphrase_layer": {
+          "checked": 145,
+          "hits": 2,
+          "rate": 0.013793,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 19988,
+          "train": 79138
+        },
+        "groups": {
+          "test": 19189,
+          "train": 76295
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "reclor",
+      "path": "artifacts/data-prefetch/reclor.jsonl",
+      "rows_scanned": 6138,
+      "truncated": false,
+      "skeletons": 6004,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 3,
+        "share": 0.000489,
+        "skeleton": "scientists typically do their most creative work before the age of forty. it is commonly thought that this happens because aging by itself brings about a loss o"
+      },
+      "top_groups": [
+        {
+          "rows": 3,
+          "skeleton": "scientists typically do their most creative work before the age of forty. it is commonly thought that this happens becau"
+        },
+        {
+          "rows": 2,
+          "skeleton": "a certain cultivated herb is one of a group of closely related plants that thrive in soil with high concentrations of me"
+        },
+        {
+          "rows": 2,
+          "skeleton": "in <num> outlaw fishing boats began illegally harvesting lobsters from the territorial waters of the country of <name>. "
+        },
+        {
+          "rows": 2,
+          "skeleton": "boreal owls range over a much larger area than do other owls of similar size. the reason for this behavior is probably t"
+        },
+        {
+          "rows": 2,
+          "skeleton": "<name>, a sixteenth-century <name> explorer, had soil samples from <name>' s <name> <name> examined for gold content. be"
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 500,
+          "test": 1000,
+          "train": 4638
+        },
+        "groups": {
+          "calibration": 500,
+          "test": 1000,
+          "train": 4626
+        },
+        "shared_groups_train_test": 76,
+        "jaccard_train_test": 0.013694,
+        "test_rows_whose_skeleton_is_in_train": 76,
+        "test_row_leak_rate": 0.076,
+        "exact_layer_shared_skeletons": 0,
+        "paraphrase_layer": {
+          "checked": 300,
+          "hits": 8,
+          "rate": 0.026667,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 1242,
+          "train": 4896
+        },
+        "groups": {
+          "test": 1220,
+          "train": 4784
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    },
+    {
+      "dataset": "synth-loop",
+      "path": "artifacts/data-prefetch/quarantine/synth-loop-20260921.jsonl",
+      "rows_scanned": 360700,
+      "truncated": false,
+      "skeletons": 74,
+      "skeleton_version": 1,
+      "largest_group": {
+        "rows": 14075,
+        "share": 0.039021,
+        "skeleton": "asunto: trabaja desde casa: gana <amount> /mes sin esfuerzo <name>, gana <amount> al mes desde casa sin esfuerzo. solo reenvía paquetes y quédate comisión. empi"
+      },
+      "top_groups": [
+        {
+          "rows": 14075,
+          "skeleton": "asunto: trabaja desde casa: gana <amount> /mes sin esfuerzo <name>, gana <amount> al mes desde casa sin esfuerzo. solo r"
+        },
+        {
+          "rows": 14009,
+          "skeleton": "asunto: tu cuenta será <name> en 24h - verifica <name>, tu cuenta será <name> en <num> horas por actividad extraña. veri"
+        },
+        {
+          "rows": 13964,
+          "skeleton": "asunto: ganaste <amount> !!! reclama <name> tu premio felicidades <name>!!! has sido seleccionado para ganar <amount> <n"
+        },
+        {
+          "rows": 13912,
+          "skeleton": "asunto: resultado médico disponible - importante <name>, ya tienes disponible un resultado importante. revísalo hoy y pi"
+        },
+        {
+          "rows": 13892,
+          "skeleton": "asunto: urgente: tu tarjeta ha sido bloqueada <name>, hemos detectado un cargo sospechoso de <amount> y hemos bloqueado "
+        }
+      ],
+      "shipped_split": {
+        "rows": {
+          "calibration": 36070,
+          "test": 36070,
+          "train": 288560
+        },
+        "groups": {
+          "calibration": 74,
+          "test": 74,
+          "train": 74
+        },
+        "shared_groups_train_test": 74,
+        "jaccard_train_test": 1.0,
+        "test_rows_whose_skeleton_is_in_train": 36070,
+        "test_row_leak_rate": 1.0,
+        "exact_layer_shared_skeletons": 64,
+        "paraphrase_layer": {
+          "checked": 74,
+          "hits": 74,
+          "rate": 1.0,
+          "sim_threshold": 0.5
+        }
+      },
+      "group_split": {
+        "seed": 20260921,
+        "test_frac": 0.2,
+        "rows": {
+          "test": 48673,
+          "train": 312027
+        },
+        "groups": {
+          "test": 12,
+          "train": 62
+        },
+        "shared_groups_train_test": 0,
+        "jaccard_train_test": 0.0
+      }
+    }
+  ]
+}

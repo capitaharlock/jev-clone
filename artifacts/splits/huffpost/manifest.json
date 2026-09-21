@@ -1,0 +1,50 @@
+{
+  "name": "huffpost",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:14:47Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "huffpost",
+  "source": {
+    "path": "artifacts/data-prefetch/huffpost.jsonl",
+    "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd",
+    "rows": 181140
+  },
+  "counts": {
+    "rows": {
+      "test": 36117,
+      "train": 145023
+    },
+    "groups": {
+      "test": 36034,
+      "train": 144458
+    },
+    "groups_total": 180492
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 36117,
+      "sha256": "5e5010b48de97aef22537d32f4c6aeb41a96ebf7636f84cc4e5af60811067435"
+    },
+    "train.ids": {
+      "rows": 145023,
+      "sha256": "23850a35eabffe36ceba35ffa5494c907c8de4132fb6fa6a401b8467fe843465"
+    }
+  },
+  "manifest_sha256": "d6891bbc9721d57609b94e98aff59f58af2ba58bbe6eee09aed993fe2bc00800"
+}

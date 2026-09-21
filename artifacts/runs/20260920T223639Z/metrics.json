@@ -97,5 +97,14 @@
       "seconds": 0.2,
       "model": "models/email-triage.pkl"
     }
-  ]
+  ],
+  "invalidated": {
+    "invalidated_on": "2026-09-21",
+    "invalidated_by": "T-split-domain",
+    "reason": "split by row index (i % 10): the same skeleton appeared in train and in test, so the metric measured leakage, not capacity (#T-split-domain, audit 2026-09-21 finding C)",
+    "affects": [
+      "email-triage"
+    ],
+    "replacement": "eval/splits.py \u2014 group split by skeleton+domain+language"
+  }
 }

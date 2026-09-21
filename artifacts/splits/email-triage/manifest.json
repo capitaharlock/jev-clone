@@ -1,0 +1,50 @@
+{
+  "name": "email-triage",
+  "task": "T-split-domain",
+  "split_version": 1,
+  "skeleton_version": 1,
+  "created_at": "2026-09-21T14:14:26Z",
+  "seed": 20260921,
+  "grouped_by": [
+    "skeleton",
+    "domain",
+    "language"
+  ],
+  "fracs": {
+    "test": 0.2,
+    "calibration": 0.0
+  },
+  "domain": "email-triage",
+  "source": {
+    "path": "artifacts/data-prefetch/email-triage.jsonl",
+    "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d",
+    "rows": 5000
+  },
+  "counts": {
+    "rows": {
+      "test": 1342,
+      "train": 3658
+    },
+    "groups": {
+      "test": 14,
+      "train": 50
+    },
+    "groups_total": 64
+  },
+  "overlap": {
+    "shared_groups": 0,
+    "jaccard": 0.0,
+    "examples": []
+  },
+  "files": {
+    "test.ids": {
+      "rows": 1342,
+      "sha256": "540e0021663bb66bf3468db07dfd32f60540b6b6b0b4f878601db624a491f1df"
+    },
+    "train.ids": {
+      "rows": 3658,
+      "sha256": "56eb991dbd3908a190443812770abd4e56666f3d49d92b83f17133f3eb170fed"
+    }
+  },
+  "manifest_sha256": "15238db277726437d2dddf0c5f375c2487ef30d7783998302275110552c51583"
+}

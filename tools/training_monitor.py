@@ -47,6 +47,17 @@ QUARANTINE = PREFETCH / "quarantine" / "synth-loop-20260921.jsonl"
 CONTAMINATED_TASKS = {"synth-loop"}
 EVAL_ONLY_TASKS = {"logiqa", "reclor"}
 
+# #T-split-domain: every number this dashboard published for a dataset whose
+# split was assigned by ROW INDEX (i % 10) is invalid as of this date — the
+# same template sat in train and in test, so the accuracy measured leakage.
+# The replacement is eval/splits.py (group split by skeleton+domain+idioma);
+# the evidence is artifacts/gates/T-split-domain/.
+INDEX_SPLIT_INVALID_ON = "2026-09-21"
+INDEX_SPLIT_TASKS = {"synth-loop", "email-triage"}
+INDEX_SPLIT_REASON = ("split por índice de fila (i % 10): la misma plantilla "
+                      "caía en train y en test")
+SPLIT_EVIDENCE = "artifacts/gates/T-split-domain/"
+
 
 def train_python():
     """Venv first: system python has no sklearn, train would crash instantly."""
@@ -485,17 +496,30 @@ def build_state():
         "pct_trained": round(pct, 2),
         "baseline_params_est": params,
         "params_detail": pdetail,
+        # #T-split-domain: what this dashboard no longer counts as green.
+        "invalidated_numbers": {
+            "on": INDEX_SPLIT_INVALID_ON,
+            "by": "T-split-domain",
+            "reason": INDEX_SPLIT_REASON,
+            "tasks": sorted(INDEX_SPLIT_TASKS),
+            "evidence": SPLIT_EVIDENCE,
+        },
         # Flagged tasks (contaminated / eval-only) keep their history visible
         # but their accuracy is NOT shown as a number: no green without a
         # clean split behind it (#T-halt-contam).
         "per_task": [{"task": j.get("task"), "n_train": j.get("n_train"),
                       "accuracy": (None if j.get("task") in
-                                   (CONTAMINATED_TASKS | EVAL_ONLY_TASKS)
+                                   (CONTAMINATED_TASKS | EVAL_ONLY_TASKS
+                                    | INDEX_SPLIT_TASKS)
                                    else (round(j.get("accuracy", 0), 4)
                                          if j.get("accuracy") else None)),
                       "flag": ("CONTAMINADA" if j.get("task") in CONTAMINATED_TASKS
                                else ("eval-only" if j.get("task") in EVAL_ONLY_TASKS
-                                     else None)),
+                                     else (f"INVÁLIDA {INDEX_SPLIT_INVALID_ON} "
+                                           "(split i%10)"
+                                           if j.get("task") in INDEX_SPLIT_TASKS
+                                           else None))),
+                      "invalid_split": j.get("task") in INDEX_SPLIT_TASKS,
                       "seconds": j.get("seconds")} for j in jobs],
         "procs": {
             "ollama_11434": ollama_alive(),
@@ -518,6 +542,7 @@ header.top h1{{margin:0;font-size:22px}}header.top small{{color:var(--dim);font-
 .live-dot{{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--acc);margin-right:6px;box-shadow:0 0 8px var(--acc)}}
 section.panel{{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:16px}}
 section.panel h2{{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}}
+p.warn{{color:var(--warn);border-left:3px solid var(--warn);padding-left:10px;margin:0 0 12px}}
 .cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}}
 .card{{background:#0d1117;border:1px solid var(--line);border-radius:8px;padding:10px 12px}}
 .card .k{{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}}
@@ -560,7 +585,7 @@ footer{{color:var(--dim);font-size:12px;margin-top:16px}}
 </section>
 <div class="grid2">
 <section class="panel"><h2>Datasets</h2><table><tr><th>dataset</th><th class="num">ejemplos</th><th class="num">tamaño</th><th>estado</th></tr>{rows}</table></section>
-<section class="panel"><h2>Por tarea · baseline histórico TF-IDF (#T-train-real: fuera de la ruta de producto)</h2><table><tr><th>tarea</th><th class="num">n_train</th><th class="num">acc</th><th class="num">segs</th></tr>{trows}</table></section>
+<section class="panel"><h2>Por tarea · baseline histórico TF-IDF (#T-train-real: fuera de la ruta de producto)</h2>{invalid_sec}<table><tr><th>tarea</th><th class="num">n_train</th><th class="num">acc</th><th class="num">segs</th></tr>{trows}</table></section>
 </div>
 <section class="panel"><h2>Log de entrenamiento</h2><pre>{train_tail}</pre><p><span class="pill">{procs}</span></p><p><i>{note}</i></p></section>
 <footer>este html se regenera en cada latido · sirve desde artifacts/runs/training-monitor/</footer></body></html>"""
@@ -685,7 +710,10 @@ def write_outputs(state, train_note="", train_live="", train_tail="",
             f"{quarantine_rows():,} filas en cuarentena "
             f"(190 esqueletos, split <tt>i%10</tt>, acc 1,0000 por fuga). "
             f"Este panel no publica tendencia hasta que #T-gen-schemas aporte "
-            f"un split limpio por plantilla/dominio.</p>")
+            f"un split limpio por plantilla/dominio. El split correcto ya "
+            f"existe (<tt>eval/splits.py</tt>, #T-split-domain): sobre este "
+            f"mismo corpus la accuracy honesta está en "
+            f"<tt>artifacts/gates/T-split-domain/contrast.json</tt>.</p>")
     elif gt:
         age_m = gt["age_s"] / 60.0
         acc = gt.get("accuracy")
@@ -702,6 +730,16 @@ def write_outputs(state, train_note="", train_live="", train_tail="",
     else:
         fwd_sec = ("<p>forward test (Q-W-E-N/synth): aún sin reentrenos del generador "
                    "(arranca el generador para ver aquí acc sobre datos no vistos).</p>")
+    inv = state.get("invalidated_numbers") or {}
+    invalid_sec = (
+        f'<p class="warn"><b>NÚMEROS HISTÓRICOS INVÁLIDOS '
+        f'({inv.get("on", INDEX_SPLIT_INVALID_ON)})</b> — '
+        f'{", ".join(inv.get("tasks", sorted(INDEX_SPLIT_TASKS)))}: '
+        f'{inv.get("reason", INDEX_SPLIT_REASON)}. Esas accuracies medían '
+        f'fuga, no capacidad, y no se publican como número. Split correcto: '
+        f'<tt>eval/splits.py</tt> (esqueleto+dominio+idioma, por grupo). '
+        f'Evidencia: <tt>{inv.get("evidence", SPLIT_EVIDENCE)}'
+        f'</tt> (#T-split-domain).</p>')
     import html as _html
     pr = state.get("procs", {})
     (STATE_DIR / "index.html").write_text(DASH_TMPL.format(
@@ -710,6 +748,7 @@ def write_outputs(state, train_note="", train_live="", train_tail="",
         pct=state["pct_trained"], pending=state["pending_examples"], size=state["total_size"],
         params=state["baseline_params_est"], run=state["last_run"], rows=rows,
         trows=trows, procs=procs, note=train_note, synth_sec=synth_sec,
+        invalid_sec=invalid_sec,
         train_live=_html.escape(train_live), train_tail=_html.escape(train_tail),
         cycle=cycle, tick=tick, tick_ts=tick_ts,
         synth_live=f"{state.get('synth_rows_live', 0):,}",
@@ -799,6 +838,10 @@ def print_block(state, train_note=""):
     print(f"PARAMS baseline HISTORICO (TF-IDF 50k x clases, estimado): "
           f"{state['baseline_params_est']:,} — fuera de la ruta de producto "
           f"(#T-train-real)", flush=True)
+    inv = state.get("invalidated_numbers") or {}
+    print(f"NUMEROS HISTORICOS INVALIDOS ({inv.get('on')}): "
+          f"{', '.join(inv.get('tasks', []))} — {inv.get('reason')} "
+          f"(#T-split-domain, evidencia {inv.get('evidence')})", flush=True)
     for t in state["per_task"]:
         acc = t["flag"] or t["accuracy"]
         print(f"  - {t['task']:15s} n={t['n_train']:>7,} acc={acc} s={t['seconds']}",

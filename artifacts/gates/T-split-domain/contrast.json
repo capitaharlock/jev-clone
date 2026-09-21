@@ -1,0 +1,33 @@
+{
+  "task": "T-split-domain",
+  "generated_at": "2026-09-21T14:15:11Z",
+  "source": {
+    "path": "artifacts/data-prefetch/quarantine/synth-loop-20260921.jsonl",
+    "rows_used": 360700
+  },
+  "model": "tfidf-logreg-v1 (data/train_baseline.py recipe)",
+  "caps": {
+    "train": 80000,
+    "eval": 20000
+  },
+  "before_index_split": {
+    "split": "index",
+    "n_train": 80000,
+    "n_eval": 20000,
+    "accuracy": 1.0,
+    "logloss": 0.001851
+  },
+  "after_group_split": {
+    "split": "group",
+    "n_train": 80000,
+    "n_eval": 20000,
+    "accuracy": 0.35025,
+    "logloss": 1.681999
+  },
+  "skeletons": 74,
+  "shipped_split_group_overlap": {
+    "shared_groups": 74,
+    "jaccard": 1.0
+  },
+  "delta_accuracy": -0.64975
+}

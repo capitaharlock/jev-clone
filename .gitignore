@@ -35,3 +35,8 @@ __pycache__/
 artifacts/data-raw/
 artifacts/data-prefetch/*.jsonl
 artifacts/data-prefetch/quarantine/
+
+# Sealed splits (#T-split-domain): the id lists are megabytes of row ids;
+# git carries the manifest (seed + sha256 of every ids file), which is what
+# makes a split verifiable, not the bytes.
+artifacts/splits/*/*.ids
