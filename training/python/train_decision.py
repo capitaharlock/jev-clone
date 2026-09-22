@@ -85,11 +85,12 @@ import hashlib
 import json
 import math
 import os
+import random
 import re
 import shutil
 import sys
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT not in sys.path:  # the trainer runs both as -m and as a script
@@ -97,7 +98,8 @@ if ROOT not in sys.path:  # the trainer runs both as -m and as a script
 
 from data import mix as mixmod  # noqa: E402
 from data.optset import (ALLOWED_DATASETS, DistractorIndex,  # noqa: E402
-                         OptionSetSampler, SamplerConfig, difficulty)
+                         OptionSetSampler, Sample, SamplerConfig, UNKNOWN_ID,
+                         difficulty)
 
 RUNS_DIR = os.path.join(ROOT, "artifacts", "runs")
 CKPT_DIR = os.path.join(ROOT, "artifacts", "checkpoints", "decision")
@@ -551,6 +553,164 @@ def row_logits(engine, tokens, mask, embs, spans, i: int):
                        embs[start], embs[start + 1:end])
 
 
+# -- gen-objective candidates (#T-gen-objective) ---------------------------
+#
+# Four composable interventions against label-space memorisation. The
+# ablation of #T-antiscale-diag attributes 75.4 % of the 250 k -> 1 M fall
+# to ranking (axis 4) and measures that 100 % of the 1 M mixture is
+# answerable by a text -> label map (axis 1) — so these attack the
+# incentive (the objective), not the capacity, and they run BEFORE
+# #T-unfreeze-backbone. All four default to OFF and compose: each is a
+# pure function over a batch/samples/tensors, wired into `train()` by one
+# flag each. Only one is adopted (the one that moves the unseen slope);
+# the rest stay as flags, recorded as discarded in the task's gate.
+
+#: marker for synthetic replacement option texts (candidate 1). A real
+#: label text never contains a NUL byte, so a replaced text can never
+#: collide with the train label space — which is what the test asserts.
+NOVEL_OPTION_MARK = "\x00gen-novel"
+
+
+def apply_label_dropout(batch: list, rate: float,
+                        rng: random.Random) -> tuple:
+    """Candidate 1: per-episode dropout of option texts.
+
+    Every option text of every row is replaced with probability `rate`
+    by a novel sentinel text. Positions, ids, `gold_index` and `answer`
+    are untouched, so the row stays answerable — but a memorised
+    text -> label map no longer suffices to answer it. Returns the new
+    batch plus a stats dict.
+    """
+    if not 0.0 <= rate <= 1.0:
+        raise ValueError("label dropout rate must be in [0, 1]")
+    out, replaced, used = [], 0, set()
+    for sample in batch:
+        options = [dict(o) for o in sample.options]
+        for opt in options:
+            if rng.random() < rate:
+                text = f"{NOVEL_OPTION_MARK}-{rng.randrange(1 << 60):016x}"
+                while text in used:
+                    text = (f"{NOVEL_OPTION_MARK}-"
+                            f"{rng.randrange(1 << 60):016x}")
+                used.add(text)
+                opt["text"] = text
+                replaced += 1
+        out.append(replace(sample, options=options))
+    return out, {"rows": len(batch), "options_replaced": replaced,
+                 "rate": rate}
+
+
+def resample_distractors(sample: Sample, sampler: OptionSetSampler,
+                         rng: random.Random) -> Sample:
+    """Candidate 2: episodic few-shot — a fresh distractor set, same gold.
+
+    Reuses the sampler's own pool and difficulty buckets
+    (#T-optset-sampler): the redrawn set keeps the row's K and its
+    hard/easy split, the gold stays present at a reshuffled position,
+    and `unknown` rows stay `unknown` with a redrawn offer set. Calling
+    this per step (seeded by the step) is what makes the option SET vary
+    across epochs instead of only its order.
+    """
+    d = sample.dataset
+    index = sampler.index[d]
+    by_id = index.text
+    unknown = sample.is_unknown
+    gold_id = None if unknown else sample.answer
+    hard, easy = index.buckets("" if gold_id is None else gold_id)
+    k = len(sample.options)
+    n_distract = k if unknown else k - 1
+    n_hard = min(len(hard), sample.n_hard)
+    n_easy = min(len(easy), n_distract - n_hard)
+    if n_easy < n_distract - n_hard:  # tiny pool: spill back to hard
+        n_hard = min(len(hard), n_distract - n_easy)
+        n_easy = n_distract - n_hard
+    picked = rng.sample(hard, n_hard) + rng.sample(easy, n_easy)
+    options = [{"id": i, "text": by_id.get(i, i)} for i in picked]
+    if gold_id is not None:
+        options.append({"id": gold_id, "text": by_id.get(gold_id, gold_id)})
+    rng.shuffle(options)
+    gold_index = k if unknown else next(
+        i for i, o in enumerate(options) if o["id"] == gold_id)
+    return replace(sample, options=options,
+                   answer=UNKNOWN_ID if unknown else gold_id,
+                   gold_index=gold_index, n_hard=n_hard, n_easy=n_easy)
+
+
+def contrastive_q_option_loss(q, opts_list: list, golds: list,
+                              tau: float = 0.07):
+    """Candidate 3: InfoNCE over question <-> option-TEXT similarity.
+
+    Per row, the question vector scores against that row's own option
+    vectors (dot / tau) with a cross-entropy against the gold position —
+    so the signal is question <-> option text, never question -> index
+    of a known space. Rows whose gold is absent (`unknown`, gold None)
+    are skipped. Pure torch: the gradient flows into the inputs, which
+    in `train()` are the head's trainable `q_proj` / `opt_proj`
+    outputs over the frozen backbone embeddings.
+    """
+    _require_torch()
+    if tau <= 0:
+        raise ValueError("contrastive temperature must be positive")
+    losses = []
+    for b in range(q.shape[0]):
+        g = golds[b]
+        if g is None:
+            continue
+        sims = (opts_list[b] * q[b].unsqueeze(0)).sum(-1) / tau
+        target = torch.tensor([g], device=sims.device)
+        losses.append(nn.functional.cross_entropy(sims.unsqueeze(0),
+                                                  target))
+    if not losses:
+        return q.sum() * 0.0
+    return torch.stack(losses).mean()
+
+
+def fit_label_prior(samplers: dict) -> dict:
+    """Candidate 4 (fit): empirical train prior over gold labels.
+
+    Counts gold answers over the training samplers' loaded rows, keyed
+    `(dataset, option_id)`. An approximation of what the head sees (the
+    mixture selector subsamples per question), but the ranking of heads
+    vs tails — which is all the penalty needs — is what it preserves.
+    """
+    counts: dict = {}
+    for d, sampler in samplers.items():
+        for row in sampler.rows.get(d, []):
+            for question in row.get("questions", []):
+                answer = question.get("answer")
+                if answer is None or answer == UNKNOWN_ID:
+                    continue
+                key = (d, answer)
+                counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def prior_penalty_for(dataset: str, option_id: str, counts: dict) -> float:
+    """`log(count)` penalty for one option; 0 for labels unseen in train."""
+    return math.log(counts.get((dataset, option_id), 1))
+
+
+def apply_prior_penalty(logits, sample: Sample, counts: dict,
+                        weight: float):
+    """Candidate 4 (apply): discount the empirical frequency prior.
+
+    Subtracts `weight * log(train count)` from each of the K option
+    logits so a frequent label no longer wins by being frequent; the
+    `unknown` logit is untouched. A constant offset that keeps the
+    gradient: the operation is differentiable in the logits.
+    """
+    _require_torch()
+    if weight < 0:
+        raise ValueError("prior penalty weight must be non-negative")
+    if weight == 0 or not counts:
+        return logits
+    penalty = torch.tensor(
+        [prior_penalty_for(sample.dataset, o["id"], counts)
+         for o in sample.options] + [0.0], device=logits.device,
+        dtype=logits.dtype)
+    return logits - weight * penalty
+
+
 # -- metrics ---------------------------------------------------------------
 
 @dataclass
@@ -923,7 +1083,10 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           fence_clean: bool = False, drop_datasets=(),
           mix_seed: int | None = None, dataset_cap: float | None = None,
           family_cap: float | None = None,
-          allow_repeat: bool = False) -> dict:
+          allow_repeat: bool = False, label_dropout: float = 0.0,
+          episodic_resample: bool = False,
+          contrastive_weight: float = 0.0, contrastive_tau: float = 0.07,
+          prior_penalty: float = 0.0) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -932,6 +1095,13 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     os.makedirs(run_dir, exist_ok=True)
 
     torch.manual_seed(seed)
+    if not 0.0 <= label_dropout <= 1.0:
+        raise ValueError("label_dropout must be in [0, 1]")
+    if contrastive_weight < 0 or prior_penalty < 0:
+        raise ValueError("contrastive_weight and prior_penalty must be >= 0")
+    if contrastive_tau <= 0:
+        raise ValueError("contrastive_tau must be positive")
+    gen_rng = random.Random(f"{seed}\x00gen-objective")
     config = SamplerConfig(seed=seed)
     spec = pools = None
     train_rows = rows_per_dataset
@@ -986,6 +1156,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         fh.write("\n")
 
     tr = train_samplers(holdout, config, train_rows, root, spec, pools)
+    prior_counts = fit_label_prior(tr) if prior_penalty > 0 else {}
     ev_seen = eval_samplers(holdout, "seen", config, rows_per_dataset, root,
                             pools)
     ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset,
@@ -1041,7 +1212,12 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         "architecture": {"d_model": d_model, "n_layers": n_layers,
                          "n_heads": n_heads,
                          "scorer": "pointer over option text embeddings",
-                         "loss": "listwise cross-entropy over [K + 1]"},
+                         "loss": ("listwise cross-entropy over [K + 1]"
+                                  + (f" + {contrastive_weight} * q<->opt "
+                                     "InfoNCE" if contrastive_weight > 0
+                                     else "")
+                                  + (f" + prior penalty {prior_penalty}"
+                                     if prior_penalty > 0 else ""))},
         "backbone": {"id": backbone.id, "hidden_size": backbone.hidden_size,
                      "params": backbone.params, "frozen": True,
                      "revision": BACKBONES[backbone_id]["revision"]},
@@ -1073,6 +1249,12 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                           "rows in train" if fence_clean else
                           "product mix: the benchmark fence is not applied")},
         "holdout_path": os.path.relpath(holdout_path, ROOT),
+        "gen_objective": {"label_dropout": label_dropout,
+                          "episodic_resample": episodic_resample,
+                          "contrastive_weight": contrastive_weight,
+                          "contrastive_tau": contrastive_tau,
+                          "prior_penalty": prior_penalty,
+                          "prior_labels": len(prior_counts)},
         "epoch_samples": epoch_size,
         "max_samples": max_samples,
         "budget": budget,
@@ -1106,6 +1288,12 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         step += 1
         for group in opt.param_groups:
             group["lr"] = lr_at(step, total_steps, lr)
+        if episodic_resample:  # candidate 2: fresh distractor set
+            batch = [resample_distractors(s, tr[s.dataset], gen_rng)
+                     if s.dataset in tr else s for s in batch]
+        if label_dropout > 0:  # candidate 1: novel option texts
+            batch, _drop = apply_label_dropout(batch, label_dropout,
+                                               gen_rng)
         tokens, mask, n_tok = encode_states(engine.backbone,
                                             [s.state for s in batch],
                                             max_length)
@@ -1113,13 +1301,29 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         opt.zero_grad(set_to_none=True)
         total = torch.zeros((), device=engine.device)
         rows = []
+        contrast_q, contrast_opts, contrast_golds = [], [], []
         for i, sample in enumerate(batch):
             logits = row_logits(engine, tokens, mask, embs, spans, i)
+            if prior_penalty > 0:  # candidate 4: discount the prior
+                logits = apply_prior_penalty(logits, sample,
+                                             prior_counts, prior_penalty)
             gold = torch.tensor([sample.gold_index], device=engine.device)
             total = total + nn.functional.cross_entropy(logits.unsqueeze(0),
                                                         gold)
             rows.append((logits.detach(), sample))
+            if contrastive_weight > 0:  # candidate 3: q<->opt signal
+                start, end = spans[i]
+                contrast_q.append(engine.head.q_proj(embs[start]))
+                contrast_opts.append(engine.head.opt_proj(
+                    embs[start + 1:end]))
+                contrast_golds.append(
+                    None if sample.gold_index >= len(sample.options)
+                    else sample.gold_index)
         loss = total / len(batch)
+        if contrastive_weight > 0 and contrast_q:
+            loss = loss + contrastive_weight * contrastive_q_option_loss(
+                torch.stack(contrast_q), contrast_opts, contrast_golds,
+                contrastive_tau)
         loss.backward()
         nn.utils.clip_grad_norm_(engine.head.parameters(), 1.0)
         opt.step()
@@ -1474,6 +1678,27 @@ def main(argv: list) -> int:
                    help=("train the raw P0 datasets uncapped — the "
                          "pre-rebalance behaviour. The guardrails still run "
                          "and will abort on the imbalance they find"))
+    t.add_argument("--label-dropout", type=float, default=0.0,
+                   help=("candidate 1 (#T-gen-objective): fraction of "
+                         "options per batch whose text is replaced by a "
+                         "novel sentinel, so the memorised text->label map "
+                         "never suffices"))
+    t.add_argument("--episodic-resample", action="store_true",
+                   help=("candidate 2 (#T-gen-objective): redraw every row's "
+                         "distractor set from the sampler's own buckets at "
+                         "every step, gold kept — the option SET varies, "
+                         "not just its order"))
+    t.add_argument("--contrastive-weight", type=float, default=0.0,
+                   help=("candidate 3 (#T-gen-objective): weight of the "
+                         "question<->option-text InfoNCE term added to the "
+                         "listwise loss"))
+    t.add_argument("--contrastive-tau", type=float, default=0.07,
+                   help="temperature of the candidate-3 InfoNCE term")
+    t.add_argument("--prior-penalty", type=float, default=0.0,
+                   help=("candidate 4 (#T-gen-objective): weight "
+                         "subtracting the empirical log train-count from "
+                         "each option logit, so frequent labels stop "
+                         "winning by frequency"))
 
     g = sub.add_parser("gate", help="cold gate over a saved checkpoint")
     g.add_argument("--checkpoint", required=True)
@@ -1517,7 +1742,12 @@ def main(argv: list) -> int:
                         mix_seed=args.mix_seed,
                         dataset_cap=args.dataset_cap,
                         family_cap=args.family_cap,
-                        allow_repeat=args.allow_repeat)
+                        allow_repeat=args.allow_repeat,
+                        label_dropout=args.label_dropout,
+                        episodic_resample=args.episodic_resample,
+                        contrastive_weight=args.contrastive_weight,
+                        contrastive_tau=args.contrastive_tau,
+                        prior_penalty=args.prior_penalty)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

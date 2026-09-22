@@ -17,12 +17,15 @@ Run:
 from __future__ import annotations
 
 import json
+import math
 import os
+import random
 import shutil
 import unittest
+from types import SimpleNamespace
 
 from data import mix
-from data.optset import SamplerConfig
+from data.optset import DistractorIndex, Sample, SamplerConfig, UNKNOWN_ID
 
 from . import train_decision as td
 
@@ -315,6 +318,199 @@ class TestTrainingRun(unittest.TestCase):
                                  mix.MAX_FAMILY_FRACTION + 1e-9, family)
         self.assertGreater(composition["dynamic_option_share"], 0.5)
         self.assertEqual(len(manifest["members_sha256"]), 64)
+
+
+class TestGenObjectiveFlags(unittest.TestCase):
+    """The four #T-gen-objective flags must reach `train()` componibly."""
+
+    def _capture(self, extra):
+        seen = {}
+        real = td.train
+        td.train = lambda **kw: (seen.update(kw), {"steps": 0})[1]
+        try:
+            self.assertEqual(
+                td.main(["train_decision", "train", "--run-id",
+                         "flag-probe"] + extra), 0)
+        finally:
+            td.train = real
+        return seen
+
+    def test_all_four_flags_reach_train(self):
+        seen = self._capture(["--label-dropout", "0.2",
+                              "--episodic-resample",
+                              "--contrastive-weight", "0.5",
+                              "--contrastive-tau", "0.1",
+                              "--prior-penalty", "1.0"])
+        self.assertEqual(seen["label_dropout"], 0.2)
+        self.assertTrue(seen["episodic_resample"])
+        self.assertEqual(seen["contrastive_weight"], 0.5)
+        self.assertEqual(seen["contrastive_tau"], 0.1)
+        self.assertEqual(seen["prior_penalty"], 1.0)
+
+    def test_all_four_default_off(self):
+        seen = self._capture([])
+        self.assertEqual(seen["label_dropout"], 0.0)
+        self.assertFalse(seen["episodic_resample"])
+        self.assertEqual(seen["contrastive_weight"], 0.0)
+        self.assertEqual(seen["prior_penalty"], 0.0)
+
+
+class TestGenObjective(unittest.TestCase):
+    """Unit tests for the four #T-gen-objective candidates, synthetic."""
+
+    POOL = [{"id": f"l{i}", "text": f"label number {i}"} for i in range(12)]
+
+    def _sampler(self):
+        index = DistractorIndex(list(self.POOL), SamplerConfig())
+        return SimpleNamespace(index={"d": index},
+                               pools={"d": list(self.POOL)}, rows={"d": []})
+
+    def _sample(self, gold="l0", distractors=("l1", "l2", "l3"),
+                unknown=False):
+        by_id = {o["id"]: o["text"] for o in self.POOL}
+        by_id[gold] = f"label number {gold}"
+        options = [{"id": i, "text": by_id[i]} for i in distractors]
+        if unknown:
+            return Sample(dataset="d", row_id="d-0", question_id="q",
+                          state="s", question="which?", options=options,
+                          answer=UNKNOWN_ID, gold_index=len(options),
+                          dropped_gold=gold, n_hard=1, n_easy=2)
+        options.append({"id": gold, "text": by_id[gold]})
+        return Sample(dataset="d", row_id="d-0", question_id="q",
+                      state="s", question="which?", options=options,
+                      answer=gold, gold_index=len(options) - 1,
+                      n_hard=1, n_easy=2)
+
+    def test_label_dropout_zero_is_identity(self):
+        batch = [self._sample(), self._sample(gold="l4")]
+        out, stats = td.apply_label_dropout(
+            batch, 0.0, random.Random("zero"))
+        self.assertEqual(stats["options_replaced"], 0)
+        for before, after in zip(batch, out):
+            self.assertEqual([o["text"] for o in after.options],
+                             [o["text"] for o in before.options])
+            self.assertEqual(after.gold_index, before.gold_index)
+
+    def test_label_dropout_substitutes_never_appear_in_train(self):
+        batch = [self._sample(), self._sample(gold="l5")]
+        train_texts = {o["text"] for s in batch for o in s.options}
+        out, stats = td.apply_label_dropout(
+            batch, 1.0, random.Random("full"))
+        self.assertGreater(stats["options_replaced"], 0)
+        for sample in out:
+            for opt in sample.options:
+                self.assertIn(td.NOVEL_OPTION_MARK, opt["text"])
+                self.assertNotIn(opt["text"], train_texts)
+        for before, after in zip(batch, out):
+            self.assertEqual(after.gold_index, before.gold_index)
+            self.assertEqual(after.answer, before.answer)
+            # the input batch is not mutated: the copy carries the swap
+            self.assertTrue(all(td.NOVEL_OPTION_MARK not in o["text"]
+                                for o in before.options))
+
+    def test_label_dropout_rejects_rates_outside_the_unit(self):
+        with self.assertRaises(ValueError):
+            td.apply_label_dropout([self._sample()], 1.5,
+                                   random.Random(0))
+        with self.assertRaises(ValueError):
+            td.apply_label_dropout([self._sample()], -0.1,
+                                   random.Random(0))
+
+    def test_episodic_resample_keeps_gold_and_varies_distractors(self):
+        sampler, sample = self._sampler(), self._sample()
+        pool_ids = {o["id"] for o in self.POOL}
+        seen_sets = set()
+        for episode in range(8):
+            out = td.resample_distractors(
+                sample, sampler, random.Random(f"ep{episode}"))
+            self.assertEqual(len(out.options), len(sample.options))
+            self.assertEqual(out.options[out.gold_index]["id"], "l0")
+            distract = tuple(sorted(o["id"] for i, o in
+                                    enumerate(out.options)
+                                    if i != out.gold_index))
+            self.assertNotIn("l0", distract)
+            self.assertTrue(set(distract) <= pool_ids)
+            seen_sets.add(distract)
+        self.assertGreater(len(seen_sets), 1)
+
+    def test_episodic_resample_keeps_unknown_rows_unknown(self):
+        out = td.resample_distractors(self._sample(unknown=True),
+                                      self._sampler(), random.Random(7))
+        self.assertEqual(out.answer, UNKNOWN_ID)
+        self.assertEqual(out.gold_index, len(out.options))
+
+    def test_fit_label_prior_counts_golds_and_skips_unknown(self):
+        sampler = self._sampler()
+        sampler.rows = {"d": [
+            {"questions": [{"answer": "l0"}, {"answer": "l0"},
+                           {"answer": "l1"}]},
+            {"questions": [{"answer": UNKNOWN_ID}, {"answer": None},
+                           {"answer": "l1"}]}]}
+        counts = td.fit_label_prior({"d": sampler})
+        self.assertEqual(counts, {("d", "l0"): 2, ("d", "l1"): 2})
+        self.assertAlmostEqual(td.prior_penalty_for("d", "l0", counts),
+                               math.log(2))
+        self.assertEqual(td.prior_penalty_for("d", "l9", counts), 0.0)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_contrastive_loss_carries_a_gradient(self):
+        torch = td.torch
+        q = torch.randn(2, 8, requires_grad=True)
+        opts = [torch.randn(3, 8, requires_grad=True),
+                torch.randn(4, 8, requires_grad=True)]
+        loss = td.contrastive_q_option_loss(q, opts, [0, 2])
+        self.assertTrue(math.isfinite(loss.item()))
+        loss.backward()
+        self.assertIsNotNone(q.grad)
+        for o in opts:
+            self.assertIsNotNone(o.grad)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_contrastive_loss_skips_unknown_rows(self):
+        torch = td.torch
+        q = torch.randn(2, 8, requires_grad=True)
+        opts = [torch.randn(3, 8), torch.randn(2, 8)]
+        loss = td.contrastive_q_option_loss(q, opts, [1, None])
+        self.assertTrue(math.isfinite(loss.item()))
+        loss.backward()
+        self.assertIsNotNone(q.grad)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_prior_penalty_discounts_the_frequent_label(self):
+        torch = td.torch
+        sample = self._sample(gold="l1", distractors=("l0", "l2", "l3"))
+        counts = {("d", "l0"): 1000, ("d", "l1"): 1,
+                  ("d", "l2"): 1, ("d", "l3"): 1}
+        logits = torch.tensor([2.0, 0.0, 0.0, 1.0, -1.0],
+                              requires_grad=True)
+        self.assertEqual(int(torch.argmax(logits).item()), 0)
+        adjusted = td.apply_prior_penalty(logits, sample, counts, 1.0)
+        # the frequent distractor loses log(1000); the tail gold wins now
+        self.assertEqual(int(torch.argmax(adjusted).item()),
+                         sample.gold_index)
+        # `unknown` (last) is untouched by the penalty
+        self.assertAlmostEqual(float(adjusted[-1]), -1.0)
+        adjusted.sum().backward()
+        self.assertIsNotNone(logits.grad)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_all_four_compose_on_one_synthetic_batch(self):
+        torch = td.torch
+        sampler = self._sampler()
+        rng = random.Random("compose")
+        batch = [self._sample(), self._sample(gold="l2")]
+        batch = [td.resample_distractors(s, sampler, rng) for s in batch]
+        batch, _ = td.apply_label_dropout(batch, 0.5, rng)
+        counts = {("d", "l0"): 10, ("d", "l2"): 2}
+        total = torch.zeros(())
+        for sample in batch:
+            logits = torch.randn(len(sample.options) + 1,
+                                 requires_grad=True)
+            logits = td.apply_prior_penalty(logits, sample, counts, 0.5)
+            total = total + torch.nn.functional.cross_entropy(
+                logits.unsqueeze(0),
+                torch.tensor([sample.gold_index]))
+        self.assertTrue(math.isfinite(total.item()))
 
 
 if __name__ == "__main__":
