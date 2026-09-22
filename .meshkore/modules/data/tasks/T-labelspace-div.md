@@ -1,9 +1,9 @@
 ---
 id: T-labelspace-div
 title: Diversidad de espacios de etiquetas — medirla y, si falta, generarla
-status: next
+status: active
 priority: high
-owner: unassigned
+owner: developer
 category: data
 initiative: generalization-fix
 depends_on:
@@ -45,3 +45,22 @@ para que el veredicto sea una curva contra otra curva.
 - El veredicto queda escrito: la diversidad de etiquetas explica la
   anti-monotonía (GO al camino de datos) o no la explica (NO-GO, y el peso cae
   en `#T-unfreeze-backbone`).
+
+## Orden de ejecución (2026-09-22) — la mitad que no toca MPS va primero
+
+MPS está ocupado hasta ~14 h vista (`antiscale-wide` + `gen-objective-sweep`,
+ver `#T-gen-objective`), así que esta task se ejecuta en dos mitades y la
+primera no espera a nadie:
+
+1. **Inventario + mezcla, sólo CPU.** Contar espacios de etiquetas del corpus
+   actual, filas por espacio y solape con los cortes unseen; escribir
+   `artifacts/gates/T-labelspace-div/inventory.json`. Si sale pobre, apuntar la
+   fábrica sintética a producir *muchos espacios pequeños* y materializar la
+   mezcla alternativa a igual volumen (≥ 10× espacios distintos).
+2. **Curva, cuando MPS quede libre.** 62 k / 250 k / 1 M con el gate de
+   `#T-unseen-labels`, encoladas como job detrás del sweep — nunca lanzadas a
+   mano mientras otro run tenga el dispositivo.
+
+Un inventario que ya diga "hay 9 espacios de etiquetas en 1 M de filas" es, por
+sí solo, resultado publicable: no hace falta la curva para saber que la mezcla
+no enseña a comparar.
