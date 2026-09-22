@@ -1,16 +1,21 @@
 ---
 id: oss-release
 title: Release pública ejecutable (repo limpio + inferencia local)
-status: next
+status: backlog
 owner: architect-master
 modules:
   - project
   - runtime
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-22
 ---
 
 # Release pública ejecutable (repo limpio + inferencia local)
+
+> **Aparcada en `backlog` el 2026-09-22 por decisión del operador.** La release
+> pública queda fuera de la ecuación hasta que haya un modelo que supere su
+> propia promesa. No se reactiva por progreso técnico: se reactiva cuando
+> `#T-release-gate` dé GO y el operador lo pida.
 
 Hallazgo H de `.meshkore/docs/audit-2026-09-21.md`: el repositorio no es
 publicable hoy. 9 145 ficheros de `target/` (build debug de Rust) versionados

@@ -5,6 +5,7 @@ status: active
 owner: architect-master
 modules:
   - model
+  - data
 created: 2026-09-22
 updated: 2026-09-22
 ---
@@ -38,7 +39,7 @@ capacidad entrenable son ~2,9 M de cabeza pointer (d=256, 2 capas). Una cabeza
 pequeña sobre representaciones fijas es exactamente la arquitectura que aprende
 un `texto → etiqueta` cerrado en vez de una comparación pregunta↔opción.
 
-Esta iniciativa es el prerrequisito de `#oss-release` y de `#T-release-gate`:
+Esta iniciativa es el prerrequisito de `#oss-release` (aparcada en `backlog`) y de `#T-release-gate`:
 sin ella publicaríamos un modelo por debajo del azar en su propia promesa.
 
 ## Done when
@@ -49,3 +50,5 @@ sin ella publicaríamos un modelo por debajo del azar en su propia promesa.
 - Un checkpoint supera el azar (0,165) en **todos** los cortes unseen y lo
   registra `#T-unseen-labels`.
 - `#T-release-gate` puede volver a evaluarse sin que el fallo sea estructural.
+- El corpus de entreno contiene espacios de etiquetas **diversos** (no un puñado
+  de taxonomías repetidas), medido y registrado por `#T-labelspace-div`.

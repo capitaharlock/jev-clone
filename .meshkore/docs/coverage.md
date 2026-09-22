@@ -143,7 +143,7 @@ V1 therefore needs one terminal and one computer only.
 
 Fuente: `.meshkore/docs/audit-2026-09-21.md`. Cada hallazgo mapea a una task.
 Ningún hallazgo queda sin dueño; los tres `#I` nuevos son
-`#decision-rebuild`, `#honest-eval` y `#oss-release` (este último en `next`,
+`#decision-rebuild`, `#honest-eval` y `#oss-release` (este último en `backlog`,
 porque publicar antes de tener modelo sería publicar un baseline léxico).
 
 | Hallazgo | Severidad | Coverage |
@@ -155,7 +155,7 @@ porque publicar antes de tener modelo sería publicar un baseline léxico).
 | E · Mezcla dominada por ruido (civil-comments 74,6 %) | ALTO | #data-training: T-corpus-rebalance |
 | F · La evaluación no mide la propiedad del producto (sin unseen, kappa 0 en verde) | ALTO | #honest-eval: T-unseen-labels, T-release-gate (`.meshkore/docs/release-criteria.md` v1 fechado 2026-09-21 y escrito ANTES de medir: 12 umbrales, cada uno con su línea de por qué ese número; `eval/release_gate.py` los lee del markdown —ninguna constante de calidad en el código— y publica `artifacts/gates/T-release-gate/gate.json` con `criteria_sha` y veredicto **NO-GO** (8/12 fallan sobre los números reales de #T-unseen-labels; kappa contra el profesor no lo mide ningún artefacto y por eso cuenta como fallado, no omitido). `eval/gate_rules.py` aplica C1/C2/C3 a todo `artifacts/gates/**` como ERROR duro: 14 de 31 gates históricos quedan **marcados** con `coherence-invalid.json` —no borrados—, `T-release/release.json` entre ellos por publicar `cohen_kappa 0.0` junto a un `cold_verdict: GO`. El criterio es una PROPUESTA: `signed_by: pending-operator`, y el gate emite veredicto igual, marcado `criteria_signed: false`) |
 | G · LogiQA y ReClor se entrenan en vez de estar en firewall | MEDIO | #decision-rebuild: T-halt-contam |
-| H · El repositorio no es publicable (9 145 ficheros de `target/`, sin README ni inferencia local) | ALTO | #oss-release: T-repo-clean, T-readme-card, T-candle-infer |
+| H · El repositorio no es publicable (9 145 ficheros de `target/`, sin README ni inferencia local) | APARCADO | #oss-release (backlog): T-repo-clean, T-readme-card, T-candle-infer |
 
 Se conserva sin tocar lo que la auditoría dio por bueno: `data/schema.py`,
 los `convert_*.py`, `data/firewall.py` + `data/leakage.py`,
@@ -186,9 +186,10 @@ viejo).
 
 | Hallazgo | Severidad | Lo entrega |
 |---|---|---|
-| I · La accuracy sobre etiquetas no vistas **decrece** al añadir datos (0,239 → 0,050 de 250 k a 1 M) y queda por debajo del azar (0,165), mientras la accuracy dentro del corpus se mantiene alta (dbpedia14 0,98). `#T-release-gate` da NO-GO con 10/12 criterios fallados. Más datos no lo arreglan: `#T-mix-5m` ya registró el NO-GO al escalado | CRÍTICO | #generalization-fix: T-antiscale-diag (ablación de los 5 ejes), T-unfreeze-backbone (frozen vs last-n vs full sobre el mismo 1 M), T-gen-objective (dropout de etiquetas, episódico, contrastivo, penalización de prior) |
+| I · La accuracy sobre etiquetas no vistas **decrece** al añadir datos (0,239 → 0,050 de 250 k a 1 M) y queda por debajo del azar (0,165), mientras la accuracy dentro del corpus se mantiene alta (dbpedia14 0,98). `#T-release-gate` da NO-GO con 10/12 criterios fallados. Más datos no lo arreglan: `#T-mix-5m` ya registró el NO-GO al escalado | CRÍTICO | #generalization-fix: T-antiscale-diag (ablación de los 5 ejes), T-unfreeze-backbone (frozen vs last-n vs full sobre el mismo 1 M), T-gen-objective (dropout de etiquetas, episódico, contrastivo, penalización de prior), T-labelspace-div (diversidad de espacios de etiquetas: medirla y generarla) |
 
-`#oss-release` queda **detrás** de `#generalization-fix`: publicar hoy sería
+`#oss-release` queda **aparcada en `backlog`** (decisión del operador,
+2026-09-22): fuera de la ecuación hasta que haya GO. Publicar hoy sería
 publicar un modelo por debajo del azar en la propiedad que lo define.
 
 ### Orden actualizado
@@ -198,6 +199,7 @@ publicar un modelo por debajo del azar en la propiedad que lo define.
 | 13 | generalization-fix | T-antiscale-diag | Nombra la causa de la caída con un número |
 | 14 | generalization-fix | T-unfreeze-backbone | Capacidad entrenable donde está el lenguaje |
 | 14' | generalization-fix | T-gen-objective | Incentivo a comparar en vez de recordar |
+| 14'' | generalization-fix | T-labelspace-div | La mitad de datos: inventario de espacios de etiquetas y, si faltan, generarlos |
 | 15 | honest-eval | T-data-eval | OOD, calibración y los 4 reportes (repointed desde #data-training) |
 | 16 | honest-eval | T-release-gate | Re-evaluación sobre el checkpoint arreglado + firma del operador |
-| 17 | oss-release | T-repo-clean → T-candle-infer → T-readme-card | Sólo tras un GO |
+| — | oss-release | T-repo-clean → T-candle-infer → T-readme-card | Backlog: fuera de la secuencia hasta un GO |
