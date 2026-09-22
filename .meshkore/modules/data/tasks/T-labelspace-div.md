@@ -1,7 +1,7 @@
 ---
 id: T-labelspace-div
 title: Diversidad de espacios de etiquetas — medirla y, si falta, generarla
-status: active
+status: blocked
 priority: high
 owner: developer
 category: data
@@ -64,3 +64,27 @@ primera no espera a nadie:
 Un inventario que ya diga "hay 9 espacios de etiquetas en 1 M de filas" es, por
 sí solo, resultado publicable: no hace falta la curva para saber que la mezcla
 no enseña a comparar.
+
+## Estado 2026-09-22 — mitad 1 hecha, mitad 2 bloqueada por dispositivo
+
+Mitad 1 entregada y commiteada (`3b144f1`): inventario digest-verificado
+(9 taxonomías = 83,1 % de 1 M, sólo 135 espacios reutilizables → **pobre**) y
+mezcla alternativa `decision-mix-labeldiv-1m` de 1 M filas en 20 000
+mini-taxonomías (148×, solape 0 con las 26 unseen legacy).
+
+Mitad 2 (la curva) está encolada como job `labeldiv-curve` y **no puede
+arrancar**: su centinela espera
+`artifacts/runs/genobj-short-prior-s20260922/summary.json`, un run-id que no
+existe — `tools/gen_objective/arms.py` nombra los runs
+`genobj-<arm>-ettin-68m-s<seed>`. Con ese fichero inalcanzable el job poll-ea
+cada 600 s para siempre. Hay que corregir el centinela al último brazo real
+antes de que MPS quede libre.
+
+### Cierre pendiente
+
+1. Arreglar el centinela de `tools/labeldiv_curve.sh` (esperar los 5 brazos
+   reales, no `genobj-short-prior`).
+2. Dejar que el job entrene 2 × 1 M (ettin-68m + modernbert-base) sobre
+   `episodic-div` cuando el sweep libere el dispositivo.
+3. Escribir `artifacts/gates/T-labelspace-div/curve.json` y con él el veredicto
+   GO/NO-GO al camino de datos frente a `#T-unfreeze-backbone`.
