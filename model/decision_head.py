@@ -250,19 +250,51 @@ class DecisionEngine:
         mask = enc["attention_mask"].unsqueeze(-1).to(out.dtype)
         return (out * mask).sum(1) / mask.sum(1).clamp(min=1e-6)
 
-    def embed_texts(self, texts: list[str]) -> torch.Tensor:
+    def _embed_batch_grad(self, texts: list[str]) -> torch.Tensor:
+        """`_embed_batch` with the graph kept (#T-unfreeze-backbone).
+
+        The same pooled forward, outside `inference_mode`, so a backbone
+        whose parameters are being trained receives gradient from the
+        option texts too — not only from the state tokens.
+        """
+        enc = self.backbone.tokenizer(texts, return_tensors="pt",
+                                      padding=True, truncation=True,
+                                      max_length=self.max_length)
+        enc = {k: v.to(self.device) for k, v in enc.items()}
+        out = self.backbone.model(**enc).last_hidden_state
+        mask = enc["attention_mask"].unsqueeze(-1).to(out.dtype)
+        return (out * mask).sum(1) / mask.sum(1).clamp(min=1e-6)
+
+    def embed_texts(self, texts: list[str],
+                    grad: bool = False) -> torch.Tensor:
         """Pooled text embeddings [n, H], memoised per exact string.
 
         The cache is what makes option scoring cheap in production (label
         texts repeat across rows) and it is also why permuting an option
         list re-uses bit-identical inputs.
+
+        `grad=True` bypasses the cache entirely: with a trainable backbone
+        a memoised embedding is both stale (the encoder moved since it was
+        stored) and detached (it carries no graph). Duplicates are still
+        encoded once per call and gathered, so the saving that matters —
+        the repeated label texts inside one batch — survives.
         """
+        if grad:
+            uniq = list(dict.fromkeys(texts))
+            embs = self._embed_batch_grad(uniq)
+            at = {t: i for i, t in enumerate(uniq)}
+            return torch.stack([embs[at[t]] for t in texts])
         missing = [t for t in dict.fromkeys(texts) if t not in self._texts]
         if missing:
             embs = self._embed_batch(missing)
             for text, emb in zip(missing, embs):
                 self._texts[text] = emb.detach().clone()
         return torch.stack([self._texts[t] for t in texts])
+
+    def clear_caches(self) -> None:
+        """Drop the state/text memos — mandatory once the backbone moves."""
+        self._states.clear()
+        self._texts.clear()
 
     # -- scoring --------------------------------------------------------
     def score(self, state: str | StateMemory, question: str,

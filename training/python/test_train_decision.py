@@ -212,8 +212,13 @@ class TestTrainingRun(unittest.TestCase):
     def test_one_multi_dataset_model_not_one_pickle_per_dataset(self):
         run = self.records("run")[0]
         # the mixture, not the P0 four: #T-corpus-rebalance caps every
-        # source at 15 % and brings the rest in at that share
-        self.assertEqual(run["datasets"], sorted(mix.SOURCES))
+        # source at 15 % and brings the rest in at that share. Experimental
+        # sources (#T-labelspace-div) are registered but never scanned by
+        # default, so the default run is `default_datasets()`, not SOURCES.
+        self.assertEqual(run["datasets"], sorted(mix.default_datasets()))
+        self.assertTrue(set(mix.SOURCES) - set(run["datasets"])
+                        <= {d for d, s in mix.SOURCES.items()
+                            if s.experimental})
         self.assertTrue(run["mix"]["pass"], run["mix"])
         self.assertGreater(run["mix"]["dynamic_option_share"], 0.5)
         stages = self.records("stage")
@@ -568,6 +573,114 @@ class TestGenObjective(unittest.TestCase):
                 logits.unsqueeze(0),
                 torch.tensor([sample.gold_index]))
         self.assertTrue(math.isfinite(total.item()))
+
+
+@unittest.skipUnless(HAVE_STACK, SKIP)
+class TestUnfreezeRegimes(unittest.TestCase):
+    """#T-unfreeze-backbone: the regime is counted, never just declared."""
+
+    @classmethod
+    def setUpClass(cls):
+        from model.encoder import load_backbone
+        cls.backbone = load_backbone("ettin-68m", "cpu")
+
+    def tearDown(self):
+        td.set_backbone_trainable(self.backbone, "none")
+
+    def trainable(self):
+        return sum(p.numel() for p in self.backbone.model.parameters()
+                   if p.requires_grad)
+
+    def test_none_leaves_the_encoder_shut(self):
+        regime = td.set_backbone_trainable(self.backbone, "none")
+        self.assertTrue(regime["frozen"])
+        self.assertEqual(regime["trainable_params"], 0)
+        self.assertEqual(self.trainable(), 0)
+        self.assertFalse(self.backbone.model.training)
+
+    def test_full_opens_every_parameter(self):
+        regime = td.set_backbone_trainable(self.backbone, "full")
+        self.assertFalse(regime["frozen"])
+        self.assertEqual(regime["trainable_params"], self.backbone.params)
+        self.assertEqual(self.trainable(), self.backbone.params)
+        self.assertTrue(self.backbone.model.training)
+
+    def test_last_n_opens_exactly_the_top_blocks(self):
+        blocks = td.backbone_layers(self.backbone.model)
+        regime = td.set_backbone_trainable(self.backbone, "last-n", 2)
+        want = sum(p.numel() for i in (len(blocks) - 2, len(blocks) - 1)
+                   for p in blocks[i].parameters())
+        want += sum(p.numel()
+                    for p in self.backbone.model.final_norm.parameters())
+        self.assertEqual(regime["trainable_params"], want)
+        self.assertEqual(self.trainable(), want)
+        self.assertLess(regime["trainable_params"], self.backbone.params)
+        self.assertEqual(regime["opened"],
+                         [f"layers.{len(blocks) - 2}",
+                          f"layers.{len(blocks) - 1}", "final_norm"])
+
+    def test_an_unknown_mode_is_refused(self):
+        with self.assertRaises(ValueError):
+            td.set_backbone_trainable(self.backbone, "top")
+
+
+@unittest.skipUnless(HAVE_STACK, SKIP)
+class TestUnfrozenRun(unittest.TestCase):
+    """A tiny `last-n` run: the encoder must move, and say so on disk."""
+
+    RUN = "test-train-unfrozen"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.summary = td.train(max_samples=64, batch_size=32,
+                               rows_per_dataset=60, eval_samples=32,
+                               log_every=1, run_id=cls.RUN, device="cpu",
+                               backbone_id="ettin-68m", write_gate=False,
+                               unfreeze="last-n", unfreeze_layers=1,
+                               backbone_lr=1e-4)
+        cls.ckpt = os.path.join(td.ROOT, cls.summary["checkpoint"])
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(os.path.join(td.RUNS_DIR, cls.RUN), ignore_errors=True)
+        shutil.rmtree(os.path.join(td.CKPT_DIR, cls.RUN), ignore_errors=True)
+
+    def manifest(self):
+        with open(os.path.join(self.ckpt, "manifest.json")) as fh:
+            return json.load(fh)
+
+    def test_the_manifest_declares_the_regime_it_really_trained(self):
+        bb = self.manifest()["backbone"]
+        self.assertFalse(bb["frozen"])
+        self.assertEqual(bb["unfreeze"]["mode"], "last-n")
+        self.assertEqual(bb["trainable_params"],
+                         bb["state_dict_trainable_params"])
+        self.assertGreater(bb["state_dict_trainable_params"], 0)
+        self.assertLess(bb["state_dict_trainable_params"],
+                        bb["state_dict_params"])
+
+    def test_the_trained_encoder_ships_with_the_checkpoint(self):
+        bb = self.manifest()["backbone"]
+        path = os.path.join(self.ckpt, bb["weights_file"])
+        self.assertTrue(os.path.exists(path))
+        self.assertEqual(td.sha256_file(path), bb["weights_sha256"])
+
+    def test_the_cold_load_restores_the_trained_encoder(self):
+        from model.encoder import load_backbone
+        engine, manifest = td.load_checkpoint(self.ckpt, "cpu")
+        pristine = load_backbone(manifest["backbone"]["id"], "cpu")
+        moved = {k for k, v in engine.backbone.model.state_dict().items()
+                 if not td.torch.equal(
+                     v, pristine.model.state_dict()[k])}
+        self.assertTrue(moved, "the backbone_lr step left no trace")
+        self.assertTrue(all(k.startswith("layers.18.")
+                            or k.startswith("final_norm") for k in moved),
+                        f"last-n touched blocks it did not open: {moved}")
+
+    def test_the_cost_of_the_regime_is_published(self):
+        cost = self.summary["cost"]
+        self.assertFalse(cost["backbone"]["frozen"])
+        self.assertGreater(cost["minutes_per_1m"], 0)
 
 
 if __name__ == "__main__":

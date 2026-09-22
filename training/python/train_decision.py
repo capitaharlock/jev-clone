@@ -81,6 +81,7 @@ CLI
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import math
@@ -500,7 +501,7 @@ def _require_torch() -> None:
 # -- batched encoding (the single-row path is `encoder.encode_state`) ------
 
 def encode_states(backbone, states: list, max_length: int = TRAIN_MAX_LENGTH,
-                  pad_multiple: int = PAD_MULTIPLE):
+                  pad_multiple: int = PAD_MULTIPLE, grad: bool = False):
     """One backbone forward over a whole batch of states.
 
     `model.encoder.encode_state` is the single-row contract and stays the
@@ -524,13 +525,16 @@ def encode_states(backbone, states: list, max_length: int = TRAIN_MAX_LENGTH,
         mask = nn.functional.pad(mask, (0, pad), value=0)
     ids = ids.to(backbone.device)
     mask = mask.to(backbone.device)
-    with torch.no_grad():  # frozen backbone; no_grad (not inference_mode)
+    # frozen backbone: no_grad (not inference_mode, the head trains on top).
+    # #T-unfreeze-backbone passes grad=True and the forward keeps its graph.
+    ctx = contextlib.nullcontext() if grad else torch.no_grad()
+    with ctx:
         tokens = backbone.model(input_ids=ids,
                                 attention_mask=mask).last_hidden_state
     return tokens, mask.bool(), int(mask.sum().item())
 
 
-def batch_embeddings(engine, batch: list):
+def batch_embeddings(engine, batch: list, grad: bool = False):
     """Question + option embeddings for a batch, through the shared cache.
 
     One `embed_texts` call per batch: label texts repeat across rows, so
@@ -542,7 +546,7 @@ def batch_embeddings(engine, batch: list):
         texts.append(canonical_question(sample.question))
         texts.extend(o["text"] for o in sample.options)
         spans.append((start, len(texts)))
-    embs = engine.embed_texts(texts)
+    embs = engine.embed_texts(texts, grad=grad)
     return embs, spans
 
 
@@ -868,7 +872,7 @@ def tokenizer_source(backbone_id: str) -> str:
 
 
 def model_version(backbone_id: str, arch: dict, seed: int, samples: int,
-                  weights_sha: str) -> str:
+                  weights_sha: str, backbone_sha: str | None = None) -> str:
     """The `model_version` half of `jev_runtime::CacheKey`.
 
     `CacheKey::new(model_version, state_hash, tokenizer_hash)` composes the
@@ -876,8 +880,11 @@ def model_version(backbone_id: str, arch: dict, seed: int, samples: int,
     `model_version` cannot be cached, so it is built here and written into
     the manifest next to the `tokenizer_hash` the same key needs.
     """
+    # A trained encoder (#T-unfreeze-backbone) is part of the model the
+    # key names: two runs can share a head sha and differ in the backbone.
+    tail = f"-bb{backbone_sha[:8]}" if backbone_sha else ""
     return (f"jev-dec-{backbone_id}-d{arch['d_model']}l{arch['n_layers']}"
-            f"h{arch['n_heads']}-s{seed}-n{samples}-{weights_sha[:12]}")
+            f"h{arch['n_heads']}-s{seed}-n{samples}-{weights_sha[:12]}{tail}")
 
 
 def save_checkpoint(engine, out_dir: str, run: dict, samples: int,
@@ -892,18 +899,34 @@ def save_checkpoint(engine, out_dir: str, run: dict, samples: int,
     shutil.copyfile(tokenizer_source(run["backbone"]["id"]), tok_dst)
     weights_sha = sha256_file(weights_path)
     arch = run["architecture"]
+    # #T-unfreeze-backbone: a checkpoint whose encoder was trained is not
+    # reproducible from the hub revision any more, so its bytes ship with
+    # the head. The counts below are read off the live module, which is
+    # what makes `trainable_params` an assertion and not a label.
+    bb = dict(run["backbone"])
+    named = list(engine.backbone.model.named_parameters())
+    bb["state_dict_params"] = sum(v.numel() for _, v in named)
+    bb["state_dict_trainable_params"] = sum(v.numel() for _, v in named
+                                            if v.requires_grad)
+    if not bb.get("frozen", True):
+        bb_path = os.path.join(out_dir, "backbone.safetensors")
+        save_file({k: v.detach().cpu().contiguous() for k, v
+                   in engine.backbone.model.state_dict().items()}, bb_path)
+        bb["weights_file"] = "backbone.safetensors"
+        bb["weights_sha256"] = sha256_file(bb_path)
     manifest = {
         "task": "T-train-real",
         "run_id": run["run_id"],
-        "model_version": model_version(run["backbone"]["id"], arch,
-                                       run["seed"], samples, weights_sha),
+        "model_version": model_version(
+            run["backbone"]["id"], arch, run["seed"], samples,
+            weights_sha, bb.get("weights_sha256")),
         "tokenizer_hash": sha256_file(tok_dst),
         "weights_sha256": weights_sha,
         "weights_file": "model.safetensors",
         "format": "safetensors",
         "head_params": engine.head.n_params(),
         "architecture": arch,
-        "backbone": run["backbone"],
+        "backbone": bb,
         "seed": run["seed"],
         "samples_seen": samples,
         "tokens_seen": tokens,
@@ -934,6 +957,20 @@ def load_checkpoint(ckpt_dir: str, device: str = "auto"):
     head.load_state_dict(load_file(os.path.join(ckpt_dir,
                                                 manifest["weights_file"])))
     head.eval()
+    bb_file = manifest["backbone"].get("weights_file")
+    if bb_file:  # the encoder was trained: its bytes, not the hub's
+        bb_path = os.path.join(ckpt_dir, bb_file)
+        if not os.path.exists(bb_path):
+            raise FileNotFoundError(
+                f"{ckpt_dir} declares a trained backbone ({bb_file}) but "
+                "the file is missing: scoring it against the hub revision "
+                "would silently evaluate a different model")
+        got = sha256_file(bb_path)
+        want = manifest["backbone"].get("weights_sha256")
+        if want and got != want:
+            raise ValueError(f"{bb_file}: sha256 {got} != manifest {want}")
+        backbone.model.load_state_dict(load_file(bb_path))
+        backbone.model.eval()
     return DecisionEngine(backbone=backbone, head=head), manifest
 
 
@@ -1084,6 +1121,95 @@ def _realised_counts(samplers: dict, stream) -> dict:
     return counts
 
 
+# -- trainable backbone (#T-unfreeze-backbone) -----------------------------
+#
+# Every run before this one trained ~2.9 M of pointer head on top of a
+# frozen 68 M/149 M encoder, and #T-antiscale-diag attributes 75 % of the
+# 250 k -> 1 M fall to ranking. The question these knobs answer is whether
+# the slope is a property of the objective alone or of a comparison that
+# has to happen two 256-dim layers above the representation. Three
+# regimes, same corpus, same seed, same evals: `none` (the honest
+# baseline), `last-n` (the top blocks, discriminative LR) and `full`.
+
+UNFREEZE_MODES = ("none", "last-n", "full")
+
+
+def backbone_layers(model):
+    """The encoder's transformer block list, whatever its family calls it."""
+    for holder in (model, getattr(model, "encoder", None)):
+        if holder is None:
+            continue
+        for attr in ("layers", "layer"):
+            blocks = getattr(holder, attr, None)
+            if blocks is not None and len(blocks):
+                return blocks
+    raise AttributeError("cannot find the block list of "
+                         f"{type(model).__name__}")
+
+
+def set_backbone_trainable(backbone, mode: str = "none",
+                           last_n: int = 2) -> dict:
+    """Flip `requires_grad` on the encoder and report what it opened.
+
+    The returned dict is what `run.json` and every checkpoint manifest
+    publish as the regime. `trainable_params` is counted off the module
+    itself — not off the flag that was asked for — so a manifest cannot
+    claim a regime the weights do not have.
+    """
+    if mode not in UNFREEZE_MODES:
+        raise ValueError(f"unknown unfreeze mode {mode!r}; "
+                         f"known: {list(UNFREEZE_MODES)}")
+    model = backbone.model
+    for p in model.parameters():
+        p.requires_grad_(False)
+    blocks = backbone_layers(model)
+    opened = []
+    if mode == "full":
+        for p in model.parameters():
+            p.requires_grad_(True)
+        opened = ["*"]
+    elif mode == "last-n":
+        if last_n < 1:
+            raise ValueError("last-n needs at least one layer")
+        n = min(last_n, len(blocks))
+        for i in range(len(blocks) - n, len(blocks)):
+            for p in blocks[i].parameters():
+                p.requires_grad_(True)
+            opened.append(f"layers.{i}")
+        for name in ("final_norm", "norm", "layer_norm"):
+            tail = getattr(model, name, None)
+            if tail is not None:
+                for p in tail.parameters():
+                    p.requires_grad_(True)
+                opened.append(name)
+                break
+    model.train(mode != "none")  # dropout follows the regime
+    return {"mode": mode,
+            "last_n": last_n if mode == "last-n" else None,
+            "opened": opened,
+            "frozen": mode == "none",
+            "n_blocks": len(blocks),
+            "params": backbone.params,
+            "trainable_params": sum(p.numel() for p in model.parameters()
+                                    if p.requires_grad)}
+
+
+def peak_memory_gb(device) -> float | None:
+    """Peak device memory in GiB — the price of a regime, in the summary."""
+    kind = getattr(device, "type", str(device))
+    try:
+        if kind == "mps":
+            return round(torch.mps.driver_allocated_memory() / 2 ** 30, 3)
+        if kind == "cuda":
+            return round(torch.cuda.max_memory_allocated() / 2 ** 30, 3)
+        import resource
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        unit = 1 if sys.platform == "darwin" else 1024  # bytes vs KiB
+        return round(rss * unit / 2 ** 30, 3)
+    except Exception:
+        return None
+
+
 def train(max_samples: int = 250_000, batch_size: int = 32,
           lr: float = 3e-4, seed: int = DEFAULT_SEED, device: str = "auto",
           run_id: str | None = None, rows_per_dataset: int | None = None,
@@ -1100,7 +1226,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           allow_repeat: bool = False, label_dropout: float = 0.0,
           episodic_resample: bool = False,
           contrastive_weight: float = 0.0, contrastive_tau: float = 0.07,
-          prior_penalty: float = 0.0) -> dict:
+          prior_penalty: float = 0.0, unfreeze: str = "none",
+          unfreeze_layers: int = 2, backbone_lr: float = 1e-5) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -1227,10 +1354,17 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                                n_heads)
     engine = DecisionEngine(backbone=backbone, head=head)
     engine.head.train()
-    for p in engine.backbone.model.parameters():
-        p.requires_grad_(False)
-    opt = torch.optim.AdamW(engine.head.parameters(), lr=lr,
-                            weight_decay=0.01)
+    regime = set_backbone_trainable(engine.backbone, unfreeze, unfreeze_layers)
+    groups = [{"params": list(engine.head.parameters()),
+               "lr": lr, "base_lr": lr, "name": "head"}]
+    bb_params = [p for p in engine.backbone.model.parameters()
+                 if p.requires_grad]
+    if bb_params:  # discriminative LR: the encoder moves far slower
+        groups.append({"params": bb_params, "lr": backbone_lr,
+                       "base_lr": backbone_lr, "name": "backbone"})
+    regime["lr"] = backbone_lr if bb_params else None
+    opt = torch.optim.AdamW(groups, lr=lr, weight_decay=0.01)
+    trainable = [p for g in groups for p in g["params"]]
 
     run = {
         "run_id": run_id, "seed": seed, "task": "T-train-real",
@@ -1245,7 +1379,11 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                                   + (f" + prior penalty {prior_penalty}"
                                      if prior_penalty > 0 else ""))},
         "backbone": {"id": backbone.id, "hidden_size": backbone.hidden_size,
-                     "params": backbone.params, "frozen": True,
+                     "params": backbone.params,
+                     "frozen": regime["frozen"],
+                     "trainable_params": regime["trainable_params"],
+                     "lr": regime["lr"],
+                     "unfreeze": regime,
                      "revision": BACKBONES[backbone_id]["revision"]},
         "data_manifest": data_manifest(sorted(tr), root),
         "mix": ({"version": mix_manifest["version"],
@@ -1314,7 +1452,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         epochs_run = epoch + 1
         step += 1
         for group in opt.param_groups:
-            group["lr"] = lr_at(step, total_steps, lr)
+            group["lr"] = lr_at(step, total_steps, group["base_lr"])
         if episodic_resample:  # candidate 2: fresh distractor set
             batch = [resample_distractors(s, tr[s.dataset], gen_rng)
                      if s.dataset in tr else s for s in batch]
@@ -1323,8 +1461,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                                                gen_rng)
         tokens, mask, n_tok = encode_states(engine.backbone,
                                             [s.state for s in batch],
-                                            max_length)
-        embs, spans = batch_embeddings(engine, batch)
+                                            max_length,
+                                            grad=bool(bb_params))
+        embs, spans = batch_embeddings(engine, batch, grad=bool(bb_params))
         opt.zero_grad(set_to_none=True)
         total = torch.zeros((), device=engine.device)
         rows = []
@@ -1352,7 +1491,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                 torch.stack(contrast_q), contrast_opts, contrast_golds,
                 contrastive_tau)
         loss.backward()
-        nn.utils.clip_grad_norm_(engine.head.parameters(), 1.0)
+        nn.utils.clip_grad_norm_(trainable, 1.0)
         opt.step()
 
         batch_metrics = RunningMetrics()
@@ -1398,6 +1537,12 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         "train_loss": round(metrics.loss_sum / max(metrics.n, 1), 6),
         "scale_curve": curve, "stages": stage_records,
         "checkpoint": last_ckpt,
+        "cost": {"device": str(engine.device),
+                 "backbone": regime,
+                 "minutes_per_1m": round(
+                     (time.perf_counter() - t_start) / 60.0
+                     * 1_000_000 / max(1, seen_samples), 2),
+                 "peak_mem_gb": peak_memory_gb(engine.device)},
         "elapsed_s": round(time.perf_counter() - t_start, 2),
         "finished_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
@@ -1414,6 +1559,13 @@ def _stage(engine, run, run_dir, log, stage, samples, tokens, step,
            ev_seen, ev_unseen, eval_samples, batch_size, max_length,
            t_start, holdout, train_sets, write_gate) -> dict:
     """A point on the 250 k -> 1 M curve: eval both cuts, checkpoint, gate."""
+    # #T-unfreeze-backbone: with a trainable encoder the memoised states
+    # and texts are stale by construction, and its dropout must be off
+    # for the measurement. Both are restored before training resumes.
+    moving = not run["backbone"].get("frozen", True)
+    if moving:
+        engine.clear_caches()
+        engine.backbone.model.eval()
     seen = evaluate(engine, ev_seen, eval_samples, batch_size, max_length)
     unseen = evaluate(engine, ev_unseen, eval_samples, batch_size, max_length)
     ckpt_dir = os.path.join(CKPT_DIR, run["run_id"], f"stage-{stage:09d}")
@@ -1444,6 +1596,9 @@ def _stage(engine, run, run_dir, log, stage, samples, tokens, step,
                             manifest, run, engine)
         except Exception as exc:  # a gate write must never kill a long run
             log.write({"t": "gate-error", "stage": stage, "error": str(exc)})
+    if moving:
+        engine.clear_caches()
+        engine.backbone.model.train()
     return record
 
 
@@ -1737,6 +1892,22 @@ def main(argv: list) -> int:
                          "each option logit, so frequent labels stop "
                          "winning by frequency"))
 
+    t.add_argument("--unfreeze", default="none", choices=UNFREEZE_MODES,
+                   help=("#T-unfreeze-backbone: which encoder weights "
+                         "train alongside the head. `none` is the frozen "
+                         "baseline every run so far used, `last-n` opens "
+                         "the top --unfreeze-layers blocks plus the final "
+                         "norm, `full` opens all of them. The regime, the "
+                         "blocks it opened and the REAL trainable "
+                         "parameter count land in run.json and in every "
+                         "checkpoint manifest"))
+    t.add_argument("--unfreeze-layers", type=int, default=2, metavar="N",
+                   help="how many top blocks --unfreeze last-n opens")
+    t.add_argument("--backbone-lr", type=float, default=1e-5,
+                   help=("LR of the encoder param group — deliberately far "
+                         "below --lr: the head is learning a task, the "
+                         "encoder is only being nudged"))
+
     g = sub.add_parser("gate", help="cold gate over a saved checkpoint")
     g.add_argument("--checkpoint", required=True)
     g.add_argument("--device", default="auto")
@@ -1785,7 +1956,10 @@ def main(argv: list) -> int:
                         episodic_resample=args.episodic_resample,
                         contrastive_weight=args.contrastive_weight,
                         contrastive_tau=args.contrastive_tau,
-                        prior_penalty=args.prior_penalty)
+                        prior_penalty=args.prior_penalty,
+                        unfreeze=args.unfreeze,
+                        unfreeze_layers=args.unfreeze_layers,
+                        backbone_lr=args.backbone_lr)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

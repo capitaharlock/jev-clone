@@ -89,3 +89,10 @@ artifacts/*.log
 # Scratch planning docs (pre-roadmap strategy drafts). The roadmap under
 # .meshkore/ is the versioned source of truth for all of it.
 tmp/
+
+# Trained encoder bytes (#T-unfreeze-backbone): an unfrozen run ships its
+# backbone next to the head so the checkpoint is not silently scored
+# against the hub revision. Same rule as model.safetensors — the manifest
+# (weights_sha256 + the real trainable param count) stays in git, the
+# 270 MB do not.
+artifacts/checkpoints/*/*/*/backbone.safetensors
