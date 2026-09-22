@@ -1,7 +1,7 @@
 ---
 id: T-gen-objective
 title: Objetivo que premia comparar, no recordar
-status: active
+status: blocked
 priority: high
 owner: developer
 category: model
@@ -66,3 +66,29 @@ modernbert-base es casi toda abstención, y con el backbone congelado el logit
 de `unknown` es igualmente algo que la cabeza aprendió bajo este objetivo. Se
 invierte con `#T-unfreeze-backbone` si el eje 3 (cabeza ×2/×4, job
 `antiscale-wide`) aplana la pendiente.
+
+## Estado 2026-09-22 — código listo, medición en cola
+
+El código de los cuatro candidatos está en `main` (`e14a411`): cuatro flags
+componibles en `training/python/train_decision.py` con 24 tests verdes. Lo que
+falta es exclusivamente la MEDICIÓN, y depende de un recurso ocupado, no de
+una decisión: MPS está tomado por el job `antiscale-wide` (eje 3 de
+`#T-antiscale-diag`, dos runs de 1 M, ~6,2 h cada uno al ritmo medido de
+62 k filas / 1 390 s).
+
+El job `gen-objective-sweep` ya está vivo y espera a que aparezca
+`artifacts/runs/antiscale-wide-d1024-modernbert-s20260922/summary.json`;
+entonces corre los cinco runs cortos de 62,5 k (base + los cuatro candidatos,
+misma seed 20260922, mismo mix `--fence-clean`). Horizonte ≈ 14 h desde las
+10:34Z.
+
+Al cerrar el sweep queda por hacer, en este orden:
+
+1. `artifacts/gates/T-gen-objective/gate.json` con el adoptado y el número de
+   descarte de cada uno de los otros tres.
+2. Run largo a 1 M del candidato adoptado, para que la ganancia se mida en el
+   punto donde la pendiente es negativa hoy.
+3. Re-evaluar `#T-release-gate` sobre el checkpoint resultante.
+
+Esta task no se desbloquea a mano: se desbloquea cuando el sweep escribe sus
+cinco `summary.json`.
