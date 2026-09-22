@@ -641,12 +641,23 @@ def contrastive_q_option_loss(q, opts_list: list, golds: list,
     """Candidate 3: InfoNCE over question <-> option-TEXT similarity.
 
     Per row, the question vector scores against that row's own option
-    vectors (dot / tau) with a cross-entropy against the gold position —
-    so the signal is question <-> option text, never question -> index
+    vectors (COSINE / tau) with a cross-entropy against the gold position
+    — so the signal is question <-> option text, never question -> index
     of a known space. Rows whose gold is absent (`unknown`, gold None)
     are skipped. Pure torch: the gradient flows into the inputs, which
     in `train()` are the head's trainable `q_proj` / `opt_proj`
     outputs over the frozen backbone embeddings.
+
+    Both sides are L2-normalised before the dot product, which is what
+    makes `tau` a temperature: the similarity then lives in [-1, 1] and
+    the loss is bounded by log(K). Without the normalisation the raw
+    projections of a d_model=256 head give dot products in the tens, and
+    dividing those by 0.07 produces a term ~35x the listwise
+    cross-entropy that grows without bound — measured: the first
+    contrastive arm logged loss 39.2 at step 1 rising to 53.0 by step 50
+    while every other arm sat at 1.45. That arm was not measuring
+    "CE + 0.5 x InfoNCE"; it was measuring a runaway term, so it was
+    restarted against this function.
     """
     _require_torch()
     if tau <= 0:
@@ -656,7 +667,9 @@ def contrastive_q_option_loss(q, opts_list: list, golds: list,
         g = golds[b]
         if g is None:
             continue
-        sims = (opts_list[b] * q[b].unsqueeze(0)).sum(-1) / tau
+        qn = nn.functional.normalize(q[b], dim=-1)
+        on = nn.functional.normalize(opts_list[b], dim=-1)
+        sims = (on * qn.unsqueeze(0)).sum(-1) / tau
         target = torch.tensor([g], device=sims.device)
         losses.append(nn.functional.cross_entropy(sims.unsqueeze(0),
                                                   target))
@@ -1081,6 +1094,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           n_heads: int = DEFAULT_HEADS, write_gate: bool = True,
           mix_target: int | None = None, use_mix: bool = True,
           fence_clean: bool = False, drop_datasets=(),
+          only_datasets=(),
           mix_seed: int | None = None, dataset_cap: float | None = None,
           family_cap: float | None = None,
           allow_repeat: bool = False, label_dropout: float = 0.0,
@@ -1137,8 +1151,20 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
             if mix_seed is None:
                 mix_seed = mixmod.CLEAN_1M_SEED
         elif drop_datasets:
-            datasets = [d for d in mixmod.TRAINABLE_DATASETS
+            datasets = [d for d in mixmod.default_datasets()
                         if d not in set(drop_datasets)]
+        if only_datasets:
+            # an experiment names its corpus out loud (#T-labelspace-div:
+            # `--only-dataset episodic-div`); the fence still supplies the
+            # recipe defaults, and the weights are re-pulled for the named
+            # list so the allocator never keys into another list's pull.
+            unknown = [d for d in only_datasets if d not in mixmod.SOURCES]
+            if unknown:
+                raise ValueError(f"unregistered --only-dataset: {unknown}")
+            datasets = [d for d in only_datasets
+                        if d not in set(drop_datasets)]
+            if fence_clean:
+                weights = mixmod.layer_weights(datasets)
         # an explicit cap replaces the §§65-66 value outright, so the
         # mixture is planned against exactly the caps `MixtureStream`
         # verifies it against, and `run.json` records which pair that was
@@ -1245,6 +1271,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                   "fenced_datasets": sorted(mixmod.MIX_1M_FENCED)
                   if fence_clean else [],
                   "dropped": sorted(drop_datasets),
+                  "only": sorted(only_datasets),
                   "why": ("§§18, 77: zero Banking77/HelpSteer2/PubMedQA "
                           "rows in train" if fence_clean else
                           "product mix: the benchmark fence is not applied")},
@@ -1666,6 +1693,16 @@ def main(argv: list) -> int:
                    help=("exclude one source from the mixture; repeatable. "
                          "The §128 synthetic-value arm uses it to build the "
                          "no-synthetic baseline"))
+    t.add_argument("--only-dataset", action="append", default=[],
+                   metavar="ID",
+                   help=("train ONLY these registered sources, naming the "
+                         "corpus out loud (the #T-labelspace-div curve uses "
+                         "it for the experimental episodic-div mix). "
+                         "Experimental sources are selectable this way and "
+                         "no other way; combines with --fence-clean for "
+                         "the recipe defaults and with --dataset-cap / "
+                         "--family-cap for the caps the single-source "
+                         "mixture states."))
     t.add_argument("--allow-repeat", action="store_true",
                    help=("train more decisions than the mixture holds, by "
                          "looping it. Without this a budget larger than the "
@@ -1739,6 +1776,7 @@ def main(argv: list) -> int:
                         use_mix=not args.no_mix,
                         fence_clean=args.fence_clean,
                         drop_datasets=tuple(args.drop_dataset),
+                        only_datasets=tuple(args.only_dataset),
                         mix_seed=args.mix_seed,
                         dataset_cap=args.dataset_cap,
                         family_cap=args.family_cap,

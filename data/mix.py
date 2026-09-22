@@ -142,6 +142,12 @@ class Source:
     layer: str = ""
     shards: tuple = ()
     note: str = ""
+    #: an experimental source is registered (so its shards, family and caps
+    #: are described in exactly one place) but NEVER joins a default scan:
+    #: `default_datasets()` leaves it out, and only an explicit selection
+    #: (`train_decision --only-dataset`) trains on it. Registering an
+    #: experiment must not move a single byte of a running or queued run.
+    experimental: bool = False
 
     def paths(self, root: str = PREFETCH_DIR) -> list:
         """Shards of this source under `root`.
@@ -239,6 +245,16 @@ SOURCES = {
              "not a difficulty this registry asserted. Origin is "
              "programmatic and not human: the gold caption is human, the "
              "option SET is machine-constructed"),
+    "episodic-div": Source(
+        "episodic-div", "episodic", "synthetic", "en", True,
+        PRODUCT_WEIGHT["dynamic_small"], layer="episodic",
+        shards=tuple(f"artifacts/episodic-div/episodic-div-{i:03d}.jsonl"
+                     for i in range(20)),
+        experimental=True,
+        note="#T-labelspace-div: 20 000 miniature taxonomies (~52 rows "
+             "each) at 1 M total volume — the many-small-spaces alternative "
+             "to decision-mix-clean-1m's 9 shared taxonomies. EXPERIMENTAL: "
+             "never in a default scan, only via --only-dataset"),
     "detox-attack": Source(
         "detox-attack", "calibration", "human", "en", False,
         PRODUCT_WEIGHT["fixed"], layer="preference",
@@ -251,6 +267,15 @@ SOURCES = {
 
 #: every id the mixture may draw from, in registry order
 TRAINABLE_DATASETS = tuple(SOURCES)
+
+
+def default_datasets(datasets=None) -> list:
+    """The ids a scan plans over when nobody names any: the registry minus
+    experimental sources (#T-labelspace-div). Explicit lists pass through
+    untouched, so an experiment is selectable but never a default."""
+    if datasets is not None:
+        return list(datasets)
+    return [d for d in TRAINABLE_DATASETS if not SOURCES[d].experimental]
 
 #: corpora the eval firewall refuses outright (`data.firewall`): they are
 #: named here only so a mix manifest records WHY they are absent.
@@ -305,7 +330,7 @@ def family_of(dataset: str) -> str:
 def families(datasets=None) -> dict:
     """family -> the datasets in it, for the cap arithmetic."""
     out: dict = {}
-    for d in (datasets or TRAINABLE_DATASETS):
+    for d in default_datasets(datasets):
         out.setdefault(SOURCES[d].family, []).append(d)
     return out
 
@@ -318,7 +343,7 @@ def layer_of(dataset: str) -> str:
 def layers(datasets=None) -> dict:
     """§86 layer -> the datasets in it."""
     out: dict = {}
-    for d in (datasets or TRAINABLE_DATASETS):
+    for d in default_datasets(datasets):
         out.setdefault(layer_of(d), []).append(d)
     return out
 
@@ -360,7 +385,7 @@ def clean_datasets(datasets=None) -> list:
     not, and `fence_conflicts()` records the disagreement in every manifest
     rather than resolving it silently.
     """
-    return [d for d in (datasets or TRAINABLE_DATASETS)
+    return [d for d in default_datasets(datasets)
             if d not in MIX_1M_FENCED]
 
 
@@ -744,7 +769,7 @@ def scan_supply(datasets=None, root: str = PREFETCH_DIR,
     `civil-comments.jsonl` is 1 GB; a rebuild that re-reads it for every
     experiment is how a guardrail stops being run.
     """
-    datasets = list(datasets or TRAINABLE_DATASETS)
+    datasets = default_datasets(datasets)
     cache_path = cache_path or os.path.join(MIX_DIR, "supply-cache.json")
     cache: dict = {}
     if os.path.exists(cache_path) and not refresh:

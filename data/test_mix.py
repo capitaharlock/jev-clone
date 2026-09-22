@@ -261,7 +261,8 @@ class LoaderAborts(unittest.TestCase):
         stream = MixtureStream(samplers, batch_size=8)
         self.assertIsNotNone(stream.guardrails)
         self.assertFalse(stream.guardrails["breaches"])
-        self.assertEqual(sorted(stream.sizes), sorted(SOURCES))
+        self.assertEqual(sorted(stream.sizes),
+                         sorted(mix.default_datasets()))
 
 
 class PublishedComposition(unittest.TestCase):

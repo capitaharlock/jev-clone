@@ -1,0 +1,170 @@
+{
+  "concentracion": {
+    "top1": 0.1499,
+    "top3": 0.4497
+  },
+  "espacios": [
+    {
+      "dataset": "boolq",
+      "filas": 9427,
+      "kind": "shared",
+      "n_distinct_optionsets": 1,
+      "pool_size": 2
+    },
+    {
+      "dataset": "civil-comments",
+      "filas": 149900,
+      "kind": "shared",
+      "n_distinct_optionsets": 1,
+      "pool_size": 2
+    },
+    {
+      "dataset": "dbpedia14",
+      "filas": 149900,
+      "kind": "shared",
+      "n_distinct_optionsets": 1038,
+      "pool_size": 14
+    },
+    {
+      "dataset": "detox-attack",
+      "filas": 149900,
+      "kind": "shared",
+      "n_distinct_optionsets": 1,
+      "pool_size": 5
+    },
+    {
+      "dataset": "email-triage",
+      "filas": 4000,
+      "kind": "shared",
+      "n_distinct_optionsets": 1,
+      "pool_size": 4
+    },
+    {
+      "dataset": "goemotions",
+      "filas": 87076,
+      "kind": "shared",
+      "n_distinct_optionsets": 15855,
+      "pool_size": 28
+    },
+    {
+      "dataset": "huffpost",
+      "filas": 80119,
+      "kind": "shared",
+      "n_distinct_optionsets": 29,
+      "pool_size": 32
+    },
+    {
+      "dataset": "massive",
+      "filas": 50754,
+      "kind": "shared",
+      "n_distinct_optionsets": 47349,
+      "pool_size": 60
+    },
+    {
+      "dataset": "prog-gold",
+      "filas": 60631,
+      "kind": "per-row",
+      "n_distinct_optionsets": 17709,
+      "pool_size": 7588
+    },
+    {
+      "dataset": "snli",
+      "filas": 149900,
+      "kind": "shared",
+      "n_distinct_optionsets": 2,
+      "pool_size": 5
+    },
+    {
+      "dataset": "swag",
+      "filas": 73546,
+      "kind": "per-row",
+      "n_distinct_optionsets": 73546,
+      "pool_size": 232943
+    },
+    {
+      "dataset": "synth-v1",
+      "filas": 34847,
+      "kind": "per-row",
+      "n_distinct_optionsets": 10257,
+      "pool_size": 19423
+    }
+  ],
+  "filas_en_shared": 830976,
+  "filas_por_espacio_shared": {
+    "boolq": 9427,
+    "civil-comments": 149900,
+    "dbpedia14": 149900,
+    "detox-attack": 149900,
+    "email-triage": 4000,
+    "goemotions": 87076,
+    "huffpost": 80119,
+    "massive": 50754,
+    "snli": 149900
+  },
+  "filas_realizadas": 1000000,
+  "fraccion_shared": 0.830976,
+  "manifest": "artifacts/mix-1m/decision-mix-clean-1m-seed20260922.manifest.json",
+  "manifest_members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+  "method": {
+    "poor_rule": "pobre iff shared rows >= 0.80 of realised rows",
+    "shared_pool_threshold": 256,
+    "signature": "sha1(sorted(option texts))",
+    "space_rule": "one space per dataset while pool_size <= threshold, else one space per distinct option set"
+  },
+  "mix": "decision-mix-clean-1m",
+  "n_espacios": 101521,
+  "n_per_row_spaces": 101512,
+  "n_reutilizables": 135,
+  "n_shared": 9,
+  "per_row_size_hist": {
+    "1": 90195,
+    "10": 30,
+    "11": 23,
+    "12": 14,
+    "13": 10,
+    "14": 10,
+    "15": 11,
+    "16": 6,
+    "17": 1,
+    "19": 2,
+    "2": 1468,
+    "20": 4,
+    "21": 2,
+    "22": 1,
+    "23": 1,
+    "28": 1,
+    "28961": 1,
+    "3": 7239,
+    "33": 1,
+    "35": 1,
+    "4": 1231,
+    "44": 1,
+    "5": 717,
+    "543": 1,
+    "549": 1,
+    "568": 1,
+    "574": 1,
+    "597": 1,
+    "6": 302,
+    "7": 107,
+    "8": 72,
+    "8629": 1,
+    "9": 55
+  },
+  "realised_members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+  "reutilizable_min_filas": 10,
+  "selection_match": true,
+  "solape_unseen": {
+    "huffpost-holdout": {
+      "n_unseen_labels": 11,
+      "questions_with_unseen_answer": 0,
+      "questions_with_unseen_option": 67276
+    },
+    "massive-holdout": {
+      "n_unseen_labels": 15,
+      "questions_with_unseen_answer": 0,
+      "questions_with_unseen_option": 30057
+    }
+  },
+  "veredicto": "pobre"
+}

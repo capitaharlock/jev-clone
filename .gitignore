@@ -46,6 +46,12 @@ artifacts/splits/*/*.ids
 # what makes the corpus verifiable — the bytes are not.
 artifacts/prog_gold/*/*.jsonl
 
+# Episodic-div shards (#T-labelspace-div): ~500 MB of template rows rebuilt
+# by `python3 -m data.episodic --seed 20260922` in minutes, CPU only. git
+# carries the versioned manifest in artifacts/mix-labeldiv/ (recipe, shard
+# shas, realised space counts, 10x comparison) — the bytes are not.
+artifacts/episodic-div/*.jsonl
+
 # Supply cache (#T-mix-1m): a derived index of the prefetched corpus, keyed
 # on every shard's (path, size, mtime). It exists so a guardrail check does
 # not re-read a gigabyte of civil-comments; it rebuilds itself in seconds and

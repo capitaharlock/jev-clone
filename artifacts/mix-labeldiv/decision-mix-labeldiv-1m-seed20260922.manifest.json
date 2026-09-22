@@ -1,0 +1,189 @@
+{
+  "built_utc": "2026-09-22T11:13:40Z",
+  "comparison": {
+    "bar_10x": true,
+    "baseline": "artifacts/gates/T-labelspace-div/inventory.json",
+    "baseline_fraccion_shared": 0.830976,
+    "baseline_n_reutilizables": 135,
+    "factor_reutilizables": 148.1,
+    "same_total_volume": true
+  },
+  "corpus": "decision-mix-labeldiv-1m",
+  "elapsed_s": 32.7,
+  "labelspace": {
+    "fraccion_shared_realised": 0.0,
+    "legacy_unseen_labels_checked": 26,
+    "n_espacios": 20000,
+    "n_espacios_realised": 20000,
+    "n_reutilizables": 20000,
+    "n_reutilizables_realised": 20000,
+    "overlap_legacy_unseen_labels": 0,
+    "rows_per_space_nominal": 52
+  },
+  "mixture": {
+    "caps": {
+      "dataset_cap": 1.0,
+      "family_cap": 1.0,
+      "why": "single-source experiment states its caps out loud; verify_mix passes, recorded in the run's mix.json"
+    },
+    "keep_fractions": {
+      "episodic-div": 1.0
+    },
+    "members_sha256": "946576a30443216ebc8e37db8d6c9953f92be544f4ab4609b0f8d3b44b0606c7",
+    "quotas": {
+      "episodic-div": 1000000
+    },
+    "realised_rows": 1000000,
+    "supply_rows": {
+      "episodic-div": 1040000
+    },
+    "target_rows": 1000000,
+    "verify_mix": "pass at dataset_cap=1.0 family_cap=1.0"
+  },
+  "recipe": {
+    "interleave": "shard = (space_idx + row_j) % n_shards",
+    "k_hist_spaces": {
+      "2": 2923,
+      "3": 2826,
+      "4": 2866,
+      "5": 2933,
+      "6": 2843,
+      "7": 2839,
+      "8": 2770
+    },
+    "k_range": [
+      2,
+      8
+    ],
+    "n_shards": 20,
+    "n_spaces": 20000,
+    "rows_per_space": 52,
+    "supply_rows": 1040000,
+    "target_rows": 1000000,
+    "unknowns": 0,
+    "why_pseudowords": "globally unique labels so spaces never merge; pronounceable so the frozen backbone embeds them"
+  },
+  "seed": 20260922,
+  "shards": [
+    {
+      "bytes": 25857857,
+      "path": "artifacts/episodic-div/episodic-div-000.jsonl",
+      "sha256": "b2b30be5124436f4adb02befe6707f99064c741aeca80e2ed349460a5d2f6725"
+    },
+    {
+      "bytes": 25854236,
+      "path": "artifacts/episodic-div/episodic-div-001.jsonl",
+      "sha256": "8dfa5b64a6bf6716fb836aae75fe88ff7ddb85c522108cb64d6ee9f4377226a6"
+    },
+    {
+      "bytes": 25855081,
+      "path": "artifacts/episodic-div/episodic-div-002.jsonl",
+      "sha256": "31ff7aebef4ce318e4a778d259d0aa41182ad73e9ff2b04ecbe88629dbeacfc3"
+    },
+    {
+      "bytes": 25852656,
+      "path": "artifacts/episodic-div/episodic-div-003.jsonl",
+      "sha256": "181ea7a6e392dd3b98be6678db0d1c8b151ad6ddd348331a8fb45b31182531da"
+    },
+    {
+      "bytes": 25856732,
+      "path": "artifacts/episodic-div/episodic-div-004.jsonl",
+      "sha256": "0f9cd2b4ed925dc1f032ce38dea461393cf07dee43a0cf22b8ddd6d84d3fa4b2"
+    },
+    {
+      "bytes": 25849666,
+      "path": "artifacts/episodic-div/episodic-div-005.jsonl",
+      "sha256": "19edd0dcc052fc2414a48abe70c08eaeecd80b28634b57d1251e9e33c7e4c02d"
+    },
+    {
+      "bytes": 25867274,
+      "path": "artifacts/episodic-div/episodic-div-006.jsonl",
+      "sha256": "877aa9990875f402694ad4e3c401f66fdf4220aa7a7594496988a69effecf2dc"
+    },
+    {
+      "bytes": 25862183,
+      "path": "artifacts/episodic-div/episodic-div-007.jsonl",
+      "sha256": "586c6abcdcdf1ce9f879db5e6bcfa0c92023a628a235dea1e4682dccb2988116"
+    },
+    {
+      "bytes": 25877403,
+      "path": "artifacts/episodic-div/episodic-div-008.jsonl",
+      "sha256": "948a17075830049688793cda22eb0f908adc737d80b6fc8e5912528ffe87a168"
+    },
+    {
+      "bytes": 25863823,
+      "path": "artifacts/episodic-div/episodic-div-009.jsonl",
+      "sha256": "edd5ff72559591c32902a617cd1ccd0f345ed159577f7afb8d7f383ccd655c40"
+    },
+    {
+      "bytes": 25867176,
+      "path": "artifacts/episodic-div/episodic-div-010.jsonl",
+      "sha256": "9b45c2994e7b1ce173b22013d415e229b3afc54d179bd8b985e80d169be879ac"
+    },
+    {
+      "bytes": 25884275,
+      "path": "artifacts/episodic-div/episodic-div-011.jsonl",
+      "sha256": "7e9be9a03ee70adc08f7df157de697f811b033cd6847c555d9d2e8b843415a14"
+    },
+    {
+      "bytes": 25869868,
+      "path": "artifacts/episodic-div/episodic-div-012.jsonl",
+      "sha256": "88d6c2ebe737780700073ddea67edf69ebcab8513f5e762e2db6c48fec934f69"
+    },
+    {
+      "bytes": 25874709,
+      "path": "artifacts/episodic-div/episodic-div-013.jsonl",
+      "sha256": "195827979c2a8dc290e6ea506887bd353463a86c7acafc157c70044bc79b7072"
+    },
+    {
+      "bytes": 25873800,
+      "path": "artifacts/episodic-div/episodic-div-014.jsonl",
+      "sha256": "864393b4857fbf1dd9aa44de44de1bc0c10120ba4a2a981c0b60a187a5e91f37"
+    },
+    {
+      "bytes": 25869012,
+      "path": "artifacts/episodic-div/episodic-div-015.jsonl",
+      "sha256": "048875ce3795cd22f0a2d5e426f767cec4ca6263e30ed3d90720499d023c9f7f"
+    },
+    {
+      "bytes": 25855643,
+      "path": "artifacts/episodic-div/episodic-div-016.jsonl",
+      "sha256": "29ef51752a94e0297d9624811e3a4141ffee4212d94b9260d95a6e592c51ac92"
+    },
+    {
+      "bytes": 25855448,
+      "path": "artifacts/episodic-div/episodic-div-017.jsonl",
+      "sha256": "073a495041e4f8031274125df7b2a365e786222d5fe120da89bacbdf1e6496b2"
+    },
+    {
+      "bytes": 25856507,
+      "path": "artifacts/episodic-div/episodic-div-018.jsonl",
+      "sha256": "8eea9e09ee0556eb38c2f274bef4e18c75a8c470121c16881c87e211639fe1a7"
+    },
+    {
+      "bytes": 25846142,
+      "path": "artifacts/episodic-div/episodic-div-019.jsonl",
+      "sha256": "d24ef8b0ef46258333b6dbab7c5c31c260435776a99bbb54231b043cdc18da70"
+    }
+  ],
+  "sources": {
+    "episodic-div": {
+      "dynamic_options": true,
+      "experimental": true,
+      "family": "episodic",
+      "origin": "synthetic"
+    }
+  },
+  "task": "T-labelspace-div",
+  "train_recipe": {
+    "command": ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id <id> --backbone <ettin-68m|modernbert-base> --fence-clean --only-dataset episodic-div --dataset-cap 1.0 --family-cap 1.0 --no-gate",
+    "note": "one 1M run emits all stage checkpoints (DEFAULT_STAGES); no separate short runs",
+    "stages_scored": [
+      62500,
+      250000,
+      1000000
+    ],
+    "why_no_gate": "the curve job scores stage checkpoints with eval.unseen run(write=False) into artifacts/gates/T-labelspace-div/curve.json; it must not rewrite artifacts/gates/T-unseen-labels/gate.json"
+  },
+  "version": "episodic-div-v1"
+}
