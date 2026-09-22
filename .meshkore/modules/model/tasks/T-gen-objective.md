@@ -1,7 +1,7 @@
 ---
 id: T-gen-objective
 title: Objetivo que premia comparar, no recordar
-status: blocked
+status: active
 priority: high
 owner: developer
 category: model
@@ -92,3 +92,22 @@ Al cerrar el sweep queda por hacer, en este orden:
 
 Esta task no se desbloquea a mano: se desbloquea cuando el sweep escribe sus
 cinco `summary.json`.
+
+## Estado 2026-09-22 — sweep cerrado a 125k, gate escrito
+
+Los cinco brazos terminaron en CPU (ettin-68m, 125 056 decisiones, seed
+20260922, `artifacts/runs/genobj-<arm>-ettin-68m-s20260922/summary.json`) y el
+gate está en `artifacts/gates/T-gen-objective/gate.json`:
+
+- Adoptado: **prior-penalty** — unseen 0,350 (+53,4 % sobre baseline, 2,12x el
+  azar 0,165), ranking 0,350 == accuracy, abstención 0,0.
+- Descartados con número: episodic 0,246 (+7,9 %, a 0,104 del ganador),
+  contrastive 0,202 (−11,4 % vs baseline), label-dropout 0,169
+  (indistinguible del azar, CI95 [0,156, 0,183]).
+- Caveat explícito en el gate (`antiscale_delta`): medido a **125k, no a 1M**;
+  la caída conocida 0,239 → 0,050 (250k→1M) queda fuera del rango medido y
+  nada se extrapola.
+
+Siguiente paso escrito (no entreno nuevo en esta task): run largo a 1M del
+brazo prior y re-evaluar `#T-release-gate` sobre ese checkpoint. La GPU sigue
+ocupada por `antiscale-wide`; ese run se encola como job, nunca a mano.

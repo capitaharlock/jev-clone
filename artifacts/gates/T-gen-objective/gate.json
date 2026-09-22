@@ -1,0 +1,1001 @@
+{
+  "adopted": "prior",
+  "adoption_rule": {
+    "criterion_1": "Wilson 95 % lower bound of unseen accuracy > mean chance 1/(K+1) at the final budget point",
+    "criterion_2": "Wilson 95 % lower bound of unseen ranking (accuracy_options_only, `unknown` out of the race) > its own mean chance 1/K — the task's own second gate: 'no basta con acertar, el orden tiene que ser informativo'",
+    "if_none_eligible": "pass: false, adopted: null. That is a valid result: it says the four candidates do not move the incentive at this budget, and no winner is forced",
+    "pre_registered": "written in tools/gen_objective/arms.py before the first arm was trained",
+    "tie_break": "among eligible arms, highest unseen accuracy at the final point; ties broken by unseen ranking"
+  },
+  "arms": {
+    "baseline": {
+      "budget_decisions": 125000,
+      "candidate": 0,
+      "command": "-m training.python.train_decision train --run-id genobj-baseline-ettin-68m-s20260922 --backbone ettin-68m --max-samples 125000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device cpu --eval-samples 3000 --log-every 50 --fence-clean --no-gate",
+      "complete": true,
+      "eligible": true,
+      "final": {
+        "checkpoint": "artifacts/checkpoints/decision/genobj-baseline-ettin-68m-s20260922/stage-000125000",
+        "elapsed_s": 6505.18,
+        "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-39e6b2515512",
+        "samples": 125056,
+        "seen_accuracy": 0.576795,
+        "seen_n": 3008,
+        "tokens": 6861191,
+        "unseen_abstain_rate": 0.091755,
+        "unseen_accuracy": 0.228391,
+        "unseen_accuracy_ci95": [
+          0.213741,
+          0.243734
+        ],
+        "unseen_chance": 0.165236,
+        "unseen_ece": 0.082343,
+        "unseen_n": 3008,
+        "unseen_nll": 1.905318,
+        "unseen_per_dataset": {
+          "huffpost": {
+            "accuracy": 0.201637,
+            "accuracy_options_only": 0.252976,
+            "n": 1344
+          },
+          "massive": {
+            "accuracy": 0.25,
+            "accuracy_options_only": 0.258413,
+            "n": 1664
+          }
+        },
+        "unseen_ranking": 0.255984,
+        "unseen_ranking_chance": 0.201924,
+        "unseen_ranking_ci95": [
+          0.240706,
+          0.271884
+        ]
+      },
+      "final_margin": {
+        "accuracy_beats_chance": true,
+        "accuracy_chance": 0.165236,
+        "accuracy_ci95_lower": 0.213741,
+        "accuracy_margin": 0.048505,
+        "ranking_beats_chance": true,
+        "ranking_chance": 0.201924,
+        "ranking_ci95_lower": 0.240706,
+        "ranking_margin": 0.038782
+      },
+      "flags": [],
+      "gen_objective": {
+        "contrastive_tau": 0.07,
+        "contrastive_weight": 0.0,
+        "episodic_resample": false,
+        "label_dropout": 0.0,
+        "prior_labels": 0,
+        "prior_penalty": 0.0
+      },
+      "measured": true,
+      "points": [
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-baseline-ettin-68m-s20260922/stage-000062500",
+          "elapsed_s": 4443.79,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n62528-0de6bdabaf2a",
+          "samples": 62528,
+          "seen_accuracy": 0.693484,
+          "seen_n": 3008,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.464761,
+          "unseen_accuracy": 0.141955,
+          "unseen_accuracy_ci95": [
+            0.129939,
+            0.154884
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.224591,
+          "unseen_n": 3008,
+          "unseen_nll": 2.095663,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.0,
+              "accuracy_options_only": 0.284226,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.256611,
+              "accuracy_options_only": 0.264423,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.273271,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.257643,
+            0.289478
+          ]
+        },
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-baseline-ettin-68m-s20260922/stage-000125000",
+          "elapsed_s": 6505.18,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-39e6b2515512",
+          "samples": 125056,
+          "seen_accuracy": 0.576795,
+          "seen_n": 3008,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.091755,
+          "unseen_accuracy": 0.228391,
+          "unseen_accuracy_ci95": [
+            0.213741,
+            0.243734
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.082343,
+          "unseen_n": 3008,
+          "unseen_nll": 1.905318,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.201637,
+              "accuracy_options_only": 0.252976,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.25,
+              "accuracy_options_only": 0.258413,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.255984,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.240706,
+            0.271884
+          ]
+        }
+      ],
+      "run_id": "genobj-baseline-ettin-68m-s20260922",
+      "slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": -0.373006,
+        "unseen_accuracy": 0.086436,
+        "unseen_ranking": -0.017287
+      },
+      "what": "listwise cross-entropy over [K+1], unchanged — the control"
+    },
+    "contrastive": {
+      "budget_decisions": 125000,
+      "candidate": 3,
+      "command": "-m training.python.train_decision train --run-id genobj-contrastive-ettin-68m-s20260922 --backbone ettin-68m --max-samples 125000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device cpu --eval-samples 3000 --log-every 50 --fence-clean --no-gate --contrastive-weight 0.5",
+      "complete": true,
+      "eligible": true,
+      "final": {
+        "checkpoint": "artifacts/checkpoints/decision/genobj-contrastive-ettin-68m-s20260922/stage-000125000",
+        "elapsed_s": 6030.65,
+        "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-986ef02411dc",
+        "samples": 125056,
+        "seen_accuracy": 0.56383,
+        "seen_n": 3008,
+        "tokens": 6861191,
+        "unseen_abstain_rate": 0.199468,
+        "unseen_accuracy": 0.20246,
+        "unseen_accuracy_ci95": [
+          0.188484,
+          0.217195
+        ],
+        "unseen_chance": 0.165236,
+        "unseen_ece": 0.127911,
+        "unseen_n": 3008,
+        "unseen_nll": 1.920738,
+        "unseen_per_dataset": {
+          "huffpost": {
+            "accuracy": 0.105655,
+            "accuracy_options_only": 0.166667,
+            "n": 1344
+          },
+          "massive": {
+            "accuracy": 0.280649,
+            "accuracy_options_only": 0.280649,
+            "n": 1664
+          }
+        },
+        "unseen_ranking": 0.229721,
+        "unseen_ranking_chance": 0.201924,
+        "unseen_ranking_ci95": [
+          0.215039,
+          0.245092
+        ]
+      },
+      "final_margin": {
+        "accuracy_beats_chance": true,
+        "accuracy_chance": 0.165236,
+        "accuracy_ci95_lower": 0.188484,
+        "accuracy_margin": 0.023248,
+        "ranking_beats_chance": true,
+        "ranking_chance": 0.201924,
+        "ranking_ci95_lower": 0.215039,
+        "ranking_margin": 0.013115
+      },
+      "flags": [
+        "--contrastive-weight",
+        "0.5"
+      ],
+      "gen_objective": {
+        "contrastive_tau": 0.07,
+        "contrastive_weight": 0.5,
+        "episodic_resample": false,
+        "label_dropout": 0.0,
+        "prior_labels": 0,
+        "prior_penalty": 0.0
+      },
+      "measured": true,
+      "points": [
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-contrastive-ettin-68m-s20260922/stage-000062500",
+          "elapsed_s": 4076.98,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n62528-fb2f1b4a872b",
+          "samples": 62528,
+          "seen_accuracy": 0.702793,
+          "seen_n": 3008,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.70246,
+          "unseen_accuracy": 0.159242,
+          "unseen_accuracy_ci95": [
+            0.146602,
+            0.172751
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.28198,
+          "unseen_n": 3008,
+          "unseen_nll": 2.267883,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.0,
+              "accuracy_options_only": 0.24256,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.287861,
+              "accuracy_options_only": 0.395433,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.327128,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.310591,
+            0.344105
+          ]
+        },
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-contrastive-ettin-68m-s20260922/stage-000125000",
+          "elapsed_s": 6030.65,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-986ef02411dc",
+          "samples": 125056,
+          "seen_accuracy": 0.56383,
+          "seen_n": 3008,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.199468,
+          "unseen_accuracy": 0.20246,
+          "unseen_accuracy_ci95": [
+            0.188484,
+            0.217195
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.127911,
+          "unseen_n": 3008,
+          "unseen_nll": 1.920738,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.105655,
+              "accuracy_options_only": 0.166667,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.280649,
+              "accuracy_options_only": 0.280649,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.229721,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.215039,
+            0.245092
+          ]
+        }
+      ],
+      "run_id": "genobj-contrastive-ettin-68m-s20260922",
+      "slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": -0.502992,
+        "unseen_accuracy": 0.043218,
+        "unseen_ranking": -0.097407
+      },
+      "what": "candidate 3: 0.5 x question<->option-TEXT InfoNCE (tau 0.07) over the head's own q_proj/opt_proj, added to the listwise CE — the signal is text, not index"
+    },
+    "episodic": {
+      "budget_decisions": 125000,
+      "candidate": 2,
+      "command": "-m training.python.train_decision train --run-id genobj-episodic-ettin-68m-s20260922 --backbone ettin-68m --max-samples 125000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device cpu --eval-samples 3000 --log-every 50 --fence-clean --no-gate --episodic-resample",
+      "complete": true,
+      "eligible": true,
+      "final": {
+        "checkpoint": "artifacts/checkpoints/decision/genobj-episodic-ettin-68m-s20260922/stage-000125000",
+        "elapsed_s": 6519.0,
+        "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-fe882854bacf",
+        "samples": 125056,
+        "seen_accuracy": 0.561503,
+        "seen_n": 3008,
+        "tokens": 6861191,
+        "unseen_abstain_rate": 0.023936,
+        "unseen_accuracy": 0.246343,
+        "unseen_accuracy_ci95": [
+          0.231275,
+          0.262058
+        ],
+        "unseen_chance": 0.165236,
+        "unseen_ece": 0.072059,
+        "unseen_n": 3008,
+        "unseen_nll": 1.789577,
+        "unseen_per_dataset": {
+          "huffpost": {
+            "accuracy": 0.176339,
+            "accuracy_options_only": 0.184524,
+            "n": 1344
+          },
+          "massive": {
+            "accuracy": 0.302885,
+            "accuracy_options_only": 0.302885,
+            "n": 1664
+          }
+        },
+        "unseen_ranking": 0.25,
+        "unseen_ranking_chance": 0.201924,
+        "unseen_ranking_ci95": [
+          0.234851,
+          0.265787
+        ]
+      },
+      "final_margin": {
+        "accuracy_beats_chance": true,
+        "accuracy_chance": 0.165236,
+        "accuracy_ci95_lower": 0.231275,
+        "accuracy_margin": 0.066039,
+        "ranking_beats_chance": true,
+        "ranking_chance": 0.201924,
+        "ranking_ci95_lower": 0.234851,
+        "ranking_margin": 0.032927
+      },
+      "flags": [
+        "--episodic-resample"
+      ],
+      "gen_objective": {
+        "contrastive_tau": 0.07,
+        "contrastive_weight": 0.0,
+        "episodic_resample": true,
+        "label_dropout": 0.0,
+        "prior_labels": 0,
+        "prior_penalty": 0.0
+      },
+      "measured": true,
+      "points": [
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-episodic-ettin-68m-s20260922/stage-000062500",
+          "elapsed_s": 4459.9,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n62528-03dc0252f701",
+          "samples": 62528,
+          "seen_accuracy": 0.603391,
+          "seen_n": 3008,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.913231,
+          "unseen_accuracy": 0.015293,
+          "unseen_accuracy_ci95": [
+            0.011485,
+            0.020337
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.34404,
+          "unseen_n": 3008,
+          "unseen_nll": 2.187651,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.002976,
+              "accuracy_options_only": 0.269345,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.02524,
+              "accuracy_options_only": 0.298678,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.285572,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.269712,
+            0.301979
+          ]
+        },
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-episodic-ettin-68m-s20260922/stage-000125000",
+          "elapsed_s": 6519.0,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-fe882854bacf",
+          "samples": 125056,
+          "seen_accuracy": 0.561503,
+          "seen_n": 3008,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.023936,
+          "unseen_accuracy": 0.246343,
+          "unseen_accuracy_ci95": [
+            0.231275,
+            0.262058
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.072059,
+          "unseen_n": 3008,
+          "unseen_nll": 1.789577,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.176339,
+              "accuracy_options_only": 0.184524,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.302885,
+              "accuracy_options_only": 0.302885,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.25,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.234851,
+            0.265787
+          ]
+        }
+      ],
+      "run_id": "genobj-episodic-ettin-68m-s20260922",
+      "slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": -0.889295,
+        "unseen_accuracy": 0.23105,
+        "unseen_ranking": -0.035572
+      },
+      "what": "candidate 2: the distractor SET is redrawn per step from #T-optset-sampler's own hard/easy buckets, gold kept and reshuffled — the same question is never scored against the same offer set twice"
+    },
+    "label-dropout": {
+      "budget_decisions": 125000,
+      "candidate": 1,
+      "command": "-m training.python.train_decision train --run-id genobj-label-dropout-ettin-68m-s20260922 --backbone ettin-68m --max-samples 125000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device cpu --eval-samples 3000 --log-every 50 --fence-clean --no-gate --label-dropout 0.2",
+      "complete": true,
+      "discard_reason": "unseen accuracy CI95 lower bound 0.155919 does not clear chance 0.165236 (short by 0.009317)",
+      "eligible": false,
+      "final": {
+        "checkpoint": "artifacts/checkpoints/decision/genobj-label-dropout-ettin-68m-s20260922/stage-000125000",
+        "elapsed_s": 6750.33,
+        "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-6dab4e5b7256",
+        "samples": 125056,
+        "seen_accuracy": 0.563497,
+        "seen_n": 3008,
+        "tokens": 6861191,
+        "unseen_abstain_rate": 0.321809,
+        "unseen_accuracy": 0.168883,
+        "unseen_accuracy_ci95": [
+          0.155919,
+          0.182692
+        ],
+        "unseen_chance": 0.165236,
+        "unseen_ece": 0.191505,
+        "unseen_n": 3008,
+        "unseen_nll": 2.004921,
+        "unseen_per_dataset": {
+          "huffpost": {
+            "accuracy": 0.079613,
+            "accuracy_options_only": 0.240327,
+            "n": 1344
+          },
+          "massive": {
+            "accuracy": 0.240986,
+            "accuracy_options_only": 0.240986,
+            "n": 1664
+          }
+        },
+        "unseen_ranking": 0.240691,
+        "unseen_ranking_chance": 0.201924,
+        "unseen_ranking_ci95": [
+          0.225751,
+          0.256293
+        ]
+      },
+      "final_margin": {
+        "accuracy_beats_chance": false,
+        "accuracy_chance": 0.165236,
+        "accuracy_ci95_lower": 0.155919,
+        "accuracy_margin": -0.009317,
+        "ranking_beats_chance": true,
+        "ranking_chance": 0.201924,
+        "ranking_ci95_lower": 0.225751,
+        "ranking_margin": 0.023827
+      },
+      "flags": [
+        "--label-dropout",
+        "0.2"
+      ],
+      "gen_objective": {
+        "contrastive_tau": 0.07,
+        "contrastive_weight": 0.0,
+        "episodic_resample": false,
+        "label_dropout": 0.2,
+        "prior_labels": 0,
+        "prior_penalty": 0.0
+      },
+      "measured": true,
+      "points": [
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-label-dropout-ettin-68m-s20260922/stage-000062500",
+          "elapsed_s": 4700.33,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n62528-8747220e8d68",
+          "samples": 62528,
+          "seen_accuracy": 0.695479,
+          "seen_n": 3008,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.987035,
+          "unseen_accuracy": 0.006649,
+          "unseen_accuracy_ci95": [
+            0.004308,
+            0.010248
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.319486,
+          "unseen_n": 3008,
+          "unseen_nll": 2.104276,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.00372,
+              "accuracy_options_only": 0.241815,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.009014,
+              "accuracy_options_only": 0.399639,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.329122,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.312557,
+            0.346123
+          ]
+        },
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-label-dropout-ettin-68m-s20260922/stage-000125000",
+          "elapsed_s": 6750.33,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-6dab4e5b7256",
+          "samples": 125056,
+          "seen_accuracy": 0.563497,
+          "seen_n": 3008,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.321809,
+          "unseen_accuracy": 0.168883,
+          "unseen_accuracy_ci95": [
+            0.155919,
+            0.182692
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.191505,
+          "unseen_n": 3008,
+          "unseen_nll": 2.004921,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.079613,
+              "accuracy_options_only": 0.240327,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.240986,
+              "accuracy_options_only": 0.240986,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.240691,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.225751,
+            0.256293
+          ]
+        }
+      ],
+      "run_id": "genobj-label-dropout-ettin-68m-s20260922",
+      "slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": -0.665226,
+        "unseen_accuracy": 0.162234,
+        "unseen_ranking": -0.088431
+      },
+      "what": "candidate 1: every option text is replaced with probability 0.2 by a novel sentinel string, gold included, positions and gold_index untouched — a memorised text -> label map cannot answer the replaced rows"
+    },
+    "prior": {
+      "budget_decisions": 125000,
+      "candidate": 4,
+      "command": "-m training.python.train_decision train --run-id genobj-prior-ettin-68m-s20260922 --backbone ettin-68m --max-samples 125000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device cpu --eval-samples 3000 --log-every 50 --fence-clean --no-gate --prior-penalty 1.0",
+      "complete": true,
+      "eligible": true,
+      "final": {
+        "checkpoint": "artifacts/checkpoints/decision/genobj-prior-ettin-68m-s20260922/stage-000125000",
+        "elapsed_s": 6506.06,
+        "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-d78b8da16ea9",
+        "samples": 125056,
+        "seen_accuracy": 0.626995,
+        "seen_n": 3008,
+        "tokens": 6861191,
+        "unseen_abstain_rate": 0.0,
+        "unseen_accuracy": 0.350399,
+        "unseen_accuracy_ci95": [
+          0.33355,
+          0.36763
+        ],
+        "unseen_chance": 0.165236,
+        "unseen_ece": 0.084194,
+        "unseen_n": 3008,
+        "unseen_nll": 1.702501,
+        "unseen_per_dataset": {
+          "huffpost": {
+            "accuracy": 0.270833,
+            "accuracy_options_only": 0.270833,
+            "n": 1344
+          },
+          "massive": {
+            "accuracy": 0.414663,
+            "accuracy_options_only": 0.414663,
+            "n": 1664
+          }
+        },
+        "unseen_ranking": 0.350399,
+        "unseen_ranking_chance": 0.201924,
+        "unseen_ranking_ci95": [
+          0.33355,
+          0.36763
+        ]
+      },
+      "final_margin": {
+        "accuracy_beats_chance": true,
+        "accuracy_chance": 0.165236,
+        "accuracy_ci95_lower": 0.33355,
+        "accuracy_margin": 0.168314,
+        "ranking_beats_chance": true,
+        "ranking_chance": 0.201924,
+        "ranking_ci95_lower": 0.33355,
+        "ranking_margin": 0.131626
+      },
+      "flags": [
+        "--prior-penalty",
+        "1.0"
+      ],
+      "gen_objective": {
+        "contrastive_tau": 0.07,
+        "contrastive_weight": 0.0,
+        "episodic_resample": false,
+        "label_dropout": 0.0,
+        "prior_labels": 154,
+        "prior_penalty": 1.0
+      },
+      "measured": true,
+      "points": [
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-prior-ettin-68m-s20260922/stage-000062500",
+          "elapsed_s": 4445.31,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n62528-ff6cbaaf75a0",
+          "samples": 62528,
+          "seen_accuracy": 0.690492,
+          "seen_n": 3008,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.0,
+          "unseen_accuracy": 0.343418,
+          "unseen_accuracy_ci95": [
+            0.326658,
+            0.360577
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.175046,
+          "unseen_n": 3008,
+          "unseen_nll": 2.004325,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.301339,
+              "accuracy_options_only": 0.301339,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.377404,
+              "accuracy_options_only": 0.377404,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.343418,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.326658,
+            0.360577
+          ]
+        },
+        {
+          "checkpoint": "artifacts/checkpoints/decision/genobj-prior-ettin-68m-s20260922/stage-000125000",
+          "elapsed_s": 6506.06,
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n125056-d78b8da16ea9",
+          "samples": 125056,
+          "seen_accuracy": 0.626995,
+          "seen_n": 3008,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.0,
+          "unseen_accuracy": 0.350399,
+          "unseen_accuracy_ci95": [
+            0.33355,
+            0.36763
+          ],
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.084194,
+          "unseen_n": 3008,
+          "unseen_nll": 1.702501,
+          "unseen_per_dataset": {
+            "huffpost": {
+              "accuracy": 0.270833,
+              "accuracy_options_only": 0.270833,
+              "n": 1344
+            },
+            "massive": {
+              "accuracy": 0.414663,
+              "accuracy_options_only": 0.414663,
+              "n": 1664
+            }
+          },
+          "unseen_ranking": 0.350399,
+          "unseen_ranking_chance": 0.201924,
+          "unseen_ranking_ci95": [
+            0.33355,
+            0.36763
+          ]
+        }
+      ],
+      "run_id": "genobj-prior-ettin-68m-s20260922",
+      "slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": 0.0,
+        "unseen_accuracy": 0.006981,
+        "unseen_ranking": 0.006981
+      },
+      "what": "candidate 4: each option logit is discounted by log(train gold count) of that label, `unknown` untouched — a frequent label stops winning by being frequent"
+    }
+  },
+  "backbone_frozen": true,
+  "chance": {
+    "expected_accuracy": 0.165,
+    "expected_ranking": 0.202,
+    "note": "chance is a property of the eval cut and is read back per arm from its own run; `arms_comparable` fails if two arms disagree on it"
+  },
+  "checks": {
+    "adopted_beats_chance": {
+      "adopted": "prior",
+      "criterion": "Wilson 95 % lower bound of unseen accuracy > mean chance 1/(K+1) at the final budget point AND Wilson 95 % lower bound of unseen ranking (accuracy_options_only, `unknown` out of the race) > its own mean chance 1/K — the task's own second gate: 'no basta con acertar, el orden tiene que ser informativo'",
+      "eligible_ranking": [
+        {
+          "arm": "prior",
+          "unseen_accuracy": 0.350399,
+          "unseen_ranking": 0.350399
+        },
+        {
+          "arm": "episodic",
+          "unseen_accuracy": 0.246343,
+          "unseen_ranking": 0.25
+        },
+        {
+          "arm": "baseline",
+          "unseen_accuracy": 0.228391,
+          "unseen_ranking": 0.255984
+        },
+        {
+          "arm": "contrastive",
+          "unseen_accuracy": 0.20246,
+          "unseen_ranking": 0.229721
+        }
+      ],
+      "pass": true,
+      "why_false": null
+    },
+    "all_arms_measured": {
+      "criterion": "all five arms reach the declared budget; an arm that does not is published `measured: false` (or `complete: false`) with its reason, never estimated",
+      "n_arms": 5,
+      "n_complete": 5,
+      "n_measured": 5,
+      "not_measured": [],
+      "partial": [],
+      "pass": true
+    },
+    "arms_comparable": {
+      "criterion": "every measured arm shares seed, backbone, frozen flag, corpus digest, mix seed, budget, batch size, lr, head width and eval chance — only its one flag differs",
+      "disagreements": {},
+      "n_measured_arms": 5,
+      "pass": true,
+      "per_arm": {
+        "baseline": {
+          "backbone": "ettin-68m",
+          "batch_size": 64,
+          "d_model": 256,
+          "epoch_samples": 1000000,
+          "frozen": true,
+          "lr": 0.0003,
+          "max_samples": 125000,
+          "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+          "mix_seed": 20260922,
+          "seed": 20260922,
+          "unseen_chance": 0.165236
+        },
+        "contrastive": {
+          "backbone": "ettin-68m",
+          "batch_size": 64,
+          "d_model": 256,
+          "epoch_samples": 1000000,
+          "frozen": true,
+          "lr": 0.0003,
+          "max_samples": 125000,
+          "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+          "mix_seed": 20260922,
+          "seed": 20260922,
+          "unseen_chance": 0.165236
+        },
+        "episodic": {
+          "backbone": "ettin-68m",
+          "batch_size": 64,
+          "d_model": 256,
+          "epoch_samples": 1000000,
+          "frozen": true,
+          "lr": 0.0003,
+          "max_samples": 125000,
+          "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+          "mix_seed": 20260922,
+          "seed": 20260922,
+          "unseen_chance": 0.165236
+        },
+        "label-dropout": {
+          "backbone": "ettin-68m",
+          "batch_size": 64,
+          "d_model": 256,
+          "epoch_samples": 1000000,
+          "frozen": true,
+          "lr": 0.0003,
+          "max_samples": 125000,
+          "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+          "mix_seed": 20260922,
+          "seed": 20260922,
+          "unseen_chance": 0.165236
+        },
+        "prior": {
+          "backbone": "ettin-68m",
+          "batch_size": 64,
+          "d_model": 256,
+          "epoch_samples": 1000000,
+          "frozen": true,
+          "lr": 0.0003,
+          "max_samples": 125000,
+          "members_sha256": "3f9ed8fff433036f2f07c322fe49663b917a84bb55e771a1af5ddec4b691cdbc",
+          "mix_seed": 20260922,
+          "seed": 20260922,
+          "unseen_chance": 0.165236
+        }
+      },
+      "why_it_fails_when_one_arm": null
+    },
+    "candidate_beats_baseline": {
+      "baseline_final": 0.228391,
+      "baseline_slope": {
+        "from_samples": 62528,
+        "measured": true,
+        "to_samples": 125056,
+        "unseen_abstain_rate": -0.373006,
+        "unseen_accuracy": 0.086436,
+        "unseen_ranking": -0.017287
+      },
+      "criterion": "the adopted arm is one of the four candidates, not the control: a baseline that wins means the interventions cost accuracy",
+      "deltas_vs_baseline": {
+        "contrastive": {
+          "unseen_accuracy": -0.025931,
+          "unseen_ranking": -0.026263
+        },
+        "episodic": {
+          "unseen_accuracy": 0.017952,
+          "unseen_ranking": -0.005984
+        },
+        "label-dropout": {
+          "unseen_accuracy": -0.059508,
+          "unseen_ranking": -0.015293
+        },
+        "prior": {
+          "unseen_accuracy": 0.122008,
+          "unseen_ranking": 0.094415
+        }
+      },
+      "pass": true
+    }
+  },
+  "declared_subset": {
+    "arms_run_concurrently": true,
+    "backbone": "ettin-68m",
+    "batch_size": 64,
+    "budget_decisions": 125000,
+    "corpus": "decision-mix-clean-1m (#T-mix-1m), --fence-clean",
+    "device": "cpu",
+    "eval_samples": 3000,
+    "mix_seed": 20260922,
+    "same_subset_for_every_arm": "all five arms consume the FRONT of the same deterministic MixtureStream order, so they see the same decisions in the same sequence; `arms_comparable` checks the digest",
+    "seed": 20260922,
+    "stage_points": [
+      62500,
+      125000
+    ],
+    "threads_per_arm": 3,
+    "why_cpu_ettin": "measured throughput: ettin-68m on CPU did 1 M decisions in 8 540 s on `train-real-v1` (117/s), against 74/s for modernbert-base on MPS. Running the arms on CPU costs nothing in speed and leaves MPS to the axis-3 job",
+    "why_not_1m": "the fall #T-antiscale-diag measured is deepest at 1 M, and this measurement is at 125,000. Five 1 M arms are ~13 h of wallclock on a machine whose MPS is held by the `antiscale-wide` job (axis 3 of the same ablation), so the arms run on CPU at a budget that buys TWO stage points — a slope — per arm. The adopted candidate earns the 1 M run; nothing here is extrapolated to 1 M"
+  },
+  "generated_utc": "2026-09-22T13:00:44Z",
+  "honesty": "every number here comes from a stage record in artifacts/runs/<run_id>/metrics.jsonl. An arm with no record is `measured: false` with its reason; a discarded arm keeps its numbers and its numeric discard reason instead of being deleted. No arm's number is estimated from another's",
+  "measured_baseline_on_the_same_subset": "the control arm is trained here, not read off the 1 M run's stage at 125,000: that stage belongs to a cosine schedule over 1 M steps and is not the same model as a run whose budget IS this one",
+  "next": [
+    "run the adopted candidate at 1 M so the gain is measured where the slope is negative today, then re-evaluate #T-release-gate on that checkpoint"
+  ],
+  "pass": true,
+  "task": "T-gen-objective",
+  "verdict": "GO: adopt prior",
+  "adoption": {
+    "arm": "prior",
+    "mechanism": "penalizacion del prior de frecuencia de etiqueta (descuento del logit por prior empirico)",
+    "unseen_accuracy": 0.350399,
+    "unseen_accuracy_ci95": [
+      0.33355,
+      0.36763
+    ],
+    "unseen_ranking": 0.350399,
+    "unseen_ranking_ci95": [
+      0.33355,
+      0.36763
+    ],
+    "chance_accuracy": 0.165236,
+    "chance_ranking": 0.201924,
+    "vs_baseline_rel": "+53.4% (0.350399 vs 0.228391)",
+    "vs_chance": "2.12x el azar (0.350399 vs 0.165236); cota inferior Wilson 0.3336 > azar",
+    "why": "unico brazo que duplica el azar con margen; abstencion 0.0 (decide siempre) y ranking == accuracy (el orden es informativo, segundo gate de la task)"
+  },
+  "discards": {
+    "episodic": {
+      "unseen_accuracy": 0.246343,
+      "unseen_ranking": 0.25,
+      "vs_baseline_rel": "+7.9%",
+      "reason": "mejora marginal sobre baseline (+0.018) y queda 0.104 por debajo de prior; segundo puesto pero sin margen que justifique adoptarlo"
+    },
+    "contrastive": {
+      "unseen_accuracy": 0.20246,
+      "unseen_ranking": 0.229721,
+      "vs_baseline_rel": "-11.4%",
+      "reason": "por DEBAJO del baseline (-0.026); la perdida contrastiva pregunta<->opcion no mueve la pendiente a este presupuesto"
+    },
+    "label-dropout": {
+      "unseen_accuracy": 0.168883,
+      "unseen_accuracy_ci95": [
+        0.155919,
+        0.182692
+      ],
+      "unseen_ranking": 0.240691,
+      "reason": "cota inferior Wilson 0.1559 < azar 0.1652: indistinguible del azar (falla criterio 1, eligible=false); abstencion 0.32, la mas alta tras episodic-62k"
+    },
+    "note": "baseline (0.228391) es control, no candidato: no se adopta ni se descarta"
+  },
+  "antiscale_delta": {
+    "known_fall": "ettin-68m 250k->1M: unseen 0.239 -> 0.050 (artifacts/gates/T-mix-5m/gate.json), seen estable ~0.58-0.61",
+    "this_measurement": "los 5 brazos se miden a 125k decisiones (2 stage points: 62.5k/125k), NO a 1M",
+    "explicit_caveat": "el ganador (prior 0.350 a 125k) NO esta validado a 1M: nada de este gate se extrapola a 1M. El run largo a 1M del candidato adoptado queda pendiente (ver `next`) y solo entonces se re-evalua #T-release-gate",
+    "budget_context": "a 125k el baseline ya bate al azar (0.228 vs 0.165); la anti-monotonia conocida actua 250k->1M, fuera del rango medido aqui"
+  }
+}
