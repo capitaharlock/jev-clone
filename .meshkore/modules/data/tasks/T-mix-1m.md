@@ -1,7 +1,7 @@
 ---
 id: T-mix-1m
 title: decision-mix-clean-1m y entreno top-2
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -9,10 +9,11 @@ initiative: data-training
 depends_on:
   - T-prog-gold
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 failed_at: 2026-09-21T16:48:22.933Z
-resolved_by: A027
-resolved_by_conv: work-data-training-T-mix-1m-commit-1790012000
+completed_at: 2026-09-22T09:30:45.998Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
 # decision-mix-clean-1m y entreno top-2
 
@@ -81,12 +82,42 @@ budget — one pass each, not 6.25.
 
 ## Resolution
 
-**Failed — exit 143.**
+**No tenemos modelo capaz todavía. Y no es cuestión de más días de entrenamiento: es un fallo de arquitectura.**
 
-Now I'll write the converter for the four new sources.Now the full 1M build (this streams ~2.5 GB, so I'll run it in the background):
+La instancia de ayer **sí terminó** (`mix1m-curve`, exit 0 a las 01:41 UTC). El corpus de 1M quedó verde 10/10 y se entrenaron los dos backbones sobre 1 000 000 de filas reales. Pero los números dicen esto:
 
-# architect: 2026-09-21 — A026 widened the registry and the 1M corpus builds
-# (gate: 8/10 checks green, measured_rows=1000000). It died on SIGTERM before
-# committing; A027 is committing that work. The last two checks (synthetic_value,
-# top2_trained) are owned by the live job `mix1m-curve` (pid 11028) — nobody
-# relaunches training, the task closes when that curve lands its verdicts.
+- **swag 0,255** contra azar 0,250 · **synth-v1 0,230** · **prog-gold 0,441** → cero aprendizaje en razonamiento.
+- **dbpedia14 0,972 · civil-comments 0,942** → aprendió a emparejar texto, no a decidir.
+- **La causa está en `run.json`: `backbone.frozen: true`.** Entrena un pointer head de 2 capas d=256 (~1,6 M params) sobre un encoder congelado de 149 M. Esa cabeza puede hacer similitud léxica; no puede hacer inferencia. Más filas no arreglan eso — el 1M ya se gastó y swag no se movió del azar.
+- La métrica de producto (etiquetas no vistas: **0,220 no vistas vs 0,342 vistas, ECE 0,41**) está medida sobre el checkpoint **viejo** de 250k. El release gate sigue **NO-GO, 8 de 12 criterios**.
+
+🚀 A029 (pid 51902) → `#data-training` `#T-data-eval` · registrar la curva, **re-medir el gate de etiquetas no vistas sobre los dos modelos de 1M**, y medir un run corto con el backbone **descongelado** para confirmar la hipótesis con cifras.
+
+<details><summary>Estado del sistema — qué hay y qué falta</summary>
+
+**Verde y medido:**
+- `#T-mix-1m` cerrada: gate 10/10 — fence limpio sobre 1 000 000 de preguntas (banking77/helpsteer2/pubmedqa vallados, 5 000 ids de Jevals excluidos), guardrails (`civil-comments` 14,99 %, ningún dataset sobre el cap), diversidad, ledger, reproducible.
+- `synthetic_value`: veredicto **GO-scale** — el sintético aporta, medido con brazos con/sin sobre 250k.
+- `top2_trained`: modernbert-base (3 h 46 min) y ettin-68m (2 h 42 min), 1 época exacta sobre el corpus, `members_sha256` idéntico al manifest.
+
+**Rojo:**
+- Release gate NO-GO: `unseen_accuracy_all_min`, `unseen_accuracy_cut_min`, `unseen_above_chance_every_cut`, `seen_unseen_accuracy_drop_max`, `seen_ece_max`, `teacher_cohen_kappa_min`, `coverage_min_at_risk`, `latency_p95_max_ms`.
+- Auditoría de coherencia: 14 de 32 gates marcados incoherentes (métricas sin `model_version`).
+
+**Nada entrenando ahora mismo** — solo el monitor en :8794. La GPU está libre.
+</details>
+
+<details><summary>¿Cuánto falta para un sistema utilizable?</summary>
+
+No son días de entrenamiento, son estas tres cosas en orden:
+
+1. **Descongelar el backbone** (horas de trabajo + un run de validación). Es la hipótesis que A029 va a medir. Si swag/synth-v1 suben del azar, el camino está claro.
+2. **Re-medir el gate de producto** sobre los modelos de 1M — ahora mismo estamos juzgando el sistema por un modelo obsoleto y 4× más pequeño.
+3. Solo entonces tiene sentido `#T-mix-5m` (ya lanzada su ingeniería) y `#T-data-eval`.
+
+Gastar días de mps entrenando la cabeza congelada sobre 5M sería repetir el error de ayer a mayor escala: mucho coste, swag clavado en 0,25.
+</details>
+
+— T-mix-1m · el corpus de 1M se construye y se entrena de verdad, gate 10/10 verde
+
+1.5M tokens

@@ -15,3 +15,38 @@ jobs:
     command: ".venv-train/bin/python tools/training_monitor.py --interval 60 --tick 20 --port 8794"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
     port: 8794
+  - id: mix1m-curve
+    name: "decision-mix-clean-1m curve + §128 (#T-mix-1m)"
+    command: ".venv-train/bin/python -m tools.mix_1m.run_curve --device mps"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: gen-loop
+    name: "Continuous decision-schema loop (#T-gen-loop)"
+    command: "python3 tools/data_gen_loop.py --loop --per-cell 3 --interval 30 --run-id gen-loop-v1"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+    notes: "Self-limiting: stops when marginal diversity < 250 new skeletons/h over 4 rounds, or after 3 consecutive rejected batches."
+  - id: antiscale-wide
+    name: "Head-capacity sweep 2x/4x (#T-antiscale-diag eje 3)"
+    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id antiscale-wide-d512-modernbert-s20260922 --backbone modernbert-base --fence-clean --d-model 512 --no-gate && .venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id antiscale-wide-d1024-modernbert-s20260922 --backbone modernbert-base --fence-clean --d-model 1024 --no-gate"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: gen-objective-sweep
+    name: "Gen-objective short sweep 5x62.5k (#T-gen-objective)"
+    command: "while [ ! -f artifacts/runs/antiscale-wide-d1024-modernbert-s20260922/summary.json ]; do sleep 600; done; .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-base-s20260922 --backbone modernbert-base --fence-clean --no-gate && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-dropout-s20260922 --backbone modernbert-base --fence-clean --no-gate --label-dropout 0.2 && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-episodic-s20260922 --backbone modernbert-base --fence-clean --no-gate --episodic-resample && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-contrastive-s20260922 --backbone modernbert-base --fence-clean --no-gate --contrastive-weight 0.5 && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-prior-s20260922 --backbone modernbert-base --fence-clean --no-gate --prior-penalty 1.0"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+    notes: "#T-gen-objective: baseline + 4 candidates, seed/mix/eval of the 1M baseline at 62.5k. Waits for antiscale-wide summaries before touching MPS."
+  - id: gen-objective-arms
+    name: "Gen-objective 5 arms 125k, concurrent on CPU (#T-gen-objective)"
+    command: ".venv-train/bin/python -m tools.gen_objective.arms run --parallel"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: labeldiv-curve
+    name: "labeldiv 62k/250k/1M unseen curve (#T-labelspace-div)"
+    command: "bash tools/labeldiv_curve.sh"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: gen-objective-arm-contrastive
+    name: "Gen-objective contrastive arm, normalised InfoNCE (#T-gen-objective)"
+    command: ".venv-train/bin/python -m tools.gen_objective.arms run --parallel --only contrastive"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+  - id: prior-1m
+    name: "Brazo prior a 1M + gates (#T-gen-objective -> #T-release-gate)"
+    command: "while [ ! -f artifacts/runs/antiscale-wide-d512-modernbert-s20260922/summary.json ]; do sleep 30; done; sleep 60; curl -sk -X POST -H \"Authorization: Bearer $(cat .meshkore/credentials/portal-token)\" -H 'X-MeshKore-Project: users-ricartjuncadella-documents-prj-asi' https://daemon.meshkore.com:5573/jobs/antiscale-wide/stop; sleep 20; .venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id genobj-prior-1m-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/genobj-prior-1m-ettin-68m-s20260922/stage-001000000 --device mps && .venv-train/bin/python -m eval.release_gate gate"
+    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
+    notes: "Espera el summary del d512, corta el d1024 encadenado (decision del operador: se corta en ambas ramas) y toma la GPU para el brazo adoptado prior a 1M; luego eval.unseen y eval.release_gate."

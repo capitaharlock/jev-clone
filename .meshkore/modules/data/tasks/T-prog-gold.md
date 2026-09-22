@@ -1,7 +1,7 @@
 ---
 id: T-prog-gold
 title: Gold programático, hard negatives y packs multi-Q
-status: blocked
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -9,7 +9,9 @@ initiative: data-training
 depends_on:
   - T-synth-factory
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-21
+commit_shas:
+  - 487a6ab8afe5daf43c0aaf9b3e4c8aec97e8fda4
 failed_at: 2026-09-20T18:32:20.196Z
 resolved_by: A004
 resolved_by_conv: general-09192230

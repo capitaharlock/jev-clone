@@ -1,7 +1,7 @@
 {
   "format": 1,
   "marked_by": "T-release-gate",
-  "marked_utc": "2026-09-21T14:57:23Z",
+  "marked_utc": "2026-09-22T20:40:24Z",
   "gate": "T-pointer-head",
   "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3)",
   "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",

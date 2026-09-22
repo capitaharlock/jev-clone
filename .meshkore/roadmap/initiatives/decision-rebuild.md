@@ -1,15 +1,16 @@
 ---
 id: decision-rebuild
 title: Motor de decisión real (pointer head sobre el texto de la opción)
-status: active
+status: done
 owner: architect-master
 modules:
   - model
   - data
 created: 2026-09-21
 updated: 2026-09-21
+completed_at: 2026-09-21T13:57:43.961Z
+commit_sha: 855a445667086b2835afc5e8af28a6fe87055e85
 ---
-
 # Motor de decisión real (pointer head sobre el texto de la opción)
 
 Work-stream de corrección abierto por la auditoría

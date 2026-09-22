@@ -23,11 +23,21 @@
         "boolq"
       ],
       "blocked": {
-        "logiqa": "'logiqa' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quarantine",
-        "reclor": "'reclor' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quarantine",
-        "synth-loop": "'synth-loop' is not a trainable P0 dataset; allowed: ['banking77', 'massive', 'huffpost', 'boolq'] (synth-loop is quaran"
+        "logiqa": "'logiqa' is not a registered trainable corpus; registry: ['banking77', 'massive', 'email-triage', 'huffpost', 'synth-v1'",
+        "reclor": "'reclor' is not a registered trainable corpus; registry: ['banking77', 'massive', 'email-triage', 'huffpost', 'synth-v1'",
+        "synth-loop": "'synth-loop' is not a registered trainable corpus; registry: ['banking77', 'massive', 'email-triage', 'huffpost', 'synth"
       },
-      "pass": true
+      "pass": true,
+      "trainable": [
+        "banking77",
+        "massive",
+        "email-triage",
+        "huffpost",
+        "synth-v1",
+        "boolq",
+        "civil-comments",
+        "helpsteer2"
+      ]
     },
     "gold_position_uniform": {
       "alpha": 0.01,
@@ -155,7 +165,10 @@
       "exempt_binary_datasets": [
         "boolq"
       ],
-      "exempt_reason": "a pool of 2 (boolq yes/no) IS the question: its option set cannot differ from its global label space",
+      "exempt_datasets": [
+        "boolq"
+      ],
+      "exempt_reason": "a pool of 2 (boolq yes/no) or an ordinal scale IS the question: its option set cannot differ from its global label space",
       "pass": true,
       "pool_sizes": {
         "banking77": 77,
@@ -184,8 +197,8 @@
     "huffpost",
     "boolq"
   ],
-  "elapsed_s": 1.57,
-  "generated_utc": "2026-09-21T12:49:22Z",
+  "elapsed_s": 1.6,
+  "generated_utc": "2026-09-21T15:39:43Z",
   "k_distribution": {
     "1": 466,
     "2": 3534,

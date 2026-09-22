@@ -1,0 +1,17 @@
+{
+  "task": "synth-loop",
+  "n_train": 149360,
+  "n_eval": 20000,
+  "accuracy": 1.0,
+  "logloss": 0.000978565981116512,
+  "seconds": 9.2,
+  "invalidated": {
+    "invalidated_on": "2026-09-21",
+    "invalidated_by": "T-split-domain",
+    "reason": "split by row index (i % 10): the same skeleton appeared in train and in test, so the metric measured leakage, not capacity (#T-split-domain, audit 2026-09-21 finding C)",
+    "affects": [
+      "synth-loop"
+    ],
+    "replacement": "eval/splits.py \u2014 group split by skeleton+domain+language"
+  }
+}

@@ -194,3 +194,132 @@ el 2026-09-21:
 
 Oferta limpia que aportan, en preguntas: dbpedia14 560 000 · snli 1 097 590 ·
 detox-attack 166 012 · goemotions 87 076 · swag 73 546.
+
+## Artefactos grandes — dónde viven los bytes (#T-repo-clean)
+
+Ningún byte de esta sección está en git, y ninguno vuelve. Lo que git
+versiona es esta tabla: ruta, tamaño y sha256, más cómo regenerar o volver a
+bajar cada cosa. Es lo que sustituye a los `manifest.json` que hasta
+#T-repo-clean viajaban dentro de `artifacts/weights/` y
+`artifacts/data-prefetch/` — esos directorios están ahora ignorados enteros.
+
+Medido el 2026-09-21 sobre
+`/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone`:
+**44 ficheros, 2.62 GiB**. Los hashes de pesos,
+checkpoints y datasets coinciden con los `manifest.json` que los declaraban,
+así que la tabla está verificada contra los bytes, no copiada de otro papel.
+
+> **Hoy no hay copia fuera de esta máquina.** No hay bucket, ni LFS (decisión
+> deliberada del plan: LFS no, registro sí). Todo lo marcado *regenerable* se
+> reconstruye con el comando indicado; lo que no lo es —los checkpoints— sólo
+> existe aquí. Mover eso a almacenamiento externo es trabajo pendiente, no
+> algo que esta tabla resuelva.
+
+Los pickles por corrida (`artifacts/runs/*/models/*.pkl`, ~250 MiB por run,
+decenas de runs) no se registran a propósito: son la salida de
+`train_baseline.py`, se regeneran en minutos y no son un artefacto que
+nadie deba conservar.
+
+### Backbones descargados
+
+Revisión fijada: `ettin-68m` = `jhu-clsp/ettin-encoder-68m` @
+`ac19ae4bc51093b31c475665ac872a936d056cc2` · `modernbert-base` =
+`answerdotai/ModernBERT-base` @ `8949b909ec900327062f0ebf497f51aef5e6f0c8`.
+`python -m model.weights fetch --id <id>` los vuelve a bajar y
+`python -m model.weights verify` los compara contra estos sha256.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/weights/ettin-68m/pytorch_model.bin` | 261.2 | `97ef650cbe35e69c363f28edbbc30be68912130d6a909de3a05714bd7bb1217d` |
+| `artifacts/weights/ettin-68m/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| `artifacts/weights/modernbert-base/model.safetensors` | 570.9 | `340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9` |
+| `artifacts/weights/modernbert-base/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+
+### Checkpoints entrenados aquí
+
+No existen en ninguna fuente externa: los produjo un run de esta máquina. Si se pierden, se regeneran reentrenando con el `seed` y el `data_manifest` que lleva cada `manifest.json` — no byte a byte.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/checkpoints/decision/bakeoff-ettin-68m-v1/stage-000025000/model.safetensors` | 10.3 | `24380159935a154b1fabee940fe57769f5c60b7184b874c8b0aec026ba96aa8c` |
+| `artifacts/checkpoints/decision/bakeoff-ettin-68m-v1/stage-000025000/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| `artifacts/checkpoints/decision/bakeoff-modernbert-base-v1/stage-000025000/model.safetensors` | 11.1 | `b8941294da154c5b055beef1c25995e5e7f0e27800cbee37edaa288caa896c87` |
+| `artifacts/checkpoints/decision/bakeoff-modernbert-base-v1/stage-000025000/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000062500/model.safetensors` | 10.3 | `f7dbf57eb4f61749e125141c7d7e694b32e3936a57eb0b1aeae412054933cd72` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000062500/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000125000/model.safetensors` | 10.3 | `6ed13f7ec2759645c864bce5de9c27e9eb418420a0c5deea6aa947ab1b98844d` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000125000/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000250000/model.safetensors` | 10.3 | `7448fa46c0d91a059bb594f95f421d5490a2dab7e09c9a979791757f81a2cc0d` |
+| `artifacts/checkpoints/decision/train-real-v1/stage-000250000/tokenizer.json` | 2.0 | `9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1` |
+
+### Datasets convertidos (prefetch)
+
+Derivados de las fuentes de arriba; `make prefetch` los reconstruye. El sha256 es del `.jsonl` convertido, no del original.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/data-prefetch/banking77.jsonl` | 6.1 | `abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca` |
+| `artifacts/data-prefetch/boolq.jsonl` | 9.8 | `d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a` |
+| `artifacts/data-prefetch/civil-comments.jsonl` | 1013.1 | `9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c` |
+| `artifacts/data-prefetch/email-triage.jsonl` | 2.7 | `009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d` |
+| `artifacts/data-prefetch/helpsteer2.jsonl` | 73.4 | `5fefac5fe5ec09344ea9658b4ad1fae741a11f1771bb4d01a385958b0b89cab8` |
+| `artifacts/data-prefetch/huffpost.jsonl` | 84.4 | `ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd` |
+| `artifacts/data-prefetch/logiqa.jsonl` | 70.9 | `37531b781ad71d772afbad87eb8598fb89283296e0cfe42ec40c58753c543e92` |
+| `artifacts/data-prefetch/logiqa20.raw.jsonl` | 66.1 | `1debc735ae24a0f432e422f2135f54b8a890ddc93e98ec15e93de8c8bb45a500` |
+| `artifacts/data-prefetch/massive.jsonl` | 38.9 | `c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07` |
+| `artifacts/data-prefetch/quarantine/synth-loop-20260921.jsonl` | 200.3 | `b118383b09d4778bbae041265928731ac1a94ff4c30da4bd11b984db02c0da76` |
+| `artifacts/data-prefetch/reclor.jsonl` | 7.2 | `a5419e66ada782dbb45c4c64b04188f7c27c19736697776de278fd4bb0d30db9` |
+| `artifacts/data-prefetch/reclor.raw.jsonl` | 6.5 | `e9e57386b836a7a8d0aad932117e9d1ced9e958283f1ed4c3f36b42e2e122136` |
+
+### Dataset crudo
+
+Tarball original tal cual se descargó.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/data-raw/massive/amazon-massive-1.1.tar.gz` | 38.4 | `4cba5faa11c71437928e17cb1b9b3d8b8e727e7ea363a3a9a8045e19c0491577` |
+
+### Aumentos de teacher (Qwen)
+
+Salida de un teacher local; regenerable sólo reejecutando el teacher.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/data-qwen/banking77.aug.jsonl` | 8.2 | `b39cb760aa411ee2f8a71dc74d0911f2ab9c1bebeca7c9de64fa6ab31c80967f` |
+| `artifacts/data-qwen/boolq.aug.jsonl` | 2.4 | `88795b7490c8364c798869bd0a350d30b14c56ac2f9066fff54ca66e379fde7a` |
+| `artifacts/data-qwen/civil-comments.aug.jsonl` | 4.5 | `a9cf59d03f276ba6ff3fd86a8bbc25713477ffcbb07c0af9f3ae83a11bd96cc7` |
+
+### Splits sellados
+
+Listas de ids. El `manifest.json` de cada split (sí versionado) ya lleva estos hashes; aquí quedan por si el manifest se pierde.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/splits/civil-comments/test.ids` | 8.1 | `6b3e4be13f2b3958f6fce3ba150dad29a84fe00a8d9a9ff0113245bb751a03bc` |
+| `artifacts/splits/civil-comments/train.ids` | 32.0 | `52ab6a1968762a978b38df1be08705986ddb8fac5849308099a90cf0f7188c14` |
+| `artifacts/splits/huffpost/train.ids` | 2.1 | `23850a35eabffe36ceba35ffa5494c907c8de4132fb6fa6a401b8467fe843465` |
+| `artifacts/splits/logiqa/train.ids` | 1.4 | `2998b9059c36a48634da2c312ed97aa7c712aaf317e8b6f818ad09fc85783dfc` |
+| `artifacts/splits/massive/train.ids` | 1.6 | `43226cc1dc9c116c839186c1ecf4110e76ad544e9a70fa6e04d35481220b2df5` |
+| `artifacts/splits/synth-loop-quarantine/test.ids` | 1.0 | `4d384f71d9e8749b666917a4b459fba75b25b6226bacd739e4dc1110a396b41d` |
+| `artifacts/splits/synth-loop-quarantine/train.ids` | 6.5 | `6dca6b91f946311f3f58ea7a498641880ad2585988ff81e1deb8eefa63b34788` |
+
+### Sintético v1
+
+Generado por `tools/data_gen_loop.py`; regenerable con su seed.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/synth/v1/synth-v1-000.jsonl` | 11.1 | `a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076` |
+| `artifacts/synth/v1/synth-v1-001.jsonl` | 11.2 | `36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16` |
+| `artifacts/synth/v1/synth-v1-002.jsonl` | 11.1 | `accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011` |
+| `artifacts/synth/v1/synth-v1-003.jsonl` | 11.2 | `62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547` |
+| `artifacts/synth/v1/synth-v1-004.jsonl` | 11.1 | `f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b` |
+
+### Eval OOD
+
+Particiones OOD de #T-data-eval. Grandes y NO ignoradas por .gitignore: quien haga `git add -A` las mete. El check de tamaño las rechaza.
+
+| Fichero | MiB | sha256 |
+|---|---:|---|
+| `artifacts/gates/T-data-eval/ood_heldout.jsonl` | 3.9 | `24def0857dd33b12c14b758f2682f9570c9b0bed43e22590e3901e618bab90b6` |
+| `artifacts/gates/T-data-eval/ood_train.jsonl` | 42.8 | `fb97cb10323d318d52b29505dd7bce69d2c1fc96abc6cc9e1983ee693504007e` |

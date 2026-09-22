@@ -1,6 +1,6 @@
 {
-  "cold_start_s": 0.00127410888671875,
-  "wall_s": 0.0012822151184082031,
+  "cold_start_s": 0.0014030933380126953,
+  "wall_s": 0.001413106918334961,
   "budget_s": 30.0,
   "verdict": "GO",
   "image": "jevclone:gate"

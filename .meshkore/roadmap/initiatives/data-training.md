@@ -1,4 +1,5 @@
 ---
+reactivated: 2026-09-22
 id: data-training
 title: Data training scale-up (decision-mix)
 status: done
@@ -7,8 +8,9 @@ modules:
   - data
 created: 2026-09-20
 updated: 2026-09-22
+completed_at: 2026-09-22T10:18:51.542Z
+commit_sha: 0ecbd528efbe71e12376b8de0ecd7814df0ea53b
 ---
-
 # Data training scale-up (decision-mix)
 
 Ejecuta la estrategia `TMP/JEVCLONE_DATA_TRAINING_STRATEGY_2026-09-20.md`:

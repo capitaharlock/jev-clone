@@ -38,7 +38,7 @@
     "massive"
   ],
   "format": "safetensors",
-  "generated_utc": "2026-09-21T13:18:27Z",
+  "generated_utc": "2026-09-21T14:50:22Z",
   "head_params": 2699778,
   "holdout": "artifacts/runs/train-real-v1/holdout.json",
   "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
@@ -50,9 +50,15 @@
         0.4765,
         0.512211
       ],
+      "accuracy_options_only": 0.558178,
+      "accuracy_options_only_ci95": [
+        0.540368,
+        0.57584
+      ],
       "beats_chance": true,
       "brier": 0.778451,
       "chance": 0.183984,
+      "chance_options_only": 0.234949,
       "ece": 0.276218,
       "mean_k": 5.126,
       "n": 3008,
@@ -60,21 +66,26 @@
       "per_dataset": {
         "banking77": {
           "accuracy": 0.058594,
+          "accuracy_options_only": 0.25,
           "n": 256
         },
         "boolq": {
           "accuracy": 0.609375,
+          "accuracy_options_only": 0.6125,
           "n": 320
         },
         "huffpost": {
           "accuracy": 0.914844,
+          "accuracy_options_only": 0.921094,
           "n": 1280
         },
         "massive": {
           "accuracy": 0.092014,
+          "accuracy_options_only": 0.208333,
           "n": 1152
         }
-      }
+      },
+      "ranking_beats_chance": true
     },
     "unseen": {
       "abstain_rate": 0.791888,
@@ -83,9 +94,15 @@
         0.050363,
         0.06712
       ],
+      "accuracy_options_only": 0.219415,
+      "accuracy_options_only_ci95": [
+        0.204988,
+        0.234557
+      ],
       "beats_chance": false,
       "brier": 1.267651,
       "chance": 0.165093,
+      "chance_options_only": 0.201675,
       "ece": 0.560035,
       "mean_k": 5.5279,
       "n": 3008,
@@ -93,17 +110,21 @@
       "per_dataset": {
         "banking77": {
           "accuracy": 0.191406,
+          "accuracy_options_only": 0.242188,
           "n": 256
         },
         "huffpost": {
           "accuracy": 0.103618,
+          "accuracy_options_only": 0.297697,
           "n": 1216
         },
         "massive": {
           "accuracy": 0.0,
+          "accuracy_options_only": 0.153646,
           "n": 1536
         }
-      }
+      },
+      "ranking_beats_chance": true
     }
   },
   "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n62528-f7dbf57eb4f6",

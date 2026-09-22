@@ -29,6 +29,18 @@ finding C) and `logiqa`/`reclor` (eval-only, finding G) are refused twice
 over: by `ALLOWED_DATASETS` and by `data.firewall.check_job_allowed`, which
 raises rather than warns.
 
+* **Space-scoped pools** (`space_scoped=`, #T-labelspace-div): the default
+  pool of a dataset is its GLOBAL label space, keyed on the option id. That
+  is right for a taxonomy (`dbpedia14`: Album, Animal, …) and wrong for a
+  corpus whose rows carry their own option set — `swag`'s ids are positions
+  (o0..o3), so the pool collapses to four texts taken from whichever row
+  defined each id first, and `episodic-div`'s 20 000 miniature taxonomies
+  merge into one pool of 99 544 pseudowords. Naming such a dataset here
+  makes the ROW's own option set its label space: distractors stay inside
+  it, and the per-gold difficulty ranking costs a six-label pass instead of
+  a 99 544-label one (measured: 15.7 s per distinct gold before, ~0 after).
+  It is opt-in and empty by default, so no existing run changes.
+
 The sampler NEVER rewrites the jsonl and `data/schema.py` stays untouched:
 rows are read as they are and batches are built in memory.
 
@@ -316,7 +328,8 @@ class OptionSetSampler:
                  root: str = PREFETCH_DIR,
                  pools: dict | None = None,
                  keep: dict | None = None,
-                 quotas: dict | None = None):
+                 quotas: dict | None = None,
+                 space_scoped=()):
         """`pools` and `keep` are what a `data.mix.MixSpec` injects.
 
         `pools[d]` skips the full-file scan `label_pool` would do — for
@@ -327,9 +340,19 @@ class OptionSetSampler:
         draws with headroom (`data.mix.DRAW_HEADROOM`) and the rows are
         trimmed here in file order, so the realised share IS the planned
         one instead of a binomial draw around it.
+
+        `space_scoped` names the datasets whose LABEL SPACE is the row's
+        own option set instead of the dataset's global pool — see the
+        module docstring. Empty by default: naming a dataset here is the
+        only way a run's option sets change.
         """
         self.config = config or SamplerConfig()
         self.datasets = assert_trainable(datasets)
+        self.space_scoped = {d for d in space_scoped if d in self.datasets}
+        #: `dataset -> space key -> (pool, DistractorIndex)`, filled lazily
+        #: as spaces are met: 20 000 six-label indexes, not one 99 544-label
+        #: index whose per-gold ranking never finishes.
+        self._spaces: dict[str, dict] = {d: {} for d in self.datasets}
         self.root = root
         self.rows_per_dataset = rows_per_dataset
         self.keep = dict(keep or {})
@@ -445,12 +468,38 @@ class OptionSetSampler:
         return random.Random(f"{self.config.seed}\x00ord\x00{epoch}"
                              f"\x00{dataset}\x00{row_id}\x00{qid}")
 
+    def space_of(self, dataset: str, question: dict) -> tuple:
+        """`(pool, index)` of the label space one question draws from.
+
+        The dataset's global pool, unless the dataset is space-scoped — in
+        which case the space IS the question's own option set, cached on
+        it so the rows that share a taxonomy share its ranking.
+        """
+        if dataset not in self.space_scoped:
+            return self.pools[dataset], self.index[dataset]
+        options = question.get("options", [])
+        key = "\x00".join(sorted(o.get("id", "") for o in options))
+        cached = self._spaces[dataset].get(key)
+        if cached is None:
+            pool = [{"id": o.get("id", ""),
+                     "text": o.get("text", o.get("id", ""))}
+                    for o in options]
+            cached = (pool, DistractorIndex(pool, self.config))
+            self._spaces[dataset][key] = cached
+        return cached
+
+    def spaces_seen(self, dataset: str) -> int:
+        """Distinct label spaces this sampler has drawn from so far."""
+        if dataset not in self.space_scoped:
+            return 1
+        return len(self._spaces[dataset])
+
     def compose(self, dataset: str, row: dict, question: dict,
                 row_id: str) -> Sample:
         cfg = self.config
         gold_id = question.get("answer")
-        pool = self.pools[dataset]
-        by_id = self.index[dataset].text
+        pool, index = self.space_of(dataset, question)
+        by_id = index.text
         rng = self._set_rng(dataset, row_id, question.get("id", ""))
 
         k_hi = min(cfg.k_max, len(pool))
@@ -462,7 +511,7 @@ class OptionSetSampler:
         gold_missing = gold_id is None or gold_id == UNKNOWN_ID
         is_unknown = rng.random() < cfg.unknown_fraction or gold_missing
 
-        hard, easy = self.index[dataset].buckets("" if gold_missing else gold_id)
+        hard, easy = index.buckets("" if gold_missing else gold_id)
         n_available = len(hard) + len(easy)
         n_distract = min(k_wanted if is_unknown else k_wanted - 1, n_available)
         n_hard = min(len(hard), int(round(cfg.hard_fraction * n_distract)))
@@ -533,8 +582,15 @@ class OptionSetSampler:
         This is the HuffPost 41-category bug. Datasets whose pool is binary
         (boolq: yes/no) cannot satisfy it and are exempt — see
         `binary_exempt_datasets()`; every other dataset must be empty here.
+
+        A space-scoped dataset is exempt for a different reason and it is
+        named as such: its option set IS its label space by construction,
+        so the check would compare a six-label space against a 99 544-label
+        union and pass vacuously. What must hold there is the stronger
+        claim `test_optset` makes instead — no option ever comes from
+        another space.
         """
-        exempt = set(self.fixed_option_datasets())
+        exempt = set(self.fixed_option_datasets()) | self.space_scoped
         out = []
         for s in samples:
             pool = self.pool_ids[s.dataset]

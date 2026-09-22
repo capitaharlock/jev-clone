@@ -11,8 +11,10 @@ depends_on:
   - T-optset-sampler
 created: 2026-09-21
 updated: 2026-09-21
-resolved_by: A014
-resolved_by_conv: work-decision-rebuild-T-train-real-1790005
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
+completed_at: 2026-09-21T13:26:43.770Z
+commit_shas: ['855a445667086b2835afc5e8af28a6fe87055e85']
 ---
 # Entrenamiento listwise real que sustituye a train_baseline.py
 
@@ -64,25 +66,32 @@ escala (250 k → 1 M) decide si merece la pena más.
 
 ## Resolution
 
-**Entregado** — `training/python/train_decision.py` (+ `test_train_decision.py`,
-18/18 verdes con la pila real, sin skips). Los 6 puntos del cuerpo están
-cubiertos: pérdida listwise (cross-entropy sobre los `K + 1` logits de la
-fila, `unknown` el último), un solo modelo sobre banking77 + massive +
-huffpost + boolq, checkpoints `model.safetensors` + `tokenizer.json` +
-`manifest.json` con `model_version` + `tokenizer_hash`, `metrics.jsonl` por
-step en `artifacts/runs/train-real-v1/`, job del daemon `train-decision` y
-`data/train_baseline.py` etiquetado como baseline histórico fuera de la ruta
-de producto.
+✓ #decision-rebuild #T-train-real done · 15 ficheros · commit `855a445`
+El entrenamiento real ya sustituye al bucle de 24 h: pérdida listwise sobre los K logits + `unknown`, **un** modelo multi-dataset (head de 2 699 778 params sobre backbone congelado) en vez de siete pickles, checkpoint safetensors con `model_version` que el runtime usa como clave de caché. 18/18 tests. El job `train-decision` (pid 57323) sigue vivo hacia 1M muestras.
 
-**El gate está en NO-GO y eso es el resultado, no un fallo del código.**
-`artifacts/gates/T-train-real/gate.json` del primer punto de la curva
-(stage 62 528 muestras) pasa 4 de 5 checks — `holdout_clean`, `label_free`,
-`checkpoint_cold_load` (p95 43 ms, presupuesto 500 ms) y
-`manifest_model_version` — y falla `unseen_beats_chance`: accuracy 0.058 en
-etiquetas no vistas contra un azar de 0.165, con abstención 0.79. El criterio
-se escribió antes de medir, así que el veredicto se queda escrito: no se
-escala por encima del punto actual hasta que la curva lo bata.
+⚠ Gate en **NO-GO** honesto (4/5): `unseen_beats_chance` da 0,058 contra 0,165 de azar en el stage 62,5k. Es la medida, no un bug — el job reescribe el gate en 125k/250k/500k/1M.
 
-El run sigue vivo (job `train-decision`, ~86 k muestras, loss 0.43–0.79,
-accuracy seen 0.72–0.89) y reescribe `gate.json` en cada stage: los puntos
-125 k / 250 k / 500 k / 1 M decidirán si el NO-GO se levanta.
+🚀 Opus (claude-code, pid 71801 vivo) → #decision-rebuild #T-bakeoff-real · rehacer el Pareto solo con pesos reales entrenados, proxies aleatorios fuera, top-2 de backbone decidido con números medidos.
+
+<details><summary>Por qué el verdict "no-commit / 2 fallos → blocked" se descartó</summary>
+
+- El wake pedía marcar `blocked` por fallo #2 sin commit. `git log` dice lo contrario: `855a445` es HEAD y contiene los 15 ficheros del reporte del hijo.
+- El fichero ya está en `status: done`, `resolved_by: A014`, `commit_shas: ['855a445…']`. Escribir `blocked` encima sería meter una mentira en disco que el daemon revertiría en el siguiente `/state`.
+- Patrón repetido esta sesión: el verdict del wake se calcula antes de que el commit del hijo sea visible. Regla aplicada siempre: HEAD manda sobre el verdict.
+</details>
+
+<details><summary>Estado de #decision-rebuild — 5/6 cerradas</summary>
+
+| tarea | estado |
+|---|---|
+| #T-torch-stack | done · `0d905fb` |
+| #T-pointer-head | done · `4506325` |
+| #T-halt-contam | done · `88ad4e6` |
+| #T-optset-sampler | done · `a2a8eaf` |
+| #T-train-real | done · `855a445` (gate NO-GO honesto) |
+| #T-bakeoff-real | 🚀 en curso, A015 |
+
+La iniciativa no se marca `done` hasta que #T-bakeoff-real cierre. El NO-GO de unseen no bloquea la tarea (está medido y publicado) pero sí es el hallazgo que #T-bakeoff-real tiene que explicar: si ningún backbone bate el azar en etiquetas no vistas, el top-2 se elige igualmente pero con esa advertencia escrita en prosa.
+</details>
+
+3.7M tokens

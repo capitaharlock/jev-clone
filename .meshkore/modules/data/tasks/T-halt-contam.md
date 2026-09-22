@@ -1,7 +1,7 @@
 ---
 id: T-halt-contam
 title: Parar la hemorragia — congelar synth-loop y firewall de benchmarks
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -9,6 +9,10 @@ initiative: decision-rebuild
 depends_on: []
 created: 2026-09-21
 updated: 2026-09-21
+commit: 88ad4e6
+completed_at: 2026-09-21T13:05:00.000Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
 
 # Parar la hemorragia — congelar synth-loop y firewall de benchmarks

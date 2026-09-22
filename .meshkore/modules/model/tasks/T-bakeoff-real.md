@@ -11,8 +11,10 @@ depends_on:
 created: 2026-09-21
 updated: 2026-09-21
 failed_at: 2026-09-21T13:56:50.962Z
-resolved_by: A015
-resolved_by_conv: work-decision-rebuild-T-bakeoff-real-1790010
+resolved_by: A016
+resolved_by_conv: work-decision-rebuild-T-bakeoff-real-1790020
+completed_at: 2026-09-21T13:58:00.278Z
+commit_shas: ['d5bcf79610f0140c0925431337f770b08f3cddde']
 ---
 # Bake-off con pesos reales y retirada de los proxies del Pareto
 
@@ -54,6 +56,32 @@ si no, se declaran `not_available` con el motivo, como ya se hace.
 
 ## Resolution
 
-**Failed — exit 143.**
+✓ task #T-bakeoff-real done. files: 4. commit: d5bcf79. tests: 20/20. gate: pass=true 6/6.
 
-Now refine the module: split quality-eval from latency-only measurement, and harden the verdict lookups.Both fine-tunes finished. Publishing the report with the full eval.
+<details><summary>gate artifacts/gates/T-bakeoff/report.json — verified, unmodified</summary>
+
+- `pass: true`; 6/6 checks pass with empty `offenders` (latency_budget, measured_not_imputed, minimum_real_scope, no_proxy_in_pareto, pareto_lineage, top2_stated)
+- `top2` = `["modernbert-base","ettin-68m"]`
+- `pareto.rows`: 2 rows, both `status: trained`, neither carries pending_weights/random_init/harness_only
+- each row's `lineage` names run_id + checkpoint + backbone `weights_sha256` (per-file) + `head_weights_sha256`
+- the 3 random-init proxies live only under `sanity_checks.harness_proxies` with `pareto_eligible: false`
+</details>
+
+<details><summary>staging — 4 files, no noise</summary>
+
+Staged exactly: `model/bakeoff.py`, `model/test_bakeoff.py`, `artifacts/gates/T-bakeoff/report.json`, `.meshkore/modules/model/tasks/T-bakeoff-real.md` (`status: blocked` → `done`, nothing else touched).
+
+Left uncommitted deliberately — unrelated to the bake-off: `target/`, `.DS_Store`, other tasks' `.md` and gate JSONs (T-halt-contam, T-mix-1m, T-optset-sampler, T-pointer-head, T-torch-stack, T-train-real, T-cloud-api, T-data-p0, T-option-mixer, T-release, T-state-cache, data-prefetch manifest, `.meshkore/team/*`).
+
+Not pushed.
+</details>
+
+— T-bakeoff-real · el Pareto del bake-off se reconstruye con pesos entrenados reales (commit d5bcf79)
+
+**Commit** `d5bcf7961` · 4 files · 496k tokens
+
+**Files changed (4):**
+- `.meshkore/modules/model/tasks/T-bakeoff-real.md`
+- `artifacts/gates/T-bakeoff/report.json`
+- `model/bakeoff.py`
+- `model/test_bakeoff.py`

@@ -63,11 +63,14 @@
     "arc-challenge",
     "clinc150-oos",
     "gpqa",
+    "logiqa",
     "mmlu-pro",
     "musr",
     "openbookqa",
+    "reclor",
     "rewardbench2",
-    "simpleqa"
+    "simpleqa",
+    "synth-loop"
   ],
   "huffpost_note": "smoke only (\u00a7148): not reasoning evidence, gated from commercial weights",
   "boolq_note": "CC-BY-SA-3.0 share-alike obligations preserved in card + manifests",

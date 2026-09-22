@@ -1,7 +1,7 @@
 ---
 id: T-torch-stack
 title: Stack neuronal real — torch, transformers y pesos descargados
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -9,8 +9,11 @@ initiative: decision-rebuild
 depends_on: []
 created: 2026-09-21
 updated: 2026-09-21
+commit: 0d905fb
+completed_at: 2026-09-21T12:44:04.943Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Stack neuronal real — torch, transformers y pesos descargados
 
 Hallazgo A: **no hay PyTorch en el proyecto**. `.venv-train` contiene solo
@@ -55,3 +58,30 @@ Trabajo:
   registrados en `source-register.md` con su licencia.
 - Ningún artefacto de bake-off puede volver a publicar un proxy aleatorio
   como si fuera un backbone.
+
+## Resolution
+
+✓ #decision-rebuild #T-halt-contam done · 9 ficheros · commit `88ad4e6`
+Se acabó el verde falso: el generador synth-loop está muerto y sus 360 700 filas en cuarentena fuera de git; logiqa/reclor quedan como eval-only por firewall. Auditoría de fugas sobre 2 080 647 filas de train contra 22 752 ítems held-out: exact 0, normalized 0, paraphrase 0. 16/16 tests, dashboard honesto en :8794.
+
+🚀 Opus (claude-code, pid 33119 vivo) → #decision-rebuild #T-optset-sampler · el dataloader que alimenta al pointer head: K opciones dinámicas por fila, hard negatives medidos, filas `unknown` reales y barajado por epoch sobre banking77+massive+huffpost+boolq.
+
+Un solo agente esta oleada: #T-train-real cuelga de este sampler y #T-bakeoff-real de #T-train-real — la cadena es secuencial, y el daemon rechaza despachar fuera de #decision-rebuild mientras siga viva.
+
+<details><summary>#decision-rebuild — estado de las 6 tasks</summary>
+
+- `done`: #T-torch-stack (`0d905fb`), #T-pointer-head (`4506325`), #T-halt-contam (`88ad4e6`).
+- `active`: #T-optset-sampler — en curso ahora.
+- `next`: #T-train-real (dep: #T-pointer-head ✓ + #T-optset-sampler ⏳), #T-bakeoff-real (dep: #T-train-real).
+- Cierre de iniciativa cuando las 6 estén `done`; entonces paso a #honest-eval.
+</details>
+
+<details><summary>Integridad — #data-training con 14 tasks</summary>
+
+- El check marca `initiative_too_dense`. No lo toco a media oleada: repartir 14 tasks entre sub-iniciativas reescribe el `initiative:` de cada fichero y movería la card mientras #decision-rebuild está en vuelo.
+- Lo propongo al cerrar #decision-rebuild, antes de entrar en el resto de #data-training.
+</details>
+
+— T-halt-contam · synth-loop congelado, corpus en cuarentena y firewall train↔benchmark con fuga cero
+
+2.4M tokens

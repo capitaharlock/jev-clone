@@ -46,6 +46,6 @@
   "max_samples": 1000000,
   "run_id": "train-real-v1",
   "seed": 1789,
-  "started_utc": "2026-09-21T13:09:15Z",
+  "started_utc": "2026-09-21T14:42:24Z",
   "task": "T-train-real"
 }

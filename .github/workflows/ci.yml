@@ -5,12 +5,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # #T-repo-clean: the size check reads blob sizes
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy, rustfmt
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # #T-repo-clean: no blob over 5 MiB, no path .gitignore already excludes.
+      - run: python tools/repo_size_check.py
+      - run: python -m unittest tools.test_repo_size_check
       - run: cargo fmt --check
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test --workspace

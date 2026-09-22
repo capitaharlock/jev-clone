@@ -1,7 +1,7 @@
 {
   "format": 1,
   "task": "T-release",
-  "commit": "220f7e2d6258509ee982fbf413229bf909a01404",
+  "commit": "b6a75f93d1d03dd32f524837c4026d0a63ebc271",
   "predictor": {
     "name": "cosine-char3-softmax",
     "base_temperature": 1.0,
@@ -18,8 +18,8 @@
     "cohen_kappa": 0.0,
     "exact_agree_rate": 0.852,
     "top2": [
-      "proxy-L",
-      "proxy-M"
+      "modernbert-base",
+      "ettin-68m"
     ],
     "cold_verdict": "GO",
     "cold_budget_s": 30.0
@@ -43,12 +43,12 @@
     {
       "claim": "bakeoff",
       "path": "artifacts/gates/T-bakeoff/report.json",
-      "sha256": "36afe4ef5c992634e84b940b8cf6403279129ff70b3dfc102a92ec80405afc3c"
+      "sha256": "ae6ca7d5249fa6e665e5fdc4e4c7fcd42fdbc2405b69c66607295e5da993821c"
     },
     {
       "claim": "cold-start",
       "path": "artifacts/gates/T-cloud-api/coldstart.json",
-      "sha256": "e11bfbfb9fef3012034ad699c2af56b0391a1adb7e9d42011d26fb7d3bb8b14e"
+      "sha256": "cf6c82dc386c36fe16b2e49e69a716bf92121a0ab2bb3d4ebccfdd7f578e113f"
     },
     {
       "claim": "sbom",
@@ -58,7 +58,7 @@
     {
       "claim": "model-card",
       "path": ".meshkore/docs/model-card.md",
-      "sha256": "37850802c6f32195813c3518bdf92699aace6a45dbe0fa263056831b8105fd2b"
+      "sha256": "0595d8fb0638d1ed604fd140b91c1bd061877e1323832c6ebfd4ffd8f3e9e0cf"
     },
     {
       "claim": "pod-train",
@@ -73,12 +73,12 @@
     {
       "claim": "sources",
       "path": ".meshkore/docs/source-register.md",
-      "sha256": "10eaa09da50d85055c6f77f693acab4bb0e9f5c2e332817f7fb0a50d9cc1275c"
+      "sha256": "1d607fc77e44941f7fae5c6a6228bec88293a5655de378211afcdf38146a7c6e"
     },
     {
       "claim": "dataset-registry",
       "path": "data/registry.py",
-      "sha256": "5824fcff65af934d6febcfc1cdd1906e6a7c524fe059c3baf9b0fb78cd80aced"
+      "sha256": "e937e8a8b6a7653fa5ce60d5c202027f6c16ba1f385a498975f9d17064024ad8"
     }
   ],
   "golden": [

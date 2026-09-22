@@ -1,7 +1,7 @@
 ---
 id: T-gen-schemas
 title: Q-W-E-N genera esquemas de decisión completos, no plantillas de email
-status: next
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -10,8 +10,10 @@ depends_on:
   - T-halt-contam
 created: 2026-09-21
 updated: 2026-09-21
+completed_at: 2026-09-21T15:24:40.321Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Q-W-E-N genera esquemas de decisión completos, no plantillas de email
 
 Hallazgo D: en ~11 h de loop, Q-W-E-N aportó **5 plantillas frescas en
@@ -62,3 +64,30 @@ nunca por fila.
 - El presupuesto por dominio está definido y el loop se detiene al llenarlo.
 - La curva de esqueletos únicos es visible en el dashboard y el loop se
   autodetiene si se aplana.
+
+## Resolution
+
+✓ #data-training #T-gen-schemas done · 14 ficheros · commit `39e6322` · 27 tests verdes
+El generador ya no fabrica plantillas: emite esquemas de decisión completos con K 3–8, distractores y `unknown`. **1 152 esquemas desde 1 152 esqueletos únicos** — el corpus viejo tenía 190 esqueletos en 258 700 filas. Gate `pass: true`.
+
+🚀 #data-training #T-prog-gold → A022 (pid 63475 vivo)
+· gold programático desde el grafo Wikidata — el grafo decide la respuesta, los teachers solo redactan. Es la raíz que desbloquea #T-mix-1m → #T-mix-5m → #T-data-eval.
+
+⏳ #T-corpus-rebalance sigue vivo (A021, 14 min) · civil-comments 74,6 % → ≤15 %.
+
+<details><summary>Estado de las 14 tareas de #data-training</summary>
+
+- **done (5)**: `T-bigsrc`, `T-massive-huff`, `T-synth-factory`, `T-teacher-intent`, `T-tester-engine`, `T-train-monitor`, y ahora `T-gen-schemas`
+- **vivas (2)**: `T-corpus-rebalance` (A021), `T-prog-gold` (A022)
+- **encadenadas detrás de prog-gold**: `T-mix-1m` → `T-mix-5m` → `T-data-eval`; `T-mix-10m` en backlog
+- **`T-gen-loop` se queda `blocked` a propósito**: sus dos dependencias (`T-halt-contam`, `T-gen-schemas`) ya están done, pero su cuerpo dice literalmente que no se cierra ni se borra — es el registro de por qué el generador cambió de contrato. No lo toco.
+</details>
+
+<details><summary>Trabajo de fondo</summary>
+
+- Job `train-decision` corriendo (pid 37091, 42 min de uptime) · `training-monitor` en :8794 (pid 18966).
+</details>
+
+— T-gen-schemas · el generador produce esquemas de decisión completos en vez de plantillas (commit 39e6322)
+
+8.9M tokens

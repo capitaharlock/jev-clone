@@ -1,0 +1,140 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "loss": "listwise cross-entropy over [K + 1]",
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer over option text embeddings"
+  },
+  "backbone": {
+    "frozen": true,
+    "hidden_size": 512,
+    "id": "ettin-68m",
+    "params": 68144640,
+    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+  },
+  "data_manifest": {
+    "banking77": {
+      "bytes": 6360326,
+      "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca"
+    },
+    "boolq": {
+      "bytes": 10279023,
+      "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "huffpost": {
+      "bytes": 88534603,
+      "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "bytes": 40814161,
+      "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    }
+  },
+  "datasets": [
+    "banking77",
+    "boolq",
+    "huffpost",
+    "massive"
+  ],
+  "format": "safetensors",
+  "generated_utc": "2026-09-21T17:04:35Z",
+  "head_params": 2699778,
+  "holdout": "artifacts/runs/train-real-v1/holdout.json",
+  "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+  "metrics": {
+    "seen": {
+      "abstain_rate": 0.054854,
+      "accuracy": 0.784907,
+      "accuracy_ci95": [
+        0.769865,
+        0.799222
+      ],
+      "accuracy_options_only": 0.816157,
+      "accuracy_options_only_ci95": [
+        0.801914,
+        0.829593
+      ],
+      "beats_chance": true,
+      "brier": 0.300971,
+      "chance": 0.183984,
+      "chance_options_only": 0.234949,
+      "ece": 0.057889,
+      "mean_k": 5.126,
+      "n": 3008,
+      "nll": 0.644413,
+      "per_dataset": {
+        "banking77": {
+          "accuracy": 0.597656,
+          "accuracy_options_only": 0.648438,
+          "n": 256
+        },
+        "boolq": {
+          "accuracy": 0.628125,
+          "accuracy_options_only": 0.628125,
+          "n": 320
+        },
+        "huffpost": {
+          "accuracy": 0.8875,
+          "accuracy_options_only": 0.928125,
+          "n": 1280
+        },
+        "massive": {
+          "accuracy": 0.756076,
+          "accuracy_options_only": 0.78125,
+          "n": 1152
+        }
+      },
+      "ranking_beats_chance": true
+    },
+    "unseen": {
+      "abstain_rate": 0.467753,
+      "accuracy": 0.093085,
+      "accuracy_ci95": [
+        0.083215,
+        0.103994
+      ],
+      "accuracy_options_only": 0.181848,
+      "accuracy_options_only_ci95": [
+        0.168473,
+        0.196036
+      ],
+      "beats_chance": false,
+      "brier": 1.198852,
+      "chance": 0.165093,
+      "chance_options_only": 0.201675,
+      "ece": 0.470592,
+      "mean_k": 5.5279,
+      "n": 3008,
+      "nll": 3.374492,
+      "per_dataset": {
+        "banking77": {
+          "accuracy": 0.183594,
+          "accuracy_options_only": 0.277344,
+          "n": 256
+        },
+        "huffpost": {
+          "accuracy": 0.078947,
+          "accuracy_options_only": 0.192434,
+          "n": 1216
+        },
+        "massive": {
+          "accuracy": 0.089193,
+          "accuracy_options_only": 0.157552,
+          "n": 1536
+        }
+      },
+      "ranking_beats_chance": false
+    }
+  },
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n1000025-cffd64607b55",
+  "run_id": "train-real-v1",
+  "runtime_cache_key": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
+  "samples_seen": 1000025,
+  "seed": 1789,
+  "task": "T-train-real",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "tokens_seen": 41499114,
+  "weights_file": "model.safetensors",
+  "weights_sha256": "cffd64607b5555a4b681c961fe820a0ec7f0579b9745ff0bc09db9ba15dcd50c"
+}

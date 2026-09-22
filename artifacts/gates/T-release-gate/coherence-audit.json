@@ -1,18 +1,20 @@
 {
   "format": 1,
-  "generated_utc": "2026-09-21T14:57:23Z",
+  "generated_utc": "2026-09-22T20:40:24Z",
   "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u2014 all ERRORS, never warnings",
   "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
-  "n_gates": 32,
-  "n_invalid": 14,
+  "n_gates": 39,
+  "n_invalid": 16,
   "invalid": [
     "T-bakeoff",
     "T-calib",
     "T-curriculum",
     "T-distillation",
     "T-firewall",
+    "T-gen-objective",
     "T-gold",
     "T-local-infer",
+    "T-mix-1m",
     "T-option-mixer",
     "T-pointer-head",
     "T-release",
@@ -27,8 +29,10 @@
     "artifacts/gates/T-curriculum/coherence-invalid.json",
     "artifacts/gates/T-distillation/coherence-invalid.json",
     "artifacts/gates/T-firewall/coherence-invalid.json",
+    "artifacts/gates/T-gen-objective/coherence-invalid.json",
     "artifacts/gates/T-gold/coherence-invalid.json",
     "artifacts/gates/T-local-infer/coherence-invalid.json",
+    "artifacts/gates/T-mix-1m/coherence-invalid.json",
     "artifacts/gates/T-option-mixer/coherence-invalid.json",
     "artifacts/gates/T-pointer-head/coherence-invalid.json",
     "artifacts/gates/T-release/coherence-invalid.json",
@@ -38,6 +42,24 @@
     "artifacts/gates/T-torch-stack/coherence-invalid.json"
   ],
   "results": [
+    {
+      "gate": "T-antiscale-diag",
+      "path": "artifacts/gates/T-antiscale-diag",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 3,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
     {
       "gate": "T-bakeoff",
       "path": "artifacts/gates/T-bakeoff",
@@ -223,6 +245,30 @@
       "pass": true
     },
     {
+      "gate": "T-corpus-rebalance",
+      "path": "artifacts/gates/T-corpus-rebalance",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-curriculum",
       "path": "artifacts/gates/T-curriculum",
       "files": [
@@ -289,7 +335,8 @@
         "calibration_manifest.json",
         "eval.json",
         "general_manifest.json",
-        "jevals_ids.json"
+        "jevals_ids.json",
+        "surface_vs_reasoning.json"
       ],
       "unreadable": [],
       "green": null,
@@ -297,7 +344,7 @@
         "quality_metrics": 18,
         "latency_metrics": 0
       },
-      "model_version": false,
+      "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
       "errors": [],
@@ -495,6 +542,91 @@
       "pass": false
     },
     {
+      "gate": "T-gen-loop",
+      "path": "artifacts/gates/T-gen-loop",
+      "files": [
+        "gate.json",
+        "saturation-run.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-gen-objective",
+      "path": "artifacts/gates/T-gen-objective",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 30,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "accuracy"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-gen-schemas",
+      "path": "artifacts/gates/T-gen-schemas",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-gold",
       "path": "artifacts/gates/T-gold",
       "files": [
@@ -633,6 +765,24 @@
       "pass": true
     },
     {
+      "gate": "T-labelspace-div",
+      "path": "artifacts/gates/T-labelspace-div",
+      "files": [
+        "inventory.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-local-infer",
       "path": "artifacts/gates/T-local-infer",
       "files": [
@@ -716,12 +866,51 @@
         "gate.json"
       ],
       "unreadable": [],
-      "green": null,
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
       "publishes": {
-        "quality_metrics": 0,
+        "quality_metrics": 40,
         "latency_metrics": 0
       },
-      "model_version": false,
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "errors": [
+        {
+          "rule": "C3",
+          "severity": "error",
+          "why": "green claim publishes quality metrics with no sealed split: a seed is not a seal, it does not say which rows were actually scored",
+          "green_claimed_by": [
+            "gate.json"
+          ],
+          "quality_metrics": [
+            "accuracy",
+            "brier",
+            "ece",
+            "nll"
+          ]
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-mix-5m",
+      "path": "artifacts/gates/T-mix-5m",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 42,
+        "latency_metrics": 0
+      },
+      "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
       "errors": [],
@@ -874,7 +1063,13 @@
         "gate.json"
       ],
       "unreadable": [],
-      "green": null,
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
       "publishes": {
         "quality_metrics": 0,
         "latency_metrics": 0
@@ -1042,12 +1237,12 @@
       "cohen_kappa": [
         {
           "file": "coherence-audit.json",
-          "at": "/results[10]/errors[0]/offending[0]/cohen_kappa",
+          "at": "/results[13]/errors[0]/offending[0]/cohen_kappa",
           "value": 0.0
         },
         {
           "file": "coherence-audit.json",
-          "at": "/results[22]/errors[0]/offending[0]/cohen_kappa",
+          "at": "/results[25]/errors[0]/offending[0]/cohen_kappa",
           "value": 0.0
         }
       ],

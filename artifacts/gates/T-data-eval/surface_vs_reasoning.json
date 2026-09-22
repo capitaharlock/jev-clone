@@ -1,0 +1,342 @@
+{
+  "backbone_frozen": true,
+  "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000",
+  "cut": "seen labels, eval split, options-only (unknown dropped)",
+  "elapsed_s": 235.97,
+  "format": 1,
+  "generated_utc": "2026-09-22T10:00:51Z",
+  "grouping": {
+    "axis": "option_text_reuse = 1 - distinct option texts / option slots, measured on the scored rows",
+    "closed_vocabulary": "the same option strings recur across rows: a text -> label map answers them",
+    "per_row_options": "the options are this row's own spans: no map over a label space can answer them",
+    "threshold": 0.5
+  },
+  "holdout": "artifacts/runs/mix1m-curve-modernbert-base-s20260922/holdout.json",
+  "mix_shares": {
+    "boolq": 9427,
+    "civil-comments": 149900,
+    "dbpedia14": 149900,
+    "detox-attack": 149900,
+    "email-triage": 4000,
+    "goemotions": 87076,
+    "huffpost": 80119,
+    "massive": 50754,
+    "prog-gold": 60631,
+    "snli": 149900,
+    "swag": 73546,
+    "synth-v1": 34847
+  },
+  "model_version": "jev-dec-modernbert-base-d256l2h8-s20260922-n1000000-6f32a1a936ff",
+  "option_text_integrity": {
+    "boolq": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 6540,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 3270,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "civil-comments": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 10000,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "dbpedia14": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 39391,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "detox-attack": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 60330,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "email-triage": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 2000,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 500,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "goemotions": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 77216,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 4826,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "huffpost": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 20000,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "massive": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 20000,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "prog-gold": {
+      "gold_options_replaced": 4297,
+      "gold_text_replaced_rate": 2.491014,
+      "option_text_mismatch_rate": 0.645347,
+      "options": 22811,
+      "options_whose_text_the_pool_replaces": 14721,
+      "rows": 1725,
+      "rows_with_any_mismatch_rate": 1.0
+    },
+    "snli": {
+      "gold_options_replaced": 0,
+      "gold_text_replaced_rate": 0.0,
+      "option_text_mismatch_rate": 0.0,
+      "options": 25000,
+      "options_whose_text_the_pool_replaces": 0,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 0.0
+    },
+    "swag": {
+      "gold_options_replaced": 5000,
+      "gold_text_replaced_rate": 1.0,
+      "option_text_mismatch_rate": 1.0,
+      "options": 20000,
+      "options_whose_text_the_pool_replaces": 20000,
+      "rows": 5000,
+      "rows_with_any_mismatch_rate": 1.0
+    },
+    "synth-v1": {
+      "gold_options_replaced": 3283,
+      "gold_text_replaced_rate": 0.664709,
+      "option_text_mismatch_rate": 0.797874,
+      "options": 17682,
+      "options_whose_text_the_pool_replaces": 14108,
+      "rows": 4939,
+      "rows_with_any_mismatch_rate": 0.729297
+    }
+  },
+  "per_dataset": {
+    "boolq": {
+      "chance": 0.5,
+      "distinct_option_texts": 2,
+      "lexical": 0.539474,
+      "model": 0.623355,
+      "model_and_lexical": 0.384868,
+      "model_lift_over_chance": 0.123355,
+      "model_lift_over_lexical": 0.083882,
+      "model_not_lexical": 0.238487,
+      "n": 608,
+      "option_slots": 1216,
+      "option_text_reuse": 0.998355
+    },
+    "civil-comments": {
+      "chance": 0.5,
+      "distinct_option_texts": 2,
+      "lexical": 0.256579,
+      "model": 0.9375,
+      "model_and_lexical": 0.208882,
+      "model_lift_over_chance": 0.4375,
+      "model_lift_over_lexical": 0.680921,
+      "model_not_lexical": 0.728618,
+      "n": 608,
+      "option_slots": 1216,
+      "option_text_reuse": 0.998355
+    },
+    "dbpedia14": {
+      "chance": 0.206685,
+      "distinct_option_texts": 14,
+      "lexical": 0.631579,
+      "model": 0.457237,
+      "model_and_lexical": 0.284539,
+      "model_lift_over_chance": 0.250552,
+      "model_lift_over_lexical": -0.174342,
+      "model_not_lexical": 0.172697,
+      "n": 608,
+      "option_slots": 3289,
+      "option_text_reuse": 0.995743
+    },
+    "detox-attack": {
+      "chance": 0.260938,
+      "distinct_option_texts": 5,
+      "lexical": 0.256579,
+      "model": 0.802632,
+      "model_and_lexical": 0.200658,
+      "model_lift_over_chance": 0.541694,
+      "model_lift_over_lexical": 0.546053,
+      "model_not_lexical": 0.601974,
+      "n": 608,
+      "option_slots": 2431,
+      "option_text_reuse": 0.997943
+    },
+    "email-triage": {
+      "chance": 0.2895,
+      "distinct_option_texts": 4,
+      "lexical": 0.39,
+      "model": 0.978,
+      "model_and_lexical": 0.372,
+      "model_lift_over_chance": 0.6885,
+      "model_lift_over_lexical": 0.588,
+      "model_not_lexical": 0.606,
+      "n": 500,
+      "option_slots": 1763,
+      "option_text_reuse": 0.997731
+    },
+    "goemotions": {
+      "chance": 0.205539,
+      "distinct_option_texts": 28,
+      "lexical": 0.205592,
+      "model": 0.804276,
+      "model_and_lexical": 0.169408,
+      "model_lift_over_chance": 0.598737,
+      "model_lift_over_lexical": 0.598684,
+      "model_not_lexical": 0.634868,
+      "n": 608,
+      "option_slots": 3294,
+      "option_text_reuse": 0.9915
+    },
+    "huffpost": {
+      "chance": 0.204292,
+      "distinct_option_texts": 30,
+      "lexical": 0.226974,
+      "model": 0.465461,
+      "model_and_lexical": 0.116776,
+      "model_lift_over_chance": 0.261169,
+      "model_lift_over_lexical": 0.238487,
+      "model_not_lexical": 0.348684,
+      "n": 608,
+      "option_slots": 3317,
+      "option_text_reuse": 0.990956
+    },
+    "massive": {
+      "chance": 0.204611,
+      "distinct_option_texts": 45,
+      "lexical": 0.256579,
+      "model": 0.15625,
+      "model_and_lexical": 0.059211,
+      "model_lift_over_chance": -0.048361,
+      "model_lift_over_lexical": -0.100329,
+      "model_not_lexical": 0.097039,
+      "n": 608,
+      "option_slots": 3329,
+      "option_text_reuse": 0.986482
+    },
+    "prog-gold": {
+      "chance": 0.200695,
+      "distinct_option_texts": 9,
+      "lexical": 0.166118,
+      "model": 0.488487,
+      "model_and_lexical": 0.078947,
+      "model_lift_over_chance": 0.287792,
+      "model_lift_over_lexical": 0.322368,
+      "model_not_lexical": 0.409539,
+      "n": 608,
+      "option_slots": 3387,
+      "option_text_reuse": 0.997343
+    },
+    "snli": {
+      "chance": 0.263268,
+      "distinct_option_texts": 5,
+      "lexical": 0.185855,
+      "model": 0.850329,
+      "model_and_lexical": 0.154605,
+      "model_lift_over_chance": 0.587061,
+      "model_lift_over_lexical": 0.664474,
+      "model_not_lexical": 0.695724,
+      "n": 608,
+      "option_slots": 2406,
+      "option_text_reuse": 0.997922
+    },
+    "swag": {
+      "chance": 0.292078,
+      "distinct_option_texts": 4,
+      "lexical": 0.279605,
+      "model": 0.287829,
+      "model_and_lexical": 0.082237,
+      "model_lift_over_chance": -0.004249,
+      "model_lift_over_lexical": 0.008224,
+      "model_not_lexical": 0.205592,
+      "n": 608,
+      "option_slots": 2125,
+      "option_text_reuse": 0.998118
+    },
+    "synth-v1": {
+      "chance": 0.216647,
+      "distinct_option_texts": 7,
+      "lexical": 0.185855,
+      "model": 0.222039,
+      "model_and_lexical": 0.057566,
+      "model_lift_over_chance": 0.005392,
+      "model_lift_over_lexical": 0.036184,
+      "model_not_lexical": 0.164474,
+      "n": 608,
+      "option_slots": 3069,
+      "option_text_reuse": 0.997719
+    }
+  },
+  "predictors": {
+    "chance": "mean 1/K over the scored rows",
+    "lexical": "argmax over options of char-3-gram containment in the state \u2014 parameter-free, never trained",
+    "model": "the trained pointer head of this checkpoint"
+  },
+  "question": "how much of the global accuracy is surface matching",
+  "rows_per_dataset": 600,
+  "split_override": {
+    "swag": "calibration"
+  },
+  "split_override_why": "train_decision.EVAL_SPLIT has no swag entry and the converted swag corpus has no test split: swag is scored on `calibration`, which no decision run trains on",
+  "task": "T-data-eval",
+  "weighted_at_1m_shares": {
+    "by_group": {
+      "closed_vocabulary": {
+        "chance": 0.276231,
+        "contribution_to_global_lift": 0.364186,
+        "contribution_to_global_model": 0.640418,
+        "datasets": [
+          "boolq",
+          "civil-comments",
+          "dbpedia14",
+          "detox-attack",
+          "email-triage",
+          "goemotions",
+          "huffpost",
+          "massive",
+          "prog-gold",
+          "snli",
+          "swag",
+          "synth-v1"
+        ],
+        "lexical": 0.292323,
+        "model": 0.640418,
+        "share_of_mixture": 1.0
+      }
+    },
+    "covered_share_of_mixture": 1.0,
+    "global": {
+      "chance": 0.276231,
+      "lexical": 0.292323,
+      "model": 0.640418
+    }
+  }
+}

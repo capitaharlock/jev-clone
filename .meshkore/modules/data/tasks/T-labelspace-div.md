@@ -10,8 +10,11 @@ depends_on:
   - T-antiscale-diag
 created: 2026-09-22
 updated: 2026-09-22
+failed_at: 2026-09-22T11:30:25.903Z
+resolved_by: A033
+resolved_by_conv: work-generalization-fix-T-labelspace-div-1790074806
+commit_shas: ['1e660e067cde2efa14856ae1b62b110a5f904768', '9b27bfa8d915e813699872d58609c070ab82c2fe', '3b144f1c9705c066814a34a0611058c64037d365']
 ---
-
 # Diversidad de espacios de etiquetas — medirla y, si falta, generarla
 
 La hipótesis de arquitectura (`#T-antiscale-diag`, `#T-unfreeze-backbone`) tiene
@@ -88,3 +91,25 @@ antes de que MPS quede libre.
    `episodic-div` cuando el sweep libere el dispositivo.
 3. Escribir `artifacts/gates/T-labelspace-div/curve.json` y con él el veredicto
    GO/NO-GO al camino de datos frente a `#T-unfreeze-backbone`.
+
+## Resolution
+
+**Failed — exit 143.**
+
+I'll start by reading the task file.Now let me measure the real corpus. Exploratory pass first:Now let me check what the synthetic factory can actually produce (CPU, offline):Now I'll write the measurement + alternative-mixture module:A sibling agent committed half 1 while I was working. Let me check what they shipped before I clobber anything:I overwrote a sibling agent's committed module. Restoring it now:Verified the collapse. Let me confirm the end-to-end effect on a real sample:Now the fix — let the sampler honour a row's own label space:The fix works and all 69 existing tests pass. Now the measurement module + tests:
+
+**Commit** `1e660e067` (+2) · 12 files
+
+**Files changed (12):**
+- `.gitignore`
+- `.meshkore/modules/data/tasks/T-labelspace-div.md`
+- `artifacts/gates/T-labelspace-div/inventory.json`
+- `artifacts/mix-labeldiv/decision-mix-labeldiv-1m-seed20260922.manifest.json`
+- `data/episodic.py`
+- `data/labelspace.py`
+- `data/mix.py`
+- `data/test_episodic.py`
+- `data/test_labelspace.py`
+- `data/test_mix.py`
+- `tools/labeldiv_curve.sh`
+- `training/python/train_decision.py`

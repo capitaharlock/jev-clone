@@ -1,0 +1,232 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "loss": "listwise cross-entropy over [K + 1]",
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer over option text embeddings"
+  },
+  "backbone": {
+    "frozen": true,
+    "hidden_size": 512,
+    "id": "ettin-68m",
+    "params": 68144640,
+    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+  },
+  "data_manifest": {
+    "banking77": {
+      "bytes": 6360326,
+      "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca"
+    },
+    "boolq": {
+      "bytes": 10279023,
+      "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "civil-comments": {
+      "bytes": 1062302574,
+      "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+    },
+    "dbpedia14": {
+      "bytes": 634742744,
+      "sha256": "3dfe940b4ca8e4d6129fe873fbbd7ac5c3133fd04ad67ec9f2a116b6b713e5ba"
+    },
+    "detox-attack": {
+      "bytes": 171736569,
+      "sha256": "91e823c38cdc1f03c806a0f3d65c5732a088b6c0d42a7b19056053ec2e0f51f4"
+    },
+    "email-triage": {
+      "bytes": 2820195,
+      "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+    },
+    "goemotions": {
+      "bytes": 69875904,
+      "sha256": "b3ecb12219a30bfacd04b1eac1dae7f47b1199c2565e11278ab6bef9fcee2ab2"
+    },
+    "helpsteer2": {
+      "bytes": 76977430,
+      "sha256": "5fefac5fe5ec09344ea9658b4ad1fae741a11f1771bb4d01a385958b0b89cab8"
+    },
+    "huffpost": {
+      "bytes": 88534603,
+      "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "bytes": 40814161,
+      "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    },
+    "prog-gold": {
+      "bytes": 44655633,
+      "sha256": [
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+          "sha256": "aba913022be269f3f7579f8cf6212f763e10d4064e15ce97cc2446d910188200"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+          "sha256": "49fcccd3208a90d0af9c294fb48317a868e6b2697cf829c95061d7ebbdbe5d98"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+          "sha256": "3b4c7e5ea25d8536fb320e3c8eda2365510a4638c12420c51410fa2d7c036015"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl",
+          "sha256": "5759201eca2204dcbfe433437d3a2837153b02659dd7c9b6fd128c96d3a65723"
+        }
+      ]
+    },
+    "snli": {
+      "bytes": 352457023,
+      "sha256": "475081b03c9ba6a2580e10da677d00baa66eb5e00c6dd9895c11cf9f7b2e7bfc"
+    },
+    "swag": {
+      "bytes": 71149592,
+      "sha256": "058867e9dc06101cf6946facbd1cf21cb75ca590851bd06a713be81f222d5f88"
+    },
+    "synth-v1": {
+      "bytes": 58322286,
+      "sha256": [
+        {
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ]
+    }
+  },
+  "datasets": [
+    "banking77",
+    "boolq",
+    "civil-comments",
+    "dbpedia14",
+    "detox-attack",
+    "email-triage",
+    "goemotions",
+    "helpsteer2",
+    "huffpost",
+    "massive",
+    "prog-gold",
+    "snli",
+    "swag",
+    "synth-v1"
+  ],
+  "format": "safetensors",
+  "generated_utc": "2026-09-22T11:20:33Z",
+  "head_params": 2699778,
+  "holdout": "artifacts/runs/test-train-real/holdout.json",
+  "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+  "metrics": {
+    "seen": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.4375,
+      "accuracy_ci95": [
+        0.354623,
+        0.524019
+      ],
+      "accuracy_options_only": 0.4375,
+      "accuracy_options_only_ci95": [
+        0.354623,
+        0.524019
+      ],
+      "beats_chance": true,
+      "brier": 0.695552,
+      "chance": 0.248106,
+      "chance_options_only": 0.348996,
+      "ece": 0.225061,
+      "mean_k": 3.7812,
+      "n": 128,
+      "nll": 1.329307,
+      "per_dataset": {
+        "banking77": {
+          "accuracy": 1.0,
+          "accuracy_options_only": 1.0,
+          "n": 32
+        },
+        "boolq": {
+          "accuracy": 0.53125,
+          "accuracy_options_only": 0.53125,
+          "n": 32
+        },
+        "civil-comments": {
+          "accuracy": 0.125,
+          "accuracy_options_only": 0.125,
+          "n": 32
+        },
+        "dbpedia14": {
+          "accuracy": 0.09375,
+          "accuracy_options_only": 0.09375,
+          "n": 32
+        }
+      },
+      "ranking_beats_chance": true
+    },
+    "unseen": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.513889,
+      "accuracy_ci95": [
+        0.400698,
+        0.625673
+      ],
+      "accuracy_options_only": 0.513889,
+      "accuracy_options_only_ci95": [
+        0.400698,
+        0.625673
+      ],
+      "beats_chance": true,
+      "brier": 0.806455,
+      "chance": 0.160687,
+      "chance_options_only": 0.194808,
+      "ece": 0.321149,
+      "mean_k": 5.6389,
+      "n": 72,
+      "nll": 1.764052,
+      "per_dataset": {
+        "banking77": {
+          "accuracy": 0.75,
+          "accuracy_options_only": 0.75,
+          "n": 40
+        },
+        "huffpost": {
+          "accuracy": 0.272727,
+          "accuracy_options_only": 0.272727,
+          "n": 22
+        },
+        "massive": {
+          "accuracy": 0.1,
+          "accuracy_options_only": 0.1,
+          "n": 10
+        }
+      },
+      "ranking_beats_chance": true
+    }
+  },
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n256-0c186773b96f",
+  "run_id": "test-train-real",
+  "runtime_cache_key": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
+  "samples_seen": 256,
+  "seed": 1789,
+  "task": "T-train-real",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "tokens_seen": 23012,
+  "weights_file": "model.safetensors",
+  "weights_sha256": "0c186773b96f3b822412a6a9fbc07dbe78e49ba77e4e1bbc34be20b089410f46"
+}

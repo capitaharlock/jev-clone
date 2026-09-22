@@ -1,7 +1,8 @@
 ---
 id: T-release-gate
 title: Criterio de release escrito antes de medir, y gate que lo aplica
-status: next
+status: blocked
+blocked_reason: espera la firma del operador en .meshkore/docs/release-criteria.md (signed_by)
 priority: high
 owner: unassigned
 category: eval

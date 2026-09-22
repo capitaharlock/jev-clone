@@ -115,6 +115,29 @@ class TestHoldout(unittest.TestCase):
             self.assertGreaterEqual(len(h.unseen), 2)
 
 
+class TestHeadWidthFlag(unittest.TestCase):
+    """`--d-model` must reach `train()` (#T-antiscale-diag axis 3)."""
+
+    def _capture(self, extra):
+        seen = {}
+        real = td.train
+        td.train = lambda **kw: (seen.update(kw), {"steps": 0})[1]
+        try:
+            self.assertEqual(
+                td.main(["train_decision", "train", "--run-id",
+                         "flag-probe"] + extra), 0)
+        finally:
+            td.train = real
+        return seen
+
+    def test_d_model_flag_reaches_train(self):
+        self.assertEqual(self._capture(["--d-model", "512"])["d_model"], 512)
+
+    def test_d_model_defaults_to_the_published_head(self):
+        self.assertEqual(self._capture([])["d_model"], td.DEFAULT_D_MODEL)
+        self.assertEqual(td.DEFAULT_D_MODEL, 256)
+
+
 @unittest.skipUnless(HAVE_STACK, SKIP)
 class TestBatchedEncoding(unittest.TestCase):
     """The batched encoder must BE `model.encoder.encode_state`."""
@@ -464,6 +487,40 @@ class TestGenObjective(unittest.TestCase):
         self.assertIsNotNone(q.grad)
         for o in opts:
             self.assertIsNotNone(o.grad)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_contrastive_loss_is_bounded_by_log_k(self):
+        """Cosine / tau, not raw dot / tau: the term cannot run away.
+
+        The first contrastive arm of #T-gen-objective diverged (loss 39.2
+        at step 1, 53.0 by step 50, against 1.45 on every other arm)
+        because the raw projections of a d_model=256 head give dot
+        products in the tens. Scaling the inputs by 100 must not change
+        the loss at all — that is what normalisation means.
+        """
+        torch = td.torch
+        q = torch.randn(4, 16)
+        opts = [torch.randn(5, 16) for _ in range(4)]
+        golds = [0, 1, 2, 3]
+        loss = td.contrastive_q_option_loss(q, opts, golds, tau=0.07)
+        # bounded by the worst case of a 5-way softmax at tau=0.07:
+        # sims span at most 2/tau, so the loss cannot exceed that + log K
+        self.assertLess(loss.item(), 2.0 / 0.07 + math.log(5))
+        scaled = td.contrastive_q_option_loss(
+            [x * 100 for x in [q]][0], [o * 100 for o in opts], golds,
+            tau=0.07)
+        self.assertAlmostEqual(loss.item(), scaled.item(), places=4)
+
+    @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
+    def test_contrastive_loss_rewards_the_aligned_gold(self):
+        """A gold option pointing the same way as the question wins."""
+        torch = td.torch
+        q = torch.tensor([[1.0, 0.0]])
+        aligned = td.contrastive_q_option_loss(
+            q, [torch.tensor([[1.0, 0.0], [-1.0, 0.0]])], [0])
+        opposed = td.contrastive_q_option_loss(
+            q, [torch.tensor([[1.0, 0.0], [-1.0, 0.0]])], [1])
+        self.assertLess(aligned.item(), opposed.item())
 
     @unittest.skipUnless(td.HAVE_TORCH, "needs torch (never stubbed)")
     def test_contrastive_loss_skips_unknown_rows(self):

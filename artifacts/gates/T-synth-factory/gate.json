@@ -1,0 +1,66 @@
+{
+ "agreement_rate": 0.7991,
+ "config": "cpu",
+ "elapsed_s": 54.7,
+ "format": 1,
+ "pass": true,
+ "reject_rate": 0.1532,
+ "rows": 50002,
+ "summary": {
+  "dedupe": {
+   "exact": 7252,
+   "semantic": 864
+  },
+  "licenses": {
+   "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/artifacts/data-prefetch/boolq.jsonl :: mixed-research": 25238
+  },
+  "metrics": {
+   "accepted": 50002,
+   "adjudicated": 6840,
+   "agreement_rate": 0.7991,
+   "proposed": 59050,
+   "reject_rate": 0.1532,
+   "roles_inverted_frac": 0.5
+  },
+  "rows": 50002,
+  "shards": [
+   {
+    "file": "synth-v1-000.jsonl",
+    "rows": 10000,
+    "sha256": "4cd193d8f68f2aeba98cf2a81e8fee7734dd1f529f0d2b1992c0f2a5a27dd0b8"
+   },
+   {
+    "file": "synth-v1-001.jsonl",
+    "rows": 10000,
+    "sha256": "b382f4afaf300a2e414dbd732442519d0d6cdc5c76f625bd99a841a715bae55e"
+   },
+   {
+    "file": "synth-v1-002.jsonl",
+    "rows": 10000,
+    "sha256": "6a40a6cbf91614264dbf819921bae5e60fe3b5c37e80bd7a6548e28e83a59816"
+   },
+   {
+    "file": "synth-v1-003.jsonl",
+    "rows": 10000,
+    "sha256": "16a18ed5953b47c7ce8066c8bd85eba5cb348857f5fdbe09b775dd54996ad2f7"
+   },
+   {
+    "file": "synth-v1-004.jsonl",
+    "rows": 10000,
+    "sha256": "8e9c6f295d035693da483beb808571c796de7e55ee340e93597739bc62f362ba"
+   },
+   {
+    "file": "synth-v1-005.jsonl",
+    "rows": 2,
+    "sha256": "ff05252068b522702cc390fb6567c8948c157f30ec46612663b4d59f917f1833"
+   }
+  ]
+ },
+ "target_accepted": 50000,
+ "task": "T-synth-factory",
+ "ts": "20260920T154448Z",
+ "upstream": {
+  "pass": true,
+  "task": "T-massive-huff"
+ }
+}

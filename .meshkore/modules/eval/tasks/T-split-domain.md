@@ -1,7 +1,7 @@
 ---
 id: T-split-domain
 title: Split por plantilla y dominio — nunca por índice de fila
-status: active
+status: done
 priority: high
 owner: unassigned
 category: eval

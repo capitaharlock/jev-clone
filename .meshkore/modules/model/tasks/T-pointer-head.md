@@ -1,7 +1,7 @@
 ---
 id: T-pointer-head
 title: Pointer head — la opción se puntúa por su texto, nunca por su índice
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model

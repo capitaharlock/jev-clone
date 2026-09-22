@@ -20,6 +20,9 @@ half = { version = "2", features = ["serde"] }
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
 clap = { version = "4", features = ["derive"] }
+candle-core = "0.10"
+candle-nn = "0.10"
+tokenizers = { version = "0.22", default-features = false, features = ["onig"] }
 
 [profile.release]
 lto = true

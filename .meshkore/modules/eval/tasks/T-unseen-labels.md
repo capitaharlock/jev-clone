@@ -1,7 +1,7 @@
 ---
 id: T-unseen-labels
 title: Métrica primaria — accuracy y ECE sobre etiquetas no vistas en train
-status: active
+status: done
 priority: high
 owner: unassigned
 category: eval
@@ -10,8 +10,10 @@ depends_on:
   - T-split-domain
 created: 2026-09-21
 updated: 2026-09-21
+completed_at: 2026-09-21T14:46:07.809Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Métrica primaria — accuracy y ECE sobre etiquetas no vistas en train
 
 Hallazgo F: **no existe ninguna métrica sobre etiquetas no vistas en
@@ -59,3 +61,37 @@ es el modelo.
 - `eval/calib.py` calibra el modelo real y no un scorer coseno.
 - LogiQA/ReClor tienen su número eval-only publicado con su fecha y su
   `model_version`.
+
+## Resolution
+
+✓ #honest-eval #T-unseen-labels done · 12 ficheros · commit `3824995` · 119/119 tests
+Ya existe la única métrica que decide si el producto funciona: accuracy + ECE sobre **etiquetas nunca vistas**, siempre en pares vista/no-vista y medida sobre el checkpoint real. El número duele y se publica igual: **0,2203 no vistas contra 0,3421 vistas** (ECE 0,4125 vs 0,3104). HuffPost se desploma de 0,6005 a 0,0270. `eval/calib.py` deja de calibrar el scorer coseno sin parámetros y calibra el pointer head real, con `model_version` obligatorio o rechaza el ajuste.
+
+⚠ Gate en `pass: false` por **un solo** criterio — `cross_lingual_holdout`. No es un bug: falta un run de entreno que excluya it-IT/pt-PT de los samplers de MASSIVE; hasta entonces el brazo translingüe es cota superior, y así queda dicho.
+
+🚀 Opus (claude-code, pid 40301 vivo) → #honest-eval #T-release-gate · escribir el criterio de release **antes** de medir, y el gate que lo aplica solo — más las reglas de coherencia que tumban cualquier verde con kappa ≈ 0 o sin `model_version`, aplicadas hacia atrás a los gates ya publicados.
+
+<details><summary>#T-unseen-labels — por qué el veredicto del wake se descarta</summary>
+
+- El wake dice `no-commit (subagent didn't ship)` fail #1; `git log` muestra `3824995` en HEAD con los 12 ficheros del informe. Verdict stale, HEAD manda (memoria de rol, 2026-09-21).
+- Termómetro externo, jamás en train: logiqa-mc ranking 0,2693 y reclor 0,2120 contra azar 0,25 → **no supera el azar**. Se publica como está.
+- MASSIVE puntúa *mejor* en no vistas (0,3643) que en vistas (0,1700) — por eso cada par envía su K y su tasa de azar, para que el número no se lea solo.
+</details>
+
+<details><summary>#honest-eval — estado de la cadena</summary>
+
+- `T-split-domain` done (`8e0fd9a`) · `T-unseen-labels` done (`3824995`) · `T-release-gate` **active** (A019).
+- Cadena estrictamente secuencial: `T-release-gate` es la última de la iniciativa. Al cerrarla, #honest-eval pasa a `status: done` y el pase sigue con #oss-release.
+- Jobs vivos: `train-decision` (pid 37091, reiniciado 14:42Z) y `training-monitor` (:8794, pid 18966).
+</details>
+
+<details><summary>Pendiente ya identificado para el cierre de pase</summary>
+
+- **deferred-ops** · `.meshkore/docs/release-criteria.md` sale como propuesta con `signed_by: pending-operator` — el criterio es tuyo, el gate no se salta por falta de firma pero la registra.
+- **deferred-ops** · el brazo translingüe necesita un run de entreno con EVAL_LOCALES excluidos para convertir la cota superior en número real.
+- `artifacts/gates/T-release/release.json` sigue anunciando el calibrador coseno en `release.json` + `model-card.md`; entra en el barrido retroactivo de #T-release-gate.
+</details>
+
+— T-unseen-labels · la evaluación ya mide etiquetas nunca vistas, y el número sale publicado tal como es
+
+6.1M tokens

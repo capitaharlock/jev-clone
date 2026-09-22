@@ -6,10 +6,10 @@ initiative: data-training
 status: done
 created: 2026-09-20
 closed: 2026-09-20T22:40:00.000Z
-resolved_by: A004
-resolved_by_conv: general-09192230
-commit_shas: ['e6cab6055d1d7204e034c82560854fee1eb6a455']
-completed_at: 2026-09-21T09:23:16.823Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
+commit_shas: ['0ecbd528efbe71e12376b8de0ecd7814df0ea53b']
+completed_at: 2026-09-22T10:31:47.403Z
 ---
 # T-train-monitor — Live training monitor (terminal + dashboard, 24/7)
 
@@ -66,30 +66,28 @@ Comando correcto:
 
 ## Resolution
 
-No, no estamos a máxima capacidad. El tren anda (1 núcleo al 99%) pero el generador está muerto y Q-W-E-N aporta cero.
+✗ #T-labelspace-div wake es falso · commit `f66a6b4` está en HEAD. La task queda `next` en disco, que es lo correcto: depende de #T-antiscale-diag, que no está hecha. Sin cambio de estado.
 
-Lo que veo ahora: `train_baseline.py` corriendo al 98% CPU, monitor vivo en 8794, pero `data_gen_loop.py` sin proceso vivo y `synth-loop.jsonl` congelado en 26.700 filas desde las 08:01. Carga media 7,2 sobre 16 núcleos: la máquina va a medio gas. Y confirmo lo importante: entrenamos encoders de decisión (TF-IDF + regresión por tarea), no un LLM; Q-W-E-N solo inventa plantillas, nunca toca pesos de lenguaje.
+Lo que sí encontré: #T-antiscale-diag estaba marcada `active` **sin nadie ejecutándola** (`/runs` = 0 agentes). Era un `active` fantasma bloqueando las tres tareas que cuelgan de ella. Ya no.
 
-<details><summary>Estado medido — generador, train, Q-W-E-N</summary>
+🚀 A031 (`developer-copy`, opus, pid 6256 vivo) → #generalization-fix #T-antiscale-diag
+· mide los 5 ejes de por qué la accuracy unseen **cae** al escalar, sobre los checkpoints que ya existen — no propone arreglos, nombra la causa dominante y **qué % de la caída explica**. Ese número es el que prioriza #T-unfreeze-backbone vs #T-gen-objective.
 
-- Generador: `make gen-status` dice "(ningún data_gen_loop vivo)". Últimas líneas del log: batch 5 → 26.700 filas (15,1 MB), y ahí se para. Fichero con mtime 08:01, ~3h congelado.
-- Train: pid 77264 con 3 min de CPU al 98,7% en la primera medida; en la segunda ya no listaba (el reentreno completo terminó entre ambas). Es el comportamiento normal: el monitor solo reentrena al detectar datos nuevos, y sin datos nuevos no hay nada que entrenar.
-- Q-W-E-N: `plantillas frescas 0`, `grep qwen synth-loop = 0`, y el arranque registró `qwen-templates-disk=0` sin ninguna línea `[Q-W-E-N]` después. El hook existe (`--qwen-every 24` pide 5 plantillas a `qwen3.6:27b-mlx` en ollama :11434, que sí responde y tiene el modelo), pero en esta vida del generador nunca llegó al batch 24 o el fetch falló en silencio. Resultado: todo lo generado es plantilla programática, cero ideas frescas del modelo.
-- Desfase: 26.700 en disco vs 9.760 entrenadas → hay ~17k filas en cola que el próximo reentreno sí consumirá.
+<details><summary>Por qué esta y no otra — el resto está encadenado</summary>
+
+- #T-antiscale-diag · `depends_on: []` → única READY del work-stream.
+- #T-unfreeze-backbone · `depends_on: T-antiscale-diag` → espera.
+- #T-gen-objective · `depends_on: T-antiscale-diag` → espera.
+- #T-labelspace-div · `depends_on: T-antiscale-diag` → espera (es la hipótesis gemela por el lado de datos).
+- #honest-eval #T-release-gate · espera tu firma, no un agente.
+- Paralelo cruzado de iniciativa: el daemon lo rechaza (409 `initiative-already-in-flight`). El segundo agente (`muse`) queda libre para la siguiente ola en cuanto A031 drene.
+
+Restricciones que le puse: usar los checkpoints existentes (solo el eje 3 permite dos runs cortos), lanzar esos runs como **job del daemon** y no dentro de su turno, y marcar `measured: false` con la razón antes que inventar un número.
 </details>
 
-<details><summary>Capacidad — cuánto margen hay</summary>
+Te aviso cuando A031 cierre con el eje dominante.
 
-- CPU: 1 proceso Python a 1 núcleo de 16. El baseline sklearn es monohilo por tarea; paralelizar por tarea o subir el muestreo lo pondría a 8-16 núcleos sin tocar hardware.
-- Datos: el cuello no es disco (15 MB) sino que el generador lleva 3h parado: cero casos nuevos = cero entrenamiento útil aunque el train diga "EN MARCHA".
-- Q-W-E-N local (27b) da para plantillas cada ~4 min sin frenar nada; hoy aporta 0 por el punto anterior, no por falta de máquina.
-</details>
+— #T-labelspace-div · verificada contra HEAD, sin flip (wake falso)
+— #T-antiscale-diag · desbloqueada del `active` fantasma y despachada a A031
 
-<details><summary>Qué haría para ir al máximo — 3 pasos</summary>
-
-1. Rearrancar el generador (es lo que te muestra "off"): `cd /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone && nohup .venv-train/bin/python tools/data_gen_loop.py --batch 500 --interval 10 >> /tmp/gen-loop.log 2>&1 &`. Con eso el monitor vuelve a ver `mtime` nuevo y reentrena solo.
-2. Bajar `--qwen-every` de 24 a 6-8 para que Q-W-E-N aporte plantillas desde el primer minuto y comprobar con `tail -f /tmp/gen-loop.log` que aparece `[Q-W-E-N] +N templates live`. Si sigue en +0, el fetch a ollama falla y hay que mirarlo.
-3. Entrenamiento: pasar de reentreno completo ocasional a paralelo por tarea (un worker por núcleo) y subir el muestreo de civil-comments; eso sí pondría la carga cerca de 16. E indexar internet (Wikidata/programático, el #T-prog-gold) es el siguiente volumen real, no más velocidad del loop actual.
-</details>
-
-Si quieres lo rearranco yo ahora y te confirmo con `make gen-status` que vuelve a sumar filas.
+3.5M tokens

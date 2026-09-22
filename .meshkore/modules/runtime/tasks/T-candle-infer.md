@@ -11,7 +11,6 @@ depends_on:
 created: 2026-09-21
 updated: 2026-09-21
 ---
-
 # Inferencia local real — Candle Metal/CUDA en jev-model con fallback Python
 
 Hallazgo H: **no hay Candle en `Cargo.toml`**. El workspace Rust no tiene
@@ -53,3 +52,10 @@ Trabajo:
   CUDA y CPU.
 - La paridad con el runner Python está verificada sobre 1 000 filas.
 - Hay latencias p95 medidas en M-series y en NVIDIA, no estimadas.
+
+## Resolution
+
+**Cancelado, no fallido (2026-09-21).** El agente fue detenido con SIGTERM (exit 143) por orden del operador: la prioridad pasó a entrenar el modelo (#data-training), no a empaquetar la release. No hubo error de ejecución.
+
+Dejó en el worktree, sin commit: `.gitignore`, `.github/workflows/ci.yml`, `Cargo.toml`/`Cargo.lock`. El índice de git quedó con 9 168 `git rm --cached` huérfanos; el architect los desestageó (ficheros intactos en disco).
+Reanudar desde ahí cuando la release vuelva a estar en scope.

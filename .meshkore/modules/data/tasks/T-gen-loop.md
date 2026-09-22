@@ -1,7 +1,7 @@
 ---
 id: T-gen-loop
 title: Continuous decision-data generator loop
-status: active
+status: done
 owner: rjj-mac-claude
 category: data
 initiative: data-training
