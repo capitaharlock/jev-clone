@@ -7,7 +7,7 @@ owner: unassigned
 category: model
 initiative: generalization-fix
 depends_on: []
-blocked_on: 'eje 3 (job antiscale-wide, ~14 h): los dos runs de cabeza x2/x4 aun en curso'
+blocked_on: 'eje 3: falta el summary del run d512 (~1,4 h). El d1024 queda cortado por decision del operador en ambas ramas; el eje 3 se cerrara medido a x2, nunca extrapolado a x4'
 created: 2026-09-22
 updated: 2026-09-22
 failed_at: 2026-09-22T10:48:05.397Z
@@ -115,3 +115,29 @@ Turn failed (exit 143) with no output.
 - `tools/diagnose/antiscale.py`
 - `tools/diagnose/test_antiscale.py`
 - `training/python/train_decision.py`
+
+## Eje 3 — regla pre-registrada (escrita antes de leer el d512)
+
+Decision del operador 2026-09-22: **el d1024 se corta en las dos ramas**, asi
+que el eje 3 se cierra con la medida a x2 y con el motivo del corte escrito.
+Lo unico que varia es el veredicto, y esta fijado de antemano:
+
+- Baseline de comparacion: `mix1m-curve-modernbert-base-s20260922`, tramo
+  250 k -> 1 M, `fall = 0.166556` / `fall_ranking = 0.104388`.
+- Brazo x2: `artifacts/runs/antiscale-wide-d512-modernbert-s20260922`.
+- Si el d512 **aplana** la pendiente -> causa = capacidad. `measured: true`,
+  el eje 3 pasa a ser el eje dominante y la prioridad se mueve a
+  `#T-unfreeze-backbone`.
+- Si el d512 **iguala** al baseline dentro del ruido -> el eje 3 se registra
+  como *medido a x2, no a x4*, con el numero del d512 y el motivo del corte.
+  **Prohibido extrapolar el x4**: el gate no puede publicar un numero que
+  nadie ha medido.
+- En ambas ramas la GPU liberada va al run de 1 M del brazo `prior`
+  (job `prior-1m`), no a la curva de label-space.
+
+## Done when (adenda eje 3)
+
+- `gate.json` trae el eje 3 con `measured` explicito y, si aplica, el campo
+  que dice que el x4 no se midio y por que.
+- `#T-antiscale-diag` no se cierra con ningun numero de x4 inventado.
+
