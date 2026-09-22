@@ -51,3 +51,18 @@ el que la mueva, con el resto registrado como descartado y por qué.
 - Un candidato adoptado con ganancia unseen medida y reproducible.
 - Los descartados quedan registrados con su número, no borrados.
 - `#T-release-gate` vuelve a evaluarse sobre el checkpoint resultante.
+
+## Prioridad (#T-antiscale-diag)
+
+**Primera de las dos.** La ablación de `#T-antiscale-diag`
+(`artifacts/gates/T-antiscale-diag/gate.json`) atribuye el **75,4 %** de la
+caída 250 k → 1 M al eje 4, *ranking*, no a la temperatura: el número forzando
+decisión cae con el crudo y a 1 M no se distingue del azar. El eje 1 mide,
+además, que el **100 %** de la mezcla 1 M se contesta con un mapa
+texto→etiqueta, así que cada fila nueva refuerza exactamente el incentivo que
+esta task ataca. El orden no depende de cuál de los dos ejes de la partición
+gane: bajo el protocolo completo de `#T-unseen-labels` la caída de
+modernbert-base es casi toda abstención, y con el backbone congelado el logit
+de `unknown` es igualmente algo que la cabeza aprendió bajo este objetivo. Se
+invierte con `#T-unfreeze-backbone` si el eje 3 (cabeza ×2/×4, job
+`antiscale-wide`) aplana la pendiente.

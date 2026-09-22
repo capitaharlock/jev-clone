@@ -1,0 +1,813 @@
+{
+  "axes": {
+    "1_label-space_memorisation": {
+      "axis": 1,
+      "correlation": {
+        "measured": false,
+        "not_estimated": "no coefficient is published",
+        "reason": "the axis does not vary: all 12 datasets sit above the 0.5 threshold, over a spread of 0.011873, and they carry 100.0 % of the 1 M mixture. A correlation against a constant is undefined, and a coefficient computed over that spread would be noise wearing a finding's name"
+      },
+      "finding": "the prediction the task wrote down \u2014 'the fall concentrates in the closed-vocabulary cuts' \u2014 cannot be falsified on this corpus, because there is no other kind of cut in it. Every source scores as closed vocabulary, including the three whose options are per-row spans: prog-gold 1.0, swag 1.0, synth-v1 0.729297 (the fraction of rows carrying at least one option text the sampler's global pool overwrote). A text -> label map is therefore a sufficient training signal for 100 % of the mixture, which is the mechanism axis 4 measures the consequence of",
+      "measured": true,
+      "measurement": {
+        "axis": "option_text_reuse = 1 - distinct option texts / option slots (tools.diagnose.surface)",
+        "datasets_closed_vocabulary": 12,
+        "datasets_total": 12,
+        "max": 0.998355,
+        "min": 0.986482,
+        "per_dataset": {
+          "boolq": 0.998355,
+          "civil-comments": 0.998355,
+          "dbpedia14": 0.995743,
+          "detox-attack": 0.997943,
+          "email-triage": 0.997731,
+          "goemotions": 0.9915,
+          "huffpost": 0.990956,
+          "massive": 0.986482,
+          "prog-gold": 0.997343,
+          "snli": 0.997922,
+          "swag": 0.998118,
+          "synth-v1": 0.997719
+        },
+        "source": "artifacts/gates/T-data-eval/surface_vs_reasoning.json",
+        "spread": 0.011873,
+        "threshold": 0.5,
+        "unseen_cuts": {
+          "huffpost": {
+            "ettin-68m": {
+              "fall_ranking": 0.148066,
+              "group": "closed_vocabulary",
+              "n": 1344,
+              "option_text_reuse": 0.990956,
+              "options_only": [
+                0.292411,
+                0.144345
+              ]
+            },
+            "modernbert-base": {
+              "fall_ranking": 0.215029,
+              "group": "closed_vocabulary",
+              "n": 1344,
+              "option_text_reuse": 0.990956,
+              "options_only": [
+                0.31994,
+                0.104911
+              ]
+            }
+          },
+          "massive": {
+            "ettin-68m": {
+              "fall_ranking": 0.182693,
+              "group": "closed_vocabulary",
+              "n": 1664,
+              "option_text_reuse": 0.986482,
+              "options_only": [
+                0.413462,
+                0.230769
+              ]
+            },
+            "modernbert-base": {
+              "fall_ranking": 0.015024,
+              "group": "closed_vocabulary",
+              "n": 1664,
+              "option_text_reuse": 0.986482,
+              "options_only": [
+                0.233774,
+                0.21875
+              ]
+            }
+          }
+        }
+      },
+      "name": "label-space memorisation",
+      "number": {
+        "closed_vocabulary_share_of_mixture": 1.0
+      },
+      "option_text_integrity": {
+        "prog-gold": {
+          "gold_options_replaced": 4297,
+          "gold_text_replaced_rate": 2.491014,
+          "option_text_mismatch_rate": 0.645347,
+          "options": 22811,
+          "options_whose_text_the_pool_replaces": 14721,
+          "rows": 1725,
+          "rows_with_any_mismatch_rate": 1.0
+        },
+        "swag": {
+          "gold_options_replaced": 5000,
+          "gold_text_replaced_rate": 1.0,
+          "option_text_mismatch_rate": 1.0,
+          "options": 20000,
+          "options_whose_text_the_pool_replaces": 20000,
+          "rows": 5000,
+          "rows_with_any_mismatch_rate": 1.0
+        },
+        "synth-v1": {
+          "gold_options_replaced": 3283,
+          "gold_text_replaced_rate": 0.664709,
+          "option_text_mismatch_rate": 0.797874,
+          "options": 17682,
+          "options_whose_text_the_pool_replaces": 14108,
+          "rows": 4939,
+          "rows_with_any_mismatch_rate": 0.729297
+        }
+      },
+      "question": "does the fall concentrate in the closed-vocabulary cuts, as `option_text_reuse` measures them?",
+      "role": "explanatory"
+    },
+    "2_runaway_abstention": {
+      "axis": 2,
+      "finding": "abstention rises on every arm of every protocol \u2014 it is the only quantity of this decomposition that does \u2014 and on the curve this task was asked about it carries 24.6 % of the fall on average. Forcing the decision does NOT recover that curve: the forced-decision number falls with it, which is axis 4. Under the #T-unseen-labels protocol the split moves, and it moves far enough on one arm to change which axis is dominant there: see `dominant.robustness`",
+      "measured": true,
+      "measurement": {
+        "forced_decision": "accuracy_options_only \u2014 argmax over the K real options only (eval.calib.metrics_of); the same probabilities, `unknown` dropped",
+        "per_arm": {
+          "ettin-68m": {
+            "abstain_rate": [
+              0.430851,
+              0.637965
+            ],
+            "fall": 0.189827,
+            "fall_attributed": 0.022606,
+            "forced_decision": [
+              0.359375,
+              0.192154
+            ],
+            "share_of_fall": 0.119087,
+            "unseen_accuracy": [
+              0.239362,
+              0.049535
+            ]
+          },
+          "modernbert-base": {
+            "abstain_rate": [
+              0.257646,
+              0.701795
+            ],
+            "fall": 0.166556,
+            "fall_attributed": 0.062168,
+            "forced_decision": [
+              0.272274,
+              0.167886
+            ],
+            "share_of_fall": 0.373256,
+            "unseen_accuracy": [
+              0.194149,
+              0.027593
+            ]
+          }
+        },
+        "second_protocol": {
+          "mean": 0.625835,
+          "measured": true,
+          "name": "unseen_labels_gate",
+          "per_arm": {
+            "ettin-68m": 0.299078,
+            "modernbert-base": 0.952592
+          }
+        }
+      },
+      "name": "runaway abstention",
+      "number": {
+        "share_of_fall": 0.246171
+      },
+      "question": "does the fall survive a forced decision, with `unknown` taken out of the race?",
+      "role": "partition"
+    },
+    "3_trainable_capacity": {
+      "axis": 3,
+      "falsifies": "if either wider head flattens the 250 k -> 1 M slope, the fall is a capacity limit and #T-unfreeze-backbone takes priority; if both slopes match the 256-wide baseline, capacity is excluded and the priority below stands",
+      "measured": false,
+      "name": "trainable capacity",
+      "not_this_axis": {
+        "what": "the curve already carries two backbones of very different size (68 144 640 vs 149 014 272 parameters) that fall the same way",
+        "why_not": "both are FROZEN, and their trainable heads are within 8 % of each other, so the pair varies the representation's size and not the trainable capacity this axis is about. It is stated here so it is not mistaken for the measurement"
+      },
+      "pending": {
+        "backbone": "modernbert-base",
+        "baseline": {
+          "backbone": "modernbert-base",
+          "d_model": 256,
+          "fall": 0.166556,
+          "fall_ranking": 0.104388,
+          "run_id": "mix1m-curve-modernbert-base-s20260922"
+        },
+        "job": "antiscale-wide",
+        "reads_when_done": [
+          "artifacts/runs/antiscale-wide-d1024-modernbert-s20260922/summary.json",
+          "artifacts/runs/antiscale-wide-d512-modernbert-s20260922/summary.json"
+        ],
+        "runs": {
+          "2x": {
+            "run_id": "antiscale-wide-d512-modernbert-s20260922",
+            "waiting_for": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/artifacts/runs/antiscale-wide-d512-modernbert-s20260922/summary.json"
+          },
+          "4x": {
+            "run_id": "antiscale-wide-d1024-modernbert-s20260922",
+            "waiting_for": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/artifacts/runs/antiscale-wide-d1024-modernbert-s20260922/run.json"
+          }
+        },
+        "widths": {
+          "2x": 512,
+          "4x": 1024
+        }
+      },
+      "question": "does the 250 k -> 1 M slope change when the trainable head is 2x and 4x wider?",
+      "reason_not_measured": "the two short runs are not on disk yet. They are the only two this task may spend and they are running as the daemon job `antiscale-wide`; the axis fills itself in when their summaries land and this module is re-run. Nothing is estimated in the meantime",
+      "role": "explanatory"
+    },
+    "4_calibration_vs_ranking": {
+      "axis": 4,
+      "finding": "the order degrades: the forced-decision number falls on both arms and carries 75.4 % of the fall on average. At 1 M it is no longer distinguishable from chance on ettin-68m, modernbert-base (ettin-68m: CI95 upper bound 0.206623 vs chance 0.201924, modernbert-base: CI95 upper bound 0.181664 vs chance 0.201924), and strictly BELOW it on modernbert-base. Temperature alone cannot do that \u2014 a mis-scaled but correct ordering keeps its argmax",
+      "measured": true,
+      "measurement": {
+        "per_arm": {
+          "ettin-68m": {
+            "above_chance_at_final": false,
+            "below_chance_at_final": false,
+            "chance_options_only": 0.201924,
+            "ece": [
+              0.352945,
+              0.542744
+            ],
+            "ece_rise": 0.189799,
+            "fall_attributed": 0.167221,
+            "final_ci95": [
+              0.178471,
+              0.206623
+            ],
+            "seen_accuracy": [
+              0.59375,
+              0.577128
+            ],
+            "share_of_fall": 0.880913,
+            "unseen_ranking": [
+              0.359375,
+              0.192154
+            ]
+          },
+          "modernbert-base": {
+            "above_chance_at_final": false,
+            "below_chance_at_final": true,
+            "chance_options_only": 0.201924,
+            "ece": [
+              0.20998,
+              0.619949
+            ],
+            "ece_rise": 0.409969,
+            "fall_attributed": 0.104388,
+            "final_ci95": [
+              0.154954,
+              0.181664
+            ],
+            "seen_accuracy": [
+              0.606051,
+              0.573138
+            ],
+            "share_of_fall": 0.626744,
+            "unseen_ranking": [
+              0.272274,
+              0.167886
+            ]
+          }
+        },
+        "rule": "a ranking that has only lost its temperature keeps its order: accuracy_options_only would hold while ECE rises. Here both move",
+        "second_protocol": {
+          "mean": 0.374165,
+          "measured": true,
+          "name": "unseen_labels_gate",
+          "per_arm": {
+            "ettin-68m": 0.700922,
+            "modernbert-base": 0.047408
+          }
+        }
+      },
+      "name": "calibration vs ranking",
+      "number": {
+        "share_of_fall": 0.753829
+      },
+      "question": "is the fall a temperature, or is the ORDER of the options degrading too?",
+      "role": "partition"
+    },
+    "5_training_regime": {
+      "axis": 5,
+      "caveat": "the 250 k reference of this segment is an intermediate checkpoint of a 1 M cosine schedule, not a finished 250 k run. `converged_reference` is the control for exactly that, and it does not change the ranking half",
+      "finding": "not by repetition: both arms run 1.0 epochs over the corpus, so no row is seen twice and the fall is not a memorised row being re-fitted. Early stopping on unseen is a SELECTION control, not a cause \u2014 it recovers the fall by keeping an earlier point of the same curve, and how much it recovers depends on the patience it is given",
+      "measured": true,
+      "measurement": {
+        "converged_reference": {
+          "backbone": "modernbert-base",
+          "converged_250k": {
+            "abstain_rate": 0.041888,
+            "ece": 0.021645,
+            "options_only": 0.268285,
+            "unseen_accuracy": 0.254987
+          },
+          "converged_250k_minus_1m": 0.227394,
+          "end_of_the_1m_run": {
+            "abstain_rate": 0.701795,
+            "ece": 0.619949,
+            "options_only": 0.167886,
+            "unseen_accuracy": 0.027593
+          },
+          "measured": true,
+          "reading": "a finished 250 k run is better calibrated (ECE 0.021645 vs 0.619949) and abstains far less (0.041888 vs 0.701795), but its forced-decision number is within noise of the 1 M run's 250 k snapshot: the schedule moves the abstention half, not the ranking half",
+          "run_id": "mix1m-synth-modernbert-base-s20260922",
+          "snapshot_250k_of_the_1m_run": {
+            "abstain_rate": 0.257646,
+            "ece": 0.20998,
+            "options_only": 0.272274,
+            "unseen_accuracy": 0.194149
+          },
+          "what": "the same corpus recipe and seed trained with a 250 k BUDGET, so the cosine schedule completes instead of being cut at 25 % of its steps"
+        },
+        "per_arm": {
+          "ettin-68m": {
+            "early_stopping_control": {
+              "oracle_argmax": {
+                "kept_samples": 250048,
+                "kept_unseen_accuracy": 0.239362,
+                "note": "the oracle picks the peak of the same curve, so when the peak IS the segment's reference stage its recovery is 1.0 by construction and says nothing about cause",
+                "recovers_of_fall": 1.0,
+                "tautological": true
+              },
+              "patience_1": {
+                "kept_samples": 62528,
+                "kept_unseen_accuracy": 0.12766,
+                "patience": 1,
+                "recovers_of_fall": 0.411559,
+                "stopped_after_stage": 1
+              },
+              "patience_2": {
+                "kept_samples": 250048,
+                "kept_unseen_accuracy": 0.239362,
+                "patience": 2,
+                "recovers_of_fall": 1.0,
+                "stopped_after_stage": 4
+              }
+            },
+            "epochs_over_corpus": 1.0,
+            "lr": 0.0003,
+            "rows_repeated": false,
+            "schedule": {
+              "floor_fraction_of_base": 0.1,
+              "shape": "linear warmup then cosine decay to 10 % of base",
+              "warmup_steps": 200
+            },
+            "steps": 15633
+          },
+          "modernbert-base": {
+            "early_stopping_control": {
+              "oracle_argmax": {
+                "kept_samples": 250048,
+                "kept_unseen_accuracy": 0.194149,
+                "note": "the oracle picks the peak of the same curve, so when the peak IS the segment's reference stage its recovery is 1.0 by construction and says nothing about cause",
+                "recovers_of_fall": 1.0,
+                "tautological": true
+              },
+              "patience_1": {
+                "kept_samples": 250048,
+                "kept_unseen_accuracy": 0.194149,
+                "patience": 1,
+                "recovers_of_fall": 1.0,
+                "stopped_after_stage": 3
+              },
+              "patience_2": {
+                "kept_samples": 250048,
+                "kept_unseen_accuracy": 0.194149,
+                "patience": 2,
+                "recovers_of_fall": 1.0,
+                "stopped_after_stage": 4
+              }
+            },
+            "epochs_over_corpus": 1.0,
+            "lr": 0.0003,
+            "rows_repeated": false,
+            "schedule": {
+              "floor_fraction_of_base": 0.1,
+              "shape": "linear warmup then cosine decay to 10 % of base",
+              "warmup_steps": 200
+            },
+            "steps": 15633
+          }
+        }
+      },
+      "name": "training regime",
+      "number": {
+        "epochs_over_corpus": 1.0
+      },
+      "question": "is the last segment over-training the label map?",
+      "role": "explanatory"
+    }
+  },
+  "crosscheck_t_unseen": {
+    "all_level": {
+      "ettin-68m": {
+        "fall": 0.153983,
+        "fall_ranking": 0.10793,
+        "share_abstention": 0.299078,
+        "share_ranking": 0.700922
+      },
+      "modernbert-base": {
+        "fall": 0.123755,
+        "fall_ranking": 0.005867,
+        "share_abstention": 0.952592,
+        "share_ranking": 0.047408
+      }
+    },
+    "extreme_cell": {
+      "abstain_1m": 1.0,
+      "chance_options_only_1m": 0.205078,
+      "cut": "massive @ modernbert-base",
+      "forced_1m": 0.218294,
+      "forced_above_chance_while_fully_silent": true,
+      "reading": "the head answers nothing on this cut at 1 M while still ranking above chance with unknown out of the race: the purest silence in the curve"
+    },
+    "per_cut": {
+      "ettin-68m": {
+        "ALL": {
+          "abstain_rate": [
+            0.433144,
+            0.615754
+          ],
+          "chance_options_only": 0.203407,
+          "fall": 0.153983,
+          "forced_decision": [
+            0.310633,
+            0.202703
+          ],
+          "n": 5624,
+          "unseen_accuracy": [
+            0.220839,
+            0.066856
+          ]
+        },
+        "banking77": {
+          "abstain_rate": [
+            0.709797,
+            0.523105
+          ],
+          "chance_options_only": 0.200249,
+          "fall": -0.048059,
+          "forced_decision": [
+            0.192237,
+            0.227357
+          ],
+          "n": 541,
+          "unseen_accuracy": [
+            0.057301,
+            0.10536
+          ]
+        },
+        "huffpost": {
+          "abstain_rate": [
+            0.934,
+            0.776
+          ],
+          "chance_options_only": 0.201687,
+          "fall": -0.017,
+          "forced_decision": [
+            0.2095,
+            0.1345
+          ],
+          "n": 2000,
+          "unseen_accuracy": [
+            0.019,
+            0.036
+          ]
+        },
+        "massive": {
+          "abstain_rate": [
+            0.059682,
+            0.528057
+          ],
+          "chance_options_only": 0.205078,
+          "fall": 0.300357,
+          "forced_decision": [
+            0.397016,
+            0.242621
+          ],
+          "n": 3083,
+          "unseen_accuracy": [
+            0.380474,
+            0.080117
+          ]
+        }
+      },
+      "modernbert-base": {
+        "ALL": {
+          "abstain_rate": [
+            0.185277,
+            0.720839
+          ],
+          "chance_options_only": 0.203407,
+          "fall": 0.123755,
+          "forced_decision": [
+            0.23293,
+            0.227063
+          ],
+          "n": 5624,
+          "unseen_accuracy": [
+            0.189011,
+            0.065256
+          ]
+        },
+        "banking77": {
+          "abstain_rate": [
+            0.005545,
+            0.338262
+          ],
+          "chance_options_only": 0.200249,
+          "fall": 0.101663,
+          "forced_decision": [
+            0.212569,
+            0.170055
+          ],
+          "n": 541,
+          "unseen_accuracy": [
+            0.208872,
+            0.107209
+          ]
+        },
+        "huffpost": {
+          "abstain_rate": [
+            0.509,
+            0.394
+          ],
+          "chance_options_only": 0.201687,
+          "fall": -0.0525,
+          "forced_decision": [
+            0.223,
+            0.256
+          ],
+          "n": 2000,
+          "unseen_accuracy": [
+            0.102,
+            0.1545
+          ]
+        },
+        "massive": {
+          "abstain_rate": [
+            0.006812,
+            1.0
+          ],
+          "chance_options_only": 0.205078,
+          "fall": 0.241972,
+          "forced_decision": [
+            0.242945,
+            0.218294
+          ],
+          "n": 3083,
+          "unseen_accuracy": [
+            0.241972,
+            0.0
+          ]
+        }
+      }
+    },
+    "protocol": "T-unseen-labels cuts (metric seed 20260921): 250 k stage checkpoints scored with eval.unseen.run(ckpt, write=False), committed under inputs/; 1 M side from artifacts/gates/T-unseen-labels/by-checkpoint/",
+    "reading": "the pooled ALL cut falls under both protocols; the mechanism mix differs by arm (ettin-68m stays ranking-led, modernbert-base goes abstention-led), and massive carries the pooled fall on both"
+  },
+  "decomposition": {
+    "explanatory": [
+      1,
+      3,
+      5
+    ],
+    "partition": [
+      2,
+      4
+    ],
+    "rule": "fall = fall_ranking + fall_abstention, exactly: the two are the same probabilities read with and without `unknown` in the race",
+    "why": "axes 1, 3 and 5 explain the ranking half; giving them a share of their own would count the same accuracy twice"
+  },
+  "dominant": {
+    "axis": 4,
+    "measured_on": "trainer_stage_eval",
+    "measured_on_why": "the curve this task was asked about is the trainer's stage eval \u2014 the one #T-mix-5m published and the one the task quotes",
+    "name": "calibration vs ranking",
+    "per_arm": {
+      "ettin-68m": 0.880913,
+      "modernbert-base": 0.626744
+    },
+    "robustness": {
+      "cells": {
+        "trainer_stage_eval": {
+          "ettin-68m": 0.880913,
+          "modernbert-base": 0.626744
+        },
+        "unseen_labels_gate": {
+          "ettin-68m": 0.700922,
+          "modernbert-base": 0.047408
+        }
+      },
+      "dominant_in_cells": "3 of 4",
+      "per_protocol_mean": {
+        "trainer_stage_eval": 0.753829,
+        "unseen_labels_gate": 0.374165
+      },
+      "pooled_share": 0.563997,
+      "range": [
+        0.047408,
+        0.880913
+      ],
+      "reading": "the two protocols agree on the direction everywhere and on the SPLIT only in part: they are different cuts of different sizes (the #T-unseen-labels one carries a banking77 sibling-pair holdout the trainer's stage eval does not), so the share is published as a range and not as one decimal"
+    },
+    "rule": "axes 2 and 4 partition the fall exactly (they are the same rows read with and without `unknown` in the race); the dominant one is the larger mean share across the arms. Axes 1, 3 and 5 explain that share, they do not add to it",
+    "runner_up": {
+      "axis_2": 0.246171
+    },
+    "share_of_fall": 0.753829
+  },
+  "failed_criteria": [
+    "3_trainable_capacity"
+  ],
+  "fall": {
+    "ettin-68m": {
+      "chance": 0.165236,
+      "chance_options_only": 0.201924,
+      "fall": 0.189827,
+      "fall_abstention": 0.022606,
+      "fall_ranking": 0.167221,
+      "final_samples": 1000000,
+      "n": 3008,
+      "ref_samples": 250048,
+      "seen_accuracy": [
+        0.59375,
+        0.577128
+      ],
+      "share_abstention": 0.119087,
+      "share_ranking": 0.880913,
+      "unseen_abstain_rate": [
+        0.430851,
+        0.637965
+      ],
+      "unseen_accuracy": [
+        0.239362,
+        0.049535
+      ],
+      "unseen_ece": [
+        0.352945,
+        0.542744
+      ],
+      "unseen_options_only": [
+        0.359375,
+        0.192154
+      ]
+    },
+    "modernbert-base": {
+      "chance": 0.165236,
+      "chance_options_only": 0.201924,
+      "fall": 0.166556,
+      "fall_abstention": 0.062168,
+      "fall_ranking": 0.104388,
+      "final_samples": 1000000,
+      "n": 3008,
+      "ref_samples": 250048,
+      "seen_accuracy": [
+        0.606051,
+        0.573138
+      ],
+      "share_abstention": 0.373256,
+      "share_ranking": 0.626744,
+      "unseen_abstain_rate": [
+        0.257646,
+        0.701795
+      ],
+      "unseen_accuracy": [
+        0.194149,
+        0.027593
+      ],
+      "unseen_ece": [
+        0.20998,
+        0.619949
+      ],
+      "unseen_options_only": [
+        0.272274,
+        0.167886
+      ]
+    }
+  },
+  "fall_second_protocol": {
+    "measured": true,
+    "name": "unseen_labels_gate",
+    "per_arm": {
+      "ettin-68m": {
+        "chance_options_only": 0.203407,
+        "checkpoints": [
+          "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000",
+          "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000"
+        ],
+        "fall": 0.153983,
+        "fall_abstention": 0.046053,
+        "fall_ranking": 0.10793,
+        "n": 5624,
+        "share_abstention": 0.299078,
+        "share_ranking": 0.700922,
+        "unseen_abstain_rate": [
+          0.433144,
+          0.615754
+        ],
+        "unseen_accuracy": [
+          0.220839,
+          0.066856
+        ],
+        "unseen_ece": [
+          0.338533,
+          0.549547
+        ],
+        "unseen_options_only": [
+          0.310633,
+          0.202703
+        ],
+        "unseen_options_only_ci95_final": [
+          0.192401,
+          0.213411
+        ]
+      },
+      "modernbert-base": {
+        "chance_options_only": 0.203407,
+        "checkpoints": [
+          "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000250000",
+          "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000"
+        ],
+        "fall": 0.123755,
+        "fall_abstention": 0.117888,
+        "fall_ranking": 0.005867,
+        "n": 5624,
+        "share_abstention": 0.952592,
+        "share_ranking": 0.047408,
+        "unseen_abstain_rate": [
+          0.185277,
+          0.720839
+        ],
+        "unseen_accuracy": [
+          0.189011,
+          0.065256
+        ],
+        "unseen_ece": [
+          0.181489,
+          0.580722
+        ],
+        "unseen_options_only": [
+          0.23293,
+          0.227063
+        ],
+        "unseen_options_only_ci95_final": [
+          0.216302,
+          0.238196
+        ]
+      }
+    },
+    "what": "the #T-unseen-labels gate over the SAME two checkpoints: calibrated, sealed group split, n=5624, and it carries a banking77 sibling-pair cut the trainer's stage eval does not"
+  },
+  "format": 1,
+  "generated_utc": "2026-09-22T10:46:04Z",
+  "honesty": "an axis that cannot be measured from disk is published `measured: false` with its reason. Nothing here is estimated, and no axis is given a share it did not earn from the decomposition above",
+  "pass": false,
+  "priority": {
+    "axis_3_status": "pending \u2014 antiscale-wide",
+    "decided_by": "axis 4 (calibration vs ranking), 75.4 % of the fall",
+    "first": "T-gen-objective",
+    "flips_when": "axis 3 lands: if the 2x or 4x head flattens the 250 k -> 1 M slope, the fall has a capacity component and #T-unfreeze-backbone goes first. Until then this order is the measurement's, not a preference",
+    "second": "T-unfreeze-backbone",
+    "why": [
+      "the fall is a RANKING collapse, not a temperature: the forced-decision number falls with the raw one and reaches chance at 1 M. A wrong order is what the objective teaches, and temperature \u2014 the thing an unfrozen backbone would not fix either \u2014 is the smaller half",
+      "axis 1 measures that 100 % of the 1 M mixture is answerable by a text -> label map: every extra row is another row of that map, so the objective gets exactly what it optimises and the held-out label space is pushed down with it",
+      "the SAME frozen representation supports unseen accuracy well above chance earlier on the curve, so the representation is demonstrably not empty at the point where the curve turns: what changes over the segment is only what the head was taught, since the backbone never updates",
+      "the order does not depend on which of the two partition axes wins. The second protocol puts most of one arm's fall on abstention instead of ranking (see `dominant.robustness`), and runaway abstention is the same kind of artifact: with the backbone frozen, the `unknown` logit is something the head learned under this objective too. Both readings point at the objective before they point at the representation"
+    ],
+    "why_not_first": "#T-unfreeze-backbone is the more expensive intervention and its necessity is exactly what axis 3 tests. Unfreezing a backbone under an objective that is already driving the head the wrong way buys more capacity for the same lesson"
+  },
+  "provenance": {
+    "inputs": {
+      "artifacts/gates/T-antiscale-diag/inputs/unseen-250k-ettin-68m-s20260922.json": "7849b0666cab9af43c6f48f762c51f6d67d1767636dda5a600046fe31c3fd5db",
+      "artifacts/gates/T-antiscale-diag/inputs/unseen-250k-modernbert-base-s20260922.json": "04badf404803d50f2bdec8b9b5d0ef781708a12a6eefa626fd106eda2003a82a",
+      "artifacts/gates/T-data-eval/surface_vs_reasoning.json": "0677e8d338209f51a7f2841e25e8dacef732a4f4df9253fe23ee7141fdf46eae",
+      "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-ettin-68m-s20260922-stage-001000000.json": "b0b113cf6dcbdafcc0007c9fd119ca37c78e4e74ee77fe221eeae7c3da8e7adc",
+      "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-modernbert-base-s20260922-stage-001000000.json": "05771baed9526b53b9351737a2ee202efb9e6c845d513397d687b282c8c3709f",
+      "artifacts/runs/mix1m-curve-ettin-68m-s20260922/run.json": "15a1283acf87a3320aa105baeab7f6d5ae4637cdf9cee1e10458394a82189b4a",
+      "artifacts/runs/mix1m-curve-ettin-68m-s20260922/summary.json": "32b734f3fbef5343d20a28a5a5715aeada224992e4e77aed0dd8692b35bcf89e",
+      "artifacts/runs/mix1m-curve-modernbert-base-s20260922/run.json": "30cf4b2f5bcaaa07697f43c33fda8c2dc2558bad780064de82f08af2a5c86690",
+      "artifacts/runs/mix1m-curve-modernbert-base-s20260922/summary.json": "a4c082062e2db2d986a34af7545697c3a57f21a932708f4fe00ebd1877a8413c",
+      "artifacts/runs/mix1m-synth-modernbert-base-s20260922/run.json": "37fa6ccb4e471007afe4e8f226ca626bf169dc1a15ed5c03f3747f518dedca77",
+      "artifacts/runs/mix1m-synth-modernbert-base-s20260922/summary.json": "3ade6c2ba1c5ad8b80a62b9cbc9f4cb5f05b6f2b66e334f3f179bce1a330a4d9"
+    },
+    "reproduce": "python3 -m tools.diagnose.antiscale --seed 20260922",
+    "test": "tools/diagnose/test_antiscale.py"
+  },
+  "question": "why does unseen-label accuracy FALL as the corpus grows, when seen-label accuracy does not?",
+  "report": "artifacts/gates/T-antiscale-diag/REPORT.md",
+  "seed": 20260922,
+  "segment": {
+    "arms": [
+      "ettin-68m",
+      "modernbert-base"
+    ],
+    "from_samples": 250048,
+    "metric": "unseen-label accuracy, the trainer's stage eval (#T-unseen-labels protocol, n=3008 per stage)",
+    "to_samples": 1000000
+  },
+  "task": "T-antiscale-diag",
+  "verdict": "axis 4 \u2014 calibration vs ranking \u2014 carries 75.4 % of the fall on the curve this task was asked about, and it is the dominant axis in 3 of 4 (protocol, arm) cells \u2014 pooled 56.4 %, range 4.7\u201388.1 %. Published with 1 of 5 axes unmeasured (3_trainable_capacity): the gate stays pass:false until they are"
+}

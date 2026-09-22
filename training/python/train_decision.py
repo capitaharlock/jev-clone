@@ -1426,6 +1426,12 @@ def main(argv: list) -> int:
                    help=("which sha256-verified backbone to train the head "
                          "on; #T-bakeoff-real trains one short run per "
                          "candidate to fill the Pareto"))
+    t.add_argument("--d-model", type=int, default=DEFAULT_D_MODEL,
+                   help=("width of the trainable pointer head "
+                         "(#T-antiscale-diag axis 3: 512/1024 repeat the "
+                         "250 k -> 1 M segment with a 2x/4x head); "
+                         "must stay divisible by the head's 8 attention "
+                         "heads"))
     t.add_argument("--no-gate", action="store_true",
                    help="do not rewrite artifacts/gates/T-train-real")
     t.add_argument("--mix-target", type=int, default=None,
@@ -1502,6 +1508,7 @@ def main(argv: list) -> int:
                         log_every=args.log_every,
                         max_length=args.max_length,
                         backbone_id=args.backbone,
+                        d_model=args.d_model,
                         write_gate=not args.no_gate,
                         mix_target=args.mix_target,
                         use_mix=not args.no_mix,

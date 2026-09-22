@@ -2,7 +2,7 @@
 id: T-unfreeze-backbone
 title: Descongelar el backbone — capacidad entrenable donde está el lenguaje
 status: next
-priority: high
+priority: medium
 owner: unassigned
 category: model
 initiative: generalization-fix
@@ -46,3 +46,14 @@ multiplica ambos y el operador debe ver el precio.
 - Existe la curva unseen de los tres regímenes sobre el mismo corpus.
 - Al menos un régimen tiene pendiente **no decreciente** de 250 k a 1 M.
 - Está registrado el coste (min/1 M, GB pico) de cada régimen.
+
+## Prioridad (#T-antiscale-diag)
+
+**Segunda de las dos.** No porque la sospecha del backbone congelado esté
+descartada — el eje 3 de `#T-antiscale-diag` es justo lo que la mide y sigue
+`measured: false` a la espera del job `antiscale-wide` — sino porque la misma
+representación congelada sostiene accuracy unseen muy por encima del azar
+antes del punto en que la curva gira: lo que cambia en el tramo es sólo lo que
+se le enseñó a la cabeza. Descongelar bajo un objetivo que ya empuja en la
+dirección equivocada compra más capacidad para la misma lección. **Vuelve a
+ser la primera** si la cabeza ×2 o ×4 aplana la pendiente 250 k → 1 M.

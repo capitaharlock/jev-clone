@@ -50,3 +50,39 @@ Ejes a aislar, cada uno con su experimento y su número:
 - Hay una causa dominante nombrada con su cuota de la caída.
 - `#T-unfreeze-backbone` y `#T-gen-objective` quedan priorizadas por ese
   hallazgo, no por la sospecha previa.
+
+## Hallazgo (medido, no argumentado)
+
+`artifacts/gates/T-antiscale-diag/gate.json` · informe
+`artifacts/gates/T-antiscale-diag/REPORT.md` · ablación
+`python3 -m tools.diagnose.antiscale --seed 20260922`.
+
+**Eje dominante: el 4 — calibración vs ranking — con el 75,4 % de la caída**
+sobre la curva que la task cita (ettin-68m 88,1 %, modernbert-base 62,7 %).
+Los ejes 2 y 4 parten la caída exactamente, porque son las mismas
+probabilidades leídas con y sin `unknown` en la carrera; los ejes 1, 3 y 5
+explican esa mitad y no reciben cuota propia.
+
+**Robustez, publicada con el hallazgo:** repetida la misma descomposición
+sobre el protocolo completo de `#T-unseen-labels` (mismos dos checkpoints,
+n=5624, con el corte banking77 que el stage eval del trainer no lleva), el eje
+4 sigue siendo el dominante en **3 de 4** celdas (protocolo × brazo), con una
+cuota agrupada del **56,4 %** y un rango 4,7–88,1 %. La celda que se sale es
+modernbert-base bajo `#T-unseen-labels`, donde la caída es casi toda
+abstención (95,3 %). Las dos lecturas se publican; la prioridad no cambia con
+ninguna de ellas, porque con el backbone congelado el logit de `unknown`
+también es algo que la cabeza aprendió bajo este objetivo.
+
+| eje | medida | número |
+|---|---|---|
+| 1 · memorización del espacio de etiquetas | `option_text_reuse` de los 12 datasets | 12/12 por encima del umbral 0,5 (rango 0,986–0,998): el **100 %** de la mezcla 1 M se contesta con un mapa texto→etiqueta. La correlación que pedía la task queda `measured: false`: el eje no varía |
+| 2 · abstención desbocada | accuracy unseen forzando decisión (`accuracy_options_only`) | **24,6 %** de la caída. Forzar la decisión NO recupera la curva |
+| 3 · capacidad entrenable | cabeza ×2 y ×4 (`--d-model 512/1024`) | **`measured: false`** — los dos runs cortos siguen entrenando en el job `antiscale-wide`; el gate se rellena solo al aterrizar |
+| 4 · calibración vs ranking | `unseen_ranking` contra su propio azar (0,202) | **75,4 %** de la caída (56,4 % agrupando los dos protocolos). A 1 M ya no se distingue del azar en ninguno de los dos brazos, y en modernbert-base queda estrictamente por debajo (CI95 alto 0,182) |
+| 5 · régimen de entreno | épocas, schedule y early-stopping sobre unseen | 1,0 épocas sobre el corpus: ninguna fila se ve dos veces, así que no es re-ajuste por repetición. El early-stopping es control de SELECCIÓN, no causa (recupera 41,2 %–100 % según la paciencia) |
+
+Prioridad que sale del hallazgo: **`#T-gen-objective` primero,
+`#T-unfreeze-backbone` después**. Se invierte si el eje 3 aplana la pendiente
+250 k → 1 M con la cabeza ancha.
+
+Queda abierto sólo el eje 3, a la espera del job `antiscale-wide`.

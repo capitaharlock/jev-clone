@@ -1,6 +1,6 @@
 ---
 title: Coverage matrix
-updated: 2026-09-21
+updated: 2026-09-22
 owner: architect-master
 ---
 
@@ -196,9 +196,9 @@ publicar un modelo por debajo del azar en la propiedad que lo define.
 
 | Orden | Initiative | Task | Desbloquea |
 |---:|---|---|---|
-| 13 | generalization-fix | T-antiscale-diag | Nombra la causa de la caída con un número |
-| 14 | generalization-fix | T-unfreeze-backbone | Capacidad entrenable donde está el lenguaje |
-| 14' | generalization-fix | T-gen-objective | Incentivo a comparar en vez de recordar |
+| 13 | generalization-fix | T-antiscale-diag | Nombra la causa de la caída con un número — hecho salvo el eje 3: eje dominante **4 · calibración vs ranking, 75,4 %** (`artifacts/gates/T-antiscale-diag/gate.json`) |
+| 14 | generalization-fix | T-gen-objective | Incentivo a comparar en vez de recordar — **priorizada primera** por el eje dominante de `#T-antiscale-diag` |
+| 14' | generalization-fix | T-unfreeze-backbone | Capacidad entrenable donde está el lenguaje — segunda; vuelve a primera si el eje 3 (cabeza ×2/×4, job `antiscale-wide`) aplana la pendiente |
 | 14'' | generalization-fix | T-labelspace-div | La mitad de datos: inventario de espacios de etiquetas y, si faltan, generarlos |
 | 15 | honest-eval | T-data-eval | OOD, calibración y los 4 reportes (repointed desde #data-training) |
 | 16 | honest-eval | T-release-gate | Re-evaluación sobre el checkpoint arreglado + firma del operador |

@@ -1,0 +1,7609 @@
+{
+ "format": 1,
+ "task": "T-unseen-labels",
+ "generated_utc": "2026-09-22T10:28:53Z",
+ "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+ "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000",
+ "calibration": {
+  "artifact": "artifacts/gates/T-unseen-labels/calibration.json",
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+  "temperature": 4.5169522616122135,
+  "nll_before": 2.0806065265147367,
+  "nll_after": 1.5697611934792732,
+  "fit_split": "calibration",
+  "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature",
+  "n_fit": 2924
+ },
+ "pass": false,
+ "failed_criteria": [
+  "cross_lingual_holdout"
+ ],
+ "verdict": "FAIL [cross_lingual_holdout] \u2014 unseen accuracy 0.220839 vs seen 0.267883 (drop 0.047044), unseen ECE 0.338533 vs seen 0.281362. The table is published as measured; the failing criteria say what is missing, not that the numbers were massaged",
+ "honesty": "numbers are published as measured \u2014 a bad number is published bad, and a pass:false with a truthful table is the correct outcome of this gate",
+ "protocol": {
+  "label_holdout": {
+   "per_dataset": {
+    "banking77": {
+     "dataset": "banking77",
+     "n_seen": 58,
+     "n_unseen": 19,
+     "seen": [
+      "Refund_not_showing_up",
+      "activate_my_card",
+      "age_limit",
+      "apple_pay_or_google_pay",
+      "automatic_top_up",
+      "beneficiary_not_allowed",
+      "card_about_to_expire",
+      "card_acceptance",
+      "card_arrival",
+      "card_delivery_estimate",
+      "card_linking",
+      "card_payment_fee_charged",
+      "card_payment_wrong_exchange_rate",
+      "card_swallowed",
+      "cash_withdrawal_charge",
+      "cash_withdrawal_not_recognised",
+      "change_pin",
+      "compromised_card",
+      "contactless_not_working",
+      "declined_card_payment",
+      "declined_cash_withdrawal",
+      "disposable_card_limits",
+      "edit_personal_details",
+      "exchange_via_app",
+      "extra_charge_on_statement",
+      "fiat_currency_support",
+      "get_disposable_virtual_card",
+      "get_physical_card",
+      "getting_spare_card",
+      "getting_virtual_card",
+      "order_physical_card",
+      "passcode_forgotten",
+      "pending_card_payment",
+      "pending_cash_withdrawal",
+      "pending_top_up",
+      "pin_blocked",
+      "receiving_money",
+      "request_refund",
+      "reverted_card_payment?",
+      "supported_cards_and_currencies",
+      "terminate_account",
+      "top_up_by_cash_or_cheque",
+      "top_up_failed",
+      "top_up_limits",
+      "top_up_reverted",
+      "transaction_charged_twice",
+      "transfer_fee_charged",
+      "transfer_into_account",
+      "transfer_not_received_by_recipient",
+      "transfer_timing",
+      "unable_to_verify_identity",
+      "verify_my_identity",
+      "verify_source_of_funds",
+      "verify_top_up",
+      "visa_or_mastercard",
+      "why_verify_identity",
+      "wrong_amount_of_cash_received",
+      "wrong_exchange_rate_for_cash_withdrawal"
+     ],
+     "unseen": [
+      "atm_support",
+      "balance_not_updated_after_bank_transfer",
+      "balance_not_updated_after_cheque_or_cash_deposit",
+      "cancel_transfer",
+      "card_not_working",
+      "card_payment_not_recognised",
+      "country_support",
+      "declined_transfer",
+      "direct_debit_payment_not_recognised",
+      "exchange_charge",
+      "exchange_rate",
+      "failed_transfer",
+      "lost_or_stolen_card",
+      "lost_or_stolen_phone",
+      "pending_transfer",
+      "top_up_by_bank_transfer_charge",
+      "top_up_by_card_charge",
+      "topping_up_by_card",
+      "virtual_card_not_working"
+     ],
+     "exempt": null
+    },
+    "boolq": {
+     "dataset": "boolq",
+     "n_seen": 2,
+     "n_unseen": 0,
+     "seen": [
+      "no",
+      "yes"
+     ],
+     "unseen": [],
+     "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task"
+    },
+    "huffpost": {
+     "dataset": "huffpost",
+     "n_seen": 30,
+     "n_unseen": 11,
+     "seen": [
+      "ARTS",
+      "BUSINESS",
+      "COLLEGE",
+      "COMEDY",
+      "CRIME",
+      "DIVORCE",
+      "EDUCATION",
+      "ENTERTAINMENT",
+      "ENVIRONMENT",
+      "FIFTY",
+      "FOOD & DRINK",
+      "GREEN",
+      "HEALTHY LIVING",
+      "HOME & LIVING",
+      "IMPACT",
+      "LATINO VOICES",
+      "MEDIA",
+      "MONEY",
+      "POLITICS",
+      "RELIGION",
+      "SCIENCE",
+      "SPORTS",
+      "STYLE",
+      "STYLE & BEAUTY",
+      "TASTE",
+      "TECH",
+      "TRAVEL",
+      "WEDDINGS",
+      "WELLNESS",
+      "WOMEN"
+     ],
+     "unseen": [
+      "ARTS & CULTURE",
+      "BLACK VOICES",
+      "CULTURE & ARTS",
+      "GOOD NEWS",
+      "PARENTING",
+      "PARENTS",
+      "QUEER VOICES",
+      "THE WORLDPOST",
+      "WEIRD NEWS",
+      "WORLD NEWS",
+      "WORLDPOST"
+     ],
+     "exempt": null
+    },
+    "massive": {
+     "dataset": "massive",
+     "n_seen": 45,
+     "n_unseen": 15,
+     "seen": [
+      "alarm_query",
+      "alarm_remove",
+      "alarm_set",
+      "audio_volume_down",
+      "audio_volume_mute",
+      "audio_volume_other",
+      "audio_volume_up",
+      "calendar_query",
+      "cooking_query",
+      "cooking_recipe",
+      "datetime_convert",
+      "datetime_query",
+      "email_addcontact",
+      "email_sendemail",
+      "general_greet",
+      "general_joke",
+      "general_quirky",
+      "iot_cleaning",
+      "iot_coffee",
+      "iot_hue_lightchange",
+      "iot_hue_lightdim",
+      "iot_hue_lightoff",
+      "iot_hue_lighton",
+      "iot_hue_lightup",
+      "iot_wemo_off",
+      "iot_wemo_on",
+      "lists_createoradd",
+      "lists_query",
+      "lists_remove",
+      "music_query",
+      "music_settings",
+      "news_query",
+      "play_audiobook",
+      "play_game",
+      "play_music",
+      "play_podcasts",
+      "play_radio",
+      "qa_currency",
+      "qa_definition",
+      "qa_factoid",
+      "qa_maths",
+      "qa_stock",
+      "social_post",
+      "social_query",
+      "weather_query"
+     ],
+     "unseen": [
+      "calendar_remove",
+      "calendar_set",
+      "email_query",
+      "email_querycontact",
+      "music_dislikeness",
+      "music_likeness",
+      "recommendation_events",
+      "recommendation_locations",
+      "recommendation_movies",
+      "takeaway_order",
+      "takeaway_query",
+      "transport_query",
+      "transport_taxi",
+      "transport_ticket",
+      "transport_traffic"
+     ],
+     "exempt": null
+    }
+   },
+   "rule": "sibling pairs ranked by data.optset.difficulty (char-3gram cosine blended with word-Jaccard), hardest first \u2014 the holdout is the hard half",
+   "fractions": {
+    "banking77": 0.25,
+    "boolq": 0.0,
+    "huffpost": 0.2682926829268293,
+    "massive": 0.25
+   }
+  },
+  "cross_lingual": {
+   "train_locales": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "fr-FR"
+   ],
+   "eval_locales": [
+    "it-IT",
+    "pt-PT"
+   ],
+   "rule": "the last two locales in lexicographic order, fixed before the first measurement"
+  },
+  "row_partition": {
+   "by": [
+    "skeleton",
+    "domain",
+    "language"
+   ],
+   "seed": 20260921,
+   "metric_frac": 0.7,
+   "calibration_frac": 0.3,
+   "never": "row index (i % 10)"
+  },
+  "eval_only": {
+   "datasets": [
+    "logiqa",
+    "reclor"
+   ],
+   "firewall": "#T-halt-contam: refused at data.optset.assert_trainable",
+   "thermometer_floor": 0.25
+  }
+ },
+ "criteria": {
+  "unseen_text_absent_from_train": {
+   "pass": true,
+   "compared_by": "normalised label TEXT, never by option id",
+   "banned_texts": 45,
+   "checked": {
+    "pool_labels": 135,
+    "row_golds": 199557,
+    "samples": 20000,
+    "states": 20000
+   },
+   "n_hits": 0,
+   "hits": {
+    "distractor_pool": [],
+    "row_gold": [],
+    "composed_sample": []
+   },
+   "informational_state_mentions": {
+    "n": 214,
+    "examples": [
+     {
+      "dataset": "banking77",
+      "label": "banking77:lost_or_stolen_card"
+     },
+     {
+      "dataset": "banking77",
+      "label": "banking77:exchange_rate"
+     },
+     {
+      "dataset": "banking77",
+      "label": "banking77:exchange_rate"
+     },
+     {
+      "dataset": "banking77",
+      "label": "banking77:exchange_rate"
+     },
+     {
+      "dataset": "banking77",
+      "label": "banking77:exchange_rate"
+     }
+    ],
+    "note": "a held-out label's words occurring inside a training STATE is input text, not label-space leakage; counted, never gating"
+   }
+  },
+  "metrics_from_trained_checkpoint": {
+   "pass": true,
+   "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+   "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000",
+   "predictor": "pointer-decision-head",
+   "rule": "the metric is computed by the trained pointer head of #T-train-real; an artifact without model_version fails",
+   "not": "cosine-char3-softmax (the parameter-free scorer this task removed from eval/calib.py)"
+  },
+  "paired_seen_unseen_table": {
+   "pass": true,
+   "rule": "every non-exempt cut publishes seen AND unseen",
+   "cuts": {
+    "ALL": {
+     "seen_n": 9646,
+     "unseen_n": 5624,
+     "exempt": null
+    },
+    "banking77": {
+     "seen_n": 1646,
+     "unseen_n": 541,
+     "exempt": null
+    },
+    "boolq": {
+     "seen_n": 2000,
+     "unseen_n": 0,
+     "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task"
+    },
+    "huffpost": {
+     "seen_n": 2000,
+     "unseen_n": 2000,
+     "exempt": null
+    },
+    "massive": {
+     "seen_n": 4000,
+     "unseen_n": 3083,
+     "exempt": null
+    },
+    "massive@eval-locales": {
+     "seen_n": 1347,
+     "unseen_n": 1022,
+     "exempt": null
+    },
+    "massive@train-locales": {
+     "seen_n": 2653,
+     "unseen_n": 2061,
+     "exempt": null
+    }
+   }
+  },
+  "group_split_sealed": {
+   "pass": true,
+   "rule": "the metric/calibration partition is a GROUP split (skeleton+domain+language), seeded and sha256-sealed; no row index decides anything",
+   "seed": 20260921,
+   "splits": {
+    "banking77": {
+     "name": "T-unseen-labels-banking77",
+     "counts": {
+      "rows": {
+       "calibration": 893,
+       "test": 2187
+      },
+      "groups": {
+       "calibration": 893,
+       "test": 2186
+      },
+      "groups_total": 3079
+     },
+     "shared_groups_metric_vs_calibration": 0,
+     "shared_examples": [],
+     "files": {
+      "calibration.ids": {
+       "rows": 893,
+       "sha256": "52b6e61be84431bb55326b8dfe4ae6c573dd92a82e8fbcd9d12c25f7cdd45fb5"
+      },
+      "test.ids": {
+       "rows": 2187,
+       "sha256": "ff4eb227555205f4eda68f48772d47f0a38999b6c37b1a7fe70cbeb65e8ebb07"
+      }
+     },
+     "seed": 20260921,
+     "grouped_by": [
+      "skeleton",
+      "domain",
+      "language"
+     ],
+     "fracs": {
+      "test": 0.7,
+      "calibration": 0.3
+     },
+     "manifest_sha256": "fbd96f38bdd3fe42dfe6ead640b0d4c4145b1e28879a843af3d5db54064199da",
+     "manifest": "artifacts/splits/T-unseen-labels-banking77/manifest.json"
+    },
+    "huffpost": {
+     "name": "T-unseen-labels-huffpost",
+     "counts": {
+      "rows": {
+       "calibration": 5393,
+       "test": 12812
+      },
+      "groups": {
+       "calibration": 5386,
+       "test": 12789
+      },
+      "groups_total": 18175
+     },
+     "shared_groups_metric_vs_calibration": 0,
+     "shared_examples": [],
+     "files": {
+      "calibration.ids": {
+       "rows": 5393,
+       "sha256": "48dfd7641d2c32ac3d2078162bd8561251c8e9df9a183c9c8dc25c2e8868efb9"
+      },
+      "test.ids": {
+       "rows": 12812,
+       "sha256": "535453803b4cf582c7103b696fb616c89f3bdd964b04cfef58bbac9705e39e7e"
+      }
+     },
+     "seed": 20260921,
+     "grouped_by": [
+      "skeleton",
+      "domain",
+      "language"
+     ],
+     "fracs": {
+      "test": 0.7,
+      "calibration": 0.3
+     },
+     "manifest_sha256": "7e2496e83f1527383c6f5ae78ca88747912031e3bd574c0e7c88cf8b3d9eef58",
+     "manifest": "artifacts/splits/T-unseen-labels-huffpost/manifest.json"
+    },
+    "massive": {
+     "name": "T-unseen-labels-massive",
+     "counts": {
+      "rows": {
+       "calibration": 5344,
+       "test": 12500
+      },
+      "groups": {
+       "calibration": 5291,
+       "test": 12367
+      },
+      "groups_total": 17658
+     },
+     "shared_groups_metric_vs_calibration": 0,
+     "shared_examples": [],
+     "files": {
+      "calibration.ids": {
+       "rows": 5344,
+       "sha256": "c3724cf9d099ef608867d1a6d0ea503cfae859004c41234698c83f99af59c35b"
+      },
+      "test.ids": {
+       "rows": 12500,
+       "sha256": "9fe0038851a124aed84e5dd35b693a385dbd26355b3ea8f6f6fc25f232369b26"
+      }
+     },
+     "seed": 20260921,
+     "grouped_by": [
+      "skeleton",
+      "domain",
+      "language"
+     ],
+     "fracs": {
+      "test": 0.7,
+      "calibration": 0.3
+     },
+     "manifest_sha256": "5ce4dabdcacff31a3576497527e3e7385a2da4940bd9c4f8a4e0cc2181a25595",
+     "manifest": "artifacts/splits/T-unseen-labels-massive/manifest.json"
+    },
+    "boolq": {
+     "name": "T-unseen-labels-boolq",
+     "counts": {
+      "rows": {
+       "calibration": 996,
+       "test": 2274
+      },
+      "groups": {
+       "calibration": 996,
+       "test": 2274
+      },
+      "groups_total": 3270
+     },
+     "shared_groups_metric_vs_calibration": 0,
+     "shared_examples": [],
+     "files": {
+      "calibration.ids": {
+       "rows": 996,
+       "sha256": "f7cd8f5ba20c6a71f8f9ae3c74ff1a28b14093aa32d8ec8cc8d9cfd778818736"
+      },
+      "test.ids": {
+       "rows": 2274,
+       "sha256": "0c3a77e6732f4dc11a496003ba0312697759e9533e883c6e9295179ff738fd95"
+      }
+     },
+     "seed": 20260921,
+     "grouped_by": [
+      "skeleton",
+      "domain",
+      "language"
+     ],
+     "fracs": {
+      "test": 0.7,
+      "calibration": 0.3
+     },
+     "manifest_sha256": "dd8135e02c805fcbf5ec291affc733c143474e209da18574739233b071890623",
+     "manifest": "artifacts/splits/T-unseen-labels-boolq/manifest.json"
+    }
+   }
+  },
+  "cross_lingual_holdout": {
+   "pass": false,
+   "protocol": {
+    "train_locales": [
+     "de-DE",
+     "en-US",
+     "es-ES",
+     "fr-FR"
+    ],
+    "eval_locales": [
+     "it-IT",
+     "pt-PT"
+    ],
+    "rule": "the last two locales in lexicographic order, fixed before the first measurement"
+   },
+   "carved_by_training_run": null,
+   "run_id": "train-real-v1",
+   "blocker": "run 'train-real-v1' trained on all 6 MASSIVE locales: its train split contains it-IT and pt-PT rows, so no eval can turn them into unseen locales. The per-locale numbers below are therefore SEEN-locale and are an upper bound on cross-lingual generalisation. Unblocking it needs one training run that excludes EVAL_LOCALES from the train samplers \u2014 not a change in this module"
+  }
+ },
+ "n_scored": 21694,
+ "table": {
+  "banking77": {
+   "seen": {
+    "raw": {
+     "n": 1646,
+     "accuracy": 0.060146,
+     "accuracy_ci95": [
+      0.049652,
+      0.072688
+     ],
+     "chance": 0.166195,
+     "accuracy_options_only": 0.21932,
+     "accuracy_options_only_ci95": [
+      0.199996,
+      0.23995
+     ],
+     "chance_options_only": 0.203206,
+     "ece": 0.283222,
+     "brier": 0.974093,
+     "nll": 2.27141,
+     "mean_k": 5.4745,
+     "abstain_rate": 0.726002
+    },
+    "calibrated": {
+     "n": 1646,
+     "accuracy": 0.060146,
+     "accuracy_ci95": [
+      0.049652,
+      0.072688
+     ],
+     "chance": 0.166195,
+     "accuracy_options_only": 0.21932,
+     "accuracy_options_only_ci95": [
+      0.199996,
+      0.23995
+     ],
+     "chance_options_only": 0.203206,
+     "ece": 0.121979,
+     "brier": 0.841699,
+     "nll": 1.854375,
+     "mean_k": 5.4745,
+     "abstain_rate": 0.726002,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047388,
+        "risk": 0.897436,
+        "k": 78
+       },
+       {
+        "coverage": 0.094775,
+        "risk": 0.929487,
+        "k": 156
+       },
+       {
+        "coverage": 0.14277,
+        "risk": 0.93617,
+        "k": 235
+       },
+       {
+        "coverage": 0.190158,
+        "risk": 0.913738,
+        "k": 313
+       },
+       {
+        "coverage": 0.237546,
+        "risk": 0.918159,
+        "k": 391
+       },
+       {
+        "coverage": 0.285541,
+        "risk": 0.92766,
+        "k": 470
+       },
+       {
+        "coverage": 0.332928,
+        "risk": 0.930657,
+        "k": 548
+       },
+       {
+        "coverage": 0.380923,
+        "risk": 0.92823,
+        "k": 627
+       },
+       {
+        "coverage": 0.428311,
+        "risk": 0.931915,
+        "k": 705
+       },
+       {
+        "coverage": 0.475699,
+        "risk": 0.93742,
+        "k": 783
+       },
+       {
+        "coverage": 0.523694,
+        "risk": 0.933875,
+        "k": 862
+       },
+       {
+        "coverage": 0.571081,
+        "risk": 0.938298,
+        "k": 940
+       },
+       {
+        "coverage": 0.618469,
+        "risk": 0.943026,
+        "k": 1018
+       },
+       {
+        "coverage": 0.666464,
+        "risk": 0.946217,
+        "k": 1097
+       },
+       {
+        "coverage": 0.713852,
+        "risk": 0.933617,
+        "k": 1175
+       },
+       {
+        "coverage": 0.761847,
+        "risk": 0.935407,
+        "k": 1254
+       },
+       {
+        "coverage": 0.809235,
+        "risk": 0.939189,
+        "k": 1332
+       },
+       {
+        "coverage": 0.856622,
+        "risk": 0.938298,
+        "k": 1410
+       },
+       {
+        "coverage": 0.904617,
+        "risk": 0.936199,
+        "k": 1489
+       },
+       {
+        "coverage": 0.952005,
+        "risk": 0.936822,
+        "k": 1567
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.939854,
+        "k": 1646
+       }
+      ],
+      "overall_error": 0.939854,
+      "avg_selective_risk": 0.931984,
+      "beats_random": true,
+      "random_risk": 0.939854,
+      "n": 1646
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047388,
+        "risk": 0.987179,
+        "k": 78
+       },
+       {
+        "coverage": 0.094775,
+        "risk": 0.948718,
+        "k": 156
+       },
+       {
+        "coverage": 0.14277,
+        "risk": 0.940426,
+        "k": 235
+       },
+       {
+        "coverage": 0.190158,
+        "risk": 0.942492,
+        "k": 313
+       },
+       {
+        "coverage": 0.237546,
+        "risk": 0.951407,
+        "k": 391
+       },
+       {
+        "coverage": 0.285541,
+        "risk": 0.938298,
+        "k": 470
+       },
+       {
+        "coverage": 0.332928,
+        "risk": 0.925182,
+        "k": 548
+       },
+       {
+        "coverage": 0.380923,
+        "risk": 0.934609,
+        "k": 627
+       },
+       {
+        "coverage": 0.428311,
+        "risk": 0.937589,
+        "k": 705
+       },
+       {
+        "coverage": 0.475699,
+        "risk": 0.939974,
+        "k": 783
+       },
+       {
+        "coverage": 0.523694,
+        "risk": 0.941995,
+        "k": 862
+       },
+       {
+        "coverage": 0.571081,
+        "risk": 0.944681,
+        "k": 940
+       },
+       {
+        "coverage": 0.618469,
+        "risk": 0.94499,
+        "k": 1018
+       },
+       {
+        "coverage": 0.666464,
+        "risk": 0.941659,
+        "k": 1097
+       },
+       {
+        "coverage": 0.713852,
+        "risk": 0.944681,
+        "k": 1175
+       },
+       {
+        "coverage": 0.761847,
+        "risk": 0.944179,
+        "k": 1254
+       },
+       {
+        "coverage": 0.809235,
+        "risk": 0.941441,
+        "k": 1332
+       },
+       {
+        "coverage": 0.856622,
+        "risk": 0.939716,
+        "k": 1410
+       },
+       {
+        "coverage": 0.904617,
+        "risk": 0.9409,
+        "k": 1489
+       },
+       {
+        "coverage": 0.952005,
+        "risk": 0.940651,
+        "k": 1567
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.939854,
+        "k": 1646
+       }
+      ],
+      "overall_error": 0.939854,
+      "avg_selective_risk": 0.943363,
+      "beats_random": false,
+      "random_risk": 0.939854,
+      "n": 1646
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047388,
+        "risk": 1.0,
+        "k": 78
+       },
+       {
+        "coverage": 0.094775,
+        "risk": 1.0,
+        "k": 156
+       },
+       {
+        "coverage": 0.14277,
+        "risk": 1.0,
+        "k": 235
+       },
+       {
+        "coverage": 0.190158,
+        "risk": 0.996805,
+        "k": 313
+       },
+       {
+        "coverage": 0.237546,
+        "risk": 0.98977,
+        "k": 391
+       },
+       {
+        "coverage": 0.285541,
+        "risk": 0.980851,
+        "k": 470
+       },
+       {
+        "coverage": 0.332928,
+        "risk": 0.974453,
+        "k": 548
+       },
+       {
+        "coverage": 0.380923,
+        "risk": 0.974482,
+        "k": 627
+       },
+       {
+        "coverage": 0.428311,
+        "risk": 0.968794,
+        "k": 705
+       },
+       {
+        "coverage": 0.475699,
+        "risk": 0.965517,
+        "k": 783
+       },
+       {
+        "coverage": 0.523694,
+        "risk": 0.961717,
+        "k": 862
+       },
+       {
+        "coverage": 0.571081,
+        "risk": 0.961702,
+        "k": 940
+       },
+       {
+        "coverage": 0.618469,
+        "risk": 0.958743,
+        "k": 1018
+       },
+       {
+        "coverage": 0.666464,
+        "risk": 0.956244,
+        "k": 1097
+       },
+       {
+        "coverage": 0.713852,
+        "risk": 0.950638,
+        "k": 1175
+       },
+       {
+        "coverage": 0.761847,
+        "risk": 0.947368,
+        "k": 1254
+       },
+       {
+        "coverage": 0.809235,
+        "risk": 0.946697,
+        "k": 1332
+       },
+       {
+        "coverage": 0.856622,
+        "risk": 0.942553,
+        "k": 1410
+       },
+       {
+        "coverage": 0.904617,
+        "risk": 0.940228,
+        "k": 1489
+       },
+       {
+        "coverage": 0.952005,
+        "risk": 0.939375,
+        "k": 1567
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.939854,
+        "k": 1646
+       }
+      ],
+      "overall_error": 0.939854,
+      "avg_selective_risk": 0.966466,
+      "beats_random": false,
+      "random_risk": 0.939854,
+      "n": 1646
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 823,
+      "risk": 0.936817,
+      "ci95": [
+       0.918591,
+       0.952612
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1316,
+      "risk": 0.93845,
+      "ci95": [
+       0.925532,
+       0.952128
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1481,
+      "risk": 0.935854,
+      "ci95": [
+       0.923025,
+       0.948008
+      ]
+     }
+    },
+    "n": 1646
+   },
+   "unseen": {
+    "raw": {
+     "n": 541,
+     "accuracy": 0.057301,
+     "accuracy_ci95": [
+      0.040659,
+      0.080186
+     ],
+     "chance": 0.164061,
+     "accuracy_options_only": 0.192237,
+     "accuracy_options_only_ci95": [
+      0.161247,
+      0.227566
+     ],
+     "chance_options_only": 0.200249,
+     "ece": 0.218706,
+     "brier": 0.914997,
+     "nll": 2.081964,
+     "mean_k": 5.5749,
+     "abstain_rate": 0.709797
+    },
+    "calibrated": {
+     "n": 541,
+     "accuracy": 0.057301,
+     "accuracy_ci95": [
+      0.040659,
+      0.080186
+     ],
+     "chance": 0.164061,
+     "accuracy_options_only": 0.192237,
+     "accuracy_options_only_ci95": [
+      0.161247,
+      0.227566
+     ],
+     "chance_options_only": 0.200249,
+     "ece": 0.117325,
+     "brier": 0.840193,
+     "nll": 1.858217,
+     "mean_k": 5.5749,
+     "abstain_rate": 0.709797,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.046211,
+        "risk": 0.84,
+        "k": 25
+       },
+       {
+        "coverage": 0.09427,
+        "risk": 0.901961,
+        "k": 51
+       },
+       {
+        "coverage": 0.142329,
+        "risk": 0.935065,
+        "k": 77
+       },
+       {
+        "coverage": 0.190388,
+        "risk": 0.92233,
+        "k": 103
+       },
+       {
+        "coverage": 0.236599,
+        "risk": 0.929688,
+        "k": 128
+       },
+       {
+        "coverage": 0.284658,
+        "risk": 0.935065,
+        "k": 154
+       },
+       {
+        "coverage": 0.332717,
+        "risk": 0.944444,
+        "k": 180
+       },
+       {
+        "coverage": 0.380776,
+        "risk": 0.932039,
+        "k": 206
+       },
+       {
+        "coverage": 0.426987,
+        "risk": 0.930736,
+        "k": 231
+       },
+       {
+        "coverage": 0.475046,
+        "risk": 0.937743,
+        "k": 257
+       },
+       {
+        "coverage": 0.523105,
+        "risk": 0.939929,
+        "k": 283
+       },
+       {
+        "coverage": 0.571165,
+        "risk": 0.919094,
+        "k": 309
+       },
+       {
+        "coverage": 0.617375,
+        "risk": 0.92515,
+        "k": 334
+       },
+       {
+        "coverage": 0.665434,
+        "risk": 0.930556,
+        "k": 360
+       },
+       {
+        "coverage": 0.713494,
+        "risk": 0.930052,
+        "k": 386
+       },
+       {
+        "coverage": 0.761553,
+        "risk": 0.932039,
+        "k": 412
+       },
+       {
+        "coverage": 0.807763,
+        "risk": 0.935927,
+        "k": 437
+       },
+       {
+        "coverage": 0.855823,
+        "risk": 0.937365,
+        "k": 463
+       },
+       {
+        "coverage": 0.903882,
+        "risk": 0.936605,
+        "k": 489
+       },
+       {
+        "coverage": 0.951941,
+        "risk": 0.939806,
+        "k": 515
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.942699,
+        "k": 541
+       }
+      ],
+      "overall_error": 0.942699,
+      "avg_selective_risk": 0.927538,
+      "beats_random": true,
+      "random_risk": 0.942699,
+      "n": 541
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.046211,
+        "risk": 1.0,
+        "k": 25
+       },
+       {
+        "coverage": 0.09427,
+        "risk": 0.980392,
+        "k": 51
+       },
+       {
+        "coverage": 0.142329,
+        "risk": 0.961039,
+        "k": 77
+       },
+       {
+        "coverage": 0.190388,
+        "risk": 0.970874,
+        "k": 103
+       },
+       {
+        "coverage": 0.236599,
+        "risk": 0.976562,
+        "k": 128
+       },
+       {
+        "coverage": 0.284658,
+        "risk": 0.974026,
+        "k": 154
+       },
+       {
+        "coverage": 0.332717,
+        "risk": 0.966667,
+        "k": 180
+       },
+       {
+        "coverage": 0.380776,
+        "risk": 0.970874,
+        "k": 206
+       },
+       {
+        "coverage": 0.426987,
+        "risk": 0.969697,
+        "k": 231
+       },
+       {
+        "coverage": 0.475046,
+        "risk": 0.941634,
+        "k": 257
+       },
+       {
+        "coverage": 0.523105,
+        "risk": 0.946996,
+        "k": 283
+       },
+       {
+        "coverage": 0.571165,
+        "risk": 0.951456,
+        "k": 309
+       },
+       {
+        "coverage": 0.617375,
+        "risk": 0.949102,
+        "k": 334
+       },
+       {
+        "coverage": 0.665434,
+        "risk": 0.941667,
+        "k": 360
+       },
+       {
+        "coverage": 0.713494,
+        "risk": 0.945596,
+        "k": 386
+       },
+       {
+        "coverage": 0.761553,
+        "risk": 0.946602,
+        "k": 412
+       },
+       {
+        "coverage": 0.807763,
+        "risk": 0.947368,
+        "k": 437
+       },
+       {
+        "coverage": 0.855823,
+        "risk": 0.943844,
+        "k": 463
+       },
+       {
+        "coverage": 0.903882,
+        "risk": 0.944785,
+        "k": 489
+       },
+       {
+        "coverage": 0.951941,
+        "risk": 0.947573,
+        "k": 515
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.942699,
+        "k": 541
+       }
+      ],
+      "overall_error": 0.942699,
+      "avg_selective_risk": 0.958069,
+      "beats_random": false,
+      "random_risk": 0.942699,
+      "n": 541
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.046211,
+        "risk": 1.0,
+        "k": 25
+       },
+       {
+        "coverage": 0.09427,
+        "risk": 1.0,
+        "k": 51
+       },
+       {
+        "coverage": 0.142329,
+        "risk": 1.0,
+        "k": 77
+       },
+       {
+        "coverage": 0.190388,
+        "risk": 0.990291,
+        "k": 103
+       },
+       {
+        "coverage": 0.236599,
+        "risk": 0.992188,
+        "k": 128
+       },
+       {
+        "coverage": 0.284658,
+        "risk": 0.993506,
+        "k": 154
+       },
+       {
+        "coverage": 0.332717,
+        "risk": 0.994444,
+        "k": 180
+       },
+       {
+        "coverage": 0.380776,
+        "risk": 0.995146,
+        "k": 206
+       },
+       {
+        "coverage": 0.426987,
+        "risk": 0.987013,
+        "k": 231
+       },
+       {
+        "coverage": 0.475046,
+        "risk": 0.984436,
+        "k": 257
+       },
+       {
+        "coverage": 0.523105,
+        "risk": 0.978799,
+        "k": 283
+       },
+       {
+        "coverage": 0.571165,
+        "risk": 0.970874,
+        "k": 309
+       },
+       {
+        "coverage": 0.617375,
+        "risk": 0.967066,
+        "k": 334
+       },
+       {
+        "coverage": 0.665434,
+        "risk": 0.961111,
+        "k": 360
+       },
+       {
+        "coverage": 0.713494,
+        "risk": 0.953368,
+        "k": 386
+       },
+       {
+        "coverage": 0.761553,
+        "risk": 0.951456,
+        "k": 412
+       },
+       {
+        "coverage": 0.807763,
+        "risk": 0.94508,
+        "k": 437
+       },
+       {
+        "coverage": 0.855823,
+        "risk": 0.943844,
+        "k": 463
+       },
+       {
+        "coverage": 0.903882,
+        "risk": 0.93865,
+        "k": 489
+       },
+       {
+        "coverage": 0.951941,
+        "risk": 0.939806,
+        "k": 515
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.942699,
+        "k": 541
+       }
+      ],
+      "overall_error": 0.942699,
+      "avg_selective_risk": 0.972847,
+      "beats_random": false,
+      "random_risk": 0.942699,
+      "n": 541
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 270,
+      "risk": 0.940741,
+      "ci95": [
+       0.907407,
+       0.966667
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 432,
+      "risk": 0.935185,
+      "ci95": [
+       0.909722,
+       0.958333
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 486,
+      "risk": 0.936214,
+      "ci95": [
+       0.91358,
+       0.95679
+      ]
+     }
+    },
+    "n": 541
+   },
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 5.4745,
+     "mean_k_unseen": 5.5749,
+     "labels_seen": 58,
+     "labels_unseen": 19,
+     "chance_seen": 0.166195,
+     "chance_unseen": 0.164061,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.060146,
+    "accuracy_unseen": 0.057301,
+    "accuracy_drop": 0.002845,
+    "ece_seen": 0.283222,
+    "ece_unseen": 0.218706,
+    "ece_rise": -0.064516,
+    "brier_seen": 0.974093,
+    "brier_unseen": 0.914997,
+    "unseen_beats_chance": false,
+    "unseen_ranking_beats_chance": false
+   }
+  },
+  "huffpost": {
+   "seen": {
+    "raw": {
+     "n": 2000,
+     "accuracy": 0.414,
+     "accuracy_ci95": [
+      0.392598,
+      0.435731
+     ],
+     "chance": 0.165535,
+     "accuracy_options_only": 0.489,
+     "accuracy_options_only_ci95": [
+      0.467134,
+      0.510908
+     ],
+     "chance_options_only": 0.202371,
+     "ece": 0.234502,
+     "brier": 0.794148,
+     "nll": 2.521856,
+     "mean_k": 5.513,
+     "abstain_rate": 0.298
+    },
+    "calibrated": {
+     "n": 2000,
+     "accuracy": 0.414,
+     "accuracy_ci95": [
+      0.392598,
+      0.435731
+     ],
+     "chance": 0.165535,
+     "accuracy_options_only": 0.489,
+     "accuracy_options_only_ci95": [
+      0.467134,
+      0.510908
+     ],
+     "chance_options_only": 0.202371,
+     "ece": 0.11807,
+     "brier": 0.756694,
+     "nll": 1.692362,
+     "mean_k": 5.513,
+     "abstain_rate": 0.298,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.631579,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.536842,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.459649,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.463158,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.472689,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.471103,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.474474,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.48226,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.493582,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.50105,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.501433,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.511384,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.513732,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.516879,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.520308,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.522653,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.529957,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.53909,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.549475,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.565126,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.586,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.586,
+      "avg_selective_risk": 0.516306,
+      "beats_random": true,
+      "random_risk": 0.586,
+      "n": 2000
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.063158,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.1,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.161404,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.213158,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.228992,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.2662,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.294294,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.329829,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.348891,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.37605,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.398281,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.428196,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.448304,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.468117,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.493697,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.510177,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.528104,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.54259,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.559978,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.573529,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.586,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.586,
+      "avg_selective_risk": 0.377093,
+      "beats_random": true,
+      "random_risk": 0.586,
+      "n": 2000
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.094737,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.084211,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.087719,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.102632,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.132353,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.17338,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.220721,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.262812,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.309218,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.34979,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.382999,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.414186,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.441842,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.469617,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.495098,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.516743,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.533045,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.548425,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.559978,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.573004,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.586,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.586,
+      "avg_selective_risk": 0.349453,
+      "beats_random": true,
+      "random_risk": 0.586,
+      "n": 2000
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1000,
+      "risk": 0.499,
+      "ci95": [
+       0.47,
+       0.53
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1600,
+      "risk": 0.526875,
+      "ci95": [
+       0.503125,
+       0.55125
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1800,
+      "risk": 0.548333,
+      "ci95": [
+       0.522778,
+       0.570556
+      ]
+     }
+    },
+    "n": 2000
+   },
+   "unseen": {
+    "raw": {
+     "n": 2000,
+     "accuracy": 0.019,
+     "accuracy_ci95": [
+      0.013874,
+      0.02597
+     ],
+     "chance": 0.165021,
+     "accuracy_options_only": 0.2095,
+     "accuracy_options_only_ci95": [
+      0.19223,
+      0.227884
+     ],
+     "chance_options_only": 0.201687,
+     "ece": 0.520121,
+     "brier": 1.200206,
+     "nll": 2.829738,
+     "mean_k": 5.543,
+     "abstain_rate": 0.934
+    },
+    "calibrated": {
+     "n": 2000,
+     "accuracy": 0.019,
+     "accuracy_ci95": [
+      0.013874,
+      0.02597
+     ],
+     "chance": 0.165021,
+     "accuracy_options_only": 0.2095,
+     "accuracy_options_only_ci95": [
+      0.19223,
+      0.227884
+     ],
+     "chance_options_only": 0.201687,
+     "ece": 0.221897,
+     "brier": 0.874793,
+     "nll": 1.939181,
+     "mean_k": 5.543,
+     "abstain_rate": 0.934,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.968421,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.968421,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.964912,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.971053,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.972689,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.97373,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.975976,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.975033,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.97783,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.978992,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.979943,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.97986,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.978191,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.978245,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.978291,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.977676,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.977146,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.97783,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.978994,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.980042,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.981,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.981,
+      "avg_selective_risk": 0.975918,
+      "beats_random": true,
+      "random_risk": 0.981,
+      "n": 2000
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 1.0,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 1.0,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.996491,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.992105,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.985294,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.982487,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.981982,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.981603,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.982497,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.980042,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.980898,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.981611,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.980614,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.981245,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.981793,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.982928,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.982705,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.983664,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.981205,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.980042,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.981,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.981,
+      "avg_selective_risk": 0.984772,
+      "beats_random": false,
+      "random_risk": 0.981,
+      "n": 2000
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 1.0,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 1.0,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 1.0,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 1.0,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 1.0,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 1.0,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 1.0,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 1.0,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.998833,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.99895,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.999045,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.999124,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.999192,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.99925,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.998599,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.996717,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.995676,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.994749,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.99005,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.985819,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.981,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.981,
+      "avg_selective_risk": 0.997,
+      "beats_random": false,
+      "random_risk": 0.981,
+      "n": 2000
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1000,
+      "risk": 0.979,
+      "ci95": [
+       0.971,
+       0.987
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1600,
+      "risk": 0.976875,
+      "ci95": [
+       0.96875,
+       0.98375
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1800,
+      "risk": 0.978889,
+      "ci95": [
+       0.972222,
+       0.985
+      ]
+     }
+    },
+    "n": 2000
+   },
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 5.513,
+     "mean_k_unseen": 5.543,
+     "labels_seen": 30,
+     "labels_unseen": 11,
+     "chance_seen": 0.165535,
+     "chance_unseen": 0.165021,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.414,
+    "accuracy_unseen": 0.019,
+    "accuracy_drop": 0.395,
+    "ece_seen": 0.234502,
+    "ece_unseen": 0.520121,
+    "ece_rise": 0.285619,
+    "brier_seen": 0.794148,
+    "brier_unseen": 1.200206,
+    "unseen_beats_chance": false,
+    "unseen_ranking_beats_chance": false
+   }
+  },
+  "massive": {
+   "seen": {
+    "raw": {
+     "n": 4000,
+     "accuracy": 0.2235,
+     "accuracy_ci95": [
+      0.210859,
+      0.236672
+     ],
+     "chance": 0.165727,
+     "accuracy_options_only": 0.322,
+     "accuracy_options_only_ci95": [
+      0.307697,
+      0.336645
+     ],
+     "chance_options_only": 0.20268,
+     "ece": 0.353005,
+     "brier": 1.042831,
+     "nll": 2.618944,
+     "mean_k": 5.5095,
+     "abstain_rate": 0.3855
+    },
+    "calibrated": {
+     "n": 4000,
+     "accuracy": 0.2235,
+     "accuracy_ci95": [
+      0.210859,
+      0.236672
+     ],
+     "chance": 0.165727,
+     "accuracy_options_only": 0.322,
+     "accuracy_options_only_ci95": [
+      0.307697,
+      0.336645
+     ],
+     "chance_options_only": 0.20268,
+     "ece": 0.015032,
+     "brier": 0.824431,
+     "nll": 1.802336,
+     "mean_k": 5.5095,
+     "abstain_rate": 0.3855,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.710526,
+        "k": 190
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.721053,
+        "k": 380
+       },
+       {
+        "coverage": 0.14275,
+        "risk": 0.744308,
+        "k": 571
+       },
+       {
+        "coverage": 0.19025,
+        "risk": 0.767411,
+        "k": 761
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.765756,
+        "k": 952
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.768827,
+        "k": 1142
+       },
+       {
+        "coverage": 0.33325,
+        "risk": 0.773443,
+        "k": 1333
+       },
+       {
+        "coverage": 0.38075,
+        "risk": 0.764938,
+        "k": 1523
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.766044,
+        "k": 1714
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.767857,
+        "k": 1904
+       },
+       {
+        "coverage": 0.52375,
+        "risk": 0.769928,
+        "k": 2095
+       },
+       {
+        "coverage": 0.57125,
+        "risk": 0.769365,
+        "k": 2285
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.770598,
+        "k": 2476
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.771943,
+        "k": 2666
+       },
+       {
+        "coverage": 0.71425,
+        "risk": 0.770389,
+        "k": 2857
+       },
+       {
+        "coverage": 0.76175,
+        "risk": 0.770266,
+        "k": 3047
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.773626,
+        "k": 3238
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.771004,
+        "k": 3428
+       },
+       {
+        "coverage": 0.90475,
+        "risk": 0.765405,
+        "k": 3619
+       },
+       {
+        "coverage": 0.95225,
+        "risk": 0.76608,
+        "k": 3809
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.7765,
+        "k": 4000
+       }
+      ],
+      "overall_error": 0.7765,
+      "avg_selective_risk": 0.763108,
+      "beats_random": true,
+      "random_risk": 0.7765,
+      "n": 4000
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.626316,
+        "k": 190
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.678947,
+        "k": 380
+       },
+       {
+        "coverage": 0.14275,
+        "risk": 0.691769,
+        "k": 571
+       },
+       {
+        "coverage": 0.19025,
+        "risk": 0.683311,
+        "k": 761
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.689076,
+        "k": 952
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.706655,
+        "k": 1142
+       },
+       {
+        "coverage": 0.33325,
+        "risk": 0.71868,
+        "k": 1333
+       },
+       {
+        "coverage": 0.38075,
+        "risk": 0.720946,
+        "k": 1523
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.726371,
+        "k": 1714
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.733193,
+        "k": 1904
+       },
+       {
+        "coverage": 0.52375,
+        "risk": 0.740811,
+        "k": 2095
+       },
+       {
+        "coverage": 0.57125,
+        "risk": 0.747484,
+        "k": 2285
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.749192,
+        "k": 2476
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.755439,
+        "k": 2666
+       },
+       {
+        "coverage": 0.71425,
+        "risk": 0.757088,
+        "k": 2857
+       },
+       {
+        "coverage": 0.76175,
+        "risk": 0.758123,
+        "k": 3047
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.761581,
+        "k": 3238
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.762835,
+        "k": 3428
+       },
+       {
+        "coverage": 0.90475,
+        "risk": 0.766234,
+        "k": 3619
+       },
+       {
+        "coverage": 0.95225,
+        "risk": 0.770543,
+        "k": 3809
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.7765,
+        "k": 4000
+       }
+      ],
+      "overall_error": 0.7765,
+      "avg_selective_risk": 0.729576,
+      "beats_random": true,
+      "random_risk": 0.7765,
+      "n": 4000
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.568421,
+        "k": 190
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.623684,
+        "k": 380
+       },
+       {
+        "coverage": 0.14275,
+        "risk": 0.654991,
+        "k": 571
+       },
+       {
+        "coverage": 0.19025,
+        "risk": 0.676741,
+        "k": 761
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.702731,
+        "k": 952
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.710158,
+        "k": 1142
+       },
+       {
+        "coverage": 0.33325,
+        "risk": 0.708177,
+        "k": 1333
+       },
+       {
+        "coverage": 0.38075,
+        "risk": 0.713066,
+        "k": 1523
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.717036,
+        "k": 1714
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.716912,
+        "k": 1904
+       },
+       {
+        "coverage": 0.52375,
+        "risk": 0.722673,
+        "k": 2095
+       },
+       {
+        "coverage": 0.57125,
+        "risk": 0.730853,
+        "k": 2285
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.73748,
+        "k": 2476
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.743061,
+        "k": 2666
+       },
+       {
+        "coverage": 0.71425,
+        "risk": 0.747287,
+        "k": 2857
+       },
+       {
+        "coverage": 0.76175,
+        "risk": 0.754184,
+        "k": 3047
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.760964,
+        "k": 3238
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.766336,
+        "k": 3428
+       },
+       {
+        "coverage": 0.90475,
+        "risk": 0.769273,
+        "k": 3619
+       },
+       {
+        "coverage": 0.95225,
+        "risk": 0.773169,
+        "k": 3809
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.7765,
+        "k": 4000
+       }
+      ],
+      "overall_error": 0.7765,
+      "avg_selective_risk": 0.717795,
+      "beats_random": true,
+      "random_risk": 0.7765,
+      "n": 4000
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 2000,
+      "risk": 0.77,
+      "ci95": [
+       0.751,
+       0.788
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 3200,
+      "risk": 0.7725,
+      "ci95": [
+       0.758437,
+       0.786563
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 3600,
+      "risk": 0.766389,
+      "ci95": [
+       0.751944,
+       0.779722
+      ]
+     }
+    },
+    "n": 4000
+   },
+   "unseen": {
+    "raw": {
+     "n": 3083,
+     "accuracy": 0.380474,
+     "accuracy_ci95": [
+      0.363495,
+      0.39775
+     ],
+     "chance": 0.167369,
+     "accuracy_options_only": 0.397016,
+     "accuracy_options_only_ci95": [
+      0.379883,
+      0.414405
+     ],
+     "chance_options_only": 0.205078,
+     "ece": 0.242605,
+     "brier": 0.867374,
+     "nll": 2.001877,
+     "mean_k": 5.446,
+     "abstain_rate": 0.059682
+    },
+    "calibrated": {
+     "n": 3083,
+     "accuracy": 0.380474,
+     "accuracy_ci95": [
+      0.363495,
+      0.39775
+     ],
+     "chance": 0.167369,
+     "accuracy_options_only": 0.397016,
+     "accuracy_options_only_ci95": [
+      0.379883,
+      0.414405
+     ],
+     "chance_options_only": 0.205078,
+     "ece": 0.162853,
+     "brier": 0.798086,
+     "nll": 1.730949,
+     "mean_k": 5.446,
+     "abstain_rate": 0.059682,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047356,
+        "risk": 0.527397,
+        "k": 146
+       },
+       {
+        "coverage": 0.095037,
+        "risk": 0.590444,
+        "k": 293
+       },
+       {
+        "coverage": 0.142718,
+        "risk": 0.606818,
+        "k": 440
+       },
+       {
+        "coverage": 0.190399,
+        "risk": 0.623509,
+        "k": 587
+       },
+       {
+        "coverage": 0.23808,
+        "risk": 0.643052,
+        "k": 734
+       },
+       {
+        "coverage": 0.285436,
+        "risk": 0.648864,
+        "k": 880
+       },
+       {
+        "coverage": 0.333117,
+        "risk": 0.655307,
+        "k": 1027
+       },
+       {
+        "coverage": 0.380798,
+        "risk": 0.649915,
+        "k": 1174
+       },
+       {
+        "coverage": 0.428479,
+        "risk": 0.654807,
+        "k": 1321
+       },
+       {
+        "coverage": 0.47616,
+        "risk": 0.643052,
+        "k": 1468
+       },
+       {
+        "coverage": 0.523516,
+        "risk": 0.642503,
+        "k": 1614
+       },
+       {
+        "coverage": 0.571197,
+        "risk": 0.646224,
+        "k": 1761
+       },
+       {
+        "coverage": 0.618878,
+        "risk": 0.636268,
+        "k": 1908
+       },
+       {
+        "coverage": 0.666559,
+        "risk": 0.637956,
+        "k": 2055
+       },
+       {
+        "coverage": 0.714239,
+        "risk": 0.633969,
+        "k": 2202
+       },
+       {
+        "coverage": 0.761596,
+        "risk": 0.623083,
+        "k": 2348
+       },
+       {
+        "coverage": 0.809277,
+        "risk": 0.624449,
+        "k": 2495
+       },
+       {
+        "coverage": 0.856958,
+        "risk": 0.627933,
+        "k": 2642
+       },
+       {
+        "coverage": 0.904638,
+        "risk": 0.615274,
+        "k": 2789
+       },
+       {
+        "coverage": 0.952319,
+        "risk": 0.611376,
+        "k": 2936
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.619526,
+        "k": 3083
+       }
+      ],
+      "overall_error": 0.619526,
+      "avg_selective_risk": 0.626749,
+      "beats_random": false,
+      "random_risk": 0.619526,
+      "n": 3083
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047356,
+        "risk": 0.335616,
+        "k": 146
+       },
+       {
+        "coverage": 0.095037,
+        "risk": 0.354949,
+        "k": 293
+       },
+       {
+        "coverage": 0.142718,
+        "risk": 0.379545,
+        "k": 440
+       },
+       {
+        "coverage": 0.190399,
+        "risk": 0.432709,
+        "k": 587
+       },
+       {
+        "coverage": 0.23808,
+        "risk": 0.479564,
+        "k": 734
+       },
+       {
+        "coverage": 0.285436,
+        "risk": 0.4875,
+        "k": 880
+       },
+       {
+        "coverage": 0.333117,
+        "risk": 0.499513,
+        "k": 1027
+       },
+       {
+        "coverage": 0.380798,
+        "risk": 0.51448,
+        "k": 1174
+       },
+       {
+        "coverage": 0.428479,
+        "risk": 0.534444,
+        "k": 1321
+       },
+       {
+        "coverage": 0.47616,
+        "risk": 0.550409,
+        "k": 1468
+       },
+       {
+        "coverage": 0.523516,
+        "risk": 0.547088,
+        "k": 1614
+       },
+       {
+        "coverage": 0.571197,
+        "risk": 0.552527,
+        "k": 1761
+       },
+       {
+        "coverage": 0.618878,
+        "risk": 0.568658,
+        "k": 1908
+       },
+       {
+        "coverage": 0.666559,
+        "risk": 0.576642,
+        "k": 2055
+       },
+       {
+        "coverage": 0.714239,
+        "risk": 0.584923,
+        "k": 2202
+       },
+       {
+        "coverage": 0.761596,
+        "risk": 0.59029,
+        "k": 2348
+       },
+       {
+        "coverage": 0.809277,
+        "risk": 0.597194,
+        "k": 2495
+       },
+       {
+        "coverage": 0.856958,
+        "risk": 0.596139,
+        "k": 2642
+       },
+       {
+        "coverage": 0.904638,
+        "risk": 0.598781,
+        "k": 2789
+       },
+       {
+        "coverage": 0.952319,
+        "risk": 0.607289,
+        "k": 2936
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.619526,
+        "k": 3083
+       }
+      ],
+      "overall_error": 0.619526,
+      "avg_selective_risk": 0.52418,
+      "beats_random": true,
+      "random_risk": 0.619526,
+      "n": 3083
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047356,
+        "risk": 0.315068,
+        "k": 146
+       },
+       {
+        "coverage": 0.095037,
+        "risk": 0.34471,
+        "k": 293
+       },
+       {
+        "coverage": 0.142718,
+        "risk": 0.390909,
+        "k": 440
+       },
+       {
+        "coverage": 0.190399,
+        "risk": 0.432709,
+        "k": 587
+       },
+       {
+        "coverage": 0.23808,
+        "risk": 0.46594,
+        "k": 734
+       },
+       {
+        "coverage": 0.285436,
+        "risk": 0.506818,
+        "k": 880
+       },
+       {
+        "coverage": 0.333117,
+        "risk": 0.538462,
+        "k": 1027
+       },
+       {
+        "coverage": 0.380798,
+        "risk": 0.575809,
+        "k": 1174
+       },
+       {
+        "coverage": 0.428479,
+        "risk": 0.592733,
+        "k": 1321
+       },
+       {
+        "coverage": 0.47616,
+        "risk": 0.581744,
+        "k": 1468
+       },
+       {
+        "coverage": 0.523516,
+        "risk": 0.583643,
+        "k": 1614
+       },
+       {
+        "coverage": 0.571197,
+        "risk": 0.579784,
+        "k": 1761
+       },
+       {
+        "coverage": 0.618878,
+        "risk": 0.571279,
+        "k": 1908
+       },
+       {
+        "coverage": 0.666559,
+        "risk": 0.570316,
+        "k": 2055
+       },
+       {
+        "coverage": 0.714239,
+        "risk": 0.571753,
+        "k": 2202
+       },
+       {
+        "coverage": 0.761596,
+        "risk": 0.577939,
+        "k": 2348
+       },
+       {
+        "coverage": 0.809277,
+        "risk": 0.584369,
+        "k": 2495
+       },
+       {
+        "coverage": 0.856958,
+        "risk": 0.593868,
+        "k": 2642
+       },
+       {
+        "coverage": 0.904638,
+        "risk": 0.601649,
+        "k": 2789
+       },
+       {
+        "coverage": 0.952319,
+        "risk": 0.610695,
+        "k": 2936
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.619526,
+        "k": 3083
+       }
+      ],
+      "overall_error": 0.619526,
+      "avg_selective_risk": 0.533796,
+      "beats_random": true,
+      "random_risk": 0.619526,
+      "n": 3083
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1541,
+      "risk": 0.640493,
+      "ci95": [
+       0.617781,
+       0.664504
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 2466,
+      "risk": 0.621655,
+      "ci95": [
+       0.60219,
+       0.641525
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 2774,
+      "risk": 0.617159,
+      "ci95": [
+       0.599135,
+       0.635905
+      ]
+     }
+    },
+    "n": 3083
+   },
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 5.5095,
+     "mean_k_unseen": 5.446,
+     "labels_seen": 45,
+     "labels_unseen": 15,
+     "chance_seen": 0.165727,
+     "chance_unseen": 0.167369,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.2235,
+    "accuracy_unseen": 0.380474,
+    "accuracy_drop": -0.156974,
+    "ece_seen": 0.353005,
+    "ece_unseen": 0.242605,
+    "ece_rise": -0.1104,
+    "brier_seen": 1.042831,
+    "brier_unseen": 0.867374,
+    "unseen_beats_chance": true,
+    "unseen_ranking_beats_chance": true
+   }
+  },
+  "boolq": {
+   "seen": {
+    "raw": {
+     "n": 2000,
+     "accuracy": 0.3815,
+     "accuracy_ci95": [
+      0.360458,
+      0.402997
+     ],
+     "chance": 0.333333,
+     "accuracy_options_only": 0.3815,
+     "accuracy_options_only_ci95": [
+      0.360458,
+      0.402997
+     ],
+     "chance_options_only": 0.5,
+     "ece": 0.183402,
+     "brier": 0.541434,
+     "nll": 0.744332,
+     "mean_k": 2.0,
+     "abstain_rate": 0.0
+    },
+    "calibrated": {
+     "n": 2000,
+     "accuracy": 0.3815,
+     "accuracy_ci95": [
+      0.360458,
+      0.402997
+     ],
+     "chance": 0.333333,
+     "accuracy_options_only": 0.3815,
+     "accuracy_options_only_ci95": [
+      0.360458,
+      0.402997
+     ],
+     "chance_options_only": 0.5,
+     "ece": 0.175064,
+     "brier": 0.536826,
+     "nll": 0.743471,
+     "mean_k": 2.0,
+     "abstain_rate": 0.0,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.694737,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.636842,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.659649,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.652632,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.653361,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.637478,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.623123,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.613666,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.614936,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.618697,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.615091,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.615587,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.613893,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.614404,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.615546,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.616546,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.618283,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.61727,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.619679,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.621324,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.6185,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.6185,
+      "avg_selective_risk": 0.628154,
+      "beats_random": false,
+      "random_risk": 0.6185,
+      "n": 2000
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.578947,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.557895,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.582456,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.594737,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.598739,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.604203,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.591592,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.595269,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.588098,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.591387,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.592168,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.598074,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.596931,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.594899,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.60084,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.602101,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.6084,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.613769,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.61581,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.619223,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.6185,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.6185,
+      "avg_selective_risk": 0.597335,
+      "beats_random": true,
+      "random_risk": 0.6185,
+      "n": 2000
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.0475,
+        "risk": 0.568421,
+        "k": 95
+       },
+       {
+        "coverage": 0.095,
+        "risk": 0.563158,
+        "k": 190
+       },
+       {
+        "coverage": 0.1425,
+        "risk": 0.568421,
+        "k": 285
+       },
+       {
+        "coverage": 0.19,
+        "risk": 0.6,
+        "k": 380
+       },
+       {
+        "coverage": 0.238,
+        "risk": 0.598739,
+        "k": 476
+       },
+       {
+        "coverage": 0.2855,
+        "risk": 0.600701,
+        "k": 571
+       },
+       {
+        "coverage": 0.333,
+        "risk": 0.591592,
+        "k": 666
+       },
+       {
+        "coverage": 0.3805,
+        "risk": 0.595269,
+        "k": 761
+       },
+       {
+        "coverage": 0.4285,
+        "risk": 0.589265,
+        "k": 857
+       },
+       {
+        "coverage": 0.476,
+        "risk": 0.595588,
+        "k": 952
+       },
+       {
+        "coverage": 0.5235,
+        "risk": 0.592168,
+        "k": 1047
+       },
+       {
+        "coverage": 0.571,
+        "risk": 0.598074,
+        "k": 1142
+       },
+       {
+        "coverage": 0.619,
+        "risk": 0.594507,
+        "k": 1238
+       },
+       {
+        "coverage": 0.6665,
+        "risk": 0.594899,
+        "k": 1333
+       },
+       {
+        "coverage": 0.714,
+        "risk": 0.60084,
+        "k": 1428
+       },
+       {
+        "coverage": 0.7615,
+        "risk": 0.604728,
+        "k": 1523
+       },
+       {
+        "coverage": 0.8095,
+        "risk": 0.606547,
+        "k": 1619
+       },
+       {
+        "coverage": 0.857,
+        "risk": 0.613769,
+        "k": 1714
+       },
+       {
+        "coverage": 0.9045,
+        "risk": 0.616363,
+        "k": 1809
+       },
+       {
+        "coverage": 0.952,
+        "risk": 0.620273,
+        "k": 1904
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.6185,
+        "k": 2000
+       }
+      ],
+      "overall_error": 0.6185,
+      "avg_selective_risk": 0.596753,
+      "beats_random": true,
+      "random_risk": 0.6185,
+      "n": 2000
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1000,
+      "risk": 0.612,
+      "ci95": [
+       0.584,
+       0.642
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1600,
+      "risk": 0.6175,
+      "ci95": [
+       0.593125,
+       0.6425
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1800,
+      "risk": 0.619444,
+      "ci95": [
+       0.597222,
+       0.641667
+      ]
+     }
+    },
+    "n": 2000
+   },
+   "unseen": {
+    "n": 0,
+    "skipped": "no rows in this cut"
+   },
+   "pair": {},
+   "exempt": "a two-label pool (yes/no) IS the question: no label can be held out without deleting the task"
+  },
+  "massive@train-locales": {
+   "seen": {
+    "raw": {
+     "n": 2653,
+     "accuracy": 0.217867,
+     "accuracy_ci95": [
+      0.202573,
+      0.233976
+     ],
+     "chance": 0.166319,
+     "accuracy_options_only": 0.317377,
+     "accuracy_options_only_ci95": [
+      0.29994,
+      0.335341
+     ],
+     "chance_options_only": 0.203532,
+     "ece": 0.362586,
+     "brier": 1.049671,
+     "nll": 2.643005,
+     "mean_k": 5.4851,
+     "abstain_rate": 0.382963
+    },
+    "calibrated": {
+     "n": 2653,
+     "accuracy": 0.217867,
+     "accuracy_ci95": [
+      0.202573,
+      0.233976
+     ],
+     "chance": 0.166319,
+     "accuracy_options_only": 0.317377,
+     "accuracy_options_only_ci95": [
+      0.29994,
+      0.335341
+     ],
+     "chance_options_only": 0.203532,
+     "ece": 0.011312,
+     "brier": 0.824857,
+     "nll": 1.802076,
+     "mean_k": 5.4851,
+     "abstain_rate": 0.382963,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047493,
+        "risk": 0.730159,
+        "k": 126
+       },
+       {
+        "coverage": 0.094987,
+        "risk": 0.730159,
+        "k": 252
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.770449,
+        "k": 379
+       },
+       {
+        "coverage": 0.190351,
+        "risk": 0.790099,
+        "k": 505
+       },
+       {
+        "coverage": 0.237844,
+        "risk": 0.782884,
+        "k": 631
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.788918,
+        "k": 758
+       },
+       {
+        "coverage": 0.333208,
+        "risk": 0.782805,
+        "k": 884
+       },
+       {
+        "coverage": 0.380701,
+        "risk": 0.779208,
+        "k": 1010
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.773967,
+        "k": 1137
+       },
+       {
+        "coverage": 0.476065,
+        "risk": 0.776722,
+        "k": 1263
+       },
+       {
+        "coverage": 0.523558,
+        "risk": 0.776098,
+        "k": 1389
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.781003,
+        "k": 1516
+       },
+       {
+        "coverage": 0.618922,
+        "risk": 0.780146,
+        "k": 1642
+       },
+       {
+        "coverage": 0.666415,
+        "risk": 0.779412,
+        "k": 1768
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.778364,
+        "k": 1895
+       },
+       {
+        "coverage": 0.761779,
+        "risk": 0.777338,
+        "k": 2021
+       },
+       {
+        "coverage": 0.809273,
+        "risk": 0.779693,
+        "k": 2147
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.775286,
+        "k": 2274
+       },
+       {
+        "coverage": 0.904636,
+        "risk": 0.770417,
+        "k": 2400
+       },
+       {
+        "coverage": 0.95213,
+        "risk": 0.771971,
+        "k": 2526
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.782133,
+        "k": 2653
+       }
+      ],
+      "overall_error": 0.782133,
+      "avg_selective_risk": 0.774154,
+      "beats_random": true,
+      "random_risk": 0.782133,
+      "n": 2653
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047493,
+        "risk": 0.619048,
+        "k": 126
+       },
+       {
+        "coverage": 0.094987,
+        "risk": 0.686508,
+        "k": 252
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.704485,
+        "k": 379
+       },
+       {
+        "coverage": 0.190351,
+        "risk": 0.687129,
+        "k": 505
+       },
+       {
+        "coverage": 0.237844,
+        "risk": 0.689382,
+        "k": 631
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.704485,
+        "k": 758
+       },
+       {
+        "coverage": 0.333208,
+        "risk": 0.716063,
+        "k": 884
+       },
+       {
+        "coverage": 0.380701,
+        "risk": 0.714851,
+        "k": 1010
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.723835,
+        "k": 1137
+       },
+       {
+        "coverage": 0.476065,
+        "risk": 0.732383,
+        "k": 1263
+       },
+       {
+        "coverage": 0.523558,
+        "risk": 0.742981,
+        "k": 1389
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.748681,
+        "k": 1516
+       },
+       {
+        "coverage": 0.618922,
+        "risk": 0.751523,
+        "k": 1642
+       },
+       {
+        "coverage": 0.666415,
+        "risk": 0.759615,
+        "k": 1768
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.76095,
+        "k": 1895
+       },
+       {
+        "coverage": 0.761779,
+        "risk": 0.761504,
+        "k": 2021
+       },
+       {
+        "coverage": 0.809273,
+        "risk": 0.763857,
+        "k": 2147
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.76869,
+        "k": 2274
+       },
+       {
+        "coverage": 0.904636,
+        "risk": 0.771667,
+        "k": 2400
+       },
+       {
+        "coverage": 0.95213,
+        "risk": 0.776722,
+        "k": 2526
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.782133,
+        "k": 2653
+       }
+      ],
+      "overall_error": 0.782133,
+      "avg_selective_risk": 0.731738,
+      "beats_random": true,
+      "random_risk": 0.782133,
+      "n": 2653
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047493,
+        "risk": 0.531746,
+        "k": 126
+       },
+       {
+        "coverage": 0.094987,
+        "risk": 0.615079,
+        "k": 252
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.654354,
+        "k": 379
+       },
+       {
+        "coverage": 0.190351,
+        "risk": 0.675248,
+        "k": 505
+       },
+       {
+        "coverage": 0.237844,
+        "risk": 0.709984,
+        "k": 631
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.708443,
+        "k": 758
+       },
+       {
+        "coverage": 0.333208,
+        "risk": 0.711538,
+        "k": 884
+       },
+       {
+        "coverage": 0.380701,
+        "risk": 0.714851,
+        "k": 1010
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.720317,
+        "k": 1137
+       },
+       {
+        "coverage": 0.476065,
+        "risk": 0.718923,
+        "k": 1263
+       },
+       {
+        "coverage": 0.523558,
+        "risk": 0.727862,
+        "k": 1389
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.734169,
+        "k": 1516
+       },
+       {
+        "coverage": 0.618922,
+        "risk": 0.741778,
+        "k": 1642
+       },
+       {
+        "coverage": 0.666415,
+        "risk": 0.748303,
+        "k": 1768
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.751979,
+        "k": 1895
+       },
+       {
+        "coverage": 0.761779,
+        "risk": 0.758535,
+        "k": 2021
+       },
+       {
+        "coverage": 0.809273,
+        "risk": 0.767117,
+        "k": 2147
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.771328,
+        "k": 2274
+       },
+       {
+        "coverage": 0.904636,
+        "risk": 0.774167,
+        "k": 2400
+       },
+       {
+        "coverage": 0.95213,
+        "risk": 0.777514,
+        "k": 2526
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.782133,
+        "k": 2653
+       }
+      ],
+      "overall_error": 0.782133,
+      "avg_selective_risk": 0.718827,
+      "beats_random": true,
+      "random_risk": 0.782133,
+      "n": 2653
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1326,
+      "risk": 0.777526,
+      "ci95": [
+       0.754148,
+       0.799397
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 2122,
+      "risk": 0.778511,
+      "ci95": [
+       0.762488,
+       0.795947
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 2387,
+      "risk": 0.770842,
+      "ci95": [
+       0.754504,
+       0.788018
+      ]
+     }
+    },
+    "n": 2653
+   },
+   "unseen": {
+    "raw": {
+     "n": 2061,
+     "accuracy": 0.382339,
+     "accuracy_ci95": [
+      0.361596,
+      0.403519
+     ],
+     "chance": 0.167516,
+     "accuracy_options_only": 0.405143,
+     "accuracy_options_only_ci95": [
+      0.384144,
+      0.426495
+     ],
+     "chance_options_only": 0.205321,
+     "ece": 0.245684,
+     "brier": 0.861329,
+     "nll": 1.982673,
+     "mean_k": 5.4444,
+     "abstain_rate": 0.074721
+    },
+    "calibrated": {
+     "n": 2061,
+     "accuracy": 0.382339,
+     "accuracy_ci95": [
+      0.361596,
+      0.403519
+     ],
+     "chance": 0.167516,
+     "accuracy_options_only": 0.405143,
+     "accuracy_options_only_ci95": [
+      0.384144,
+      0.426495
+     ],
+     "chance_options_only": 0.205321,
+     "ece": 0.165102,
+     "brier": 0.798337,
+     "nll": 1.730365,
+     "mean_k": 5.4444,
+     "abstain_rate": 0.074721,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.04755,
+        "risk": 0.520408,
+        "k": 98
+       },
+       {
+        "coverage": 0.095099,
+        "risk": 0.561224,
+        "k": 196
+       },
+       {
+        "coverage": 0.142649,
+        "risk": 0.581633,
+        "k": 294
+       },
+       {
+        "coverage": 0.190199,
+        "risk": 0.596939,
+        "k": 392
+       },
+       {
+        "coverage": 0.237749,
+        "risk": 0.616327,
+        "k": 490
+       },
+       {
+        "coverage": 0.285298,
+        "risk": 0.630952,
+        "k": 588
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.636099,
+        "k": 687
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.634395,
+        "k": 785
+       },
+       {
+        "coverage": 0.428433,
+        "risk": 0.636467,
+        "k": 883
+       },
+       {
+        "coverage": 0.475983,
+        "risk": 0.626911,
+        "k": 981
+       },
+       {
+        "coverage": 0.523532,
+        "risk": 0.626506,
+        "k": 1079
+       },
+       {
+        "coverage": 0.571082,
+        "risk": 0.631266,
+        "k": 1177
+       },
+       {
+        "coverage": 0.618632,
+        "risk": 0.623529,
+        "k": 1275
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.624454,
+        "k": 1374
+       },
+       {
+        "coverage": 0.714216,
+        "risk": 0.620245,
+        "k": 1472
+       },
+       {
+        "coverage": 0.761766,
+        "risk": 0.609554,
+        "k": 1570
+       },
+       {
+        "coverage": 0.809316,
+        "risk": 0.616906,
+        "k": 1668
+       },
+       {
+        "coverage": 0.856866,
+        "risk": 0.620045,
+        "k": 1766
+       },
+       {
+        "coverage": 0.904415,
+        "risk": 0.607833,
+        "k": 1864
+       },
+       {
+        "coverage": 0.951965,
+        "risk": 0.608563,
+        "k": 1962
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.617661,
+        "k": 2061
+       }
+      ],
+      "overall_error": 0.617661,
+      "avg_selective_risk": 0.611806,
+      "beats_random": true,
+      "random_risk": 0.617661,
+      "n": 2061
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.04755,
+        "risk": 0.357143,
+        "k": 98
+       },
+       {
+        "coverage": 0.095099,
+        "risk": 0.392857,
+        "k": 196
+       },
+       {
+        "coverage": 0.142649,
+        "risk": 0.408163,
+        "k": 294
+       },
+       {
+        "coverage": 0.190199,
+        "risk": 0.454082,
+        "k": 392
+       },
+       {
+        "coverage": 0.237749,
+        "risk": 0.497959,
+        "k": 490
+       },
+       {
+        "coverage": 0.285298,
+        "risk": 0.511905,
+        "k": 588
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.515284,
+        "k": 687
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.524841,
+        "k": 785
+       },
+       {
+        "coverage": 0.428433,
+        "risk": 0.546999,
+        "k": 883
+       },
+       {
+        "coverage": 0.475983,
+        "risk": 0.56473,
+        "k": 981
+       },
+       {
+        "coverage": 0.523532,
+        "risk": 0.560704,
+        "k": 1079
+       },
+       {
+        "coverage": 0.571082,
+        "risk": 0.558199,
+        "k": 1177
+       },
+       {
+        "coverage": 0.618632,
+        "risk": 0.574902,
+        "k": 1275
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.582969,
+        "k": 1374
+       },
+       {
+        "coverage": 0.714216,
+        "risk": 0.588995,
+        "k": 1472
+       },
+       {
+        "coverage": 0.761766,
+        "risk": 0.591083,
+        "k": 1570
+       },
+       {
+        "coverage": 0.809316,
+        "risk": 0.595923,
+        "k": 1668
+       },
+       {
+        "coverage": 0.856866,
+        "risk": 0.59513,
+        "k": 1766
+       },
+       {
+        "coverage": 0.904415,
+        "risk": 0.597103,
+        "k": 1864
+       },
+       {
+        "coverage": 0.951965,
+        "risk": 0.606524,
+        "k": 1962
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.617661,
+        "k": 2061
+       }
+      ],
+      "overall_error": 0.617661,
+      "avg_selective_risk": 0.535388,
+      "beats_random": true,
+      "random_risk": 0.617661,
+      "n": 2061
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.04755,
+        "risk": 0.316327,
+        "k": 98
+       },
+       {
+        "coverage": 0.095099,
+        "risk": 0.372449,
+        "k": 196
+       },
+       {
+        "coverage": 0.142649,
+        "risk": 0.42517,
+        "k": 294
+       },
+       {
+        "coverage": 0.190199,
+        "risk": 0.451531,
+        "k": 392
+       },
+       {
+        "coverage": 0.237749,
+        "risk": 0.483673,
+        "k": 490
+       },
+       {
+        "coverage": 0.285298,
+        "risk": 0.517007,
+        "k": 588
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.547307,
+        "k": 687
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.583439,
+        "k": 785
+       },
+       {
+        "coverage": 0.428433,
+        "risk": 0.594564,
+        "k": 883
+       },
+       {
+        "coverage": 0.475983,
+        "risk": 0.582059,
+        "k": 981
+       },
+       {
+        "coverage": 0.523532,
+        "risk": 0.57646,
+        "k": 1079
+       },
+       {
+        "coverage": 0.571082,
+        "risk": 0.574342,
+        "k": 1177
+       },
+       {
+        "coverage": 0.618632,
+        "risk": 0.567843,
+        "k": 1275
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.564774,
+        "k": 1374
+       },
+       {
+        "coverage": 0.714216,
+        "risk": 0.564538,
+        "k": 1472
+       },
+       {
+        "coverage": 0.761766,
+        "risk": 0.56879,
+        "k": 1570
+       },
+       {
+        "coverage": 0.809316,
+        "risk": 0.577338,
+        "k": 1668
+       },
+       {
+        "coverage": 0.856866,
+        "risk": 0.589468,
+        "k": 1766
+       },
+       {
+        "coverage": 0.904415,
+        "risk": 0.600322,
+        "k": 1864
+       },
+       {
+        "coverage": 0.951965,
+        "risk": 0.608563,
+        "k": 1962
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.617661,
+        "k": 2061
+       }
+      ],
+      "overall_error": 0.617661,
+      "avg_selective_risk": 0.537315,
+      "beats_random": true,
+      "random_risk": 0.617661,
+      "n": 2061
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 1030,
+      "risk": 0.625243,
+      "ci95": [
+       0.598058,
+       0.654369
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1648,
+      "risk": 0.613471,
+      "ci95": [
+       0.588592,
+       0.637743
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1854,
+      "risk": 0.610032,
+      "ci95": [
+       0.5863,
+       0.633225
+      ]
+     }
+    },
+    "n": 2061
+   },
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 5.4851,
+     "mean_k_unseen": 5.4444,
+     "labels_seen": 45,
+     "labels_unseen": 15,
+     "chance_seen": 0.166319,
+     "chance_unseen": 0.167516,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.217867,
+    "accuracy_unseen": 0.382339,
+    "accuracy_drop": -0.164472,
+    "ece_seen": 0.362586,
+    "ece_unseen": 0.245684,
+    "ece_rise": -0.116902,
+    "brier_seen": 1.049671,
+    "brier_unseen": 0.861329,
+    "unseen_beats_chance": true,
+    "unseen_ranking_beats_chance": true
+   },
+   "locales": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "fr-FR"
+   ],
+   "caveat": "these locales were IN the training split of run mix1m-curve-ettin-68m-s20260922: the cut is seen-locale, and the label holdout is the only unseen dimension here"
+  },
+  "massive@eval-locales": {
+   "seen": {
+    "raw": {
+     "n": 1347,
+     "accuracy": 0.234595,
+     "accuracy_ci95": [
+      0.212741,
+      0.25796
+     ],
+     "chance": 0.164562,
+     "accuracy_options_only": 0.331106,
+     "accuracy_options_only_ci95": [
+      0.306486,
+      0.356687
+     ],
+     "chance_options_only": 0.201002,
+     "ece": 0.334135,
+     "brier": 1.029359,
+     "nll": 2.571553,
+     "mean_k": 5.5575,
+     "abstain_rate": 0.390497
+    },
+    "calibrated": {
+     "n": 1347,
+     "accuracy": 0.234595,
+     "accuracy_ci95": [
+      0.212741,
+      0.25796
+     ],
+     "chance": 0.164562,
+     "accuracy_options_only": 0.331106,
+     "accuracy_options_only_ci95": [
+      0.306486,
+      0.356687
+     ],
+     "chance_options_only": 0.201002,
+     "ece": 0.026835,
+     "brier": 0.823593,
+     "nll": 1.802848,
+     "mean_k": 5.5575,
+     "abstain_rate": 0.390497,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047513,
+        "risk": 0.71875,
+        "k": 64
+       },
+       {
+        "coverage": 0.095026,
+        "risk": 0.695312,
+        "k": 128
+       },
+       {
+        "coverage": 0.142539,
+        "risk": 0.708333,
+        "k": 192
+       },
+       {
+        "coverage": 0.190052,
+        "risk": 0.734375,
+        "k": 256
+       },
+       {
+        "coverage": 0.237565,
+        "risk": 0.74375,
+        "k": 320
+       },
+       {
+        "coverage": 0.285078,
+        "risk": 0.739583,
+        "k": 384
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.750557,
+        "k": 449
+       },
+       {
+        "coverage": 0.380846,
+        "risk": 0.74269,
+        "k": 513
+       },
+       {
+        "coverage": 0.428359,
+        "risk": 0.752166,
+        "k": 577
+       },
+       {
+        "coverage": 0.475872,
+        "risk": 0.75507,
+        "k": 641
+       },
+       {
+        "coverage": 0.523385,
+        "risk": 0.753191,
+        "k": 705
+       },
+       {
+        "coverage": 0.570898,
+        "risk": 0.755527,
+        "k": 769
+       },
+       {
+        "coverage": 0.618411,
+        "risk": 0.753902,
+        "k": 833
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.756125,
+        "k": 898
+       },
+       {
+        "coverage": 0.71418,
+        "risk": 0.756757,
+        "k": 962
+       },
+       {
+        "coverage": 0.761693,
+        "risk": 0.75731,
+        "k": 1026
+       },
+       {
+        "coverage": 0.809206,
+        "risk": 0.762385,
+        "k": 1090
+       },
+       {
+        "coverage": 0.856719,
+        "risk": 0.762565,
+        "k": 1154
+       },
+       {
+        "coverage": 0.904232,
+        "risk": 0.756158,
+        "k": 1218
+       },
+       {
+        "coverage": 0.951745,
+        "risk": 0.75585,
+        "k": 1282
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.765405,
+        "k": 1347
+       }
+      ],
+      "overall_error": 0.765405,
+      "avg_selective_risk": 0.746465,
+      "beats_random": true,
+      "random_risk": 0.765405,
+      "n": 1347
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047513,
+        "risk": 0.640625,
+        "k": 64
+       },
+       {
+        "coverage": 0.095026,
+        "risk": 0.65625,
+        "k": 128
+       },
+       {
+        "coverage": 0.142539,
+        "risk": 0.677083,
+        "k": 192
+       },
+       {
+        "coverage": 0.190052,
+        "risk": 0.6875,
+        "k": 256
+       },
+       {
+        "coverage": 0.237565,
+        "risk": 0.690625,
+        "k": 320
+       },
+       {
+        "coverage": 0.285078,
+        "risk": 0.710938,
+        "k": 384
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.721604,
+        "k": 449
+       },
+       {
+        "coverage": 0.380846,
+        "risk": 0.730994,
+        "k": 513
+       },
+       {
+        "coverage": 0.428359,
+        "risk": 0.731369,
+        "k": 577
+       },
+       {
+        "coverage": 0.475872,
+        "risk": 0.734789,
+        "k": 641
+       },
+       {
+        "coverage": 0.523385,
+        "risk": 0.740426,
+        "k": 705
+       },
+       {
+        "coverage": 0.570898,
+        "risk": 0.741222,
+        "k": 769
+       },
+       {
+        "coverage": 0.618411,
+        "risk": 0.745498,
+        "k": 833
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.749443,
+        "k": 898
+       },
+       {
+        "coverage": 0.71418,
+        "risk": 0.748441,
+        "k": 962
+       },
+       {
+        "coverage": 0.761693,
+        "risk": 0.751462,
+        "k": 1026
+       },
+       {
+        "coverage": 0.809206,
+        "risk": 0.750459,
+        "k": 1090
+       },
+       {
+        "coverage": 0.856719,
+        "risk": 0.7513,
+        "k": 1154
+       },
+       {
+        "coverage": 0.904232,
+        "risk": 0.756158,
+        "k": 1218
+       },
+       {
+        "coverage": 0.951745,
+        "risk": 0.75819,
+        "k": 1282
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.765405,
+        "k": 1347
+       }
+      ],
+      "overall_error": 0.765405,
+      "avg_selective_risk": 0.725704,
+      "beats_random": true,
+      "random_risk": 0.765405,
+      "n": 1347
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047513,
+        "risk": 0.609375,
+        "k": 64
+       },
+       {
+        "coverage": 0.095026,
+        "risk": 0.632812,
+        "k": 128
+       },
+       {
+        "coverage": 0.142539,
+        "risk": 0.65625,
+        "k": 192
+       },
+       {
+        "coverage": 0.190052,
+        "risk": 0.671875,
+        "k": 256
+       },
+       {
+        "coverage": 0.237565,
+        "risk": 0.69375,
+        "k": 320
+       },
+       {
+        "coverage": 0.285078,
+        "risk": 0.710938,
+        "k": 384
+       },
+       {
+        "coverage": 0.333333,
+        "risk": 0.712695,
+        "k": 449
+       },
+       {
+        "coverage": 0.380846,
+        "risk": 0.705653,
+        "k": 513
+       },
+       {
+        "coverage": 0.428359,
+        "risk": 0.714038,
+        "k": 577
+       },
+       {
+        "coverage": 0.475872,
+        "risk": 0.709828,
+        "k": 641
+       },
+       {
+        "coverage": 0.523385,
+        "risk": 0.723404,
+        "k": 705
+       },
+       {
+        "coverage": 0.570898,
+        "risk": 0.720416,
+        "k": 769
+       },
+       {
+        "coverage": 0.618411,
+        "risk": 0.72389,
+        "k": 833
+       },
+       {
+        "coverage": 0.666667,
+        "risk": 0.733853,
+        "k": 898
+       },
+       {
+        "coverage": 0.71418,
+        "risk": 0.742204,
+        "k": 962
+       },
+       {
+        "coverage": 0.761693,
+        "risk": 0.745614,
+        "k": 1026
+       },
+       {
+        "coverage": 0.809206,
+        "risk": 0.753211,
+        "k": 1090
+       },
+       {
+        "coverage": 0.856719,
+        "risk": 0.755633,
+        "k": 1154
+       },
+       {
+        "coverage": 0.904232,
+        "risk": 0.759442,
+        "k": 1218
+       },
+       {
+        "coverage": 0.951745,
+        "risk": 0.765211,
+        "k": 1282
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.765405,
+        "k": 1347
+       }
+      ],
+      "overall_error": 0.765405,
+      "avg_selective_risk": 0.714547,
+      "beats_random": true,
+      "random_risk": 0.765405,
+      "n": 1347
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 673,
+      "risk": 0.750371,
+      "ci95": [
+       0.717682,
+       0.783061
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 1077,
+      "risk": 0.761374,
+      "ci95": [
+       0.734448,
+       0.785515
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 1212,
+      "risk": 0.757426,
+      "ci95": [
+       0.732673,
+       0.782178
+      ]
+     }
+    },
+    "n": 1347
+   },
+   "unseen": {
+    "raw": {
+     "n": 1022,
+     "accuracy": 0.376712,
+     "accuracy_ci95": [
+      0.347518,
+      0.40683
+     ],
+     "chance": 0.167074,
+     "accuracy_options_only": 0.380626,
+     "accuracy_options_only_ci95": [
+      0.351358,
+      0.410789
+     ],
+     "chance_options_only": 0.204587,
+     "ece": 0.244083,
+     "brier": 0.879564,
+     "nll": 2.040604,
+     "mean_k": 5.4491,
+     "abstain_rate": 0.029354
+    },
+    "calibrated": {
+     "n": 1022,
+     "accuracy": 0.376712,
+     "accuracy_ci95": [
+      0.347518,
+      0.40683
+     ],
+     "chance": 0.167074,
+     "accuracy_options_only": 0.380626,
+     "accuracy_options_only_ci95": [
+      0.351358,
+      0.410789
+     ],
+     "chance_options_only": 0.204587,
+     "ece": 0.161609,
+     "brier": 0.797581,
+     "nll": 1.732127,
+     "mean_k": 5.4491,
+     "abstain_rate": 0.029354,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.046967,
+        "risk": 0.583333,
+        "k": 48
+       },
+       {
+        "coverage": 0.094912,
+        "risk": 0.608247,
+        "k": 97
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.657534,
+        "k": 146
+       },
+       {
+        "coverage": 0.189824,
+        "risk": 0.670103,
+        "k": 194
+       },
+       {
+        "coverage": 0.237769,
+        "risk": 0.695473,
+        "k": 243
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.688356,
+        "k": 292
+       },
+       {
+        "coverage": 0.332681,
+        "risk": 0.688235,
+        "k": 340
+       },
+       {
+        "coverage": 0.380626,
+        "risk": 0.688946,
+        "k": 389
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.687215,
+        "k": 438
+       },
+       {
+        "coverage": 0.475538,
+        "risk": 0.676955,
+        "k": 486
+       },
+       {
+        "coverage": 0.523483,
+        "risk": 0.672897,
+        "k": 535
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.67637,
+        "k": 584
+       },
+       {
+        "coverage": 0.618395,
+        "risk": 0.667722,
+        "k": 632
+       },
+       {
+        "coverage": 0.666341,
+        "risk": 0.666667,
+        "k": 681
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.660274,
+        "k": 730
+       },
+       {
+        "coverage": 0.761252,
+        "risk": 0.645244,
+        "k": 778
+       },
+       {
+        "coverage": 0.809198,
+        "risk": 0.64208,
+        "k": 827
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.642694,
+        "k": 876
+       },
+       {
+        "coverage": 0.90411,
+        "risk": 0.62987,
+        "k": 924
+       },
+       {
+        "coverage": 0.952055,
+        "risk": 0.618705,
+        "k": 973
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.623288,
+        "k": 1022
+       }
+      ],
+      "overall_error": 0.623288,
+      "avg_selective_risk": 0.656677,
+      "beats_random": false,
+      "random_risk": 0.623288,
+      "n": 1022
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.046967,
+        "risk": 0.291667,
+        "k": 48
+       },
+       {
+        "coverage": 0.094912,
+        "risk": 0.319588,
+        "k": 97
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.321918,
+        "k": 146
+       },
+       {
+        "coverage": 0.189824,
+        "risk": 0.396907,
+        "k": 194
+       },
+       {
+        "coverage": 0.237769,
+        "risk": 0.440329,
+        "k": 243
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.438356,
+        "k": 292
+       },
+       {
+        "coverage": 0.332681,
+        "risk": 0.467647,
+        "k": 340
+       },
+       {
+        "coverage": 0.380626,
+        "risk": 0.493573,
+        "k": 389
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.509132,
+        "k": 438
+       },
+       {
+        "coverage": 0.475538,
+        "risk": 0.516461,
+        "k": 486
+       },
+       {
+        "coverage": 0.523483,
+        "risk": 0.521495,
+        "k": 535
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.539384,
+        "k": 584
+       },
+       {
+        "coverage": 0.618395,
+        "risk": 0.55538,
+        "k": 632
+       },
+       {
+        "coverage": 0.666341,
+        "risk": 0.558003,
+        "k": 681
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.575342,
+        "k": 730
+       },
+       {
+        "coverage": 0.761252,
+        "risk": 0.588689,
+        "k": 778
+       },
+       {
+        "coverage": 0.809198,
+        "risk": 0.598549,
+        "k": 827
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.598174,
+        "k": 876
+       },
+       {
+        "coverage": 0.90411,
+        "risk": 0.601732,
+        "k": 924
+       },
+       {
+        "coverage": 0.952055,
+        "risk": 0.608428,
+        "k": 973
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.623288,
+        "k": 1022
+       }
+      ],
+      "overall_error": 0.623288,
+      "avg_selective_risk": 0.50305,
+      "beats_random": true,
+      "random_risk": 0.623288,
+      "n": 1022
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.046967,
+        "risk": 0.333333,
+        "k": 48
+       },
+       {
+        "coverage": 0.094912,
+        "risk": 0.309278,
+        "k": 97
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.342466,
+        "k": 146
+       },
+       {
+        "coverage": 0.189824,
+        "risk": 0.386598,
+        "k": 194
+       },
+       {
+        "coverage": 0.237769,
+        "risk": 0.436214,
+        "k": 243
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.472603,
+        "k": 292
+       },
+       {
+        "coverage": 0.332681,
+        "risk": 0.514706,
+        "k": 340
+       },
+       {
+        "coverage": 0.380626,
+        "risk": 0.560411,
+        "k": 389
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.589041,
+        "k": 438
+       },
+       {
+        "coverage": 0.475538,
+        "risk": 0.588477,
+        "k": 486
+       },
+       {
+        "coverage": 0.523483,
+        "risk": 0.598131,
+        "k": 535
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.585616,
+        "k": 584
+       },
+       {
+        "coverage": 0.618395,
+        "risk": 0.577532,
+        "k": 632
+       },
+       {
+        "coverage": 0.666341,
+        "risk": 0.580029,
+        "k": 681
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.582192,
+        "k": 730
+       },
+       {
+        "coverage": 0.761252,
+        "risk": 0.592545,
+        "k": 778
+       },
+       {
+        "coverage": 0.809198,
+        "risk": 0.599758,
+        "k": 827
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.600457,
+        "k": 876
+       },
+       {
+        "coverage": 0.90411,
+        "risk": 0.608225,
+        "k": 924
+       },
+       {
+        "coverage": 0.952055,
+        "risk": 0.615622,
+        "k": 973
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.623288,
+        "k": 1022
+       }
+      ],
+      "overall_error": 0.623288,
+      "avg_selective_risk": 0.528406,
+      "beats_random": true,
+      "random_risk": 0.623288,
+      "n": 1022
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 511,
+      "risk": 0.67319,
+      "ci95": [
+       0.636008,
+       0.712329
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 817,
+      "risk": 0.641371,
+      "ci95": [
+       0.609547,
+       0.673195
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 919,
+      "risk": 0.632209,
+      "ci95": [
+       0.598477,
+       0.660501
+      ]
+     }
+    },
+    "n": 1022
+   },
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 5.5575,
+     "mean_k_unseen": 5.4491,
+     "labels_seen": 45,
+     "labels_unseen": 15,
+     "chance_seen": 0.164562,
+     "chance_unseen": 0.167074,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.234595,
+    "accuracy_unseen": 0.376712,
+    "accuracy_drop": -0.142117,
+    "ece_seen": 0.334135,
+    "ece_unseen": 0.244083,
+    "ece_rise": -0.090052,
+    "brier_seen": 1.029359,
+    "brier_unseen": 0.879564,
+    "unseen_beats_chance": true,
+    "unseen_ranking_beats_chance": true
+   },
+   "locales": [
+    "it-IT",
+    "pt-PT"
+   ],
+   "caveat": "these locales were IN the training split of run mix1m-curve-ettin-68m-s20260922: the cut is seen-locale, and the label holdout is the only unseen dimension here"
+  },
+  "ALL": {
+   "seen": {
+    "raw": {
+     "n": 9646,
+     "accuracy": 0.267883,
+     "accuracy_ci95": [
+      0.259139,
+      0.276812
+     ],
+     "chance": 0.200519,
+     "accuracy_options_only": 0.351441,
+     "accuracy_options_only_ci95": [
+      0.341974,
+      0.361026
+     ],
+     "chance_options_only": 0.264352,
+     "ece": 0.281362,
+     "brier": 0.87558,
+     "nll": 2.150829,
+     "mean_k": 4.7766,
+     "abstain_rate": 0.345532
+    },
+    "calibrated": {
+     "n": 9646,
+     "accuracy": 0.267883,
+     "accuracy_ci95": [
+      0.259139,
+      0.276812
+     ],
+     "chance": 0.200519,
+     "accuracy_options_only": 0.351441,
+     "accuracy_options_only_ci95": [
+      0.341974,
+      0.361026
+     ],
+     "chance_options_only": 0.264352,
+     "ece": 0.05952,
+     "brier": 0.753701,
+     "nll": 1.568869,
+     "mean_k": 4.7766,
+     "abstain_rate": 0.345532,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047584,
+        "risk": 0.655773,
+        "k": 459
+       },
+       {
+        "coverage": 0.095169,
+        "risk": 0.618736,
+        "k": 918
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.615385,
+        "k": 1378
+       },
+       {
+        "coverage": 0.190442,
+        "risk": 0.620577,
+        "k": 1837
+       },
+       {
+        "coverage": 0.238026,
+        "risk": 0.641115,
+        "k": 2296
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.666909,
+        "k": 2756
+       },
+       {
+        "coverage": 0.333299,
+        "risk": 0.693624,
+        "k": 3215
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.703321,
+        "k": 3674
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.710692,
+        "k": 4134
+       },
+       {
+        "coverage": 0.476156,
+        "risk": 0.708469,
+        "k": 4593
+       },
+       {
+        "coverage": 0.52374,
+        "risk": 0.707838,
+        "k": 5052
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.710269,
+        "k": 5512
+       },
+       {
+        "coverage": 0.619013,
+        "risk": 0.714118,
+        "k": 5971
+       },
+       {
+        "coverage": 0.666598,
+        "risk": 0.715552,
+        "k": 6430
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.714949,
+        "k": 6890
+       },
+       {
+        "coverage": 0.76187,
+        "risk": 0.716424,
+        "k": 7349
+       },
+       {
+        "coverage": 0.809455,
+        "risk": 0.718878,
+        "k": 7808
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.717707,
+        "k": 8268
+       },
+       {
+        "coverage": 0.904727,
+        "risk": 0.71972,
+        "k": 8727
+       },
+       {
+        "coverage": 0.952312,
+        "risk": 0.721859,
+        "k": 9186
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.732117,
+        "k": 9646
+       }
+      ],
+      "overall_error": 0.732117,
+      "avg_selective_risk": 0.691621,
+      "beats_random": true,
+      "random_risk": 0.732117,
+      "n": 9646
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047584,
+        "risk": 0.579521,
+        "k": 459
+       },
+       {
+        "coverage": 0.095169,
+        "risk": 0.576253,
+        "k": 918
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.581277,
+        "k": 1378
+       },
+       {
+        "coverage": 0.190442,
+        "risk": 0.593359,
+        "k": 1837
+       },
+       {
+        "coverage": 0.238026,
+        "risk": 0.560105,
+        "k": 2296
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.538099,
+        "k": 2756
+       },
+       {
+        "coverage": 0.333299,
+        "risk": 0.553033,
+        "k": 3215
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.569679,
+        "k": 3674
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.591921,
+        "k": 4134
+       },
+       {
+        "coverage": 0.476156,
+        "risk": 0.609841,
+        "k": 4593
+       },
+       {
+        "coverage": 0.52374,
+        "risk": 0.626485,
+        "k": 5052
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.641509,
+        "k": 5512
+       },
+       {
+        "coverage": 0.619013,
+        "risk": 0.656171,
+        "k": 5971
+       },
+       {
+        "coverage": 0.666598,
+        "risk": 0.667185,
+        "k": 6430
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.678229,
+        "k": 6890
+       },
+       {
+        "coverage": 0.76187,
+        "risk": 0.690434,
+        "k": 7349
+       },
+       {
+        "coverage": 0.809455,
+        "risk": 0.697874,
+        "k": 7808
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.706217,
+        "k": 8268
+       },
+       {
+        "coverage": 0.904727,
+        "risk": 0.713418,
+        "k": 8727
+       },
+       {
+        "coverage": 0.952312,
+        "risk": 0.722839,
+        "k": 9186
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.732117,
+        "k": 9646
+       }
+      ],
+      "overall_error": 0.732117,
+      "avg_selective_risk": 0.632646,
+      "beats_random": true,
+      "random_risk": 0.732117,
+      "n": 9646
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047584,
+        "risk": 0.204793,
+        "k": 459
+       },
+       {
+        "coverage": 0.095169,
+        "risk": 0.356209,
+        "k": 918
+       },
+       {
+        "coverage": 0.142857,
+        "risk": 0.421626,
+        "k": 1378
+       },
+       {
+        "coverage": 0.190442,
+        "risk": 0.460533,
+        "k": 1837
+       },
+       {
+        "coverage": 0.238026,
+        "risk": 0.486934,
+        "k": 2296
+       },
+       {
+        "coverage": 0.285714,
+        "risk": 0.513788,
+        "k": 2756
+       },
+       {
+        "coverage": 0.333299,
+        "risk": 0.540591,
+        "k": 3215
+       },
+       {
+        "coverage": 0.380883,
+        "risk": 0.565868,
+        "k": 3674
+       },
+       {
+        "coverage": 0.428571,
+        "risk": 0.587567,
+        "k": 4134
+       },
+       {
+        "coverage": 0.476156,
+        "risk": 0.604398,
+        "k": 4593
+       },
+       {
+        "coverage": 0.52374,
+        "risk": 0.622328,
+        "k": 5052
+       },
+       {
+        "coverage": 0.571429,
+        "risk": 0.634797,
+        "k": 5512
+       },
+       {
+        "coverage": 0.619013,
+        "risk": 0.649472,
+        "k": 5971
+       },
+       {
+        "coverage": 0.666598,
+        "risk": 0.663142,
+        "k": 6430
+       },
+       {
+        "coverage": 0.714286,
+        "risk": 0.674601,
+        "k": 6890
+       },
+       {
+        "coverage": 0.76187,
+        "risk": 0.687304,
+        "k": 7349
+       },
+       {
+        "coverage": 0.809455,
+        "risk": 0.69877,
+        "k": 7808
+       },
+       {
+        "coverage": 0.857143,
+        "risk": 0.708757,
+        "k": 8268
+       },
+       {
+        "coverage": 0.904727,
+        "risk": 0.716741,
+        "k": 8727
+       },
+       {
+        "coverage": 0.952312,
+        "risk": 0.724581,
+        "k": 9186
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.732117,
+        "k": 9646
+       }
+      ],
+      "overall_error": 0.732117,
+      "avg_selective_risk": 0.583567,
+      "beats_random": true,
+      "random_risk": 0.732117,
+      "n": 9646
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 4823,
+      "risk": 0.710346,
+      "ci95": [
+       0.696869,
+       0.722579
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 7716,
+      "risk": 0.718377,
+      "ci95": [
+       0.709176,
+       0.728227
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 8681,
+      "risk": 0.719618,
+      "ci95": [
+       0.709941,
+       0.728833
+      ]
+     }
+    },
+    "n": 9646
+   },
+   "unseen": {
+    "raw": {
+     "n": 5624,
+     "accuracy": 0.220839,
+     "accuracy_ci95": [
+      0.210191,
+      0.231869
+     ],
+     "chance": 0.166216,
+     "accuracy_options_only": 0.310633,
+     "accuracy_options_only_ci95": [
+      0.298672,
+      0.322853
+     ],
+     "chance_options_only": 0.203407,
+     "ece": 0.338533,
+     "brier": 0.990316,
+     "nll": 2.303984,
+     "mean_k": 5.4929,
+     "abstain_rate": 0.433144
+    },
+    "calibrated": {
+     "n": 5624,
+     "accuracy": 0.220839,
+     "accuracy_ci95": [
+      0.210191,
+      0.231869
+     ],
+     "chance": 0.166216,
+     "accuracy_options_only": 0.310633,
+     "accuracy_options_only_ci95": [
+      0.298672,
+      0.322853
+     ],
+     "chance_options_only": 0.203407,
+     "ece": 0.019895,
+     "brier": 0.829415,
+     "nll": 1.817243,
+     "mean_k": 5.4929,
+     "abstain_rate": 0.433144,
+     "temperature_source": "dataset"
+    },
+    "risk_coverage": {
+     "unknown": {
+      "strategy": "unknown",
+      "curve": [
+       {
+        "coverage": 0.047475,
+        "risk": 0.58427,
+        "k": 267
+       },
+       {
+        "coverage": 0.095128,
+        "risk": 0.631776,
+        "k": 535
+       },
+       {
+        "coverage": 0.142781,
+        "risk": 0.673724,
+        "k": 803
+       },
+       {
+        "coverage": 0.190434,
+        "risk": 0.686275,
+        "k": 1071
+       },
+       {
+        "coverage": 0.238087,
+        "risk": 0.696042,
+        "k": 1339
+       },
+       {
+        "coverage": 0.285562,
+        "risk": 0.69863,
+        "k": 1606
+       },
+       {
+        "coverage": 0.333215,
+        "risk": 0.697972,
+        "k": 1874
+       },
+       {
+        "coverage": 0.380868,
+        "risk": 0.710551,
+        "k": 2142
+       },
+       {
+        "coverage": 0.428521,
+        "risk": 0.709959,
+        "k": 2410
+       },
+       {
+        "coverage": 0.476174,
+        "risk": 0.717326,
+        "k": 2678
+       },
+       {
+        "coverage": 0.523649,
+        "risk": 0.724958,
+        "k": 2945
+       },
+       {
+        "coverage": 0.571302,
+        "risk": 0.726113,
+        "k": 3213
+       },
+       {
+        "coverage": 0.618954,
+        "risk": 0.727377,
+        "k": 3481
+       },
+       {
+        "coverage": 0.666607,
+        "risk": 0.73753,
+        "k": 3749
+       },
+       {
+        "coverage": 0.71426,
+        "risk": 0.746826,
+        "k": 4017
+       },
+       {
+        "coverage": 0.761735,
+        "risk": 0.743931,
+        "k": 4284
+       },
+       {
+        "coverage": 0.809388,
+        "risk": 0.742311,
+        "k": 4552
+       },
+       {
+        "coverage": 0.857041,
+        "risk": 0.748133,
+        "k": 4820
+       },
+       {
+        "coverage": 0.904694,
+        "risk": 0.756879,
+        "k": 5088
+       },
+       {
+        "coverage": 0.952347,
+        "risk": 0.768111,
+        "k": 5356
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.779161,
+        "k": 5624
+       }
+      ],
+      "overall_error": 0.779161,
+      "avg_selective_risk": 0.71466,
+      "beats_random": true,
+      "random_risk": 0.779161,
+      "n": 5624
+     },
+     "maxprob": {
+      "strategy": "maxprob",
+      "curve": [
+       {
+        "coverage": 0.047475,
+        "risk": 0.816479,
+        "k": 267
+       },
+       {
+        "coverage": 0.095128,
+        "risk": 0.691589,
+        "k": 535
+       },
+       {
+        "coverage": 0.142781,
+        "risk": 0.723537,
+        "k": 803
+       },
+       {
+        "coverage": 0.190434,
+        "risk": 0.718954,
+        "k": 1071
+       },
+       {
+        "coverage": 0.238087,
+        "risk": 0.722928,
+        "k": 1339
+       },
+       {
+        "coverage": 0.285562,
+        "risk": 0.727273,
+        "k": 1606
+       },
+       {
+        "coverage": 0.333215,
+        "risk": 0.733191,
+        "k": 1874
+       },
+       {
+        "coverage": 0.380868,
+        "risk": 0.735761,
+        "k": 2142
+       },
+       {
+        "coverage": 0.428521,
+        "risk": 0.740249,
+        "k": 2410
+       },
+       {
+        "coverage": 0.476174,
+        "risk": 0.75056,
+        "k": 2678
+       },
+       {
+        "coverage": 0.523649,
+        "risk": 0.750424,
+        "k": 2945
+       },
+       {
+        "coverage": 0.571302,
+        "risk": 0.7507,
+        "k": 3213
+       },
+       {
+        "coverage": 0.618954,
+        "risk": 0.759552,
+        "k": 3481
+       },
+       {
+        "coverage": 0.666607,
+        "risk": 0.76287,
+        "k": 3749
+       },
+       {
+        "coverage": 0.71426,
+        "risk": 0.766492,
+        "k": 4017
+       },
+       {
+        "coverage": 0.761735,
+        "risk": 0.767974,
+        "k": 4284
+       },
+       {
+        "coverage": 0.809388,
+        "risk": 0.769112,
+        "k": 4552
+       },
+       {
+        "coverage": 0.857041,
+        "risk": 0.7639,
+        "k": 4820
+       },
+       {
+        "coverage": 0.904694,
+        "risk": 0.765134,
+        "k": 5088
+       },
+       {
+        "coverage": 0.952347,
+        "risk": 0.772778,
+        "k": 5356
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.779161,
+        "k": 5624
+       }
+      ],
+      "overall_error": 0.779161,
+      "avg_selective_risk": 0.750887,
+      "beats_random": true,
+      "random_risk": 0.779161,
+      "n": 5624
+     },
+     "margin": {
+      "strategy": "margin",
+      "curve": [
+       {
+        "coverage": 0.047475,
+        "risk": 0.771536,
+        "k": 267
+       },
+       {
+        "coverage": 0.095128,
+        "risk": 0.691589,
+        "k": 535
+       },
+       {
+        "coverage": 0.142781,
+        "risk": 0.684932,
+        "k": 803
+       },
+       {
+        "coverage": 0.190434,
+        "risk": 0.704949,
+        "k": 1071
+       },
+       {
+        "coverage": 0.238087,
+        "risk": 0.716953,
+        "k": 1339
+       },
+       {
+        "coverage": 0.285562,
+        "risk": 0.732877,
+        "k": 1606
+       },
+       {
+        "coverage": 0.333215,
+        "risk": 0.748132,
+        "k": 1874
+       },
+       {
+        "coverage": 0.380868,
+        "risk": 0.769374,
+        "k": 2142
+       },
+       {
+        "coverage": 0.428521,
+        "risk": 0.790456,
+        "k": 2410
+       },
+       {
+        "coverage": 0.476174,
+        "risk": 0.800224,
+        "k": 2678
+       },
+       {
+        "coverage": 0.523649,
+        "risk": 0.79966,
+        "k": 2945
+       },
+       {
+        "coverage": 0.571302,
+        "risk": 0.79334,
+        "k": 3213
+       },
+       {
+        "coverage": 0.618954,
+        "risk": 0.786268,
+        "k": 3481
+       },
+       {
+        "coverage": 0.666607,
+        "risk": 0.774073,
+        "k": 3749
+       },
+       {
+        "coverage": 0.71426,
+        "risk": 0.76699,
+        "k": 4017
+       },
+       {
+        "coverage": 0.761735,
+        "risk": 0.766106,
+        "k": 4284
+       },
+       {
+        "coverage": 0.809388,
+        "risk": 0.766257,
+        "k": 4552
+       },
+       {
+        "coverage": 0.857041,
+        "risk": 0.770332,
+        "k": 4820
+       },
+       {
+        "coverage": 0.904694,
+        "risk": 0.772209,
+        "k": 5088
+       },
+       {
+        "coverage": 0.952347,
+        "risk": 0.775952,
+        "k": 5356
+       },
+       {
+        "coverage": 1.0,
+        "risk": 0.779161,
+        "k": 5624
+       }
+      ],
+      "overall_error": 0.779161,
+      "avg_selective_risk": 0.760065,
+      "beats_random": true,
+      "random_risk": 0.779161,
+      "n": 5624
+     }
+    },
+    "risk_ci95_unknown": {
+     "0.5": {
+      "coverage": 0.5,
+      "k": 2812,
+      "risk": 0.722262,
+      "ci95": [
+       0.706615,
+       0.738976
+      ]
+     },
+     "0.8": {
+      "coverage": 0.8,
+      "k": 4499,
+      "risk": 0.742165,
+      "ci95": [
+       0.728384,
+       0.755723
+      ]
+     },
+     "0.9": {
+      "coverage": 0.9,
+      "k": 5061,
+      "risk": 0.755779,
+      "ci95": [
+       0.743331,
+       0.769018
+      ]
+     }
+    },
+    "n": 5624
+   },
+   "note": "the whole mixture, every dataset pooled",
+   "pair": {
+    "comparability": {
+     "mean_k_seen": 4.7766,
+     "mean_k_unseen": 5.4929,
+     "labels_seen": 135,
+     "labels_unseen": 45,
+     "chance_seen": 0.200519,
+     "chance_unseen": 0.166216,
+     "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+    },
+    "accuracy_seen": 0.267883,
+    "accuracy_unseen": 0.220839,
+    "accuracy_drop": 0.047044,
+    "ece_seen": 0.281362,
+    "ece_unseen": 0.338533,
+    "ece_rise": 0.057171,
+    "brier_seen": 0.87558,
+    "brier_unseen": 0.990316,
+    "unseen_beats_chance": true,
+    "unseen_ranking_beats_chance": true
+   }
+  }
+ },
+ "eval_only_results": {
+  "logiqa-mc": {
+   "raw": {
+    "n": 1500,
+    "accuracy": 0.106667,
+    "accuracy_ci95": [
+     0.092038,
+     0.123305
+    ],
+    "chance": 0.2,
+    "accuracy_options_only": 0.232667,
+    "accuracy_options_only_ci95": [
+     0.211983,
+     0.254716
+    ],
+    "chance_options_only": 0.25,
+    "ece": 0.230493,
+    "brier": 0.899401,
+    "nll": 1.84667,
+    "mean_k": 4.0,
+    "abstain_rate": 0.536667
+   },
+   "calibrated": {
+    "n": 1500,
+    "accuracy": 0.106667,
+    "accuracy_ci95": [
+     0.092038,
+     0.123305
+    ],
+    "chance": 0.2,
+    "accuracy_options_only": 0.232667,
+    "accuracy_options_only_ci95": [
+     0.211983,
+     0.254716
+    ],
+    "chance_options_only": 0.25,
+    "ece": 0.112866,
+    "brier": 0.808663,
+    "nll": 1.630334,
+    "mean_k": 4.0,
+    "abstain_rate": 0.536667,
+    "temperature_source": "cardinality"
+   },
+   "risk_coverage": {
+    "unknown": {
+     "strategy": "unknown",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 0.84507,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 0.816901,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.766355,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.764912,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.77591,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.766355,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.772,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.770578,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.780374,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.788515,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.805096,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.816803,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.829741,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.841,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.850607,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.859895,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.868204,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.875486,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.882093,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.887955,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.893333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.893333,
+     "avg_selective_risk": 0.821771,
+     "beats_random": true,
+     "random_risk": 0.893333,
+     "n": 1500
+    },
+    "maxprob": {
+     "strategy": "maxprob",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 1.0,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 0.992958,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.995327,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.989474,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.988796,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.985981,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.974,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.970228,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.968847,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.969188,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.963057,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.952159,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.942888,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.934,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.927171,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.922942,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.913509,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.901167,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.897568,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.896359,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.893333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.893333,
+     "avg_selective_risk": 0.951379,
+     "beats_random": false,
+     "random_risk": 0.893333,
+     "n": 1500
+    },
+    "margin": {
+     "strategy": "margin",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 1.0,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 1.0,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.995327,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.989474,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.983193,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.974299,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.97,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.963222,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.959502,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.952381,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.943949,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.932322,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.927802,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.916,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.914099,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.908932,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.902801,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.898833,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.896831,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.895658,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.893333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.893333,
+     "avg_selective_risk": 0.943712,
+     "beats_random": false,
+     "random_risk": 0.893333,
+     "n": 1500
+    }
+   },
+   "risk_ci95_unknown": {
+    "0.5": {
+     "coverage": 0.5,
+     "k": 750,
+     "risk": 0.797333,
+     "ci95": [
+      0.768,
+      0.828
+     ]
+    },
+    "0.8": {
+     "coverage": 0.8,
+     "k": 1200,
+     "risk": 0.866667,
+     "ci95": [
+      0.8475,
+      0.885
+     ]
+    },
+    "0.9": {
+     "coverage": 0.9,
+     "k": 1350,
+     "risk": 0.881481,
+     "ci95": [
+      0.864444,
+      0.899259
+     ]
+    }
+   },
+   "n": 1500,
+   "never_in_train": "#T-halt-contam firewall",
+   "date": "2026-09-22",
+   "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+   "cardinality": 4,
+   "split": "test",
+   "split_note": "official test split",
+   "above_chance": false,
+   "ranking_above_chance": false,
+   "above_thermometer_floor": false
+  },
+  "logiqa-nli": {
+   "raw": {
+    "n": 1500,
+    "accuracy": 0.498667,
+    "accuracy_ci95": [
+     0.473399,
+     0.523941
+    ],
+    "chance": 0.333333,
+    "accuracy_options_only": 0.498667,
+    "accuracy_options_only_ci95": [
+     0.473399,
+     0.523941
+    ],
+    "chance_options_only": 0.5,
+    "ece": 0.118069,
+    "brier": 0.551846,
+    "nll": 0.808358,
+    "mean_k": 2.0,
+    "abstain_rate": 0.0
+   },
+   "calibrated": {
+    "n": 1500,
+    "accuracy": 0.498667,
+    "accuracy_ci95": [
+     0.473399,
+     0.523941
+    ],
+    "chance": 0.333333,
+    "accuracy_options_only": 0.498667,
+    "accuracy_options_only_ci95": [
+     0.473399,
+     0.523941
+    ],
+    "chance_options_only": 0.5,
+    "ece": 0.099042,
+    "brier": 0.545909,
+    "nll": 0.811463,
+    "mean_k": 2.0,
+    "abstain_rate": 0.0,
+    "temperature_source": "cardinality"
+   },
+   "risk_coverage": {
+    "unknown": {
+     "strategy": "unknown",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 0.577465,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 0.542254,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.504673,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.501754,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.498599,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.504673,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.506,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.490368,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.492212,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.494398,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.498089,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.495916,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.493534,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.496,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.494865,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.496497,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.49341,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.498054,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.498158,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.497899,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.501333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.501333,
+     "avg_selective_risk": 0.503626,
+     "beats_random": false,
+     "random_risk": 0.501333,
+     "n": 1500
+    },
+    "maxprob": {
+     "strategy": "maxprob",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 0.422535,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 0.485915,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.490654,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.533333,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.529412,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.53271,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.542,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.528897,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.523364,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.526611,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.524841,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.523921,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.517241,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.512,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.511671,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.514886,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.512356,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.505058,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.503316,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.502101,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.501333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.501333,
+     "avg_selective_risk": 0.511626,
+     "beats_random": false,
+     "random_risk": 0.501333,
+     "n": 1500
+    },
+    "margin": {
+     "strategy": "margin",
+     "curve": [
+      {
+       "coverage": 0.047333,
+       "risk": 0.43662,
+       "k": 71
+      },
+      {
+       "coverage": 0.094667,
+       "risk": 0.5,
+       "k": 142
+      },
+      {
+       "coverage": 0.142667,
+       "risk": 0.528037,
+       "k": 214
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.533333,
+       "k": 285
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.535014,
+       "k": 357
+      },
+      {
+       "coverage": 0.285333,
+       "risk": 0.523364,
+       "k": 428
+      },
+      {
+       "coverage": 0.333333,
+       "risk": 0.524,
+       "k": 500
+      },
+      {
+       "coverage": 0.380667,
+       "risk": 0.539405,
+       "k": 571
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.534268,
+       "k": 642
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.532213,
+       "k": 714
+      },
+      {
+       "coverage": 0.523333,
+       "risk": 0.529936,
+       "k": 785
+      },
+      {
+       "coverage": 0.571333,
+       "risk": 0.525088,
+       "k": 857
+      },
+      {
+       "coverage": 0.618667,
+       "risk": 0.517241,
+       "k": 928
+      },
+      {
+       "coverage": 0.666667,
+       "risk": 0.515,
+       "k": 1000
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.514472,
+       "k": 1071
+      },
+      {
+       "coverage": 0.761333,
+       "risk": 0.512259,
+       "k": 1142
+      },
+      {
+       "coverage": 0.809333,
+       "risk": 0.514003,
+       "k": 1214
+      },
+      {
+       "coverage": 0.856667,
+       "risk": 0.509728,
+       "k": 1285
+      },
+      {
+       "coverage": 0.904667,
+       "risk": 0.504053,
+       "k": 1357
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.504902,
+       "k": 1428
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.501333,
+       "k": 1500
+      }
+     ],
+     "overall_error": 0.501333,
+     "avg_selective_risk": 0.515918,
+     "beats_random": false,
+     "random_risk": 0.501333,
+     "n": 1500
+    }
+   },
+   "risk_ci95_unknown": {
+    "0.5": {
+     "coverage": 0.5,
+     "k": 750,
+     "risk": 0.492,
+     "ci95": [
+      0.457333,
+      0.528
+     ]
+    },
+    "0.8": {
+     "coverage": 0.8,
+     "k": 1200,
+     "risk": 0.493333,
+     "ci95": [
+      0.465833,
+      0.520833
+     ]
+    },
+    "0.9": {
+     "coverage": 0.9,
+     "k": 1350,
+     "risk": 0.497778,
+     "ci95": [
+      0.473333,
+      0.525185
+     ]
+    }
+   },
+   "n": 1500,
+   "never_in_train": "#T-halt-contam firewall",
+   "date": "2026-09-22",
+   "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+   "cardinality": 2,
+   "split": "test",
+   "split_note": "official test split",
+   "above_chance": true,
+   "ranking_above_chance": false,
+   "above_thermometer_floor": false
+  },
+  "reclor": {
+   "raw": {
+    "n": 500,
+    "accuracy": 0.184,
+    "accuracy_ci95": [
+     0.152489,
+     0.220329
+    ],
+    "chance": 0.2,
+    "accuracy_options_only": 0.208,
+    "accuracy_options_only_ci95": [
+     0.174716,
+     0.245736
+    ],
+    "chance_options_only": 0.25,
+    "ece": 0.12678,
+    "brier": 0.845735,
+    "nll": 1.742453,
+    "mean_k": 4.0,
+    "abstain_rate": 0.12
+   },
+   "calibrated": {
+    "n": 500,
+    "accuracy": 0.184,
+    "accuracy_ci95": [
+     0.152489,
+     0.220329
+    ],
+    "chance": 0.2,
+    "accuracy_options_only": 0.208,
+    "accuracy_options_only_ci95": [
+     0.174716,
+     0.245736
+    ],
+    "chance_options_only": 0.25,
+    "ece": 0.0324,
+    "brier": 0.803351,
+    "nll": 1.617976,
+    "mean_k": 4.0,
+    "abstain_rate": 0.12,
+    "temperature_source": "cardinality"
+   },
+   "risk_coverage": {
+    "unknown": {
+     "strategy": "unknown",
+     "curve": [
+      {
+       "coverage": 0.046,
+       "risk": 0.956522,
+       "k": 23
+      },
+      {
+       "coverage": 0.094,
+       "risk": 0.87234,
+       "k": 47
+      },
+      {
+       "coverage": 0.142,
+       "risk": 0.859155,
+       "k": 71
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.863158,
+       "k": 95
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.848739,
+       "k": 119
+      },
+      {
+       "coverage": 0.284,
+       "risk": 0.823944,
+       "k": 142
+      },
+      {
+       "coverage": 0.332,
+       "risk": 0.801205,
+       "k": 166
+      },
+      {
+       "coverage": 0.38,
+       "risk": 0.805263,
+       "k": 190
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.78972,
+       "k": 214
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.798319,
+       "k": 238
+      },
+      {
+       "coverage": 0.522,
+       "risk": 0.800766,
+       "k": 261
+      },
+      {
+       "coverage": 0.57,
+       "risk": 0.782456,
+       "k": 285
+      },
+      {
+       "coverage": 0.618,
+       "risk": 0.789644,
+       "k": 309
+      },
+      {
+       "coverage": 0.666,
+       "risk": 0.804805,
+       "k": 333
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.809524,
+       "k": 357
+      },
+      {
+       "coverage": 0.76,
+       "risk": 0.805263,
+       "k": 380
+      },
+      {
+       "coverage": 0.808,
+       "risk": 0.806931,
+       "k": 404
+      },
+      {
+       "coverage": 0.856,
+       "risk": 0.801402,
+       "k": 428
+      },
+      {
+       "coverage": 0.904,
+       "risk": 0.80531,
+       "k": 452
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.813025,
+       "k": 476
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.816,
+       "k": 500
+      }
+     ],
+     "overall_error": 0.816,
+     "avg_selective_risk": 0.821595,
+     "beats_random": false,
+     "random_risk": 0.816,
+     "n": 500
+    },
+    "maxprob": {
+     "strategy": "maxprob",
+     "curve": [
+      {
+       "coverage": 0.046,
+       "risk": 0.869565,
+       "k": 23
+      },
+      {
+       "coverage": 0.094,
+       "risk": 0.808511,
+       "k": 47
+      },
+      {
+       "coverage": 0.142,
+       "risk": 0.788732,
+       "k": 71
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.821053,
+       "k": 95
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.831933,
+       "k": 119
+      },
+      {
+       "coverage": 0.284,
+       "risk": 0.823944,
+       "k": 142
+      },
+      {
+       "coverage": 0.332,
+       "risk": 0.825301,
+       "k": 166
+      },
+      {
+       "coverage": 0.38,
+       "risk": 0.815789,
+       "k": 190
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.813084,
+       "k": 214
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.815126,
+       "k": 238
+      },
+      {
+       "coverage": 0.522,
+       "risk": 0.831418,
+       "k": 261
+      },
+      {
+       "coverage": 0.57,
+       "risk": 0.824561,
+       "k": 285
+      },
+      {
+       "coverage": 0.618,
+       "risk": 0.825243,
+       "k": 309
+      },
+      {
+       "coverage": 0.666,
+       "risk": 0.81982,
+       "k": 333
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.817927,
+       "k": 357
+      },
+      {
+       "coverage": 0.76,
+       "risk": 0.815789,
+       "k": 380
+      },
+      {
+       "coverage": 0.808,
+       "risk": 0.816832,
+       "k": 404
+      },
+      {
+       "coverage": 0.856,
+       "risk": 0.817757,
+       "k": 428
+      },
+      {
+       "coverage": 0.904,
+       "risk": 0.818584,
+       "k": 452
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.815126,
+       "k": 476
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.816,
+       "k": 500
+      }
+     ],
+     "overall_error": 0.816,
+     "avg_selective_risk": 0.820576,
+     "beats_random": false,
+     "random_risk": 0.816,
+     "n": 500
+    },
+    "margin": {
+     "strategy": "margin",
+     "curve": [
+      {
+       "coverage": 0.046,
+       "risk": 0.826087,
+       "k": 23
+      },
+      {
+       "coverage": 0.094,
+       "risk": 0.808511,
+       "k": 47
+      },
+      {
+       "coverage": 0.142,
+       "risk": 0.859155,
+       "k": 71
+      },
+      {
+       "coverage": 0.19,
+       "risk": 0.842105,
+       "k": 95
+      },
+      {
+       "coverage": 0.238,
+       "risk": 0.865546,
+       "k": 119
+      },
+      {
+       "coverage": 0.284,
+       "risk": 0.866197,
+       "k": 142
+      },
+      {
+       "coverage": 0.332,
+       "risk": 0.861446,
+       "k": 166
+      },
+      {
+       "coverage": 0.38,
+       "risk": 0.842105,
+       "k": 190
+      },
+      {
+       "coverage": 0.428,
+       "risk": 0.827103,
+       "k": 214
+      },
+      {
+       "coverage": 0.476,
+       "risk": 0.831933,
+       "k": 238
+      },
+      {
+       "coverage": 0.522,
+       "risk": 0.827586,
+       "k": 261
+      },
+      {
+       "coverage": 0.57,
+       "risk": 0.817544,
+       "k": 285
+      },
+      {
+       "coverage": 0.618,
+       "risk": 0.81877,
+       "k": 309
+      },
+      {
+       "coverage": 0.666,
+       "risk": 0.816817,
+       "k": 333
+      },
+      {
+       "coverage": 0.714,
+       "risk": 0.815126,
+       "k": 357
+      },
+      {
+       "coverage": 0.76,
+       "risk": 0.813158,
+       "k": 380
+      },
+      {
+       "coverage": 0.808,
+       "risk": 0.814356,
+       "k": 404
+      },
+      {
+       "coverage": 0.856,
+       "risk": 0.813084,
+       "k": 428
+      },
+      {
+       "coverage": 0.904,
+       "risk": 0.818584,
+       "k": 452
+      },
+      {
+       "coverage": 0.952,
+       "risk": 0.817227,
+       "k": 476
+      },
+      {
+       "coverage": 1.0,
+       "risk": 0.816,
+       "k": 500
+      }
+     ],
+     "overall_error": 0.816,
+     "avg_selective_risk": 0.82945,
+     "beats_random": false,
+     "random_risk": 0.816,
+     "n": 500
+    }
+   },
+   "risk_ci95_unknown": {
+    "0.5": {
+     "coverage": 0.5,
+     "k": 250,
+     "risk": 0.8,
+     "ci95": [
+      0.744,
+      0.844
+     ]
+    },
+    "0.8": {
+     "coverage": 0.8,
+     "k": 400,
+     "risk": 0.805,
+     "ci95": [
+      0.7625,
+      0.8425
+     ]
+    },
+    "0.9": {
+     "coverage": 0.9,
+     "k": 450,
+     "risk": 0.804444,
+     "ci95": [
+      0.766667,
+      0.84
+     ]
+    }
+   },
+   "n": 500,
+   "never_in_train": "#T-halt-contam firewall",
+   "date": "2026-09-22",
+   "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+   "cardinality": 4,
+   "split": "calibration",
+   "split_note": "official validation split: the test split's gold is hidden upstream (label -1), so it cannot be scored at all",
+   "above_chance": false,
+   "ranking_above_chance": false,
+   "above_thermometer_floor": false
+  }
+ },
+ "headline": {
+  "cuts": {
+   "ALL": {
+    "accuracy": [
+     0.267883,
+     0.220839
+    ],
+    "ece": [
+     0.281362,
+     0.338533
+    ],
+    "brier": [
+     0.87558,
+     0.990316
+    ],
+    "n": [
+     9646,
+     5624
+    ],
+    "unseen_beats_chance": true
+   },
+   "banking77": {
+    "accuracy": [
+     0.060146,
+     0.057301
+    ],
+    "ece": [
+     0.283222,
+     0.218706
+    ],
+    "brier": [
+     0.974093,
+     0.914997
+    ],
+    "n": [
+     1646,
+     541
+    ],
+    "unseen_beats_chance": false
+   },
+   "huffpost": {
+    "accuracy": [
+     0.414,
+     0.019
+    ],
+    "ece": [
+     0.234502,
+     0.520121
+    ],
+    "brier": [
+     0.794148,
+     1.200206
+    ],
+    "n": [
+     2000,
+     2000
+    ],
+    "unseen_beats_chance": false
+   },
+   "massive": {
+    "accuracy": [
+     0.2235,
+     0.380474
+    ],
+    "ece": [
+     0.353005,
+     0.242605
+    ],
+    "brier": [
+     1.042831,
+     0.867374
+    ],
+    "n": [
+     4000,
+     3083
+    ],
+    "unseen_beats_chance": true
+   },
+   "massive@eval-locales": {
+    "accuracy": [
+     0.234595,
+     0.376712
+    ],
+    "ece": [
+     0.334135,
+     0.244083
+    ],
+    "brier": [
+     1.029359,
+     0.879564
+    ],
+    "n": [
+     1347,
+     1022
+    ],
+    "unseen_beats_chance": true
+   },
+   "massive@train-locales": {
+    "accuracy": [
+     0.217867,
+     0.382339
+    ],
+    "ece": [
+     0.362586,
+     0.245684
+    ],
+    "brier": [
+     1.049671,
+     0.861329
+    ],
+    "n": [
+     2653,
+     2061
+    ],
+    "unseen_beats_chance": true
+   }
+  },
+  "overall": {
+   "comparability": {
+    "mean_k_seen": 4.7766,
+    "mean_k_unseen": 5.4929,
+    "labels_seen": 135,
+    "labels_unseen": 45,
+    "chance_seen": 0.200519,
+    "chance_unseen": 0.166216,
+    "note": "distractors of the unseen cut come only from the held-out labels: a smaller pool, so the two cuts are not equally hard. Read the pair with both K and both chance rates in hand"
+   },
+   "accuracy_seen": 0.267883,
+   "accuracy_unseen": 0.220839,
+   "accuracy_drop": 0.047044,
+   "ece_seen": 0.281362,
+   "ece_unseen": 0.338533,
+   "ece_rise": 0.057171,
+   "brier_seen": 0.87558,
+   "brier_unseen": 0.990316,
+   "unseen_beats_chance": true,
+   "unseen_ranking_beats_chance": true
+  }
+ }
+}
