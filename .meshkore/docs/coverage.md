@@ -181,3 +181,23 @@ viejo).
 | 10 | oss-release | T-repo-clean | Repo clonable, historial sin blobs |
 | 11 | oss-release | T-candle-infer | Candle Metal/CUDA con paridad contra Python |
 | 12 | oss-release | T-readme-card | Quickstart de 3 comandos + model card real |
+
+## Hallazgo I (2026-09-22) — la generalización cae al escalar
+
+| Hallazgo | Severidad | Lo entrega |
+|---|---|---|
+| I · La accuracy sobre etiquetas no vistas **decrece** al añadir datos (0,239 → 0,050 de 250 k a 1 M) y queda por debajo del azar (0,165), mientras la accuracy dentro del corpus se mantiene alta (dbpedia14 0,98). `#T-release-gate` da NO-GO con 10/12 criterios fallados. Más datos no lo arreglan: `#T-mix-5m` ya registró el NO-GO al escalado | CRÍTICO | #generalization-fix: T-antiscale-diag (ablación de los 5 ejes), T-unfreeze-backbone (frozen vs last-n vs full sobre el mismo 1 M), T-gen-objective (dropout de etiquetas, episódico, contrastivo, penalización de prior) |
+
+`#oss-release` queda **detrás** de `#generalization-fix`: publicar hoy sería
+publicar un modelo por debajo del azar en la propiedad que lo define.
+
+### Orden actualizado
+
+| Orden | Initiative | Task | Desbloquea |
+|---:|---|---|---|
+| 13 | generalization-fix | T-antiscale-diag | Nombra la causa de la caída con un número |
+| 14 | generalization-fix | T-unfreeze-backbone | Capacidad entrenable donde está el lenguaje |
+| 14' | generalization-fix | T-gen-objective | Incentivo a comparar en vez de recordar |
+| 15 | honest-eval | T-data-eval | OOD, calibración y los 4 reportes (repointed desde #data-training) |
+| 16 | honest-eval | T-release-gate | Re-evaluación sobre el checkpoint arreglado + firma del operador |
+| 17 | oss-release | T-repo-clean → T-candle-infer → T-readme-card | Sólo tras un GO |

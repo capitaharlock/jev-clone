@@ -1,12 +1,12 @@
 ---
 id: data-training
 title: Data training scale-up (decision-mix)
-status: active
+status: done
 owner: architect-master
 modules:
   - data
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 ---
 
 # Data training scale-up (decision-mix)
@@ -46,3 +46,20 @@ tasks del agente, plegadas aquí en 7 activas + 1 backlog).
 - Reportes `JEVALS_REPORT.md`, `GENERALIZATION_REPORT.md`,
   `CALIBRATION_REPORT.md`, `LATENCY_REPORT.md` publicados desde splits
   sellados; ningún gate PASS con Civil > 15 % de un mix.
+
+## Cierre (2026-09-22)
+
+El work-stream de **corpus** está entregado: 12 tasks en `done`, el mix
+`decision-mix-clean-1m` construido y fenced, y la curva de escalado medida.
+Su último hallazgo es un NO-GO: `#T-mix-5m` registró que 1 M no demuestra
+generalización, así que multiplicar filas no compra nada.
+
+Dos tasks salen de aquí porque no son corpus:
+
+- `#T-data-eval` (OOD, calibración y reportes públicos) → `#honest-eval`:
+  es evaluación, y su sitio natural es la iniciativa que decide qué significa
+  un número verde.
+- `#T-mix-10m` (10 M/20 M) → `#train-scaleout`: escalar está bloqueado por el
+  NO-GO de `#T-mix-5m`, no por falta de receta.
+
+Lo que falta ahora no son datos: es `#generalization-fix`.

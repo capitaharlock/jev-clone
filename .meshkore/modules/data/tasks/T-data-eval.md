@@ -1,17 +1,20 @@
 ---
 id: T-data-eval
 title: OOD, calibration split y reportes públicos
-status: active
+status: blocked
 priority: medium
 owner: unassigned
 category: data
-initiative: data-training
+initiative: honest-eval
 depends_on:
   - T-mix-5m
 created: 2026-09-20
 updated: 2026-09-20
+failed_at: 2026-09-22T10:00:34.877Z
+resolved_by: A029
+resolved_by_conv: work-data-training-T-data-eval-1790030000
+commit_shas: ['c34024f4e54986178cc172830df494261fefd9ae']
 ---
-
 # OOD, calibration split y reportes públicos
 
 Cierra el work-stream con lo que lo hace creíble (§§76–83, 138–140):
@@ -51,3 +54,33 @@ Fuentes: data-training §§54–55, 76–83, 113–115, 138–140.
 - OOD + calibration split sellados; clean room Jevals congelado.
 - 4 reportes publicados; objetivo §115 (baselines + zero-shot +
   calibración) cumplido antes de comparar con Jev.
+
+## Resolution
+
+**Failed — exit 143.**
+
+Now I'll write the surface-vs-reasoning diagnostic tool.
+
+**Commit** `c34024f4e` · 20 files
+
+**Files changed (20):**
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000500000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260921/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260921/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000500000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/gates/T-mix-1m/gate.json`
+- `artifacts/mix-1m/decision-mix-clean-1m-seed20260922.manifest.json`

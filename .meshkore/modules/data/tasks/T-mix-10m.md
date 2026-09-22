@@ -5,7 +5,7 @@ status: backlog
 priority: low
 owner: unassigned
 category: data
-initiative: data-training
+initiative: train-scaleout
 depends_on:
   - T-mix-5m
 created: 2026-09-20
