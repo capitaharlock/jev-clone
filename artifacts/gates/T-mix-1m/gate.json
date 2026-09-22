@@ -218,8 +218,8 @@
     },
     "synthetic_value": {
       "criterion": "\u00a7128: baseline vs +synthetic on held-out; a verdict either way is the deliverable",
-      "pass": false,
-      "verdict": null
+      "pass": true,
+      "verdict": "GO-scale"
     },
     "token_ledger": {
       "criterion": "\u00a763: examples, state/candidate tokens, mean K per shard",
@@ -235,9 +235,12 @@
     },
     "top2_trained": {
       "criterion": "\u00a762: both top-2 backbones measured at Stage 0 (250 k) and Stage 1 (1 M) on this corpus by the real trainer",
-      "measured": [],
-      "pass": false,
-      "state": "running"
+      "measured": [
+        "modernbert-base",
+        "ettin-68m"
+      ],
+      "pass": true,
+      "state": "measured"
     },
     "type_mix": {
       "criterion": "\u00a748: Choice 55 / Noul 30 / Score 15 within 5 pp",
@@ -419,10 +422,7 @@
       "qtype": 0.5772
     }
   },
-  "failed_checks": [
-    "synthetic_value",
-    "top2_trained"
-  ],
+  "failed_checks": [],
   "feasibility": {
     "achievable_rows": 1213741,
     "binding": {
@@ -541,7 +541,7 @@
     "questions_checked": 1000000
   },
   "format": 1,
-  "generated_utc": "2026-09-21T17:26:58Z",
+  "generated_utc": "2026-09-22T01:41:06Z",
   "guardrails": {
     "checks": {
       "dataset:boolq<=15%": {
@@ -758,7 +758,7 @@
     "rows": 1000000,
     "status": "built"
   },
-  "pass": false,
+  "pass": true,
   "quotas": {
     "boolq": 9427,
     "civil-comments": 149900,
@@ -963,7 +963,7 @@
   "training": {
     "backbones": {
       "ettin-68m": {
-        "complete": false,
+        "complete": true,
         "corpus": "decision-mix-clean-1m",
         "id": "ettin-68m",
         "lineage": {
@@ -973,28 +973,66 @@
           "repo": "jhu-clsp/ettin-encoder-68m",
           "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
         },
-        "progress": {
-          "status": "unknown",
-          "why": "mix1m-curve-ettin-68m-s20260922 has logged no training step yet"
-        },
         "run_id": "mix1m-curve-ettin-68m-s20260922",
-        "run_json": null,
+        "run_json": "artifacts/runs/mix1m-curve-ettin-68m-s20260922/run.json",
         "stages": {
           "stage0": {
-            "status": "pending",
+            "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000",
+            "elapsed_s": 2467.78,
+            "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n250048-1f771b075731",
+            "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+            "samples": 250048,
+            "seen": {
+              "accuracy": 0.59375,
+              "brier": 0.573542,
+              "ece": 0.096648,
+              "nll": 1.552852
+            },
+            "seen_n": 3008,
+            "status": "measured",
             "target_samples": 250000,
-            "why": "the run has not reached this point of the curve yet"
+            "tokens": 13597828,
+            "unseen": {
+              "accuracy": 0.239362,
+              "brier": 0.99287,
+              "ece": 0.352945,
+              "nll": 2.303008
+            },
+            "unseen_abstain_rate": 0.430851,
+            "unseen_chance": 0.165236,
+            "unseen_n": 3008
           },
           "stage1": {
-            "status": "pending",
+            "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000",
+            "elapsed_s": 9732.2,
+            "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-3332059cc144",
+            "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+            "samples": 1000000,
+            "seen": {
+              "accuracy": 0.577128,
+              "brier": 0.636353,
+              "ece": 0.17317,
+              "nll": 1.706497
+            },
+            "seen_n": 3008,
+            "status": "measured",
             "target_samples": 1000000,
-            "why": "the run has not reached this point of the curve yet"
+            "tokens": 54305277,
+            "unseen": {
+              "accuracy": 0.049535,
+              "brier": 1.274911,
+              "ece": 0.542744,
+              "nll": 3.337242
+            },
+            "unseen_abstain_rate": 0.637965,
+            "unseen_chance": 0.165236,
+            "unseen_n": 3008
           }
         },
         "trainer": "training/python/train_decision.py (#T-train-real)"
       },
       "modernbert-base": {
-        "complete": false,
+        "complete": true,
         "corpus": "decision-mix-clean-1m",
         "id": "modernbert-base",
         "lineage": {
@@ -1004,22 +1042,60 @@
           "repo": "answerdotai/ModernBERT-base",
           "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
         },
-        "progress": {
-          "status": "unknown",
-          "why": "mix1m-curve-modernbert-base-s20260922 has logged no training step yet"
-        },
         "run_id": "mix1m-curve-modernbert-base-s20260922",
-        "run_json": null,
+        "run_json": "artifacts/runs/mix1m-curve-modernbert-base-s20260922/run.json",
         "stages": {
           "stage0": {
-            "status": "pending",
+            "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000250000",
+            "elapsed_s": 3795.21,
+            "model_version": "jev-dec-modernbert-base-d256l2h8-s20260922-n250048-b0929372c3ae",
+            "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+            "samples": 250048,
+            "seen": {
+              "accuracy": 0.606051,
+              "brier": 0.492566,
+              "ece": 0.064926,
+              "nll": 0.96995
+            },
+            "seen_n": 3008,
+            "status": "measured",
             "target_samples": 250000,
-            "why": "the run has not reached this point of the curve yet"
+            "tokens": 13597828,
+            "unseen": {
+              "accuracy": 0.194149,
+              "brier": 0.911346,
+              "ece": 0.20998,
+              "nll": 2.054633
+            },
+            "unseen_abstain_rate": 0.257646,
+            "unseen_chance": 0.165236,
+            "unseen_n": 3008
           },
           "stage1": {
-            "status": "pending",
+            "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000",
+            "elapsed_s": 13551.08,
+            "model_version": "jev-dec-modernbert-base-d256l2h8-s20260922-n1000000-6f32a1a936ff",
+            "primary_metric": "unseen-label accuracy (#T-unseen-labels)",
+            "samples": 1000000,
+            "seen": {
+              "accuracy": 0.573138,
+              "brier": 0.609484,
+              "ece": 0.169905,
+              "nll": 1.322586
+            },
+            "seen_n": 3008,
+            "status": "measured",
             "target_samples": 1000000,
-            "why": "the run has not reached this point of the curve yet"
+            "tokens": 54305277,
+            "unseen": {
+              "accuracy": 0.027593,
+              "brier": 1.384456,
+              "ece": 0.619949,
+              "nll": 3.687719
+            },
+            "unseen_abstain_rate": 0.701795,
+            "unseen_chance": 0.165236,
+            "unseen_n": 3008
           }
         },
         "trainer": "training/python/train_decision.py (#T-train-real)"
@@ -1036,7 +1112,10 @@
       "recipe": "data.mix.CLEAN_1M_TARGET / _SEED / _CAP_MARGIN",
       "rule": "every curve run states --mix-target and the trainer aborts (MixShortfallError) if the realised mixture is smaller than --max-samples, so a stage of the \u00a762 curve is decisions SEEN ONCE, never a corpus looped"
     },
-    "measured": [],
+    "measured": [
+      "modernbert-base",
+      "ettin-68m"
+    ],
     "source": {
       "from": "artifacts/gates/T-bakeoff/report.json",
       "task": "T-bakeoff-real",
@@ -1050,8 +1129,14 @@
       "stage0": 250000,
       "stage1": 1000000
     },
-    "status": "running",
+    "status": "measured",
     "synthetic_value": {
+      "baseline_unseen": {
+        "accuracy": 0.166888,
+        "brier": 0.894223,
+        "ece": 0.189575,
+        "nll": 2.029941
+      },
       "compare_at_samples": 250000,
       "design": {
         "arms": "same corpus size, same caps, same budget; synth-v1 in or out",
@@ -1063,13 +1148,25 @@
         "why_one_epoch": "the arms' corpus is as large as their budget, so 250 000 decisions are 250 000 DISTINCT decisions. The previous pair trained 250 000 samples over a 39 980-row mixture \u2014 6.25 passes reported as one",
         "why_the_caps_are_standard": "the #T-mix-1m widening took the registry without synth-v1 to 1.65 cap units, so the baseline arm is buildable at the \u00a765 15 % cap. The 18 % exception the arms used to state is retired"
       },
+      "fallback": null,
+      "gain": {
+        "unseen_accuracy": 0.088099,
+        "unseen_nll": 0.235722
+      },
+      "metric": "nll",
+      "plus_synthetic_unseen": {
+        "accuracy": 0.254987,
+        "brier": 0.811458,
+        "ece": 0.021645,
+        "nll": 1.794219
+      },
+      "rule": "held-out unseen-label NLL must fall and accuracy must not fall; anything else is NO-GO",
       "runs": {
         "baseline": "mix1m-nosynth-modernbert-base-s20260922",
         "plus_synthetic": "mix1m-synth-modernbert-base-s20260922"
       },
-      "status": "pending",
-      "verdict": null,
-      "why": "no stage record at 250,000 samples for ['mix1m-nosynth-modernbert-base-s20260922', 'mix1m-synth-modernbert-base-s20260922']"
+      "status": "measured",
+      "verdict": "GO-scale"
     }
   },
   "type_mix": {

@@ -1,0 +1,252 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "loss": "listwise cross-entropy over [K + 1]",
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer over option text embeddings"
+  },
+  "backbone": {
+    "frozen": true,
+    "hidden_size": 512,
+    "id": "ettin-68m",
+    "params": 68144640,
+    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+  },
+  "data_manifest": {
+    "boolq": {
+      "bytes": 10279023,
+      "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "civil-comments": {
+      "bytes": 1062302574,
+      "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+    },
+    "dbpedia14": {
+      "bytes": 634742744,
+      "sha256": "3dfe940b4ca8e4d6129fe873fbbd7ac5c3133fd04ad67ec9f2a116b6b713e5ba"
+    },
+    "detox-attack": {
+      "bytes": 171736569,
+      "sha256": "91e823c38cdc1f03c806a0f3d65c5732a088b6c0d42a7b19056053ec2e0f51f4"
+    },
+    "email-triage": {
+      "bytes": 2820195,
+      "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+    },
+    "goemotions": {
+      "bytes": 69875904,
+      "sha256": "b3ecb12219a30bfacd04b1eac1dae7f47b1199c2565e11278ab6bef9fcee2ab2"
+    },
+    "huffpost": {
+      "bytes": 88534603,
+      "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "bytes": 40814161,
+      "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    },
+    "prog-gold": {
+      "bytes": 44655633,
+      "sha256": [
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+          "sha256": "aba913022be269f3f7579f8cf6212f763e10d4064e15ce97cc2446d910188200"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+          "sha256": "49fcccd3208a90d0af9c294fb48317a868e6b2697cf829c95061d7ebbdbe5d98"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+          "sha256": "3b4c7e5ea25d8536fb320e3c8eda2365510a4638c12420c51410fa2d7c036015"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl",
+          "sha256": "5759201eca2204dcbfe433437d3a2837153b02659dd7c9b6fd128c96d3a65723"
+        }
+      ]
+    },
+    "snli": {
+      "bytes": 352457023,
+      "sha256": "475081b03c9ba6a2580e10da677d00baa66eb5e00c6dd9895c11cf9f7b2e7bfc"
+    },
+    "swag": {
+      "bytes": 71149592,
+      "sha256": "058867e9dc06101cf6946facbd1cf21cb75ca590851bd06a713be81f222d5f88"
+    },
+    "synth-v1": {
+      "bytes": 58322286,
+      "sha256": [
+        {
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ]
+    }
+  },
+  "datasets": [
+    "boolq",
+    "civil-comments",
+    "dbpedia14",
+    "detox-attack",
+    "email-triage",
+    "goemotions",
+    "huffpost",
+    "massive",
+    "prog-gold",
+    "snli",
+    "swag",
+    "synth-v1"
+  ],
+  "format": "safetensors",
+  "generated_utc": "2026-09-22T01:40:29Z",
+  "head_params": 2699778,
+  "holdout": "artifacts/runs/mix1m-curve-ettin-68m-s20260922/holdout.json",
+  "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+  "metrics": {
+    "seen": {
+      "abstain_rate": 0.174202,
+      "accuracy": 0.577128,
+      "accuracy_ci95": [
+        0.559386,
+        0.594673
+      ],
+      "accuracy_options_only": 0.649934,
+      "accuracy_options_only_ci95": [
+        0.632706,
+        0.666778
+      ],
+      "beats_chance": true,
+      "brier": 0.636353,
+      "chance": 0.206669,
+      "chance_options_only": 0.270306,
+      "ece": 0.17317,
+      "mean_k": 4.3684,
+      "n": 3008,
+      "nll": 1.706497,
+      "per_dataset": {
+        "boolq": {
+          "accuracy": 0.71875,
+          "accuracy_options_only": 0.71875,
+          "n": 64
+        },
+        "civil-comments": {
+          "accuracy": 0.940104,
+          "accuracy_options_only": 0.940104,
+          "n": 384
+        },
+        "dbpedia14": {
+          "accuracy": 0.0,
+          "accuracy_options_only": 0.403125,
+          "n": 320
+        },
+        "detox-attack": {
+          "accuracy": 0.760817,
+          "accuracy_options_only": 0.784856,
+          "n": 832
+        },
+        "email-triage": {
+          "accuracy": 1.0,
+          "accuracy_options_only": 1.0,
+          "n": 64
+        },
+        "goemotions": {
+          "accuracy": 0.786458,
+          "accuracy_options_only": 0.8125,
+          "n": 192
+        },
+        "huffpost": {
+          "accuracy": 0.324219,
+          "accuracy_options_only": 0.390625,
+          "n": 256
+        },
+        "massive": {
+          "accuracy": 0.0625,
+          "accuracy_options_only": 0.214844,
+          "n": 256
+        },
+        "prog-gold": {
+          "accuracy": 0.515625,
+          "accuracy_options_only": 0.515625,
+          "n": 192
+        },
+        "snli": {
+          "accuracy": 0.81875,
+          "accuracy_options_only": 0.840625,
+          "n": 320
+        },
+        "synth-v1": {
+          "accuracy": 0.164062,
+          "accuracy_options_only": 0.179688,
+          "n": 128
+        }
+      },
+      "ranking_beats_chance": true
+    },
+    "unseen": {
+      "abstain_rate": 0.637965,
+      "accuracy": 0.049535,
+      "accuracy_ci95": [
+        0.042339,
+        0.05788
+      ],
+      "accuracy_options_only": 0.192154,
+      "accuracy_options_only_ci95": [
+        0.178471,
+        0.206623
+      ],
+      "beats_chance": false,
+      "brier": 1.274911,
+      "chance": 0.165236,
+      "chance_options_only": 0.201924,
+      "ece": 0.542744,
+      "mean_k": 5.5229,
+      "n": 3008,
+      "nll": 3.337242,
+      "per_dataset": {
+        "huffpost": {
+          "accuracy": 0.046875,
+          "accuracy_options_only": 0.144345,
+          "n": 1344
+        },
+        "massive": {
+          "accuracy": 0.051683,
+          "accuracy_options_only": 0.230769,
+          "n": 1664
+        }
+      },
+      "ranking_beats_chance": false
+    }
+  },
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-3332059cc144",
+  "run_id": "mix1m-curve-ettin-68m-s20260922",
+  "runtime_cache_key": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
+  "samples_seen": 1000000,
+  "seed": 20260922,
+  "task": "T-train-real",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "tokens_seen": 54305277,
+  "weights_file": "model.safetensors",
+  "weights_sha256": "3332059cc14431612c5b4f69b53c17863929eecf45c3bf818388185b5fa6d0dc"
+}

@@ -1,0 +1,207 @@
+{
+  "architecture": {
+    "d_model": 256,
+    "loss": "listwise cross-entropy over [K + 1]",
+    "n_heads": 8,
+    "n_layers": 2,
+    "scorer": "pointer over option text embeddings"
+  },
+  "backbone": {
+    "frozen": true,
+    "hidden_size": 768,
+    "id": "modernbert-base",
+    "params": 149014272,
+    "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
+  },
+  "data_manifest": {
+    "boolq": {
+      "bytes": 10279023,
+      "sha256": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "civil-comments": {
+      "bytes": 1062302574,
+      "sha256": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+    },
+    "email-triage": {
+      "bytes": 2820195,
+      "sha256": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+    },
+    "huffpost": {
+      "bytes": 88534603,
+      "sha256": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "bytes": 40814161,
+      "sha256": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    },
+    "prog-gold": {
+      "bytes": 44655633,
+      "sha256": [
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+          "sha256": "aba913022be269f3f7579f8cf6212f763e10d4064e15ce97cc2446d910188200"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+          "sha256": "49fcccd3208a90d0af9c294fb48317a868e6b2697cf829c95061d7ebbdbe5d98"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+          "sha256": "3b4c7e5ea25d8536fb320e3c8eda2365510a4638c12420c51410fa2d7c036015"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl",
+          "sha256": "5759201eca2204dcbfe433437d3a2837153b02659dd7c9b6fd128c96d3a65723"
+        }
+      ]
+    },
+    "synth-v1": {
+      "bytes": 58322286,
+      "sha256": [
+        {
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ]
+    }
+  },
+  "datasets": [
+    "boolq",
+    "civil-comments",
+    "email-triage",
+    "huffpost",
+    "massive",
+    "prog-gold",
+    "synth-v1"
+  ],
+  "format": "safetensors",
+  "generated_utc": "2026-09-21T16:30:50Z",
+  "head_params": 2896386,
+  "holdout": "artifacts/runs/mix1m-curve-modernbert-base-s20260921/holdout.json",
+  "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+  "metrics": {
+    "seen": {
+      "abstain_rate": 0.013298,
+      "accuracy": 0.598404,
+      "accuracy_ci95": [
+        0.580771,
+        0.615787
+      ],
+      "accuracy_options_only": 0.606715,
+      "accuracy_options_only_ci95": [
+        0.589134,
+        0.624025
+      ],
+      "beats_chance": true,
+      "brier": 0.474281,
+      "chance": 0.228708,
+      "chance_options_only": 0.313727,
+      "ece": 0.075967,
+      "mean_k": 4.1539,
+      "n": 3008,
+      "nll": 1.006177,
+      "per_dataset": {
+        "boolq": {
+          "accuracy": 0.635417,
+          "accuracy_options_only": 0.635417,
+          "n": 192
+        },
+        "civil-comments": {
+          "accuracy": 0.930804,
+          "accuracy_options_only": 0.930804,
+          "n": 896
+        },
+        "email-triage": {
+          "accuracy": 1.0,
+          "accuracy_options_only": 1.0,
+          "n": 64
+        },
+        "huffpost": {
+          "accuracy": 0.839063,
+          "accuracy_options_only": 0.870313,
+          "n": 640
+        },
+        "massive": {
+          "accuracy": 0.026042,
+          "accuracy_options_only": 0.034722,
+          "n": 576
+        },
+        "prog-gold": {
+          "accuracy": 0.442708,
+          "accuracy_options_only": 0.442708,
+          "n": 384
+        },
+        "synth-v1": {
+          "accuracy": 0.226562,
+          "accuracy_options_only": 0.226562,
+          "n": 256
+        }
+      },
+      "ranking_beats_chance": true
+    },
+    "unseen": {
+      "abstain_rate": 0.131981,
+      "accuracy": 0.128657,
+      "accuracy_ci95": [
+        0.117164,
+        0.141097
+      ],
+      "accuracy_options_only": 0.165226,
+      "accuracy_options_only_ci95": [
+        0.152383,
+        0.178923
+      ],
+      "beats_chance": false,
+      "brier": 0.928664,
+      "chance": 0.16743,
+      "chance_options_only": 0.205218,
+      "ece": 0.216124,
+      "mean_k": 5.4495,
+      "n": 3008,
+      "nll": 2.065296,
+      "per_dataset": {
+        "huffpost": {
+          "accuracy": 0.110863,
+          "accuracy_options_only": 0.192708,
+          "n": 1344
+        },
+        "massive": {
+          "accuracy": 0.143029,
+          "accuracy_options_only": 0.143029,
+          "n": 1664
+        }
+      },
+      "ranking_beats_chance": false
+    }
+  },
+  "model_version": "jev-dec-modernbert-base-d256l2h8-s20260921-n62509-79d80e62bfa9",
+  "run_id": "mix1m-curve-modernbert-base-s20260921",
+  "runtime_cache_key": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
+  "samples_seen": 62509,
+  "seed": 20260921,
+  "task": "T-train-real",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "tokens_seen": 4431656,
+  "weights_file": "model.safetensors",
+  "weights_sha256": "79d80e62bfa962ddb10f280754978fb9205a344d16c9f772338b78f0538d0d42"
+}

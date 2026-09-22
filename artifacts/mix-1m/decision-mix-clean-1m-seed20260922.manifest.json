@@ -1,5 +1,5 @@
 {
-  "built_utc": "2026-09-21T17:26:58Z",
+  "built_utc": "2026-09-22T01:41:06Z",
   "checks": {
     "checks": {
       "dynamic_options_are_the_majority": {
@@ -387,7 +387,7 @@
       "qtype": 0.5772
     }
   },
-  "elapsed_s": 19.8,
+  "elapsed_s": 17.7,
   "excluded": {
     "logiqa": "reasoning benchmark, eval-only (finding G)",
     "reclor": "reasoning benchmark, eval-only (finding G)",
