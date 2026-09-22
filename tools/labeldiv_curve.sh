@@ -7,7 +7,7 @@
 # Never touches MPS before the sweep is done; never rewrites T-unseen-labels.
 set -u
 cd /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone
-while [ ! -f artifacts/runs/genobj-short-prior-s20260922/summary.json ]; do sleep 600; done
+while [ ! -f artifacts/runs/genobj-baseline-ettin-68m-s20260922/summary.json ] || [ ! -f artifacts/runs/genobj-label-dropout-ettin-68m-s20260922/summary.json ] || [ ! -f artifacts/runs/genobj-episodic-ettin-68m-s20260922/summary.json ] || [ ! -f artifacts/runs/genobj-contrastive-ettin-68m-s20260922/summary.json ] || [ ! -f artifacts/runs/genobj-prior-ettin-68m-s20260922/summary.json ]; do sleep 600; done
 PY=.venv-train/bin/python
 $PY -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id labeldiv-1m-ettin-s20260922 --fence-clean --only-dataset episodic-div --dataset-cap 1.0 --family-cap 1.0 --no-gate || exit 1
 $PY -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id labeldiv-1m-modernbert-s20260922 --backbone modernbert-base --fence-clean --only-dataset episodic-div --dataset-cap 1.0 --family-cap 1.0 --no-gate || exit 1
