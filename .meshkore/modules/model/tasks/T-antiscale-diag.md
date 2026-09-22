@@ -1,15 +1,14 @@
 ---
 id: T-antiscale-diag
 title: Por qué la accuracy unseen cae al escalar — ablación, no opinión
-status: blocked
+status: done
 priority: high
 owner: unassigned
 category: model
 initiative: generalization-fix
 depends_on: []
-blocked_on: 'eje 3: falta el summary del run d512 (~1,4 h). El d1024 queda cortado por decision del operador en ambas ramas; el eje 3 se cerrara medido a x2, nunca extrapolado a x4'
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
 failed_at: 2026-09-22T10:48:05.397Z
 resolved_by: mb-developer
 resolved_by_conv: mb-developer
@@ -141,3 +140,27 @@ Lo unico que varia es el veredicto, y esta fijado de antemano:
   que dice que el x4 no se midio y por que.
 - `#T-antiscale-diag` no se cierra con ningun numero de x4 inventado.
 
+
+## Eje 3 — medido (2026-09-23), y cambia la prioridad
+
+El run `antiscale-wide-d512-modernbert-s20260922` (cabeza ×2, d_model 512,
+mismo corpus/seed/evals que la curva congelada) cerró. La pendiente 250 k → 1 M
+**sí** depende de la capacidad entrenable:
+
+| brazo | 250 k | 1 M | Δ |
+|---|---|---|---|
+| modernbert congelado d256 (baseline) | 0,1941 | 0,0276 | −0,1665 |
+| modernbert congelado **d512** (eje 3) | 0,2387 | 0,1838 | **−0,0549** |
+| ettin-68m congelado d256 (baseline) | 0,2394 | 0,0495 | −0,1899 |
+| ettin-68m congelado + prior-penalty (#T-gen-objective) | 0,3215 | 0,2347 | −0,0868 |
+
+Doblar la cabeza recorta el **67 %** de la caída; el objetivo prior recorta el
+**54 %** y además sube todo el nivel. Ninguno la elimina: las dos palancas son
+parciales y **acumulables**, y el eje 3 deja de ser "no es capacidad".
+
+El brazo ×4 (d1024) queda cortado por decisión del operador: el eje se cierra
+medido a ×2, nunca extrapolado a ×4.
+
+**Consecuencia registrada:** se cumple la condición escrita en
+`#T-unfreeze-backbone` ("vuelve a ser la primera si la cabeza ×2 o ×4 aplana la
+pendiente"). Esa task pasa a `active`.
