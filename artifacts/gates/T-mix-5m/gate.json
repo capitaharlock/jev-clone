@@ -1,0 +1,581 @@
+{
+  "decision": {
+    "authorises": {
+      "curve_to_10m": false,
+      "distillation_pilot_100k": false,
+      "mix_5m": false
+    },
+    "criterion": "\u00a7\u00a789, 136 \u2014 T-mix-5m escala a 5 M S\u00d3LO si 1 M demuestra generalizaci\u00f3n; si 1 M no mejora, esta task registra NO-GO y no genera 5 M",
+    "not_a_claim": "this is a NO-GO on SCALING, not on the corpus. T-mix-1m passed as a corpus build; what is unmet is the 'ganancia demostrada' half of the \u00a7136 precondition.",
+    "why": "1 M did not demonstrate generalisation. Across 250 k -> 1 M on the same corpus, the same trainer and the same fixed evals, unseen-label accuracy FELL on both backbones and no reasoning eval cleared its own chance rate at either stage. A curve that is flat at chance cannot be lifted by multiplying the rows on it: 5 M would buy ~5x the compute for the same measurement."
+  },
+  "evidence": {
+    "in_corpus_rescore": {
+      "mix1m-curve-ettin-68m-s20260922": {
+        "boolq": {
+          "accuracy": 0.614724,
+          "accuracy_options_only": 0.508539,
+          "n": 9427
+        },
+        "civil-comments": {
+          "accuracy": 0.941328,
+          "accuracy_options_only": 0.822922,
+          "n": 149900
+        },
+        "dbpedia14": {
+          "accuracy": 0.976364,
+          "accuracy_options_only": 0.866044,
+          "n": 149900
+        },
+        "detox-attack": {
+          "accuracy": 0.663736,
+          "accuracy_options_only": 0.630233,
+          "n": 149900
+        },
+        "email-triage": {
+          "accuracy": 0.694,
+          "accuracy_options_only": 0.6465,
+          "n": 4000
+        },
+        "goemotions": {
+          "accuracy": 0.656943,
+          "accuracy_options_only": 0.636628,
+          "n": 87076
+        },
+        "huffpost": {
+          "accuracy": 0.760444,
+          "accuracy_options_only": 0.727867,
+          "n": 80119
+        },
+        "massive": {
+          "accuracy": 0.62531,
+          "accuracy_options_only": 0.620483,
+          "n": 50754
+        },
+        "prog-gold": {
+          "accuracy": 0.440484,
+          "accuracy_options_only": 0.441276,
+          "n": 60631
+        },
+        "snli": {
+          "accuracy": 0.753442,
+          "accuracy_options_only": 0.702161,
+          "n": 149900
+        },
+        "swag": {
+          "accuracy": 0.256601,
+          "accuracy_options_only": 0.257771,
+          "n": 73546
+        },
+        "synth-v1": {
+          "accuracy": 0.23563,
+          "accuracy_options_only": 0.234023,
+          "n": 34847
+        }
+      },
+      "mix1m-curve-modernbert-base-s20260922": {
+        "boolq": {
+          "accuracy": 0.612708,
+          "accuracy_options_only": 0.508539,
+          "n": 9427
+        },
+        "civil-comments": {
+          "accuracy": 0.942148,
+          "accuracy_options_only": 0.822922,
+          "n": 149900
+        },
+        "dbpedia14": {
+          "accuracy": 0.971728,
+          "accuracy_options_only": 0.863149,
+          "n": 149900
+        },
+        "detox-attack": {
+          "accuracy": 0.659066,
+          "accuracy_options_only": 0.629406,
+          "n": 149900
+        },
+        "email-triage": {
+          "accuracy": 0.62925,
+          "accuracy_options_only": 0.61425,
+          "n": 4000
+        },
+        "goemotions": {
+          "accuracy": 0.68044,
+          "accuracy_options_only": 0.657965,
+          "n": 87076
+        },
+        "huffpost": {
+          "accuracy": 0.778167,
+          "accuracy_options_only": 0.741472,
+          "n": 80119
+        },
+        "massive": {
+          "accuracy": 0.616326,
+          "accuracy_options_only": 0.609154,
+          "n": 50754
+        },
+        "prog-gold": {
+          "accuracy": 0.441094,
+          "accuracy_options_only": 0.442051,
+          "n": 60631
+        },
+        "snli": {
+          "accuracy": 0.761254,
+          "accuracy_options_only": 0.708879,
+          "n": 149900
+        },
+        "swag": {
+          "accuracy": 0.255024,
+          "accuracy_options_only": 0.255051,
+          "n": 73546
+        },
+        "synth-v1": {
+          "accuracy": 0.229747,
+          "accuracy_options_only": 0.229977,
+          "n": 34847
+        }
+      }
+    },
+    "in_corpus_rescore_note": "summary.json['train'] \u2014 the trained head re-scored over the 1 000 000 rows it was TRAINED on. swag and synth-v1 sitting at chance here is the stronger form of the finding: the model cannot fit these families, let alone generalise them.",
+    "reasoning_evals": {
+      "mix1m-curve-ettin-68m-s20260922-stage-001000000": {
+        "logiqa-mc": {
+          "abstain_rate": 0.587333,
+          "accuracy": 0.094,
+          "accuracy_ci95": [
+            0.080251,
+            0.109823
+          ],
+          "accuracy_options_only": 0.238,
+          "accuracy_options_only_ci95": [
+            0.217135,
+            0.260203
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.356431,
+          "mean_k": 4.0,
+          "n": 1500
+        },
+        "logiqa-nli": {
+          "abstain_rate": 0.0,
+          "accuracy": 0.492,
+          "accuracy_ci95": [
+            0.466753,
+            0.517288
+          ],
+          "accuracy_options_only": 0.492,
+          "accuracy_options_only_ci95": [
+            0.466753,
+            0.517288
+          ],
+          "chance": 0.333333,
+          "chance_options_only": 0.5,
+          "ece": 0.127292,
+          "mean_k": 2.0,
+          "n": 1500
+        },
+        "reclor": {
+          "abstain_rate": 0.408,
+          "accuracy": 0.152,
+          "accuracy_ci95": [
+            0.123192,
+            0.186114
+          ],
+          "accuracy_options_only": 0.238,
+          "accuracy_options_only_ci95": [
+            0.202759,
+            0.277236
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.251856,
+          "mean_k": 4.0,
+          "n": 500
+        }
+      },
+      "mix1m-curve-modernbert-base-s20260922-stage-001000000": {
+        "logiqa-mc": {
+          "abstain_rate": 0.012,
+          "accuracy": 0.260667,
+          "accuracy_ci95": [
+            0.239082,
+            0.283474
+          ],
+          "accuracy_options_only": 0.264,
+          "accuracy_options_only_ci95": [
+            0.242316,
+            0.28689
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.034066,
+          "mean_k": 4.0,
+          "n": 1500
+        },
+        "logiqa-nli": {
+          "abstain_rate": 0.0,
+          "accuracy": 0.496667,
+          "accuracy_ci95": [
+            0.471405,
+            0.521945
+          ],
+          "accuracy_options_only": 0.496667,
+          "accuracy_options_only_ci95": [
+            0.471405,
+            0.521945
+          ],
+          "chance": 0.333333,
+          "chance_options_only": 0.5,
+          "ece": 0.210925,
+          "mean_k": 2.0,
+          "n": 1500
+        },
+        "reclor": {
+          "abstain_rate": 0.0,
+          "accuracy": 0.268,
+          "accuracy_ci95": [
+            0.231054,
+            0.308484
+          ],
+          "accuracy_options_only": 0.268,
+          "accuracy_options_only_ci95": [
+            0.231054,
+            0.308484
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.067504,
+          "mean_k": 4.0,
+          "n": 500
+        }
+      },
+      "train-real-v1-stage-000250000": {
+        "logiqa-mc": {
+          "abstain_rate": 0.676,
+          "accuracy": 0.084,
+          "accuracy_ci95": [
+            0.071003,
+            0.099122
+          ],
+          "accuracy_options_only": 0.269333,
+          "accuracy_options_only_ci95": [
+            0.247494,
+            0.292351
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.422995,
+          "mean_k": 4.0,
+          "n": 1500
+        },
+        "logiqa-nli": {
+          "abstain_rate": 0.181333,
+          "accuracy": 0.416667,
+          "accuracy_ci95": [
+            0.391961,
+            0.441798
+          ],
+          "accuracy_options_only": 0.505333,
+          "accuracy_options_only_ci95": [
+            0.48005,
+            0.530589
+          ],
+          "chance": 0.333333,
+          "chance_options_only": 0.5,
+          "ece": 0.027874,
+          "mean_k": 2.0,
+          "n": 1500
+        },
+        "reclor": {
+          "abstain_rate": 0.562,
+          "accuracy": 0.086,
+          "accuracy_ci95": [
+            0.064473,
+            0.11384
+          ],
+          "accuracy_options_only": 0.212,
+          "accuracy_options_only_ci95": [
+            0.17844,
+            0.249952
+          ],
+          "chance": 0.2,
+          "chance_options_only": 0.25,
+          "ece": 0.454869,
+          "mean_k": 4.0,
+          "n": 500
+        }
+      }
+    },
+    "reasoning_evals_note": "eval-only cuts (#T-halt-contam): logiqa/reclor are never training rows. Read accuracy_options_only against chance_options_only \u2014 the raw accuracy of an abstaining head says more about abstention than about reasoning.",
+    "scaling_250k_to_1m": {
+      "mix1m-curve-ettin-68m-s20260922": {
+        "abstain_at_1m": 0.637965,
+        "abstain_at_250k": 0.430851,
+        "at_1m": 0.049535,
+        "at_250k": 0.239362,
+        "backbone": "ettin-68m",
+        "chance": 0.165236,
+        "delta": -0.189827,
+        "ece_at_1m": 0.542744,
+        "ece_at_250k": 0.352945,
+        "metric": "unseen-label accuracy (#T-unseen-labels)",
+        "n": 3008,
+        "seen_at_1m": 0.577128,
+        "seen_at_250k": 0.59375
+      },
+      "mix1m-curve-modernbert-base-s20260922": {
+        "abstain_at_1m": 0.701795,
+        "abstain_at_250k": 0.257646,
+        "at_1m": 0.027593,
+        "at_250k": 0.194149,
+        "backbone": "modernbert-base",
+        "chance": 0.165236,
+        "delta": -0.166556,
+        "ece_at_1m": 0.619949,
+        "ece_at_250k": 0.20998,
+        "metric": "unseen-label accuracy (#T-unseen-labels)",
+        "n": 3008,
+        "seen_at_1m": 0.573138,
+        "seen_at_250k": 0.606051
+      }
+    },
+    "trainable_surface": {
+      "mix1m-curve-ettin-68m-s20260922": {
+        "architecture": {
+          "d_model": 256,
+          "loss": "listwise cross-entropy over [K + 1]",
+          "n_heads": 8,
+          "n_layers": 2,
+          "scorer": "pointer over option text embeddings"
+        },
+        "backbone": "ettin-68m",
+        "backbone_frozen": true,
+        "backbone_params": 68144640,
+        "head_params": 2699778,
+        "head_params_source": "artifacts/gates/T-bakeoff/report.json (same head architecture, measured)",
+        "lr": 0.0003,
+        "max_length": 256,
+        "trainable_fraction": 0.038109
+      },
+      "mix1m-curve-modernbert-base-s20260922": {
+        "architecture": {
+          "d_model": 256,
+          "loss": "listwise cross-entropy over [K + 1]",
+          "n_heads": 8,
+          "n_layers": 2,
+          "scorer": "pointer over option text embeddings"
+        },
+        "backbone": "modernbert-base",
+        "backbone_frozen": true,
+        "backbone_params": 149014272,
+        "head_params": 2896386,
+        "head_params_source": "artifacts/gates/T-bakeoff/report.json (same head architecture, measured)",
+        "lr": 0.0003,
+        "max_length": 256,
+        "trainable_fraction": 0.019066
+      }
+    },
+    "within_run_scale_curve": {
+      "mix1m-curve-ettin-68m-s20260922": [
+        {
+          "samples": 62528,
+          "seen_accuracy": 0.650266,
+          "seen_ece": 0.069632,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.37234,
+          "unseen_accuracy": 0.12766,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.126444,
+          "unseen_ranking": 0.262633,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 125056,
+          "seen_accuracy": 0.573138,
+          "seen_ece": 0.154997,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.590093,
+          "unseen_accuracy": 0.100399,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.157029,
+          "unseen_ranking": 0.238364,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 250048,
+          "seen_accuracy": 0.59375,
+          "seen_ece": 0.096648,
+          "tokens": 13597828,
+          "unseen_abstain_rate": 0.430851,
+          "unseen_accuracy": 0.239362,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.352945,
+          "unseen_ranking": 0.359375,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 500032,
+          "seen_accuracy": 0.612035,
+          "seen_ece": 0.178788,
+          "tokens": 27176807,
+          "unseen_abstain_rate": 0.616024,
+          "unseen_accuracy": 0.108378,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.405852,
+          "unseen_ranking": 0.213431,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 1000000,
+          "seen_accuracy": 0.577128,
+          "seen_ece": 0.17317,
+          "tokens": 54305277,
+          "unseen_abstain_rate": 0.637965,
+          "unseen_accuracy": 0.049535,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.542744,
+          "unseen_ranking": 0.192154,
+          "unseen_ranking_chance": 0.201924
+        }
+      ],
+      "mix1m-curve-modernbert-base-s20260922": [
+        {
+          "samples": 62528,
+          "seen_accuracy": 0.687168,
+          "seen_ece": 0.073094,
+          "tokens": 3450200,
+          "unseen_abstain_rate": 0.669215,
+          "unseen_accuracy": 0.08012,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.295457,
+          "unseen_ranking": 0.236702,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 125056,
+          "seen_accuracy": 0.569481,
+          "seen_ece": 0.125224,
+          "tokens": 6861191,
+          "unseen_abstain_rate": 0.363364,
+          "unseen_accuracy": 0.14262,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.304864,
+          "unseen_ranking": 0.215093,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 250048,
+          "seen_accuracy": 0.606051,
+          "seen_ece": 0.064926,
+          "tokens": 13597828,
+          "unseen_abstain_rate": 0.257646,
+          "unseen_accuracy": 0.194149,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.20998,
+          "unseen_ranking": 0.272274,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 500032,
+          "seen_accuracy": 0.601064,
+          "seen_ece": 0.084724,
+          "tokens": 27176807,
+          "unseen_abstain_rate": 0.605386,
+          "unseen_accuracy": 0.132314,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.36769,
+          "unseen_ranking": 0.302527,
+          "unseen_ranking_chance": 0.201924
+        },
+        {
+          "samples": 1000000,
+          "seen_accuracy": 0.573138,
+          "seen_ece": 0.169905,
+          "tokens": 54305277,
+          "unseen_abstain_rate": 0.701795,
+          "unseen_accuracy": 0.027593,
+          "unseen_chance": 0.165236,
+          "unseen_ece": 0.619949,
+          "unseen_ranking": 0.167886,
+          "unseen_ranking_chance": 0.201924
+        }
+      ]
+    }
+  },
+  "flips_to_go_when": [
+    "an unfrozen-backbone (or LoRA / partially-unfrozen) run at 250 k on this same corpus clears chance on at least one eval-only reasoning cut by CI95 lower bound, AND",
+    "the 250 k -> 1 M delta on unseen-label accuracy is positive for at least one backbone under that configuration, AND",
+    "the gain survives the #T-unseen-labels protocol unchanged \u2014 same holdout, same calibration fitted on seen labels only"
+  ],
+  "format": 1,
+  "generated_utc": "2026-09-22T10:07:31Z",
+  "honesty": "published as measured. The task's own gate says a NO-GO IS the deliverable when 1 M does not improve (\u00a7\u00a789, 136); recording it is the work, not a failure to do the work.",
+  "hypothesis": {
+    "claim": "the curve is flat because the only thing the rows can move is a small pointer head on top of an encoder that never updates. The head learns to match option text to state text \u2014 which is why the text-matching families are near-ceiling and the reasoning families are at chance \u2014 and no quantity of rows adds a capability the frozen representation does not already carry.",
+    "name": "frozen backbone",
+    "not_yet_tested": "no run on this curve unfroze the backbone, so the hypothesis is what the curve SUPPORTS, not what it proves",
+    "supported_by": [
+      "run.json backbone.frozen is true for every run on the curve, and the trainable surface is under 4 % of the parameters (see evidence.trainable_surface)",
+      "text-matching families are near-ceiling on the same checkpoint that is at chance on swag and synth-v1",
+      "seen-label accuracy also fell 250 k -> 1 M while ECE rose: the extra rows moved calibration, not capability"
+    ]
+  },
+  "pass": false,
+  "report": "artifacts/gates/T-mix-5m/SCALING_NOGO.md",
+  "rule": {
+    "enforced_by": "tools.mix_5m.nogo.violations (data/test_mix_5m.py)",
+    "id": "S1",
+    "statement": "a gate may not claim GO while the reasoning evals are indistinguishable from chance",
+    "test": "accuracy_options_only_ci95[0] > chance_options_only, the same test as eval/unseen.py's unseen_ranking_beats_chance"
+  },
+  "task": "T-mix-5m",
+  "upstream": {
+    "T-mix-1m": {
+      "corpus": "decision-mix-clean-1m",
+      "gate": "artifacts/gates/T-mix-1m/gate.json",
+      "pass": true,
+      "rows": 1000000,
+      "scope": "the passing checks are construction checks (rows, fence, guardrails, diversity, both top-2 trained); none of them is a generalisation gain"
+    },
+    "T-unseen-labels": {
+      "artifacts": "artifacts/gates/T-unseen-labels/by-checkpoint/",
+      "by_checkpoint": {
+        "mix1m-curve-ettin-68m-s20260922-stage-001000000": {
+          "accuracy_drop": 0.23897,
+          "accuracy_seen": 0.305826,
+          "accuracy_unseen": 0.066856,
+          "chance_unseen": 0.166216,
+          "failed_criteria": [
+            "cross_lingual_holdout"
+          ],
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-3332059cc144",
+          "pass": false
+        },
+        "mix1m-curve-modernbert-base-s20260922-stage-001000000": {
+          "accuracy_drop": 0.235076,
+          "accuracy_seen": 0.300332,
+          "accuracy_unseen": 0.065256,
+          "chance_unseen": 0.166216,
+          "failed_criteria": [
+            "cross_lingual_holdout"
+          ],
+          "model_version": "jev-dec-modernbert-base-d256l2h8-s20260922-n1000000-6f32a1a936ff",
+          "pass": false
+        },
+        "train-real-v1-stage-000250000": {
+          "accuracy_drop": 0.121805,
+          "accuracy_seen": 0.342111,
+          "accuracy_unseen": 0.220306,
+          "chance_unseen": 0.166216,
+          "failed_criteria": [
+            "cross_lingual_holdout"
+          ],
+          "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n250053-7448fa46c0d9",
+          "pass": false
+        }
+      }
+    }
+  },
+  "verdict": "NO-GO"
+}

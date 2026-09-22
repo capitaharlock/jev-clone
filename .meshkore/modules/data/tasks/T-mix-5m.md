@@ -1,7 +1,7 @@
 ---
 id: T-mix-5m
 title: Escala a 5M y distillation soft piloto
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -9,10 +9,24 @@ initiative: data-training
 depends_on:
   - T-mix-1m
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 ---
 
 # Escala a 5M y distillation soft piloto
+
+> **Resultado: NO-GO (2026-09-22).** 1 M no demostró generalización, así
+> que por §§89/136 esta task registra el NO-GO y NO genera 5 M. Gate:
+> `artifacts/gates/T-mix-5m/gate.json` (`pass: false`, `verdict: NO-GO`).
+> Informe: `artifacts/gates/T-mix-5m/SCALING_NOGO.md`. La regla que impide
+> que este gate se vuelva GO mientras los evals de razonamiento estén en el
+> azar vive en `tools/mix_5m/nogo.py` y la cubre `data/test_mix_5m.py`.
+> En 250 k→1 M la accuracy unseen-label CAYÓ en los dos backbones
+> (−0.166556 modernbert-base, −0.189827 ettin-68m, azar 0.165236) y
+> ninguno de los 9 cortes de razonamiento (logiqa-mc / logiqa-nli / reclor
+> × 3 checkpoints) superó su propio azar por el límite inferior del CI95.
+> Hipótesis que la curva sostiene: `backbone.frozen: true` — sólo entrena
+> un pointer head del 1.9 % (modernbert-base) / 3.8 % (ettin-68m) de los
+> parámetros. Lo que lo volvería GO está en el §5 del informe.
 
 SÓLO si 1 M demuestra generalización (§§87, 136): escalar a 5 M
 añadiendo diversidad (más familias, buckets K, idiomas, long context,
