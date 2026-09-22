@@ -1,16 +1,20 @@
 ---
 id: T-antiscale-diag
 title: Por qué la accuracy unseen cae al escalar — ablación, no opinión
-status: active
+status: blocked
 priority: high
 owner: unassigned
 category: model
 initiative: generalization-fix
 depends_on: []
+blocked_on: 'eje 3 (job antiscale-wide, ~14 h): los dos runs de cabeza x2/x4 aun en curso'
 created: 2026-09-22
 updated: 2026-09-22
+failed_at: 2026-09-22T10:48:05.397Z
+resolved_by: mb-developer
+resolved_by_conv: mb-developer
+commit_shas: ['0f160cac75210eedd12b202c9dac1822eb01d6a6', 'f66a6b4f313384b705d94afdcf8499a9e2cbc095']
 ---
-
 # Por qué la accuracy unseen cae al escalar — ablación, no opinión
 
 La curva de `artifacts/gates/T-mix-5m/gate.json` es anti-monótona en unseen
@@ -86,3 +90,28 @@ Prioridad que sale del hallazgo: **`#T-gen-objective` primero,
 250 k → 1 M con la cabeza ancha.
 
 Queda abierto sólo el eje 3, a la espera del job `antiscale-wide`.
+
+## Resolution
+
+**Failed — exit 143.**
+
+Turn failed (exit 143) with no output.
+
+**Commit** `0f160cac7` (+1) · 15 files
+
+**Files changed (15):**
+- `.meshkore/docs/coverage.md`
+- `.meshkore/modules/data/tasks/T-labelspace-div.md`
+- `.meshkore/modules/model/tasks/T-antiscale-diag.md`
+- `.meshkore/modules/model/tasks/T-gen-objective.md`
+- `.meshkore/modules/model/tasks/T-unfreeze-backbone.md`
+- `.meshkore/roadmap/initiatives/generalization-fix.md`
+- `.meshkore/roadmap/initiatives/oss-release.md`
+- `artifacts/gates/T-antiscale-diag/REPORT.md`
+- `artifacts/gates/T-antiscale-diag/gate.json`
+- `artifacts/gates/T-antiscale-diag/inputs/unseen-250k-ettin-68m-s20260922.json`
+- `artifacts/gates/T-antiscale-diag/inputs/unseen-250k-modernbert-base-s20260922.json`
+- `tools/diagnose/__init__.py`
+- `tools/diagnose/antiscale.py`
+- `tools/diagnose/test_antiscale.py`
+- `training/python/train_decision.py`

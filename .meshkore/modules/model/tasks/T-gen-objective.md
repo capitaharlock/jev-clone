@@ -1,9 +1,9 @@
 ---
 id: T-gen-objective
 title: Objetivo que premia comparar, no recordar
-status: next
+status: active
 priority: high
-owner: unassigned
+owner: developer
 category: model
 initiative: generalization-fix
 depends_on:
