@@ -409,6 +409,43 @@ class TestGenObjective(unittest.TestCase):
                       answer=gold, gold_index=len(options) - 1,
                       n_hard=1, n_easy=2)
 
+    def test_batched_packing_matches_the_row_layout(self):
+        """`pack_options`/`batch_gold`/`batch_prior_penalty` vs the row path."""
+        import torch
+        batch = [self._sample(distractors=("l1", "l2")),
+                 self._sample(distractors=("l1", "l2", "l3", "l4")),
+                 self._sample(distractors=("l1",), unknown=True)]
+        # the flat [question, opt, opt, ...] layout `batch_embeddings` emits
+        texts, spans = [], []
+        for sample in batch:
+            start = len(texts)
+            texts.append(td.canonical_question(sample.question))
+            texts.extend(o["text"] for o in sample.options)
+            spans.append((start, len(texts)))
+        embs = torch.arange(len(texts) * 5,
+                            dtype=torch.float32).reshape(len(texts), 5)
+        q, opts, omask = td.pack_options(embs, spans, torch.device("cpu"))
+        kmax = opts.shape[1]
+        self.assertEqual(kmax, 5)   # 4 distractors + the gold
+        for i, (start, end) in enumerate(spans):
+            k = end - start - 1
+            self.assertTrue(torch.equal(q[i], embs[start]))
+            self.assertTrue(torch.equal(opts[i, :k], embs[start + 1:end]))
+            self.assertTrue(bool(omask[i, :k].all()))
+            self.assertFalse(bool(omask[i, k:].any()))
+        gold = td.batch_gold(batch, kmax, torch.device("cpu"))
+        # a real gold keeps its column; `unknown` moves to the shared K_max
+        self.assertEqual(gold.tolist(), [2, 4, kmax])
+        counts = {("d", "l1"): 100, ("d", "l2"): 10}
+        pen = td.batch_prior_penalty(batch, counts, kmax,
+                                     torch.device("cpu"), torch.float32)
+        for i, sample in enumerate(batch):
+            k = len(sample.options)
+            row = td.apply_prior_penalty(torch.zeros(k + 1), sample,
+                                         counts, 1.0)
+            self.assertTrue(torch.allclose(pen[i, :k], -row[:k]))
+            self.assertEqual(float(pen[i, k:].abs().sum()), 0.0)
+
     def test_label_dropout_zero_is_identity(self):
         batch = [self._sample(), self._sample(gold="l4")]
         out, stats = td.apply_label_dropout(

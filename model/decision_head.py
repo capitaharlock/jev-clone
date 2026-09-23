@@ -93,14 +93,20 @@ class CrossBlock(nn.Module):
         )
 
     def forward(self, x: torch.Tensor, memory: torch.Tensor,
-                pad_mask: torch.Tensor | None) -> torch.Tensor:
+                pad_mask: torch.Tensor | None,
+                set_pad_mask: torch.Tensor | None = None) -> torch.Tensor:
         h = self.ln_cross(x)
         attended, _ = self.cross(h, memory, memory,
                                  key_padding_mask=pad_mask,
                                  need_weights=False)
         x = x + attended
         h = self.ln_set(x)
-        mixed, _ = self.set_attn(h, h, h, need_weights=False)
+        # `set_pad_mask` only exists in the batched path, where rows with
+        # fewer options are padded up to K_max: a real option must not
+        # read a padding slot, or the batched forward would stop agreeing
+        # with the per-row one.
+        mixed, _ = self.set_attn(h, h, h, key_padding_mask=set_pad_mask,
+                                 need_weights=False)
         x = x + mixed
         return x + self.ff(self.ln_ff(x))
 
@@ -175,6 +181,58 @@ class PointerDecisionHead(nn.Module):
         summary = mem_pooled[0] + ctx.mean(0) + q.view(-1)
         unk = self.unknown(self.unknown_ln(summary))          # [1]
         return torch.cat([scores, unk.view(1)], dim=0)        # [K + 1]
+
+    def forward_batch(self, memory: torch.Tensor,
+                      memory_mask: torch.Tensor,
+                      question_emb: torch.Tensor,
+                      option_embs: torch.Tensor,
+                      option_mask: torch.Tensor) -> torch.Tensor:
+        """`[B, K_max + 1]` logits for a whole batch in ONE kernel chain.
+
+        Same maths as `forward`, one row at a time replaced by a padded
+        option axis. `test_decision_head` asserts the two agree row by
+        row to float tolerance; this one exists purely because MPS pays a
+        dispatch per launch, so scoring 64 rows in a Python loop spends
+        most of a training step queueing tiny kernels instead of
+        computing (#T-metal-throughput).
+
+        memory        [B, T, d_state]  state token states
+        memory_mask   [B, T] bool      True = real token
+        question_emb  [B, d_state]     pooled question texts
+        option_embs   [B, K_max, d_state]  pooled option TEXTS, zero-padded
+        option_mask   [B, K_max] bool  True = real option
+
+        Column `K_max` is `unknown`; the padded option columns come back
+        as `-inf`, so a softmax gives them exactly zero mass and a
+        cross-entropy against a real gold index is unaffected.
+        """
+        if option_embs.dim() != 3:
+            raise ValueError("option_embs must be [B, K_max, d_state]")
+        if option_mask.shape != option_embs.shape[:2]:
+            raise ValueError("option_mask must be [B, K_max]")
+        counts = option_mask.sum(1)
+        if int(counts.min()) == 0:
+            raise ValueError("a question needs at least one option")
+        mem = self.state_ln(self.state_proj(memory))           # [B, T, d]
+        pad = ~memory_mask.bool()
+        opt_pad = ~option_mask.bool()
+        opt = self.opt_proj(option_embs)                       # [B, K, d]
+        q = self.q_proj(question_emb).unsqueeze(1)             # [B, 1, d]
+        x = opt + q
+        for block in self.blocks:
+            x = block(x, mem, pad, opt_pad)
+        ctx = self.ln_out(x)                                   # [B, K, d]
+        keys = self.ptr_key(opt)                               # [B, K, d]
+        scores = (self.ptr_query(ctx) * keys).sum(-1) * self.scale
+        scores = scores + self.ptr_bias
+        m = memory_mask.unsqueeze(-1).to(mem.dtype)
+        mem_pooled = (mem * m).sum(1) / m.sum(1).clamp(min=1e-6)
+        om = option_mask.unsqueeze(-1).to(ctx.dtype)
+        ctx_mean = (ctx * om).sum(1) / om.sum(1).clamp(min=1e-6)
+        summary = mem_pooled + ctx_mean + q.squeeze(1)         # [B, d]
+        unk = self.unknown(self.unknown_ln(summary))           # [B, 1]
+        scores = scores.masked_fill(opt_pad, float("-inf"))
+        return torch.cat([scores, unk], dim=1)                 # [B, K + 1]
 
     def n_params(self) -> int:
         return sum(p.numel() for p in self.parameters())

@@ -374,9 +374,16 @@ def entries_from_samples(engine, samples, split: str, cut: str,
                 engine.backbone, [s.state for s in batch],
                 T.TRAIN_MAX_LENGTH)
             embs, spans = T.batch_embeddings(engine, batch)
+            # one head call per batch, not per row (#T-metal-throughput);
+            # each row is read back as its own K_i options + `unknown`.
+            q_emb, opt_embs, opt_mask = T.pack_options(embs, spans,
+                                                       engine.device)
+            kmax = opt_embs.shape[1]
+            rows = engine.head.forward_batch(tokens, mask, q_emb, opt_embs,
+                                             opt_mask).float().cpu().tolist()
             for i, sample in enumerate(batch):
-                logits = T.row_logits(engine, tokens, mask, embs, spans, i)
-                logits = [float(x) for x in logits.tolist()]
+                k = len(sample.options)
+                logits = [float(x) for x in rows[i][:k] + [rows[i][kmax]]]
                 probs = softmax(logits, 1.0)
                 pred = max(range(len(probs)), key=lambda j: probs[j])
                 out.append({

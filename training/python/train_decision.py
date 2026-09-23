@@ -557,6 +557,62 @@ def row_logits(engine, tokens, mask, embs, spans, i: int):
                        embs[start], embs[start + 1:end])
 
 
+def pack_options(embs, spans, device):
+    """Gather `embed_texts` output into the padded `[B, K_max, H]` block.
+
+    `embs` is the flat `[question, opt, opt, ...]` per row that
+    `batch_embeddings` returns; `spans` says where each row starts and
+    ends. One `index_select` builds the whole padded cube, so the packing
+    itself costs a single kernel rather than a Python slice per row.
+
+    Padding slots gather row 0 instead of being zero-filled — one kernel
+    less, and `forward_batch` masks them out of the set attention, the
+    row summary and the scores, so their content cannot reach a real
+    option (`test_decision_head` asserts exactly that).
+    """
+    b = len(spans)
+    kmax = max(end - start - 1 for start, end in spans)
+    idx = torch.zeros((b, kmax), dtype=torch.long)
+    omask = torch.zeros((b, kmax), dtype=torch.bool)
+    qidx = torch.empty((b,), dtype=torch.long)
+    for i, (start, end) in enumerate(spans):
+        k = end - start - 1
+        qidx[i] = start
+        idx[i, :k] = torch.arange(start + 1, end)
+        omask[i, :k] = True
+    q = embs.index_select(0, qidx.to(device))
+    opts = embs.index_select(0, idx.reshape(-1).to(device)).reshape(
+        b, kmax, embs.shape[-1])
+    return q, opts, omask.to(device)
+
+
+def batch_prior_penalty(batch: list, counts: dict, kmax: int, device,
+                        dtype):
+    """`[B, K_max + 1]` of `log(train count)` — the batched candidate 4.
+
+    Same numbers `apply_prior_penalty` subtracts row by row, laid out on
+    the padded axis. `unknown` (the last column) and the padding columns
+    get 0, which is what the per-row path does with its trailing `0.0`.
+    """
+    rows = []
+    for sample in batch:
+        pen = [prior_penalty_for(sample.dataset, o["id"], counts)
+               for o in sample.options]
+        rows.append(pen + [0.0] * (kmax + 1 - len(pen)))
+    return torch.tensor(rows, device=device, dtype=dtype)
+
+
+def batch_gold(batch: list, kmax: int, device):
+    """Gold column per row on the padded axis.
+
+    A row that answers `unknown` points at its own `K_i` in the per-row
+    layout; here every `unknown` lives in the same column, `K_max`.
+    """
+    return torch.tensor(
+        [s.gold_index if s.gold_index < len(s.options) else kmax
+         for s in batch], device=device, dtype=torch.long)
+
+
 # -- gen-objective candidates (#T-gen-objective) ---------------------------
 #
 # Four composable interventions against label-space memorisation. The
@@ -816,10 +872,16 @@ def evaluate(engine, samplers: dict, max_samples: int = 4000,
             tokens, mask, _ = encode_states(
                 engine.backbone, [s.state for s in batch], max_length)
             embs, spans = batch_embeddings(engine, batch)
+            q_emb, opt_embs, opt_mask = pack_options(embs, spans,
+                                                     engine.device)
+            kmax = opt_embs.shape[1]
+            logits = engine.head.forward_batch(tokens, mask, q_emb,
+                                               opt_embs, opt_mask)
+            probs_rows = torch.softmax(logits.float(), dim=-1).cpu().tolist()
             for i, sample in enumerate(batch):
-                logits = row_logits(engine, tokens, mask, embs, spans, i)
-                probs = torch.softmax(logits, dim=-1).tolist()
-                metrics.add(probs, sample.gold_index, sample.dataset)
+                k = len(sample.options)
+                metrics.add(probs_rows[i][:k] + [probs_rows[i][kmax]],
+                            sample.gold_index, sample.dataset)
             if metrics.n >= max_samples:
                 break
     engine.head.train()
@@ -1465,19 +1527,23 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                                             grad=bool(bb_params))
         embs, spans = batch_embeddings(engine, batch, grad=bool(bb_params))
         opt.zero_grad(set_to_none=True)
-        total = torch.zeros((), device=engine.device)
-        rows = []
-        contrast_q, contrast_opts, contrast_golds = [], [], []
-        for i, sample in enumerate(batch):
-            logits = row_logits(engine, tokens, mask, embs, spans, i)
-            if prior_penalty > 0:  # candidate 4: discount the prior
-                logits = apply_prior_penalty(logits, sample,
-                                             prior_counts, prior_penalty)
-            gold = torch.tensor([sample.gold_index], device=engine.device)
-            total = total + nn.functional.cross_entropy(logits.unsqueeze(0),
-                                                        gold)
-            rows.append((logits.detach(), sample))
-            if contrastive_weight > 0:  # candidate 3: q<->opt signal
+        # ONE head call for the whole batch (#T-metal-throughput). The
+        # row-by-row loop this replaces was ~60 % of a step's wallclock on
+        # MPS in dispatch alone; `forward_batch` is the same maths on a
+        # padded option axis and `test_decision_head` pins the two
+        # together row by row.
+        q_emb, opt_embs, opt_mask = pack_options(embs, spans, engine.device)
+        kmax = opt_embs.shape[1]
+        logits = engine.head.forward_batch(tokens, mask, q_emb, opt_embs,
+                                           opt_mask)
+        if prior_penalty > 0 and prior_counts:  # candidate 4: prior
+            logits = logits - prior_penalty * batch_prior_penalty(
+                batch, prior_counts, kmax, engine.device, logits.dtype)
+        gold = batch_gold(batch, kmax, engine.device)
+        loss = nn.functional.cross_entropy(logits, gold)
+        if contrastive_weight > 0:  # candidate 3: q<->opt signal
+            contrast_q, contrast_opts, contrast_golds = [], [], []
+            for i, sample in enumerate(batch):
                 start, end = spans[i]
                 contrast_q.append(engine.head.q_proj(embs[start]))
                 contrast_opts.append(engine.head.opt_proj(
@@ -1485,8 +1551,6 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                 contrast_golds.append(
                     None if sample.gold_index >= len(sample.options)
                     else sample.gold_index)
-        loss = total / len(batch)
-        if contrastive_weight > 0 and contrast_q:
             loss = loss + contrastive_weight * contrastive_q_option_loss(
                 torch.stack(contrast_q), contrast_opts, contrast_golds,
                 contrastive_tau)
@@ -1494,9 +1558,15 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         nn.utils.clip_grad_norm_(trainable, 1.0)
         opt.step()
 
+        # One device->host transfer per step instead of one per row: the
+        # padded columns are exactly 0 after the softmax, so each row is
+        # read back as its own `K_i` options plus the shared `unknown`.
         batch_metrics = RunningMetrics()
-        for logits, sample in rows:
-            probs = torch.softmax(logits, dim=-1).tolist()
+        probs_cpu = torch.softmax(logits.detach().float(), dim=-1).cpu()
+        probs_rows = probs_cpu.tolist()
+        for i, sample in enumerate(batch):
+            k = len(sample.options)
+            probs = probs_rows[i][:k] + [probs_rows[i][kmax]]
             metrics.add(probs, sample.gold_index, sample.dataset)
             batch_metrics.add(probs, sample.gold_index, sample.dataset)
         seen_samples += len(batch)

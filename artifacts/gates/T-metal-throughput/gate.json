@@ -1,0 +1,57 @@
+{
+  "task": "T-metal-throughput",
+  "initiative": "train-scaleout",
+  "measured_utc": "2026-09-23T00:00:00Z",
+  "what": "One head call per batch instead of one per row, on Apple Metal (MPS).",
+  "how": "Same process, same synthetic batch, same optimizer: the row-by-row path (`row_logits` in a Python loop) against `PointerDecisionHead.forward_batch`. Median of 5 steps after 2 warm-up steps. GPU utilisation sampled every 250 ms from ioreg IOAccelerator `Device Utilization %` (max across accelerators), not estimated.",
+  "machine": "Apple M4 Max 48 GB, device mps",
+  "model": {"backbone": "ettin-68m", "d_model": 256, "n_layers": 2, "max_length": 256},
+  "arms": [
+    {"batch_size": 64, "unfreeze": "last-n (2 layers)",
+     "ms_per_step": {"row": 1175.4, "batch": 441.0},
+     "samples_per_s": {"row": 54.45, "batch": 145.12},
+     "gpu_utilization_pct_mean": {"row": 56.3, "batch": 58.3},
+     "speedup": 2.665},
+    {"batch_size": 128, "unfreeze": "last-n (2 layers)",
+     "ms_per_step": {"row": 2304.1, "batch": 701.2},
+     "samples_per_s": {"row": 55.55, "batch": 182.54},
+     "gpu_utilization_pct_mean": {"row": 58.2, "batch": 97.4},
+     "speedup": 3.286},
+    {"batch_size": 256, "unfreeze": "last-n (2 layers)",
+     "ms_per_step": {"row": 4981.0, "batch": 1565.6},
+     "samples_per_s": {"row": 51.39, "batch": 163.52},
+     "gpu_utilization_pct_mean": {"row": 59.9, "batch": 98.6},
+     "speedup": 3.182},
+    {"batch_size": 64, "unfreeze": "none (frozen backbone)",
+     "ms_per_step": {"row": 1017.4, "batch": 227.4},
+     "samples_per_s": {"row": 62.9, "batch": 281.48},
+     "gpu_utilization_pct_mean": {"row": 50.9, "batch": 86.3},
+     "speedup": 4.475}
+  ],
+  "profile_before": {
+    "note": "Where a step's wallclock went with the row loop (B=64, last-n, under contention).",
+    "backward_pct": 37.2, "encode_states_pct": 28.6,
+    "head_row_loop_pct": 23.2, "embed_texts_pct": 8.4,
+    "clip_step_pct": 1.4, "metrics_tolist_pct": 1.2
+  },
+  "findings": [
+    "The row loop leaves the GPU at ~50-60 % mean utilisation whatever the batch size: it is dispatch-bound, so a bigger batch buys nothing (51-56 samples/s at B=64, 128 and 256 alike).",
+    "Batched, throughput scales with the batch again and the device saturates: 97.4 % mean at B=128.",
+    "B=128 is the throughput optimum on this machine; B=256 regresses (163 vs 183 samples/s) under memory pressure.",
+    "The running anti-scaling experiments stay at B=64 on purpose - changing the batch size would change the optimisation, and the whole 250k-1M curve family was measured at 64."
+  ],
+  "equivalence": {
+    "tests": [
+      "model/test_decision_head.py::TestBatchedForward::test_matches_the_row_path_with_ragged_option_sets",
+      "model/test_decision_head.py::TestBatchedForward::test_rejects_a_row_with_no_options",
+      "training/python/test_train_decision.py::TestGenObjective::test_batched_packing_matches_the_row_layout"
+    ],
+    "claim": "forward_batch equals forward row by row to 1e-5 with ragged option sets and a padded state, and the content of a padding slot cannot reach a real row."
+  },
+  "consumers_migrated": [
+    "training.python.train_decision.train (training step)",
+    "training.python.train_decision.evaluate (stage eval)",
+    "eval.calib.predict (the eval.unseen gate path)"
+  ],
+  "pass": true
+}

@@ -234,5 +234,70 @@ class TestGate(unittest.TestCase):
             self.assertTrue(gate["checks"][name]["pass"], name)
 
 
+@NEEDS_STACK
+class TestBatchedForward(unittest.TestCase):
+    """`forward_batch` must be `forward`, row by row (#T-metal-throughput)."""
+
+    def _head(self):
+        import torch
+        from .decision_head import PointerDecisionHead
+        torch.manual_seed(11)
+        return PointerDecisionHead(d_state=64, d_model=32, n_layers=2,
+                                   n_heads=4).eval()
+
+    def test_matches_the_row_path_with_ragged_option_sets(self):
+        import torch
+        head = self._head()
+        ks = [1, 3, 7, 4]
+        t = 9
+        mem = torch.randn(len(ks), t, 64)
+        mmask = torch.ones(len(ks), t, dtype=torch.bool)
+        mmask[1, 5:] = False           # a short state, padded
+        q = torch.randn(len(ks), 64)
+        kmax = max(ks)
+        opts = torch.zeros(len(ks), kmax, 64)
+        omask = torch.zeros(len(ks), kmax, dtype=torch.bool)
+        per_row = []
+        for i, k in enumerate(ks):
+            o = torch.randn(k, 64)
+            opts[i, :k] = o
+            omask[i, :k] = True
+            per_row.append(head(mem[i:i + 1], mmask[i:i + 1], q[i], o))
+        got = head.forward_batch(mem, mmask, q, opts, omask)
+        self.assertEqual(list(got.shape), [len(ks), kmax + 1])
+        for i, k in enumerate(ks):
+            want = per_row[i]
+            mine = torch.cat([got[i, :k], got[i, kmax:kmax + 1]])
+            self.assertTrue(torch.allclose(mine, want, atol=1e-5),
+                            f"row {i}: {mine.tolist()} != {want.tolist()}")
+            if k < kmax:   # the padding columns carry no probability mass
+                self.assertTrue(bool(torch.isinf(got[i, k:kmax]).all()))
+        probs = torch.softmax(got, dim=-1)
+        self.assertTrue(torch.allclose(probs.sum(-1), torch.ones(len(ks)),
+                                       atol=1e-5))
+        # what lands in a padding slot must not matter: `pack_options`
+        # gathers rather than zero-fills, so the masks are the only thing
+        # keeping the pad out of a real row's answer.
+        noisy = opts.clone()
+        for i, k in enumerate(ks):
+            noisy[i, k:] = torch.randn(kmax - k, 64) * 50
+        again = head.forward_batch(mem, mmask, q, noisy, omask)
+        for i, k in enumerate(ks):
+            self.assertTrue(torch.allclose(again[i, :k], got[i, :k],
+                                           atol=1e-5))
+            self.assertTrue(torch.allclose(again[i, kmax], got[i, kmax],
+                                           atol=1e-5))
+
+    def test_rejects_a_row_with_no_options(self):
+        import torch
+        head = self._head()
+        mem = torch.randn(2, 4, 64)
+        mmask = torch.ones(2, 4, dtype=torch.bool)
+        omask = torch.tensor([[True, False], [False, False]])
+        with self.assertRaises(ValueError):
+            head.forward_batch(mem, mmask, torch.randn(2, 64),
+                               torch.zeros(2, 2, 64), omask)
+
+
 if __name__ == "__main__":
     unittest.main()
