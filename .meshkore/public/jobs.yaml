@@ -64,8 +64,8 @@ jobs:
     command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id leverstack-d512-prior-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 --d-model 512 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000 --device mps"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
     notes: "Control = genobj-prior-1m-ettin-68m-s20260922 (mismo todo, d256). Unica variable: d_model 512. ~2h por la ruta batched de #T-metal-throughput."
-  - id: lever-stack-d512-prior
-    name: "Apilado cabeza x2 + prior a 1M (#T-lever-stack)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id leverstack-d512-prior-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 --d-model 512 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000 --device mps"
+  - id: labeldiv-curve-d512
+    name: "Curva de la mezcla diversa, d512+prior (#T-labelspace-div)"
+    command: "bash tools/labeldiv_curve.sh"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Control = genobj-prior-1m-ettin-68m-s20260922 (mismo corpus/seed/objetivo, d256). Unica variable: d_model 512. ~2h por la ruta batched de #T-metal-throughput."
+    notes: "Centinela: espera el summary.json del run de control #T-lever-stack y arranca solo."

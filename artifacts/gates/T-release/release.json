@@ -1,7 +1,7 @@
 {
   "format": 1,
   "task": "T-release",
-  "commit": "b6a75f93d1d03dd32f524837c4026d0a63ebc271",
+  "commit": "0cc95e8a590cf3eed7420baf0f95e2df83f26d77",
   "predictor": {
     "name": "cosine-char3-softmax",
     "base_temperature": 1.0,
@@ -48,7 +48,7 @@
     {
       "claim": "cold-start",
       "path": "artifacts/gates/T-cloud-api/coldstart.json",
-      "sha256": "cf6c82dc386c36fe16b2e49e69a716bf92121a0ab2bb3d4ebccfdd7f578e113f"
+      "sha256": "c760887cea911beab7fb0fc7edaaffc3f86af60052d1d9a083d9273b0cf31f7b"
     },
     {
       "claim": "sbom",
@@ -73,7 +73,7 @@
     {
       "claim": "sources",
       "path": ".meshkore/docs/source-register.md",
-      "sha256": "1d607fc77e44941f7fae5c6a6228bec88293a5655de378211afcdf38146a7c6e"
+      "sha256": "2da3f9655902d0ac40d2528c98ec866a997edddb203db4dde5eca42b1d4970e4"
     },
     {
       "claim": "dataset-registry",

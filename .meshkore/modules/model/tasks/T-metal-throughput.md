@@ -1,13 +1,14 @@
 ---
 id: T-metal-throughput
 title: Saturar la GPU Metal — una llamada de cabeza por batch, no por fila
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
 initiative: train-scaleout
 created: 2026-09-23
 updated: 2026-09-23
+commit_shas: ['76199c9']
 ---
 
 # Saturar la GPU Metal — una llamada de cabeza por batch, no por fila
@@ -59,3 +60,17 @@ la métrica, está rota.
   suite de `model/` y `training/python/` sigue verde.
 - El gate registra la utilización de GPU antes y después, medida con
   `ioreg IOAccelerator`, no estimada.
+
+## Resolution — 2026-09-23, GO
+
+Medido y commiteado (`76199c9`). `artifacts/gates/T-metal-throughput/gate.json`:
+la ruta fila a fila estaba **dispatch-bound** (51-56 filas/s a B=64, 128 y 256
+por igual, GPU al 50-60 %). Con una llamada de cabeza por batch la GPU vuelve a
+escalar: **×2,67** en la config real de entreno (B=64, last-n) y **×4,48**
+congelado, con **97,4 %** de utilización a B=128 — el nuevo óptimo de esta
+máquina. Un run de 1 M pasó de ~11 h a **128 min**, que es lo que ha permitido
+medir `#T-unfreeze-backbone` y `#T-lever-stack` el mismo día.
+
+Nota para quien compare curvas: la familia 250 k-1 M del anti-escalado se midió
+a B=64 a propósito. Un brazo nuevo a B=128 es más rápido pero **no** es
+comparable contra esa curva.

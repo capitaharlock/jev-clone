@@ -205,3 +205,26 @@ publicar un modelo por debajo del azar en la propiedad que lo define.
 | 15 | honest-eval | T-data-eval | OOD, calibración y los 4 reportes (repointed desde #data-training) |
 | 16 | honest-eval | T-release-gate | Re-evaluación sobre el checkpoint arreglado + firma del operador |
 | — | oss-release | T-repo-clean → T-candle-infer → T-readme-card | Backlog: fuera de la secuencia hasta un GO |
+
+## Replanificación 2026-09-23 — dónde está la métrica y qué queda
+
+Estado medido, no estimado. Mejor checkpoint del proyecto sobre el gate
+independiente de `#T-unseen-labels` (n=5624, azar 0,166): **unseen 0,2879**,
+seen 0,4864, umbral de release **0,50**. Sobre banking77 —el corte comparable
+con el benchmark público Jevals— **0,237 contra 0,166 de azar**: el producto
+apenas se despega del azar en la tarea que lo define.
+
+Tres ejes de modelo medidos y agotados o casi: capacidad de cabeza (d512 aplana
+−67 % de la caída), objetivo (prior-penalty, −54 %), backbone entrenable
+(**NO-GO**). Ninguno la elimina. Queda vivo el eje de datos y falta toda
+referencia externa. De ahí el reparto de abajo.
+
+| Orden | Initiative | Task | Qué decide |
+|---:|---|---|---|
+| 17 | generalization-fix | T-lever-stack | Techo del eje modelo: ¿las dos palancas suman? (job `lever-stack-d512-prior`) |
+| 18 | generalization-fix | T-labelspace-div | **El eje vivo**: curva de la mezcla de 20 000 mini-taxonomías contra la de 9 |
+| 19 | teacher-distill | T-teacher-probe | La distancia real: el profesor puntuado sobre NUESTRO corte unseen, mismas filas |
+| 20 | teacher-distill | T-teacher-kappa | Cierra `teacher_cohen_kappa_min`, hoy fallado por evidencia ausente |
+| 21 | generalization-fix | T-xlingual-holdout | `cross_lingual_holdout` falla por construcción en todos los runs: it-IT/pt-PT nunca se excluyeron |
+| 22 | teacher-distill | T-teacher-labelspaces | Condicionada al veredicto de #18: taxonomías del profesor, no filas |
+| 23 | honest-eval | T-data-eval → T-release-gate | Re-evaluación y firma, cuando haya algo que firmar |

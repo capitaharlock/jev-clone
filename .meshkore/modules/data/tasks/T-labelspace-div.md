@@ -1,7 +1,7 @@
 ---
 id: T-labelspace-div
 title: Diversidad de espacios de etiquetas — medirla y, si falta, generarla
-status: blocked
+status: active
 priority: high
 owner: developer
 category: data
@@ -9,7 +9,7 @@ initiative: generalization-fix
 depends_on:
   - T-antiscale-diag
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
 failed_at: 2026-09-22T11:30:25.903Z
 resolved_by: A033
 resolved_by_conv: work-generalization-fix-T-labelspace-div-1790074806
@@ -113,3 +113,41 @@ I'll start by reading the task file.Now let me measure the real corpus. Explorat
 - `data/test_mix.py`
 - `tools/labeldiv_curve.sh`
 - `training/python/train_decision.py`
+
+## Replanificación 2026-09-23 — esta task es ahora el eje principal
+
+Con `#T-unfreeze-backbone` en NO-GO y `#T-lever-stack` midiendo el techo del
+eje de capacidad+objetivo, el **eje de datos es la única hipótesis viva** de la
+anti-monotonía, y es además la que el inventario ya dejó señalada: 9 taxonomías
+cubren el 83,1 % de 1 M de filas. La mezcla alternativa
+`decision-mix-labeldiv-1m` (20 000 mini-taxonomías, 148× más espacios, solape 0
+con los cortes unseen) **existe en disco y nunca se ha entrenado hasta el
+final**: el run `labeldiv-1m-ettin-s20260922` murió con exit 143 antes de su
+primera etapa evaluada.
+
+Cambios sobre el plan de ayer:
+
+1. **Centinela roto**: `tools/labeldiv_curve.sh` espera
+   `artifacts/runs/genobj-prior-ettin-68m-s20260922/summary.json`, un run-id que
+   no existe (el real es `genobj-prior-1m-ettin-68m-s20260922`). Con el sweep ya
+   terminado el centinela sobra entero: se quita y el job se encola detrás de
+   `lever-stack-d512-prior` por la cola de jobs, no por un `sleep`.
+2. **El brazo cambia**: la curva ya no se mide con la config desnuda. Se mide
+   con las palancas que sobrevivieron (`--d-model 512 --prior-penalty 1.0`,
+   ettin-68m), porque el control contra el que se compara es el brazo de
+   `#T-lever-stack` sobre la mezcla vieja. Una variable: la mezcla.
+3. **Un brazo, no dos**: se cae el brazo `modernbert-base` (es consistentemente
+   peor en unseen en las cuatro curvas medidas y cuesta otras 2 h de GPU).
+
+## Done when (revisado 2026-09-23)
+
+- `tools/labeldiv_curve.sh` corre sin centinela y el job queda registrado en el
+  daemon con su id.
+- `artifacts/gates/T-labelspace-div/curve.json` publica 62 k / 250 k / 1 M de la
+  mezcla `labeldiv` **al lado** de la curva de `#T-lever-stack` sobre
+  `decision-mix-clean-1m`, misma seed, mismo objetivo, misma cabeza.
+- El veredicto queda escrito con el número: si la pendiente unseen 250 k → 1 M
+  de la mezcla diversa es ≥ 0 (o mejora la mejor palanca de modelo, −0,0549), el
+  eje de datos es GO y el relevo pasa a `#T-teacher-labelspaces` para generar
+  mucho más de lo mismo; si no, el anti-escalado no es de espacios de etiquetas
+  y hay que subir de tamaño de backbone, no de corpus.

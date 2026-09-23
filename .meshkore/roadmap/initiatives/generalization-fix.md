@@ -7,7 +7,7 @@ modules:
   - model
   - data
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
 ---
 
 # La generalización a etiquetas nuevas (el fallo que bloquea el release)
@@ -52,3 +52,36 @@ sin ella publicaríamos un modelo por debajo del azar en su propia promesa.
 - `#T-release-gate` puede volver a evaluarse sin que el fallo sea estructural.
 - El corpus de entreno contiene espacios de etiquetas **diversos** (no un puñado
   de taxonomías repetidas), medido y registrado por `#T-labelspace-div`.
+
+## Estado 2026-09-23 — tres ejes medidos, dos palancas parciales, uno vivo
+
+Los números de arriba son los del diagnóstico (2026-09-22) y se conservan como
+punto de partida. Lo medido desde entonces, con el mismo corpus, la misma seed
+y los mismos evals:
+
+| brazo (250 k → 1 M, unseen) | 250 k | 1 M | pendiente |
+|---|---:|---:|---:|
+| congelado d256 (control) | 0,2394 | 0,0495 | −0,1899 |
+| cabeza ×2 (d512) | 0,2387 | 0,1838 | **−0,0549** |
+| objetivo prior-penalty | 0,3215 | 0,2347 | **−0,0868** |
+| backbone `last-n=2` @1e-5 | 0,3281 | 0,2354 | −0,0927 · **NO-GO** |
+
+Dos palancas parciales (−71 % y −54 % de la caída), ninguna la elimina, y el
+backbone entrenable no aporta: `#T-unfreeze-backbone` cerró en NO-GO. El eje de
+modelo está cerca de su techo y `#T-lever-stack` lo está midiendo ahora mismo
+(las dos palancas apiladas, job `lever-stack-d512-prior`).
+
+Queda **un eje sin medir**: el espacio de etiquetas. El inventario de
+`#T-labelspace-div` ya dijo que 9 taxonomías cubren el 83,1 % del corpus y que
+la mezcla alternativa de 20 000 mini-taxonomías existe en disco — pero su curva
+nunca se llegó a entrenar (el run murió con exit 143). Esa task pasa de
+`blocked` a `active` y es ahora la hipótesis principal; su job
+(`labeldiv-curve-d512`) está encolado detrás del de `#T-lever-stack`.
+
+Se añade `#T-xlingual-holdout`: el criterio `cross_lingual_holdout` falla en
+**todos** los checkpoints medidos porque ningún run excluyó it-IT/pt-PT del
+entreno. Es ruido constante en el veredicto de `#T-unseen-labels` y hay que
+quitarlo de en medio para poder leer los brazos nuevos.
+
+La referencia externa y el acuerdo con el profesor salen de esta iniciativa y
+pasan a `#teacher-distill`, que nace con la API key que aportó el operador.

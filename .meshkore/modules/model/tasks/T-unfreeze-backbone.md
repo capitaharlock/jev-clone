@@ -10,6 +10,10 @@ depends_on:
   - T-antiscale-diag
 created: 2026-09-22
 updated: 2026-09-23
+completed_at: 2026-09-23T07:56:46.372Z
+resolved_by: A035
+resolved_by_conv: general-09222211
+commit_shas: ['17264951ad2c1ddae941d397b0b4296639dbd681', '76199c98aa8e5aba2bfd69b4643a6c817379ddde']
 ---
 # Descongelar el backbone — capacidad entrenable donde está el lenguaje
 
@@ -83,25 +87,82 @@ seed 20260922, mismo mix `decision-mix-v3` fence-clean).
 
 ## Resolution
 
-**Medido y NO-GO para `last-n=2` a `backbone-lr` 1e-5.**
-Gate: `artifacts/gates/T-unfreeze-backbone/gate.json`.
+⟦anchor⟧ {"i":"generalization-fix","t":"T-lever-stack"}
 
-El brazo `last-n` (`unfreeze-lastn3-prior-ettin-68m-s20260922`) corrió el
-mismo corpus, seed, objetivo y evals que el brazo `none`
-(`genobj-prior-1m-ettin-68m-s20260922`). La pendiente 250 k → 1 M no se
-aplana: −0,0927 frente a −0,0868, y los extremos a 1 M son
-indistinguibles (0,2354 vs 0,2347). En el gate independiente de
-`eval.unseen` (n=5624) el brazo descongelado es **peor** en unseen
-(0,2422 vs 0,2879) y algo mejor en seen (0,4864 vs 0,4753): las dos capas
-extra se gastaron en memorizar el espacio de etiquetas de entreno.
+Dos cierres y un relevo ya corriendo.
 
-El brazo `full` **no se lanza**: la hipótesis del backbone no queda
-cerrada en general (solo se midió un punto, n=2 capas a lr 1e-5), pero ha
-dejado de ser la palanca más barata. Las dos que sí aplanan la pendiente
-—cabeza ×2 (d512) y objetivo prior— nunca se han apilado, y ese run cuesta
-ahora ~2 h de GPU gracias a `#T-metal-throughput`. Relevo en
-`#T-lever-stack`.
+**GPU Metal: hecho y commiteado** (`76199c9`). Estaba dispatch-bound, no lenta: el bucle puntuaba fila a fila. Ahora una llamada por batch → **×2,7** en la config real, ×4,5 congelado, GPU al **97,4 %** a B=128. El run de 1M bajó de ~11 h a **128 min**.
 
-Subproducto: el brazo costó 128 min/1 M en MPS con 4,1 GB de pico, frente
-a las ~11 h que costaba el mismo entreno por la ruta fila a fila. Ese
-número es el que hace viable la siguiente tanda.
+**Backbone descongelado: NO-GO.** El brazo `last-n=2` terminó y no aplana nada — peor en el gate independiente (0,2422 vs 0,2879 unseen). El brazo `full` no se lanza.
+
+**Corriendo ahora**: job `lever-stack-d512-prior` (~2 h) — apilar las dos palancas que sí funcionaron, nunca medidas juntas.
+
+<details><summary>#T-unfreeze-backbone — NO-GO, gate en disco</summary>
+
+Mismo corpus, seed, objetivo y evals que el brazo congelado; única variable, el régimen del backbone.
+
+| rows | none (congelado) | last-n=2 @1e-5 |
+|---|---|---|
+| 250 k | 0,3215 | 0,3281 |
+| 1 M | 0,2347 | **0,2354** |
+| pendiente | −0,0868 | **−0,0927** |
+
+Gate independiente `eval.unseen` (n=5624, otro corte): unseen **0,2422 vs 0,2879**, seen 0,4864 vs 0,4753. Mejor en seen, peor en unseen = las dos capas extra se gastaron en memorizar el espacio de etiquetas de entreno.
+
+Coste medido: 128,1 min/1M, 4,1 GB de pico. `artifacts/gates/T-unfreeze-backbone/gate.json`.
+
+El `blocked`/exit-143 que el daemon le puso a la task era un turno cortado, no trabajo perdido — el run había terminado a las 04:08.
+</details>
+
+<details><summary>#T-metal-throughput — el A/B, y por qué no toca la métrica</summary>
+
+`PointerDecisionHead.forward_batch`: misma matemática sobre un eje de opciones con padding a K_max, con máscaras en la set-attention, en el resumen permutación-invariante y en los scores; `unknown` en la columna compartida K_max y gold remapeado. Migrados entreno, `evaluate` y `eval.calib.predict`.
+
+| B | régimen | ms/step fila | ms/step batch | speedup | GPU % |
+|---|---|---|---|---|---|
+| 64 | last-n | 1175 | 441 | ×2,67 | 56→58 |
+| 128 | last-n | 2304 | 701 | ×3,29 | 58→**97** |
+| 256 | last-n | 4981 | 1566 | ×3,18 | 60→99 |
+| 64 | congelado | 1017 | 227 | ×4,48 | 51→86 |
+
+B=128 es el óptimo; B=256 regresa por presión de memoria. **Los runs de la curva siguen a B=64 a propósito** — cambiar la batch cambiaría la optimización y toda la familia 250k–1M se midió a 64.
+
+Tests de equivalencia fila a fila con K=1..7 desiguales y estado con padding, tolerancia 1e-5. 159/159 verdes.
+</details>
+
+<details><summary>#T-lever-stack — lo que está corriendo y qué decide</summary>
+
+Tres hipótesis medidas contra la anti-monotonía, dos sobreviven:
+
+| palanca | pendiente 250k→1M |
+|---|---|
+| nada (congelado d256) | −0,1899 |
+| cabeza ×2 (d512) | **−0,0549** |
+| objetivo prior | **−0,0868** |
+| backbone last-n | −0,0927 ✗ |
+
+Nunca se han apilado, y son mecanismos distintos (capacidad vs quitar la recompensa de memorizar), así que a priori no compiten. Brazo: ettin-68m + d512 + prior a 1M, todo lo demás idéntico al brazo prior d256 que hace de control.
+
+Regla escrita antes de mirar: si el apilado no mejora −0,0549, el eje capacidad/objetivo se declara agotado y el relevo pasa al espacio de etiquetas (`#T-labelspace-div`) — ahí es donde entrarían los datasets generados y tu API.
+</details>
+
+
+— #T-metal-throughput · la GPU Metal deja de esperar: una llamada de cabeza por batch, ×2,7 en entreno real (`76199c9`)
+— #T-unfreeze-backbone · descongelar 2 capas del backbone cerrado en NO-GO, con gate y curvas en disco (`1726495`)
+— #T-lever-stack · abierta y corriendo: apilado cabeza d512 + objetivo prior a 1M, job `lever-stack-d512-prior`
+
+**Commit** `17264951a` (+1) · 12 files · 4.7M tokens
+
+**Files changed (12):**
+- `.meshkore/docs/coverage.md`
+- `.meshkore/modules/model/tasks/T-lever-stack.md`
+- `.meshkore/modules/model/tasks/T-metal-throughput.md`
+- `.meshkore/modules/model/tasks/T-unfreeze-backbone.md`
+- `.meshkore/public/jobs.yaml`
+- `artifacts/gates/T-metal-throughput/gate.json`
+- `artifacts/gates/T-unfreeze-backbone/gate.json`
+- `eval/calib.py`
+- `model/decision_head.py`
+- `model/test_decision_head.py`
+- `training/python/test_train_decision.py`
+- `training/python/train_decision.py`
