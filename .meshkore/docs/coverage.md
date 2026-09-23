@@ -223,8 +223,9 @@ referencia externa. De ahí el reparto de abajo.
 |---:|---|---|---|
 | 17 | generalization-fix | T-lever-stack | Techo del eje modelo: ¿las dos palancas suman? (job `lever-stack-d512-prior`) |
 | 18 | generalization-fix | T-labelspace-div | **El eje vivo**: curva de la mezcla de 20 000 mini-taxonomías contra la de 9 |
-| 19 | teacher-distill | T-teacher-probe | La distancia real: el profesor puntuado sobre NUESTRO corte unseen, mismas filas |
+| 19 | teacher-distill | T-teacher-probe | La distancia real: el profesor puntuado sobre NUESTRO corte unseen, mismas filas. Cliente + probe hechos (29 tests); medición BLOQUEADA hasta saber el proveedor de la key (401 en los 6 endpoints públicos). Mientras tanto `fullspace.json`: **0,0123 a 77 vías en BANKING77, bajo el azar 0,0130**, contra el 0,924 publicado de Jev |
 | 20 | teacher-distill | T-teacher-kappa | Cierra `teacher_cohen_kappa_min`, hoy fallado por evidencia ausente |
+| 20' | generalization-fix | T-bigk-optsets | La cardinalidad del objetivo: `k_max=8` en todo el corpus y la ventaja sobre azar se disuelve en K=77 (`fullspace.json`) |
 | 21 | generalization-fix | T-xlingual-holdout | `cross_lingual_holdout` falla por construcción en todos los runs: it-IT/pt-PT nunca se excluyeron |
 | 22 | teacher-distill | T-teacher-labelspaces | Condicionada al veredicto de #18: taxonomías del profesor, no filas |
 | 23 | honest-eval | T-data-eval → T-release-gate | Re-evaluación y firma, cuando haya algo que firmar |

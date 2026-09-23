@@ -1,0 +1,56 @@
+---
+id: teacher-distill
+title: Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
+status: active
+owner: architect-master
+modules:
+  - eval
+  - data
+created: 2026-09-23
+updated: 2026-09-23
+---
+
+# Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
+
+El operador ha aportado (2026-09-23) una **API key con saldo** contra un modelo
+profesor. Eso desbloquea dos cosas que el proyecto lleva desde el principio sin
+poder hacer, y que no son la misma:
+
+1. **Una referencia externa medida.** Hoy la pregunta "¿estamos lejos del
+   original?" sólo se puede contestar contra el umbral que escribimos nosotros
+   (`unseen_accuracy_all_min = 0,50`), no contra otro sistema. Con la key se
+   puntúa **el mismo corte unseen, las mismas filas, el mismo protocolo** con el
+   profesor, y la distancia deja de ser una opinión.
+2. **La evidencia ausente del release gate.** `teacher_cohen_kappa_min = 0,60` es
+   uno de los 9 criterios fallados de `#T-release-gate`, y falla por la regla de
+   §2 —evidencia ausente = criterio fallado—, no por desacuerdo medido: *no
+   existe ningún artefacto que mida el acuerdo del checkpoint contra el
+   profesor*. Con la key, existe.
+
+Y abre una tercera, condicionada: si `#T-labelspace-div` da GO al eje de datos,
+la fábrica sintética deja de estar limitada a lo que sabe generar de forma
+programática y puede pedirle al profesor **espacios de etiquetas** que ninguna
+plantilla nuestra produce.
+
+Esta iniciativa es distinta de `#generalization-fix`: aquella busca *por qué* la
+curva baja, tocando modelo y mezcla; ésta trae una referencia y un profesor de
+fuera. Se cruzan en un punto: el veredicto de `#T-labelspace-div` decide si
+`#T-teacher-labelspaces` se ejecuta o se queda en backlog.
+
+Regla de gasto, desde la primera llamada: el saldo es finito y prestado. Toda
+llamada va cacheada en disco por hash del prompt, todo gate publica el coste que
+consumió, y ningún experimento re-puntúa lo ya puntuado.
+
+## Done when
+
+- El cliente del profesor está cableado, cacheado y con presupuesto declarado, y
+  ningún experimento puede gastar saldo sin registrar cuánto gastó.
+- Existe un número publicado de **el profesor sobre nuestro corte unseen**, fila
+  a fila comparable con el nuestro: la distancia al estado del arte deja de ser
+  una estimación.
+- `artifacts/gates/T-teacher-kappa/gate.json` publica Cohen's kappa del
+  checkpoint candidato contra el profesor, y `#T-release-gate` deja de fallar
+  `teacher_cohen_kappa_min` por evidencia ausente.
+- El camino de datos con profesor está decidido con el veredicto de
+  `#T-labelspace-div` delante: GO y se generan espacios de etiquetas, NO-GO y se
+  archiva sin gastar saldo.

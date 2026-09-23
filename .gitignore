@@ -96,3 +96,9 @@ tmp/
 # (weights_sha256 + the real trainable param count) stays in git, the
 # 270 MB do not.
 artifacts/checkpoints/*/*/*/backbone.safetensors
+
+# Teacher API (#T-teacher-probe): the key lives outside git, always. The
+# answer cache is reproducible from the API and would be megabytes of
+# third-party output in the tree; the gate and the subsample stay versioned.
+.secrets/
+artifacts/cache/

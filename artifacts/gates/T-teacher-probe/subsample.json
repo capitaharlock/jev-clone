@@ -1,0 +1,5010 @@
+{
+ "seed": 20260923,
+ "n_asked": 400,
+ "n": 399,
+ "per_cut": {
+  "massive": 219,
+  "huffpost": 142,
+  "banking77": 38
+ },
+ "cut": "unseen (label holdout of the checkpoint's own run)",
+ "rows": [
+  {
+   "cut": "massive",
+   "id": "massive:massive-2098:massive-intent-48523",
+   "options": [
+    "email_querycontact",
+    "music_likeness",
+    "takeaway_order",
+    "email_query",
+    "takeaway_query",
+    "recommendation_movies",
+    "calendar_set"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3173:massive-intent-73672",
+   "options": [
+    "recommendation_locations",
+    "calendar_set",
+    "takeaway_order",
+    "recommendation_movies",
+    "transport_taxi",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1850:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "THE WORLDPOST"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1361:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3138:massive-intent-73384",
+   "options": [
+    "recommendation_movies",
+    "recommendation_events",
+    "calendar_set",
+    "music_dislikeness",
+    "transport_taxi",
+    "calendar_remove",
+    "takeaway_query",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-419:massive-intent-11413",
+   "options": [
+    "recommendation_events",
+    "recommendation_movies",
+    "calendar_set",
+    "calendar_remove",
+    "transport_ticket",
+    "music_likeness",
+    "recommendation_locations",
+    "transport_traffic"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2907:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "THE WORLDPOST",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1342:massive-intent-31858",
+   "options": [
+    "music_dislikeness",
+    "recommendation_movies",
+    "takeaway_query",
+    "transport_query",
+    "transport_ticket",
+    "email_querycontact",
+    "email_query"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-256:banking77-intent-11099",
+   "options": [
+    "top_up_by_card_charge",
+    "card_payment_not_recognised",
+    "virtual_card_not_working",
+    "card_not_working",
+    "direct_debit_payment_not_recognised",
+    "cancel_transfer",
+    "topping_up_by_card",
+    "top_up_by_bank_transfer_charge"
+   ],
+   "gold": "card_payment_not_recognised"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-544:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "PARENTING",
+    "ARTS & CULTURE",
+    "WORLDPOST",
+    "CULTURE & ARTS",
+    "GOOD NEWS",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2915:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "WORLDPOST",
+    "WORLD NEWS",
+    "WEIRD NEWS",
+    "GOOD NEWS"
+   ],
+   "gold": "CULTURE & ARTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-616:massive-intent-15397",
+   "options": [
+    "recommendation_events",
+    "transport_query",
+    "email_query",
+    "calendar_remove",
+    "email_querycontact",
+    "transport_taxi"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2138:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WORLD NEWS",
+    "PARENTS",
+    "THE WORLDPOST",
+    "PARENTING",
+    "WORLDPOST",
+    "GOOD NEWS"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1202:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3191:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "ARTS & CULTURE",
+    "GOOD NEWS",
+    "QUEER VOICES",
+    "WORLD NEWS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-667:banking77-intent-12790",
+   "options": [
+    "balance_not_updated_after_bank_transfer",
+    "exchange_charge",
+    "top_up_by_bank_transfer_charge",
+    "country_support",
+    "exchange_rate",
+    "lost_or_stolen_card"
+   ],
+   "gold": "exchange_charge"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2639:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTING",
+    "QUEER VOICES",
+    "CULTURE & ARTS",
+    "WEIRD NEWS",
+    "PARENTS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4024:massive-intent-91265",
+   "options": [
+    "recommendation_events",
+    "recommendation_locations",
+    "calendar_set",
+    "takeaway_order"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1212:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "WORLD NEWS",
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "PARENTING",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1227:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "ARTS & CULTURE"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2342:massive-intent-56287",
+   "options": [
+    "calendar_set",
+    "calendar_remove",
+    "recommendation_locations",
+    "recommendation_events",
+    "music_likeness",
+    "transport_ticket",
+    "transport_query",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2266:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTING",
+    "WEIRD NEWS",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "CULTURE & ARTS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2243:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "WORLDPOST",
+    "WEIRD NEWS",
+    "PARENTS",
+    "PARENTING"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-828:massive-intent-21818",
+   "options": [
+    "music_dislikeness",
+    "transport_ticket",
+    "transport_query",
+    "takeaway_order",
+    "recommendation_locations",
+    "email_query"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-71:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "PARENTING",
+    "PARENTS",
+    "CULTURE & ARTS",
+    "WORLDPOST"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3283:massive-intent-74698",
+   "options": [
+    "calendar_set",
+    "transport_query",
+    "calendar_remove"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3431:massive-intent-77944",
+   "options": [
+    "recommendation_events",
+    "email_query",
+    "transport_traffic",
+    "transport_ticket"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-585:massive-intent-12976",
+   "options": [
+    "music_likeness",
+    "calendar_remove",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3159:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "GOOD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2270:massive-intent-53042",
+   "options": [
+    "recommendation_movies",
+    "email_querycontact",
+    "takeaway_order",
+    "recommendation_events",
+    "calendar_set",
+    "transport_traffic"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4104:massive-intent-94038",
+   "options": [
+    "recommendation_events",
+    "transport_ticket",
+    "calendar_remove"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3483:massive-intent-78317",
+   "options": [
+    "calendar_remove",
+    "transport_traffic",
+    "calendar_set",
+    "recommendation_movies",
+    "transport_taxi"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1148:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "WEIRD NEWS",
+    "WORLD NEWS",
+    "PARENTS",
+    "WORLDPOST",
+    "CULTURE & ARTS",
+    "PARENTING",
+    "THE WORLDPOST"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2538:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTS",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "PARENTING"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-279:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTS",
+    "WORLD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3381:massive-intent-77590",
+   "options": [
+    "recommendation_movies",
+    "calendar_remove",
+    "email_query",
+    "calendar_set",
+    "transport_traffic"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-188:massive-intent-7251",
+   "options": [
+    "recommendation_movies",
+    "takeaway_query",
+    "calendar_set",
+    "calendar_remove"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3130:massive-intent-73299",
+   "options": [
+    "calendar_set",
+    "takeaway_query",
+    "recommendation_events",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1825:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "PARENTING",
+    "WORLD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2100:massive-intent-48573",
+   "options": [
+    "transport_query",
+    "transport_taxi",
+    "music_likeness",
+    "email_query",
+    "email_querycontact",
+    "transport_traffic",
+    "takeaway_query",
+    "transport_ticket"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1235:massive-intent-28453",
+   "options": [
+    "recommendation_movies",
+    "transport_query",
+    "transport_ticket",
+    "transport_taxi",
+    "recommendation_locations"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3421:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "ARTS & CULTURE",
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "PARENTS",
+    "GOOD NEWS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3198:massive-intent-73828",
+   "options": [
+    "calendar_set",
+    "calendar_remove",
+    "email_querycontact"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-627:banking77-intent-12710",
+   "options": [
+    "pending_transfer",
+    "failed_transfer",
+    "top_up_by_bank_transfer_charge",
+    "direct_debit_payment_not_recognised",
+    "balance_not_updated_after_bank_transfer",
+    "top_up_by_card_charge",
+    "cancel_transfer",
+    "balance_not_updated_after_cheque_or_cash_deposit"
+   ],
+   "gold": "balance_not_updated_after_bank_transfer"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-909:massive-intent-23563",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "takeaway_order",
+    "calendar_set",
+    "takeaway_query",
+    "transport_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2725:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "GOOD NEWS",
+    "PARENTING",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-704:banking77-intent-12827",
+   "options": [
+    "top_up_by_card_charge",
+    "topping_up_by_card",
+    "pending_transfer",
+    "declined_transfer",
+    "card_not_working",
+    "card_payment_not_recognised"
+   ],
+   "gold": "top_up_by_card_charge"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-708:banking77-intent-12831",
+   "options": [
+    "top_up_by_card_charge",
+    "topping_up_by_card",
+    "balance_not_updated_after_bank_transfer",
+    "failed_transfer",
+    "card_not_working",
+    "direct_debit_payment_not_recognised",
+    "exchange_charge",
+    "top_up_by_bank_transfer_charge"
+   ],
+   "gold": "top_up_by_card_charge"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1571:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "CULTURE & ARTS",
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "PARENTS",
+    "WORLDPOST",
+    "PARENTING",
+    "QUEER VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-499:massive-intent-11932",
+   "options": [
+    "takeaway_query",
+    "email_querycontact",
+    "email_query",
+    "transport_taxi",
+    "recommendation_events",
+    "transport_query"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-158:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "WEIRD NEWS",
+    "ARTS & CULTURE",
+    "WORLDPOST"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-341:banking77-intent-11464",
+   "options": [
+    "country_support",
+    "atm_support",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "exchange_rate"
+   ],
+   "gold": "atm_support"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2903:massive-intent-65733",
+   "options": [
+    "email_query",
+    "recommendation_locations",
+    "takeaway_query",
+    "music_likeness",
+    "recommendation_events",
+    "transport_traffic",
+    "transport_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1877:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "PARENTS",
+    "PARENTING",
+    "BLACK VOICES",
+    "WORLDPOST",
+    "GOOD NEWS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1751:massive-intent-41055",
+   "options": [
+    "music_likeness",
+    "recommendation_events",
+    "recommendation_movies",
+    "calendar_remove"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-481:massive-intent-11825",
+   "options": [
+    "email_query",
+    "music_dislikeness",
+    "transport_traffic",
+    "transport_ticket",
+    "recommendation_movies"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2863:massive-intent-65362",
+   "options": [
+    "email_query",
+    "transport_traffic",
+    "email_querycontact"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-300:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "QUEER VOICES",
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "CULTURE & ARTS",
+    "PARENTS",
+    "THE WORLDPOST",
+    "WORLD NEWS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4189:massive-intent-94589",
+   "options": [
+    "takeaway_query",
+    "email_query",
+    "calendar_set",
+    "transport_query",
+    "music_dislikeness",
+    "transport_traffic"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1997:massive-intent-45150",
+   "options": [
+    "transport_traffic",
+    "music_dislikeness",
+    "transport_taxi",
+    "transport_query",
+    "calendar_set"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-509:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTS",
+    "CULTURE & ARTS",
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "WEIRD NEWS"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1203:massive-intent-28257",
+   "options": [
+    "transport_taxi",
+    "music_dislikeness",
+    "calendar_set",
+    "transport_ticket",
+    "email_query",
+    "recommendation_locations",
+    "transport_traffic"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4008:massive-intent-91088",
+   "options": [
+    "recommendation_events",
+    "recommendation_locations",
+    "calendar_set",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3888:massive-intent-90008",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "calendar_set",
+    "takeaway_query",
+    "transport_taxi",
+    "recommendation_locations",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4056:massive-intent-91505",
+   "options": [
+    "calendar_remove",
+    "recommendation_locations",
+    "calendar_set",
+    "takeaway_order",
+    "email_query",
+    "recommendation_events",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2233:massive-intent-51330",
+   "options": [
+    "takeaway_order",
+    "recommendation_movies",
+    "takeaway_query",
+    "transport_query",
+    "calendar_set"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4058:massive-intent-93763",
+   "options": [
+    "recommendation_locations",
+    "recommendation_events",
+    "email_querycontact",
+    "calendar_set",
+    "takeaway_order"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2796:massive-intent-63262",
+   "options": [
+    "music_likeness",
+    "transport_traffic",
+    "email_querycontact",
+    "transport_query",
+    "email_query",
+    "recommendation_locations",
+    "transport_ticket",
+    "transport_taxi"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1567:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTS",
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "THE WORLDPOST"
+   ],
+   "gold": "WEIRD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2018:massive-intent-45316",
+   "options": [
+    "takeaway_query",
+    "transport_ticket",
+    "recommendation_movies",
+    "transport_query",
+    "calendar_set",
+    "transport_traffic",
+    "email_querycontact"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3203:massive-intent-73894",
+   "options": [
+    "calendar_set",
+    "recommendation_movies",
+    "recommendation_locations",
+    "transport_traffic",
+    "email_querycontact"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2311:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "QUEER VOICES",
+    "PARENTING",
+    "WORLDPOST",
+    "THE WORLDPOST",
+    "GOOD NEWS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3399:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "PARENTS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-484:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "BLACK VOICES",
+    "PARENTING",
+    "WEIRD NEWS",
+    "CULTURE & ARTS",
+    "GOOD NEWS",
+    "WORLDPOST",
+    "QUEER VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-103:massive-intent-6147",
+   "options": [
+    "transport_traffic",
+    "recommendation_locations",
+    "transport_ticket",
+    "calendar_set",
+    "recommendation_movies"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4037:massive-intent-91346",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "calendar_set",
+    "music_likeness",
+    "transport_query"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1833:massive-intent-41811",
+   "options": [
+    "calendar_set",
+    "recommendation_movies",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2456:massive-intent-57275",
+   "options": [
+    "calendar_set",
+    "transport_ticket",
+    "recommendation_locations",
+    "calendar_remove",
+    "transport_taxi"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-321:massive-intent-8375",
+   "options": [
+    "calendar_remove",
+    "calendar_set",
+    "transport_taxi",
+    "recommendation_locations",
+    "email_querycontact",
+    "recommendation_movies",
+    "recommendation_events",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3051:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS"
+   ],
+   "gold": "CULTURE & ARTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2545:massive-intent-58157",
+   "options": [
+    "transport_ticket",
+    "recommendation_events",
+    "recommendation_movies",
+    "calendar_remove",
+    "email_querycontact",
+    "calendar_set",
+    "transport_traffic",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4083:massive-intent-93902",
+   "options": [
+    "takeaway_query",
+    "recommendation_movies",
+    "music_likeness",
+    "transport_ticket",
+    "recommendation_events",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3619:massive-intent-82115",
+   "options": [
+    "transport_query",
+    "recommendation_locations",
+    "transport_ticket",
+    "email_query",
+    "takeaway_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2539:massive-intent-58102",
+   "options": [
+    "email_query",
+    "calendar_set",
+    "takeaway_query",
+    "calendar_remove",
+    "recommendation_events",
+    "email_querycontact",
+    "recommendation_movies",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2469:massive-intent-57384",
+   "options": [
+    "recommendation_locations",
+    "calendar_remove",
+    "takeaway_query",
+    "music_likeness",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-431:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTING",
+    "QUEER VOICES",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4035:massive-intent-91330",
+   "options": [
+    "recommendation_events",
+    "email_query",
+    "takeaway_query",
+    "calendar_set",
+    "transport_ticket",
+    "calendar_remove",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-646:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "QUEER VOICES",
+    "THE WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2227:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "GOOD NEWS",
+    "QUEER VOICES",
+    "ARTS & CULTURE",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "CULTURE & ARTS",
+    "WORLD NEWS"
+   ],
+   "gold": "GOOD NEWS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1731:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "GOOD NEWS",
+    "QUEER VOICES",
+    "PARENTING"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3502:massive-intent-78451",
+   "options": [
+    "transport_ticket",
+    "recommendation_locations",
+    "transport_taxi"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3185:massive-intent-73744",
+   "options": [
+    "transport_taxi",
+    "recommendation_movies",
+    "calendar_set",
+    "calendar_remove",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2843:massive-intent-65164",
+   "options": [
+    "email_querycontact",
+    "transport_ticket",
+    "email_query"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1035:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "WORLDPOST",
+    "PARENTS",
+    "THE WORLDPOST",
+    "WORLD NEWS",
+    "WEIRD NEWS",
+    "GOOD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-330:banking77-intent-11453",
+   "options": [
+    "declined_transfer",
+    "atm_support",
+    "direct_debit_payment_not_recognised",
+    "country_support",
+    "card_not_working",
+    "balance_not_updated_after_cheque_or_cash_deposit"
+   ],
+   "gold": "atm_support"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-22:banking77-intent-10105",
+   "options": [
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "cancel_transfer",
+    "exchange_rate",
+    "direct_debit_payment_not_recognised",
+    "declined_transfer",
+    "atm_support",
+    "exchange_charge"
+   ],
+   "gold": "exchange_rate"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-14:banking77-intent-10097",
+   "options": [
+    "top_up_by_card_charge",
+    "exchange_rate",
+    "topping_up_by_card",
+    "cancel_transfer",
+    "card_payment_not_recognised"
+   ],
+   "gold": "exchange_rate"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-688:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "CULTURE & ARTS",
+    "GOOD NEWS",
+    "WORLDPOST",
+    "ARTS & CULTURE",
+    "BLACK VOICES"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2519:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "GOOD NEWS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3726:massive-intent-85288",
+   "options": [
+    "calendar_remove",
+    "transport_query",
+    "music_likeness",
+    "takeaway_query",
+    "music_dislikeness",
+    "email_querycontact",
+    "takeaway_order"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3329:massive-intent-77288",
+   "options": [
+    "takeaway_query",
+    "recommendation_events",
+    "recommendation_movies",
+    "takeaway_order",
+    "calendar_remove",
+    "music_likeness",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3028:massive-intent-70903",
+   "options": [
+    "music_dislikeness",
+    "music_likeness",
+    "email_query",
+    "recommendation_locations"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1045:massive-intent-24788",
+   "options": [
+    "recommendation_events",
+    "calendar_remove",
+    "calendar_set",
+    "recommendation_movies",
+    "music_dislikeness",
+    "takeaway_query",
+    "recommendation_locations",
+    "transport_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-450:banking77-intent-11733",
+   "options": [
+    "direct_debit_payment_not_recognised",
+    "top_up_by_card_charge",
+    "declined_transfer",
+    "balance_not_updated_after_bank_transfer",
+    "pending_transfer",
+    "exchange_rate",
+    "failed_transfer",
+    "cancel_transfer"
+   ],
+   "gold": "declined_transfer"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1383:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "GOOD NEWS",
+    "WEIRD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "GOOD NEWS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2442:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "PARENTS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1990:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "PARENTS",
+    "PARENTING",
+    "WEIRD NEWS",
+    "CULTURE & ARTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3494:massive-intent-78374",
+   "options": [
+    "transport_traffic",
+    "recommendation_locations",
+    "transport_query",
+    "recommendation_movies"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3893:massive-intent-90039",
+   "options": [
+    "takeaway_query",
+    "calendar_remove",
+    "recommendation_locations",
+    "calendar_set",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1446:massive-intent-32859",
+   "options": [
+    "calendar_remove",
+    "email_query",
+    "recommendation_events",
+    "music_likeness",
+    "transport_ticket",
+    "transport_query",
+    "takeaway_query",
+    "email_querycontact"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3077:massive-intent-72787",
+   "options": [
+    "recommendation_events",
+    "transport_traffic",
+    "recommendation_locations",
+    "email_query",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2522:massive-intent-57873",
+   "options": [
+    "music_likeness",
+    "calendar_set",
+    "calendar_remove",
+    "transport_query",
+    "recommendation_events",
+    "transport_traffic"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1847:massive-intent-41941",
+   "options": [
+    "email_query",
+    "recommendation_locations",
+    "calendar_set",
+    "recommendation_events"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2719:massive-intent-61564",
+   "options": [
+    "transport_ticket",
+    "music_likeness",
+    "email_querycontact",
+    "transport_traffic",
+    "email_query",
+    "transport_taxi",
+    "transport_query",
+    "recommendation_locations"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-223:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "WORLD NEWS",
+    "PARENTING",
+    "WORLDPOST"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-874:massive-intent-23260",
+   "options": [
+    "calendar_set",
+    "calendar_remove",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-464:banking77-intent-11747",
+   "options": [
+    "pending_transfer",
+    "country_support",
+    "declined_transfer",
+    "atm_support",
+    "failed_transfer"
+   ],
+   "gold": "declined_transfer"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-753:banking77-intent-13076",
+   "options": [
+    "exchange_charge",
+    "country_support",
+    "card_not_working"
+   ],
+   "gold": "country_support"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2820:massive-intent-64932",
+   "options": [
+    "takeaway_order",
+    "transport_query",
+    "email_querycontact"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3844:massive-intent-89547",
+   "options": [
+    "recommendation_movies",
+    "music_likeness",
+    "transport_query",
+    "calendar_remove",
+    "calendar_set",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1324:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "PARENTING",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3251:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "PARENTS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3061:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "WEIRD NEWS",
+    "GOOD NEWS",
+    "PARENTS",
+    "WORLDPOST"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-94:banking77-intent-10457",
+   "options": [
+    "card_not_working",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "lost_or_stolen_card",
+    "card_payment_not_recognised"
+   ],
+   "gold": "lost_or_stolen_card"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1104:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WORLDPOST",
+    "WORLD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2706:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTING",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1334:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "WORLDPOST",
+    "GOOD NEWS",
+    "WEIRD NEWS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1294:massive-intent-28888",
+   "options": [
+    "transport_traffic",
+    "music_likeness",
+    "calendar_remove",
+    "email_query",
+    "transport_taxi",
+    "transport_query",
+    "calendar_set",
+    "transport_ticket"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2038:massive-intent-45439",
+   "options": [
+    "transport_taxi",
+    "recommendation_movies",
+    "takeaway_order",
+    "transport_query",
+    "transport_ticket"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1144:massive-intent-27863",
+   "options": [
+    "recommendation_locations",
+    "transport_ticket",
+    "calendar_set"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1171:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "WORLDPOST",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "CULTURE & ARTS",
+    "GOOD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1385:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "GOOD NEWS",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-514:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WEIRD NEWS",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "WORLDPOST"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-147:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "PARENTS",
+    "CULTURE & ARTS",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3045:massive-intent-71980",
+   "options": [
+    "music_dislikeness",
+    "email_query",
+    "transport_traffic",
+    "music_likeness"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2849:massive-intent-65215",
+   "options": [
+    "music_likeness",
+    "email_querycontact",
+    "takeaway_order"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1843:massive-intent-41904",
+   "options": [
+    "email_query",
+    "calendar_set",
+    "recommendation_events"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3257:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "WEIRD NEWS",
+    "WORLDPOST",
+    "PARENTING",
+    "QUEER VOICES",
+    "CULTURE & ARTS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1295:massive-intent-28889",
+   "options": [
+    "email_query",
+    "calendar_remove",
+    "music_dislikeness",
+    "transport_ticket",
+    "recommendation_locations",
+    "transport_traffic",
+    "transport_taxi"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2982:massive-intent-68396",
+   "options": [
+    "music_likeness",
+    "transport_ticket",
+    "calendar_set",
+    "transport_taxi",
+    "music_dislikeness",
+    "email_querycontact",
+    "email_query"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-681:massive-intent-16073",
+   "options": [
+    "music_likeness",
+    "transport_ticket",
+    "recommendation_events",
+    "transport_traffic",
+    "email_query",
+    "takeaway_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-488:banking77-intent-11851",
+   "options": [
+    "pending_transfer",
+    "balance_not_updated_after_bank_transfer",
+    "top_up_by_bank_transfer_charge"
+   ],
+   "gold": "pending_transfer"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-403:massive-intent-11297",
+   "options": [
+    "calendar_set",
+    "transport_query",
+    "recommendation_movies",
+    "recommendation_events",
+    "transport_traffic"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1967:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "QUEER VOICES",
+    "PARENTING",
+    "CULTURE & ARTS",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-964:massive-intent-24102",
+   "options": [
+    "calendar_remove",
+    "takeaway_order",
+    "transport_traffic",
+    "recommendation_locations",
+    "transport_ticket",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4011:massive-intent-91144",
+   "options": [
+    "recommendation_events",
+    "recommendation_movies",
+    "email_querycontact",
+    "transport_query",
+    "calendar_remove",
+    "calendar_set",
+    "takeaway_query"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1659:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "ARTS & CULTURE",
+    "PARENTING"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-490:banking77-intent-11853",
+   "options": [
+    "cancel_transfer",
+    "lost_or_stolen_phone",
+    "failed_transfer",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "pending_transfer",
+    "declined_transfer",
+    "exchange_charge"
+   ],
+   "gold": "pending_transfer"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2696:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WEIRD NEWS",
+    "QUEER VOICES",
+    "PARENTING",
+    "ARTS & CULTURE",
+    "WORLDPOST",
+    "THE WORLDPOST"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1089:massive-intent-25224",
+   "options": [
+    "takeaway_query",
+    "recommendation_locations",
+    "calendar_set",
+    "recommendation_events"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2901:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "PARENTS",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-353:banking77-intent-11476",
+   "options": [
+    "cancel_transfer",
+    "exchange_rate",
+    "atm_support",
+    "country_support"
+   ],
+   "gold": "atm_support"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1234:massive-intent-28441",
+   "options": [
+    "takeaway_order",
+    "transport_query",
+    "transport_taxi",
+    "takeaway_query",
+    "transport_traffic"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1610:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "CULTURE & ARTS",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2795:massive-intent-62706",
+   "options": [
+    "recommendation_events",
+    "transport_query",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1862:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "THE WORLDPOST",
+    "WORLDPOST"
+   ],
+   "gold": "WEIRD NEWS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1205:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "PARENTS",
+    "THE WORLDPOST",
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "WEIRD NEWS"
+   ],
+   "gold": "GOOD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2151:massive-intent-49113",
+   "options": [
+    "email_querycontact",
+    "music_likeness",
+    "transport_taxi",
+    "recommendation_events",
+    "takeaway_query"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1087:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "ARTS & CULTURE",
+    "THE WORLDPOST"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-98:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "WORLD NEWS",
+    "BLACK VOICES",
+    "PARENTING",
+    "PARENTS"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-491:banking77-intent-11854",
+   "options": [
+    "cancel_transfer",
+    "pending_transfer",
+    "lost_or_stolen_phone",
+    "balance_not_updated_after_bank_transfer",
+    "topping_up_by_card",
+    "balance_not_updated_after_cheque_or_cash_deposit"
+   ],
+   "gold": "pending_transfer"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1117:massive-intent-27701",
+   "options": [
+    "email_query",
+    "music_likeness",
+    "recommendation_events",
+    "music_dislikeness",
+    "calendar_remove",
+    "recommendation_locations",
+    "recommendation_movies",
+    "calendar_set"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-669:banking77-intent-12792",
+   "options": [
+    "balance_not_updated_after_bank_transfer",
+    "declined_transfer",
+    "top_up_by_card_charge",
+    "card_not_working",
+    "exchange_charge",
+    "failed_transfer",
+    "exchange_rate"
+   ],
+   "gold": "exchange_charge"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3168:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2888:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "PARENTS",
+    "WEIRD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3054:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "PARENTS",
+    "PARENTING",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "WORLD NEWS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2662:massive-intent-61194",
+   "options": [
+    "calendar_set",
+    "takeaway_order",
+    "recommendation_locations",
+    "recommendation_events"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3267:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2227:massive-intent-50891",
+   "options": [
+    "calendar_remove",
+    "music_likeness",
+    "transport_query",
+    "email_querycontact",
+    "email_query",
+    "takeaway_query",
+    "music_dislikeness"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3137:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "PARENTS",
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1231:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "PARENTS",
+    "PARENTING",
+    "QUEER VOICES",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-804:massive-intent-20431",
+   "options": [
+    "takeaway_order",
+    "email_query",
+    "takeaway_query",
+    "music_likeness",
+    "recommendation_events",
+    "transport_taxi"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-452:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "WORLD NEWS",
+    "THE WORLDPOST",
+    "QUEER VOICES"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-475:banking77-intent-11758",
+   "options": [
+    "pending_transfer",
+    "failed_transfer",
+    "declined_transfer",
+    "card_not_working",
+    "top_up_by_card_charge",
+    "cancel_transfer",
+    "balance_not_updated_after_cheque_or_cash_deposit"
+   ],
+   "gold": "declined_transfer"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1547:massive-intent-37443",
+   "options": [
+    "calendar_set",
+    "email_query",
+    "music_likeness",
+    "music_dislikeness"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2062:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WORLD NEWS",
+    "WORLDPOST",
+    "GOOD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4093:massive-intent-93974",
+   "options": [
+    "recommendation_events",
+    "recommendation_movies",
+    "music_dislikeness",
+    "recommendation_locations",
+    "calendar_remove",
+    "transport_ticket",
+    "transport_taxi"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1399:massive-intent-32450",
+   "options": [
+    "transport_query",
+    "music_dislikeness",
+    "email_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2026:massive-intent-45385",
+   "options": [
+    "recommendation_locations",
+    "transport_query",
+    "transport_traffic"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-752:massive-intent-17560",
+   "options": [
+    "music_dislikeness",
+    "calendar_remove",
+    "transport_ticket",
+    "email_query"
+   ],
+   "gold": "music_dislikeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2440:massive-intent-57171",
+   "options": [
+    "transport_ticket",
+    "calendar_remove",
+    "recommendation_locations",
+    "calendar_set",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2190:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "PARENTS",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1237:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "WORLDPOST",
+    "THE WORLDPOST",
+    "CULTURE & ARTS",
+    "QUEER VOICES",
+    "PARENTS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1972:massive-intent-44975",
+   "options": [
+    "transport_traffic",
+    "transport_taxi",
+    "transport_query",
+    "calendar_remove"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2370:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3881:massive-intent-89938",
+   "options": [
+    "calendar_set",
+    "calendar_remove",
+    "takeaway_query",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2626:massive-intent-60965",
+   "options": [
+    "recommendation_movies",
+    "calendar_set",
+    "calendar_remove",
+    "takeaway_order",
+    "transport_taxi",
+    "email_query"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1381:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "PARENTING",
+    "QUEER VOICES",
+    "WORLDPOST"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-242:banking77-intent-11085",
+   "options": [
+    "card_not_working",
+    "virtual_card_not_working",
+    "pending_transfer",
+    "card_payment_not_recognised",
+    "country_support",
+    "direct_debit_payment_not_recognised",
+    "top_up_by_card_charge",
+    "topping_up_by_card"
+   ],
+   "gold": "card_payment_not_recognised"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2740:massive-intent-61729",
+   "options": [
+    "takeaway_query",
+    "transport_ticket",
+    "transport_traffic"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1752:massive-intent-41060",
+   "options": [
+    "email_query",
+    "recommendation_movies",
+    "calendar_set",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-723:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "GOOD NEWS",
+    "WORLDPOST",
+    "ARTS & CULTURE",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "QUEER VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1902:massive-intent-44501",
+   "options": [
+    "music_likeness",
+    "email_query",
+    "calendar_remove",
+    "recommendation_movies",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2168:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLDPOST",
+    "GOOD NEWS",
+    "WORLD NEWS"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1191:massive-intent-28164",
+   "options": [
+    "calendar_set",
+    "recommendation_locations",
+    "takeaway_query"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1002:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "WORLDPOST",
+    "PARENTS",
+    "WEIRD NEWS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1766:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "QUEER VOICES",
+    "ARTS & CULTURE",
+    "GOOD NEWS",
+    "CULTURE & ARTS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1039:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "WEIRD NEWS",
+    "PARENTING",
+    "THE WORLDPOST",
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "WORLDPOST",
+    "PARENTS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1354:massive-intent-31953",
+   "options": [
+    "email_querycontact",
+    "music_dislikeness",
+    "recommendation_movies",
+    "takeaway_query",
+    "transport_traffic",
+    "transport_query",
+    "email_query",
+    "music_likeness"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-748:massive-intent-17416",
+   "options": [
+    "email_query",
+    "music_likeness",
+    "takeaway_query",
+    "transport_taxi",
+    "music_dislikeness"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-935:massive-intent-23836",
+   "options": [
+    "recommendation_events",
+    "calendar_set",
+    "transport_query",
+    "transport_ticket",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4143:massive-intent-94334",
+   "options": [
+    "transport_query",
+    "recommendation_movies",
+    "email_query",
+    "recommendation_events",
+    "transport_taxi"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3910:massive-intent-90197",
+   "options": [
+    "recommendation_movies",
+    "calendar_remove",
+    "calendar_set",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1096:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WORLDPOST",
+    "WORLD NEWS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3501:massive-intent-78440",
+   "options": [
+    "music_likeness",
+    "transport_traffic",
+    "transport_ticket",
+    "email_query",
+    "calendar_set"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3580:massive-intent-81691",
+   "options": [
+    "transport_taxi",
+    "calendar_set",
+    "music_likeness",
+    "transport_ticket",
+    "takeaway_query",
+    "transport_query",
+    "email_query",
+    "email_querycontact"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1468:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "WEIRD NEWS",
+    "QUEER VOICES",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "GOOD NEWS",
+    "PARENTING"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3493:massive-intent-78364",
+   "options": [
+    "transport_taxi",
+    "transport_ticket",
+    "transport_traffic",
+    "calendar_remove"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1249:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3182:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTING",
+    "ARTS & CULTURE",
+    "WEIRD NEWS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3914:massive-intent-90228",
+   "options": [
+    "calendar_remove",
+    "transport_query",
+    "calendar_set"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-657:massive-intent-15832",
+   "options": [
+    "email_querycontact",
+    "recommendation_movies",
+    "email_query",
+    "recommendation_locations",
+    "calendar_set",
+    "transport_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1593:massive-intent-39632",
+   "options": [
+    "recommendation_locations",
+    "takeaway_order",
+    "calendar_set",
+    "calendar_remove",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-368:massive-intent-8823",
+   "options": [
+    "recommendation_locations",
+    "calendar_set",
+    "email_querycontact"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1135:massive-intent-27794",
+   "options": [
+    "email_querycontact",
+    "recommendation_events",
+    "calendar_remove",
+    "transport_traffic",
+    "recommendation_movies"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4066:massive-intent-93811",
+   "options": [
+    "transport_ticket",
+    "recommendation_movies",
+    "calendar_remove",
+    "recommendation_events",
+    "transport_query",
+    "takeaway_query",
+    "calendar_set"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2103:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "GOOD NEWS"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2648:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "PARENTS",
+    "BLACK VOICES"
+   ],
+   "gold": "CULTURE & ARTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3167:huffpost-cat-0",
+   "options": [
+    "WEIRD NEWS",
+    "WORLDPOST",
+    "PARENTING",
+    "PARENTS",
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "WORLD NEWS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2418:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "GOOD NEWS",
+    "ARTS & CULTURE",
+    "QUEER VOICES",
+    "WORLD NEWS",
+    "WORLDPOST"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-283:banking77-intent-11326",
+   "options": [
+    "topping_up_by_card",
+    "pending_transfer",
+    "virtual_card_not_working"
+   ],
+   "gold": "topping_up_by_card"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4306:massive-intent-98086",
+   "options": [
+    "transport_ticket",
+    "email_query",
+    "recommendation_movies",
+    "music_likeness",
+    "transport_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-707:banking77-intent-12830",
+   "options": [
+    "top_up_by_card_charge",
+    "lost_or_stolen_card",
+    "topping_up_by_card"
+   ],
+   "gold": "top_up_by_card_charge"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-751:banking77-intent-13074",
+   "options": [
+    "atm_support",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "exchange_rate",
+    "exchange_charge",
+    "card_payment_not_recognised",
+    "country_support"
+   ],
+   "gold": "country_support"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1931:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "QUEER VOICES",
+    "WORLD NEWS",
+    "PARENTS",
+    "BLACK VOICES",
+    "THE WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1982:massive-intent-45037",
+   "options": [
+    "transport_query",
+    "recommendation_locations",
+    "transport_taxi",
+    "transport_ticket"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-532:massive-intent-12166",
+   "options": [
+    "music_dislikeness",
+    "music_likeness",
+    "transport_query",
+    "transport_ticket",
+    "takeaway_order",
+    "transport_traffic",
+    "email_query",
+    "transport_taxi"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2631:massive-intent-60995",
+   "options": [
+    "calendar_set",
+    "transport_ticket",
+    "recommendation_events",
+    "music_dislikeness",
+    "music_likeness",
+    "recommendation_movies"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-269:banking77-intent-11112",
+   "options": [
+    "direct_debit_payment_not_recognised",
+    "failed_transfer",
+    "pending_transfer",
+    "card_payment_not_recognised",
+    "cancel_transfer",
+    "top_up_by_card_charge"
+   ],
+   "gold": "card_payment_not_recognised"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2915:massive-intent-65888",
+   "options": [
+    "music_likeness",
+    "email_query",
+    "takeaway_order"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1552:massive-intent-37750",
+   "options": [
+    "transport_query",
+    "music_dislikeness",
+    "calendar_remove",
+    "music_likeness",
+    "transport_traffic",
+    "transport_taxi"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2989:massive-intent-68760",
+   "options": [
+    "transport_traffic",
+    "transport_query",
+    "takeaway_query"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-42:banking77-intent-10365",
+   "options": [
+    "topping_up_by_card",
+    "card_not_working",
+    "card_payment_not_recognised",
+    "exchange_charge",
+    "top_up_by_card_charge",
+    "virtual_card_not_working",
+    "country_support",
+    "failed_transfer"
+   ],
+   "gold": "card_not_working"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4395:massive-intent-99021",
+   "options": [
+    "takeaway_query",
+    "email_querycontact",
+    "transport_query",
+    "recommendation_locations",
+    "recommendation_events",
+    "music_likeness",
+    "email_query",
+    "takeaway_order"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1945:massive-intent-44846",
+   "options": [
+    "takeaway_query",
+    "transport_ticket",
+    "transport_query",
+    "transport_traffic"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3740:massive-intent-85789",
+   "options": [
+    "email_querycontact",
+    "calendar_remove",
+    "takeaway_query",
+    "transport_query",
+    "recommendation_locations"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1012:massive-intent-24519",
+   "options": [
+    "calendar_set",
+    "recommendation_movies",
+    "takeaway_query",
+    "email_querycontact",
+    "recommendation_locations",
+    "recommendation_events",
+    "calendar_remove",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3152:massive-intent-73487",
+   "options": [
+    "recommendation_locations",
+    "calendar_set",
+    "recommendation_events",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-638:banking77-intent-12721",
+   "options": [
+    "balance_not_updated_after_bank_transfer",
+    "failed_transfer",
+    "card_not_working",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "card_payment_not_recognised",
+    "top_up_by_bank_transfer_charge",
+    "cancel_transfer",
+    "virtual_card_not_working"
+   ],
+   "gold": "balance_not_updated_after_bank_transfer"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3682:massive-intent-82736",
+   "options": [
+    "calendar_set",
+    "music_likeness",
+    "transport_traffic",
+    "transport_query",
+    "music_dislikeness",
+    "takeaway_order"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2111:massive-intent-48684",
+   "options": [
+    "recommendation_locations",
+    "transport_query",
+    "music_likeness",
+    "email_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-581:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "PARENTS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2774:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "ARTS & CULTURE",
+    "PARENTING",
+    "WEIRD NEWS",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1885:massive-intent-44411",
+   "options": [
+    "recommendation_events",
+    "email_query",
+    "music_likeness",
+    "transport_taxi",
+    "recommendation_locations",
+    "calendar_remove"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1221:massive-intent-28371",
+   "options": [
+    "takeaway_query",
+    "transport_ticket",
+    "transport_traffic",
+    "recommendation_events",
+    "email_query",
+    "music_dislikeness"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-820:massive-intent-21340",
+   "options": [
+    "transport_query",
+    "transport_ticket",
+    "music_likeness",
+    "email_querycontact"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3350:massive-intent-77408",
+   "options": [
+    "calendar_remove",
+    "transport_taxi",
+    "music_dislikeness",
+    "recommendation_movies",
+    "transport_ticket",
+    "recommendation_locations"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3884:massive-intent-89961",
+   "options": [
+    "calendar_remove",
+    "transport_ticket",
+    "calendar_set",
+    "music_likeness",
+    "recommendation_locations",
+    "transport_taxi"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2567:massive-intent-58326",
+   "options": [
+    "music_likeness",
+    "recommendation_events",
+    "transport_taxi",
+    "calendar_set",
+    "recommendation_movies",
+    "email_querycontact"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-641:banking77-intent-12764",
+   "options": [
+    "exchange_charge",
+    "card_not_working",
+    "atm_support",
+    "exchange_rate",
+    "top_up_by_bank_transfer_charge",
+    "balance_not_updated_after_bank_transfer",
+    "cancel_transfer"
+   ],
+   "gold": "exchange_charge"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2105:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "PARENTING",
+    "WORLD NEWS",
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-764:massive-intent-18483",
+   "options": [
+    "transport_traffic",
+    "email_query",
+    "takeaway_order",
+    "transport_taxi",
+    "transport_query",
+    "calendar_remove",
+    "takeaway_query"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1402:massive-intent-32488",
+   "options": [
+    "takeaway_order",
+    "transport_query",
+    "transport_taxi",
+    "takeaway_query",
+    "recommendation_movies",
+    "music_likeness",
+    "email_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1813:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "CULTURE & ARTS"
+   ],
+   "gold": "WEIRD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1540:massive-intent-36952",
+   "options": [
+    "recommendation_events",
+    "calendar_remove",
+    "transport_query",
+    "takeaway_order",
+    "email_query",
+    "takeaway_query",
+    "transport_ticket"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2631:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WORLDPOST",
+    "GOOD NEWS",
+    "WEIRD NEWS",
+    "PARENTING",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-96:massive-intent-5407",
+   "options": [
+    "music_dislikeness",
+    "takeaway_order",
+    "email_query",
+    "calendar_remove",
+    "takeaway_query",
+    "transport_traffic",
+    "email_querycontact"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1895:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "WORLD NEWS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3575:massive-intent-81632",
+   "options": [
+    "takeaway_query",
+    "recommendation_locations",
+    "email_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2715:massive-intent-61537",
+   "options": [
+    "recommendation_events",
+    "takeaway_order",
+    "transport_ticket",
+    "recommendation_locations",
+    "calendar_remove",
+    "music_likeness"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2637:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "PARENTING",
+    "QUEER VOICES",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4206:massive-intent-94718",
+   "options": [
+    "email_query",
+    "calendar_set",
+    "transport_taxi"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2623:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-329:massive-intent-8487",
+   "options": [
+    "recommendation_movies",
+    "email_querycontact",
+    "music_likeness",
+    "calendar_remove",
+    "recommendation_events",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-54:massive-intent-3000",
+   "options": [
+    "recommendation_movies",
+    "email_query",
+    "music_likeness",
+    "music_dislikeness"
+   ],
+   "gold": "music_dislikeness"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-925:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLDPOST",
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "QUEER VOICES",
+    "CULTURE & ARTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1249:massive-intent-28528",
+   "options": [
+    "music_likeness",
+    "transport_ticket",
+    "takeaway_order",
+    "transport_traffic",
+    "calendar_set",
+    "transport_taxi",
+    "transport_query",
+    "recommendation_movies"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-633:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "PARENTING",
+    "WEIRD NEWS",
+    "PARENTS"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-997:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "PARENTS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2274:massive-intent-53267",
+   "options": [
+    "transport_taxi",
+    "takeaway_order",
+    "music_likeness"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1010:massive-intent-24511",
+   "options": [
+    "recommendation_events",
+    "calendar_set",
+    "transport_traffic"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-386:banking77-intent-11509",
+   "options": [
+    "pending_transfer",
+    "exchange_charge",
+    "direct_debit_payment_not_recognised",
+    "topping_up_by_card",
+    "balance_not_updated_after_bank_transfer"
+   ],
+   "gold": "direct_debit_payment_not_recognised"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2384:massive-intent-56610",
+   "options": [
+    "recommendation_movies",
+    "calendar_set",
+    "takeaway_order"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3435:massive-intent-77959",
+   "options": [
+    "transport_ticket",
+    "email_query",
+    "recommendation_events"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3445:massive-intent-78026",
+   "options": [
+    "transport_ticket",
+    "takeaway_query",
+    "transport_traffic",
+    "transport_taxi",
+    "music_likeness",
+    "transport_query",
+    "email_query",
+    "email_querycontact"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-344:banking77-intent-11467",
+   "options": [
+    "balance_not_updated_after_bank_transfer",
+    "country_support",
+    "cancel_transfer",
+    "card_not_working",
+    "virtual_card_not_working",
+    "top_up_by_card_charge",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "atm_support"
+   ],
+   "gold": "atm_support"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2344:massive-intent-56291",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "transport_traffic",
+    "calendar_set",
+    "takeaway_order",
+    "recommendation_locations",
+    "email_querycontact"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-652:banking77-intent-12775",
+   "options": [
+    "top_up_by_card_charge",
+    "virtual_card_not_working",
+    "exchange_charge"
+   ],
+   "gold": "exchange_charge"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-411:massive-intent-11361",
+   "options": [
+    "music_likeness",
+    "calendar_set",
+    "takeaway_order",
+    "email_querycontact",
+    "recommendation_movies",
+    "recommendation_events",
+    "calendar_remove"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-917:massive-intent-23630",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "email_querycontact",
+    "music_likeness",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3224:massive-intent-74102",
+   "options": [
+    "calendar_set",
+    "transport_ticket",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-357:massive-intent-8741",
+   "options": [
+    "email_query",
+    "transport_traffic",
+    "music_likeness",
+    "recommendation_locations",
+    "calendar_set",
+    "calendar_remove"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1397:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "WORLD NEWS",
+    "WORLDPOST",
+    "THE WORLDPOST",
+    "GOOD NEWS"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-565:massive-intent-12392",
+   "options": [
+    "recommendation_movies",
+    "transport_query",
+    "takeaway_query",
+    "transport_traffic",
+    "music_dislikeness",
+    "email_query"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3286:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "ARTS & CULTURE",
+    "PARENTING",
+    "CULTURE & ARTS",
+    "PARENTS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2770:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "PARENTING",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-530:massive-intent-12163",
+   "options": [
+    "transport_query",
+    "transport_traffic",
+    "transport_taxi",
+    "takeaway_order"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3347:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTING",
+    "THE WORLDPOST"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2415:massive-intent-56965",
+   "options": [
+    "transport_query",
+    "calendar_set",
+    "calendar_remove",
+    "recommendation_events",
+    "email_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-328:massive-intent-8483",
+   "options": [
+    "recommendation_movies",
+    "calendar_set",
+    "transport_traffic",
+    "recommendation_events"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1369:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "THE WORLDPOST",
+    "PARENTS",
+    "GOOD NEWS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-119:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "QUEER VOICES",
+    "BLACK VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1504:massive-intent-35126",
+   "options": [
+    "email_query",
+    "takeaway_query",
+    "recommendation_movies"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1757:massive-intent-41116",
+   "options": [
+    "calendar_remove",
+    "recommendation_movies",
+    "calendar_set",
+    "recommendation_locations",
+    "takeaway_query",
+    "recommendation_events",
+    "transport_traffic",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1919:massive-intent-44616",
+   "options": [
+    "recommendation_movies",
+    "calendar_set",
+    "recommendation_locations",
+    "transport_ticket",
+    "transport_traffic",
+    "calendar_remove",
+    "transport_query"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3565:massive-intent-81529",
+   "options": [
+    "email_querycontact",
+    "transport_taxi",
+    "transport_ticket",
+    "takeaway_query",
+    "email_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-465:massive-intent-11731",
+   "options": [
+    "email_query",
+    "takeaway_order",
+    "recommendation_movies",
+    "transport_taxi",
+    "music_likeness",
+    "transport_ticket",
+    "transport_query",
+    "transport_traffic"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-481:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "THE WORLDPOST",
+    "GOOD NEWS",
+    "PARENTS",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3228:massive-intent-74115",
+   "options": [
+    "transport_query",
+    "calendar_remove",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2282:massive-intent-53958",
+   "options": [
+    "transport_traffic",
+    "music_likeness",
+    "calendar_remove",
+    "transport_query",
+    "takeaway_order"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1485:massive-intent-33972",
+   "options": [
+    "email_querycontact",
+    "recommendation_locations",
+    "transport_ticket",
+    "email_query",
+    "takeaway_order",
+    "takeaway_query",
+    "calendar_remove"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4060:massive-intent-93782",
+   "options": [
+    "calendar_set",
+    "calendar_remove",
+    "recommendation_locations",
+    "transport_query",
+    "recommendation_events",
+    "recommendation_movies",
+    "music_likeness",
+    "takeaway_order"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2964:massive-intent-67543",
+   "options": [
+    "takeaway_query",
+    "recommendation_events",
+    "music_likeness",
+    "calendar_set",
+    "email_query",
+    "takeaway_order",
+    "transport_query",
+    "transport_traffic"
+   ],
+   "gold": "takeaway_order"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2147:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "ARTS & CULTURE",
+    "THE WORLDPOST",
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "WORLDPOST"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3497:massive-intent-78417",
+   "options": [
+    "transport_query",
+    "transport_traffic",
+    "takeaway_query",
+    "transport_taxi",
+    "music_likeness",
+    "calendar_set"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1971:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "WEIRD NEWS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1247:massive-intent-28522",
+   "options": [
+    "transport_ticket",
+    "email_querycontact",
+    "recommendation_locations",
+    "transport_query",
+    "takeaway_order",
+    "email_query",
+    "transport_traffic"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-686:massive-intent-16118",
+   "options": [
+    "email_query",
+    "music_likeness",
+    "transport_ticket",
+    "takeaway_query",
+    "email_querycontact",
+    "transport_query",
+    "takeaway_order",
+    "calendar_remove"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2688:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "GOOD NEWS",
+    "QUEER VOICES",
+    "WORLD NEWS",
+    "WORLDPOST",
+    "PARENTS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2634:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTING",
+    "PARENTS",
+    "WEIRD NEWS",
+    "WORLD NEWS",
+    "WORLDPOST"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-818:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "PARENTS",
+    "WORLD NEWS",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2208:massive-intent-49633",
+   "options": [
+    "music_dislikeness",
+    "email_querycontact",
+    "recommendation_events",
+    "music_likeness",
+    "recommendation_locations",
+    "transport_query",
+    "calendar_set"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2221:massive-intent-50493",
+   "options": [
+    "recommendation_events",
+    "transport_query",
+    "takeaway_query"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1595:massive-intent-39669",
+   "options": [
+    "transport_query",
+    "recommendation_events",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1016:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "QUEER VOICES",
+    "WORLDPOST",
+    "WEIRD NEWS",
+    "WORLD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1208:massive-intent-28323",
+   "options": [
+    "email_query",
+    "transport_ticket",
+    "email_querycontact"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-7:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "CULTURE & ARTS",
+    "WORLD NEWS"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2957:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLD NEWS",
+    "PARENTS",
+    "BLACK VOICES",
+    "CULTURE & ARTS",
+    "GOOD NEWS",
+    "QUEER VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-95:banking77-intent-10458",
+   "options": [
+    "lost_or_stolen_card",
+    "topping_up_by_card",
+    "declined_transfer",
+    "lost_or_stolen_phone"
+   ],
+   "gold": "lost_or_stolen_card"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1157:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "PARENTING",
+    "GOOD NEWS",
+    "THE WORLDPOST",
+    "PARENTS",
+    "WEIRD NEWS",
+    "WORLD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2029:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTING",
+    "WORLDPOST"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1232:massive-intent-28428",
+   "options": [
+    "recommendation_movies",
+    "transport_query",
+    "takeaway_order",
+    "email_query",
+    "transport_traffic",
+    "music_likeness",
+    "transport_ticket",
+    "transport_taxi"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2703:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WORLDPOST",
+    "PARENTS",
+    "PARENTING",
+    "GOOD NEWS",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3816:massive-intent-89333",
+   "options": [
+    "transport_taxi",
+    "takeaway_order",
+    "recommendation_events",
+    "calendar_set",
+    "recommendation_locations",
+    "music_likeness"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-413:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WORLD NEWS",
+    "WORLDPOST",
+    "THE WORLDPOST",
+    "WEIRD NEWS",
+    "PARENTING",
+    "CULTURE & ARTS",
+    "GOOD NEWS"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2475:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4000:massive-intent-90971",
+   "options": [
+    "takeaway_order",
+    "calendar_set",
+    "transport_query",
+    "recommendation_movies",
+    "music_dislikeness",
+    "calendar_remove"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1816:massive-intent-41702",
+   "options": [
+    "recommendation_events",
+    "recommendation_movies",
+    "calendar_set",
+    "email_querycontact",
+    "takeaway_query",
+    "calendar_remove",
+    "transport_taxi"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1614:massive-intent-39807",
+   "options": [
+    "calendar_set",
+    "recommendation_events",
+    "music_dislikeness",
+    "transport_query",
+    "calendar_remove",
+    "takeaway_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-696:banking77-intent-12819",
+   "options": [
+    "top_up_by_card_charge",
+    "top_up_by_bank_transfer_charge",
+    "balance_not_updated_after_bank_transfer",
+    "direct_debit_payment_not_recognised",
+    "exchange_charge"
+   ],
+   "gold": "top_up_by_card_charge"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-365:massive-intent-8805",
+   "options": [
+    "recommendation_events",
+    "calendar_remove",
+    "transport_ticket"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1643:massive-intent-40059",
+   "options": [
+    "music_dislikeness",
+    "recommendation_movies",
+    "calendar_remove",
+    "transport_taxi",
+    "calendar_set"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-258:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "CULTURE & ARTS",
+    "THE WORLDPOST",
+    "WORLD NEWS",
+    "WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "WORLD NEWS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1206:massive-intent-28302",
+   "options": [
+    "transport_traffic",
+    "transport_ticket",
+    "transport_taxi",
+    "calendar_remove",
+    "recommendation_movies",
+    "music_dislikeness",
+    "transport_query"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2790:massive-intent-62273",
+   "options": [
+    "recommendation_events",
+    "recommendation_movies",
+    "music_dislikeness",
+    "calendar_set",
+    "recommendation_locations",
+    "email_querycontact",
+    "calendar_remove",
+    "transport_ticket"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2335:massive-intent-56231",
+   "options": [
+    "calendar_remove",
+    "music_dislikeness",
+    "calendar_set",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1394:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "BLACK VOICES",
+    "THE WORLDPOST",
+    "WORLDPOST"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2893:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "PARENTS",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "BLACK VOICES",
+    "WORLDPOST",
+    "WEIRD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-755:massive-intent-17849",
+   "options": [
+    "transport_traffic",
+    "takeaway_order",
+    "email_query",
+    "recommendation_movies",
+    "email_querycontact",
+    "music_likeness",
+    "takeaway_query",
+    "transport_query"
+   ],
+   "gold": "takeaway_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-73:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "CULTURE & ARTS",
+    "BLACK VOICES",
+    "WEIRD NEWS",
+    "WORLD NEWS",
+    "PARENTS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2685:massive-intent-61380",
+   "options": [
+    "email_query",
+    "transport_ticket",
+    "recommendation_locations",
+    "transport_taxi",
+    "transport_query",
+    "calendar_remove",
+    "email_querycontact",
+    "transport_traffic"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2453:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WORLDPOST",
+    "WORLD NEWS",
+    "BLACK VOICES",
+    "PARENTING",
+    "GOOD NEWS",
+    "ARTS & CULTURE"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1260:massive-intent-28618",
+   "options": [
+    "transport_ticket",
+    "email_query",
+    "recommendation_events"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1906:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "WORLD NEWS",
+    "THE WORLDPOST",
+    "ARTS & CULTURE",
+    "CULTURE & ARTS",
+    "WEIRD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2813:massive-intent-64898",
+   "options": [
+    "email_querycontact",
+    "music_dislikeness",
+    "email_query"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-607:banking77-intent-12690",
+   "options": [
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "direct_debit_payment_not_recognised",
+    "top_up_by_bank_transfer_charge",
+    "balance_not_updated_after_bank_transfer",
+    "exchange_rate",
+    "pending_transfer",
+    "cancel_transfer"
+   ],
+   "gold": "balance_not_updated_after_bank_transfer"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-3045:huffpost-cat-0",
+   "options": [
+    "QUEER VOICES",
+    "CULTURE & ARTS",
+    "ARTS & CULTURE",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2613:massive-intent-60874",
+   "options": [
+    "recommendation_events",
+    "transport_ticket",
+    "recommendation_movies",
+    "takeaway_order",
+    "calendar_remove",
+    "email_querycontact"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2501:massive-intent-57700",
+   "options": [
+    "calendar_remove",
+    "email_query",
+    "transport_query",
+    "takeaway_query",
+    "recommendation_events",
+    "recommendation_movies",
+    "recommendation_locations",
+    "calendar_set"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3084:massive-intent-72843",
+   "options": [
+    "recommendation_events",
+    "takeaway_query",
+    "recommendation_movies",
+    "calendar_set",
+    "music_likeness",
+    "transport_query"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3221:massive-intent-74089",
+   "options": [
+    "takeaway_query",
+    "calendar_remove",
+    "transport_taxi",
+    "calendar_set",
+    "music_dislikeness",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2338:massive-intent-56253",
+   "options": [
+    "recommendation_events",
+    "transport_query",
+    "calendar_remove",
+    "recommendation_locations",
+    "recommendation_movies",
+    "calendar_set",
+    "takeaway_order",
+    "transport_traffic"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-632:massive-intent-15550",
+   "options": [
+    "email_query",
+    "transport_traffic",
+    "music_likeness",
+    "transport_query",
+    "recommendation_movies",
+    "email_querycontact",
+    "recommendation_events",
+    "takeaway_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-792:huffpost-cat-0",
+   "options": [
+    "WORLDPOST",
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "PARENTING",
+    "CULTURE & ARTS",
+    "WEIRD NEWS",
+    "PARENTS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3658:massive-intent-82483",
+   "options": [
+    "email_querycontact",
+    "transport_query",
+    "music_dislikeness",
+    "transport_ticket",
+    "email_query",
+    "transport_traffic",
+    "takeaway_query",
+    "music_likeness"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2929:huffpost-cat-0",
+   "options": [
+    "GOOD NEWS",
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "PARENTS",
+    "ARTS & CULTURE",
+    "PARENTING",
+    "QUEER VOICES",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3392:massive-intent-77667",
+   "options": [
+    "recommendation_events",
+    "recommendation_locations",
+    "takeaway_query",
+    "calendar_remove",
+    "takeaway_order",
+    "email_querycontact"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-198:massive-intent-7313",
+   "options": [
+    "calendar_set",
+    "takeaway_query",
+    "recommendation_locations",
+    "transport_traffic",
+    "recommendation_movies",
+    "recommendation_events",
+    "transport_ticket",
+    "calendar_remove"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2445:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "QUEER VOICES",
+    "PARENTING",
+    "BLACK VOICES",
+    "WORLD NEWS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1769:massive-intent-41199",
+   "options": [
+    "music_likeness",
+    "recommendation_events",
+    "calendar_remove",
+    "recommendation_movies",
+    "email_query",
+    "music_dislikeness"
+   ],
+   "gold": "calendar_remove"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1269:massive-intent-28688",
+   "options": [
+    "transport_traffic",
+    "transport_query",
+    "music_dislikeness",
+    "transport_taxi"
+   ],
+   "gold": "transport_taxi"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2637:massive-intent-61018",
+   "options": [
+    "calendar_remove",
+    "recommendation_events",
+    "music_dislikeness",
+    "recommendation_locations",
+    "transport_ticket",
+    "email_querycontact"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1702:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "PARENTS",
+    "QUEER VOICES"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1488:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "WORLD NEWS",
+    "ARTS & CULTURE",
+    "QUEER VOICES",
+    "PARENTS"
+   ],
+   "gold": "ARTS & CULTURE"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-423:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLD NEWS",
+    "BLACK VOICES",
+    "PARENTS",
+    "WORLDPOST"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-597:massive-intent-15207",
+   "options": [
+    "email_query",
+    "takeaway_order",
+    "music_likeness",
+    "transport_query",
+    "email_querycontact",
+    "music_dislikeness",
+    "transport_ticket"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3623:massive-intent-82155",
+   "options": [
+    "email_query",
+    "transport_ticket",
+    "email_querycontact",
+    "takeaway_query",
+    "transport_taxi",
+    "music_likeness",
+    "transport_traffic"
+   ],
+   "gold": "email_querycontact"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-106:huffpost-cat-0",
+   "options": [
+    "ARTS & CULTURE",
+    "QUEER VOICES",
+    "GOOD NEWS",
+    "BLACK VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-143:massive-intent-6769",
+   "options": [
+    "calendar_set",
+    "music_dislikeness",
+    "recommendation_locations"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1600:massive-intent-39711",
+   "options": [
+    "transport_ticket",
+    "email_querycontact",
+    "calendar_set",
+    "recommendation_events",
+    "transport_traffic",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-53:banking77-intent-10376",
+   "options": [
+    "card_not_working",
+    "virtual_card_not_working",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "declined_transfer",
+    "topping_up_by_card",
+    "balance_not_updated_after_bank_transfer",
+    "top_up_by_card_charge"
+   ],
+   "gold": "card_not_working"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-351:banking77-intent-11474",
+   "options": [
+    "atm_support",
+    "country_support",
+    "card_payment_not_recognised",
+    "top_up_by_bank_transfer_charge",
+    "balance_not_updated_after_bank_transfer"
+   ],
+   "gold": "atm_support"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-246:massive-intent-7698",
+   "options": [
+    "calendar_set",
+    "transport_query",
+    "calendar_remove",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2960:huffpost-cat-0",
+   "options": [
+    "CULTURE & ARTS",
+    "PARENTING",
+    "WEIRD NEWS",
+    "WORLD NEWS",
+    "GOOD NEWS",
+    "BLACK VOICES",
+    "PARENTS",
+    "QUEER VOICES"
+   ],
+   "gold": "QUEER VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2746:massive-intent-61793",
+   "options": [
+    "transport_ticket",
+    "transport_traffic",
+    "transport_query",
+    "takeaway_order",
+    "takeaway_query"
+   ],
+   "gold": "transport_traffic"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-191:banking77-intent-10714",
+   "options": [
+    "exchange_charge",
+    "lost_or_stolen_card",
+    "cancel_transfer",
+    "top_up_by_bank_transfer_charge",
+    "balance_not_updated_after_bank_transfer",
+    "pending_transfer"
+   ],
+   "gold": "cancel_transfer"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1351:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "QUEER VOICES",
+    "WEIRD NEWS",
+    "THE WORLDPOST",
+    "PARENTS",
+    "WORLD NEWS",
+    "GOOD NEWS",
+    "WORLDPOST"
+   ],
+   "gold": "WORLDPOST"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-199:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "BLACK VOICES",
+    "PARENTS"
+   ],
+   "gold": "BLACK VOICES"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-576:massive-intent-12456",
+   "options": [
+    "transport_query",
+    "transport_ticket",
+    "calendar_remove",
+    "transport_taxi"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2523:huffpost-cat-0",
+   "options": [
+    "BLACK VOICES",
+    "GOOD NEWS",
+    "PARENTING"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1812:massive-intent-41662",
+   "options": [
+    "takeaway_order",
+    "calendar_remove",
+    "recommendation_events",
+    "email_query",
+    "email_querycontact",
+    "calendar_set",
+    "recommendation_locations",
+    "recommendation_movies"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2021:massive-intent-45322",
+   "options": [
+    "transport_ticket",
+    "transport_taxi",
+    "recommendation_movies"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2894:huffpost-cat-0",
+   "options": [
+    "PARENTS",
+    "THE WORLDPOST",
+    "QUEER VOICES",
+    "GOOD NEWS",
+    "WEIRD NEWS",
+    "PARENTING",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2220:massive-intent-50458",
+   "options": [
+    "music_likeness",
+    "email_query",
+    "transport_query",
+    "email_querycontact",
+    "transport_traffic",
+    "recommendation_events",
+    "music_dislikeness",
+    "calendar_remove"
+   ],
+   "gold": "music_likeness"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-589:massive-intent-13937",
+   "options": [
+    "takeaway_order",
+    "transport_query",
+    "email_query"
+   ],
+   "gold": "transport_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-2650:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "ARTS & CULTURE",
+    "PARENTS"
+   ],
+   "gold": "PARENTING"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-3349:massive-intent-77395",
+   "options": [
+    "takeaway_order",
+    "recommendation_events",
+    "recommendation_locations",
+    "calendar_set",
+    "recommendation_movies",
+    "email_query",
+    "music_dislikeness",
+    "calendar_remove"
+   ],
+   "gold": "recommendation_events"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-645:banking77-intent-12768",
+   "options": [
+    "top_up_by_bank_transfer_charge",
+    "top_up_by_card_charge",
+    "failed_transfer",
+    "exchange_charge",
+    "card_payment_not_recognised"
+   ],
+   "gold": "exchange_charge"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-203:massive-intent-7348",
+   "options": [
+    "recommendation_locations",
+    "email_querycontact",
+    "transport_traffic",
+    "recommendation_movies",
+    "calendar_set",
+    "calendar_remove",
+    "takeaway_query",
+    "recommendation_events"
+   ],
+   "gold": "calendar_set"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1944:massive-intent-44844",
+   "options": [
+    "recommendation_events",
+    "transport_traffic",
+    "transport_ticket",
+    "recommendation_movies",
+    "takeaway_query",
+    "transport_taxi",
+    "email_query"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1962:huffpost-cat-0",
+   "options": [
+    "PARENTING",
+    "WORLD NEWS",
+    "CULTURE & ARTS",
+    "QUEER VOICES",
+    "PARENTS",
+    "WORLDPOST",
+    "BLACK VOICES"
+   ],
+   "gold": "PARENTS"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-821:massive-intent-21481",
+   "options": [
+    "transport_ticket",
+    "music_likeness",
+    "email_query"
+   ],
+   "gold": "transport_ticket"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-649:massive-intent-15735",
+   "options": [
+    "music_likeness",
+    "email_query",
+    "calendar_set",
+    "calendar_remove",
+    "transport_query",
+    "transport_traffic",
+    "takeaway_query"
+   ],
+   "gold": "email_query"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1335:huffpost-cat-0",
+   "options": [
+    "WORLD NEWS",
+    "GOOD NEWS",
+    "PARENTING",
+    "THE WORLDPOST",
+    "WORLDPOST",
+    "CULTURE & ARTS",
+    "PARENTS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-4187:massive-intent-94579",
+   "options": [
+    "recommendation_movies",
+    "email_query",
+    "recommendation_events",
+    "transport_ticket",
+    "music_likeness",
+    "recommendation_locations",
+    "calendar_set"
+   ],
+   "gold": "recommendation_locations"
+  },
+  {
+   "cut": "huffpost",
+   "id": "huffpost:huffpost-1423:huffpost-cat-0",
+   "options": [
+    "THE WORLDPOST",
+    "BLACK VOICES",
+    "WORLDPOST",
+    "PARENTING",
+    "WEIRD NEWS"
+   ],
+   "gold": "THE WORLDPOST"
+  },
+  {
+   "cut": "banking77",
+   "id": "banking77:banking77-231:banking77-intent-11074",
+   "options": [
+    "virtual_card_not_working",
+    "lost_or_stolen_card",
+    "topping_up_by_card",
+    "cancel_transfer",
+    "balance_not_updated_after_cheque_or_cash_deposit",
+    "atm_support"
+   ],
+   "gold": "balance_not_updated_after_cheque_or_cash_deposit"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-1166:massive-intent-27980",
+   "options": [
+    "email_query",
+    "calendar_remove",
+    "recommendation_movies"
+   ],
+   "gold": "recommendation_movies"
+  },
+  {
+   "cut": "massive",
+   "id": "massive:massive-2606:massive-intent-60833",
+   "options": [
+    "recommendation_locations",
+    "recommendation_events",
+    "transport_query",
+    "takeaway_query",
+    "calendar_set"
+   ],
+   "gold": "recommendation_locations"
+  }
+ ],
+ "estimated_input_tokens": 43825,
+ "estimated_usd": 0.001841,
+ "already_cached": 0
+}

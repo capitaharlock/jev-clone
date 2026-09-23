@@ -1,0 +1,147 @@
+{
+  "format": "jev.gate.v1",
+  "task": "T-teacher-probe",
+  "artifact": "fullspace",
+  "generated_utc": "2026-09-23T20:53:44+00:00",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+  "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+  "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+  "same_rows": false,
+  "table": {
+    "banking77": {
+      "ours": {
+        "n": 3080,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012338,
+        "accuracy_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "accuracy_options_only": 0.012338,
+        "accuracy_options_only_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "abstain_rate": 0.0,
+        "beats_chance": false
+      },
+      "references": [
+        {
+          "who": "Jev (teacher)",
+          "accuracy": 0.924,
+          "setup": "all 3 080 official test messages, 77 intents, category definitions + 24 labelled examples per prediction, no weight updates",
+          "source": "github.com/simonmesmith/jev-banking77-experiment",
+          "caveat": "BANKING77 is public; nobody can inspect Jev's training data, so this is not a held-out claim"
+        },
+        {
+          "who": "fine-tuned BERT (BANKING77 paper)",
+          "accuracy": 0.9366,
+          "setup": "supervised fine-tune on the 10 003 training messages",
+          "source": "Casanueva et al. 2020, BANKING77",
+          "caveat": "trained ON this label space; our head never was"
+        }
+      ],
+      "distance_to_teacher": 0.911662,
+      "ratio_to_teacher": 0.0134
+    }
+  },
+  "cardinality_sweep": {
+    "5": {
+      "n": 1000,
+      "cardinality": 5,
+      "chance": 0.2,
+      "accuracy": 0.215,
+      "accuracy_ci95": [
+        0.190653,
+        0.241528
+      ],
+      "accuracy_options_only": 0.215,
+      "accuracy_options_only_ci95": [
+        0.190653,
+        0.241528
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "lift_over_chance": 1.075
+    },
+    "8": {
+      "n": 1000,
+      "cardinality": 8,
+      "chance": 0.125,
+      "accuracy": 0.151,
+      "accuracy_ci95": [
+        0.130146,
+        0.174525
+      ],
+      "accuracy_options_only": 0.151,
+      "accuracy_options_only_ci95": [
+        0.130146,
+        0.174525
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": true,
+      "lift_over_chance": 1.208
+    },
+    "20": {
+      "n": 1000,
+      "cardinality": 20,
+      "chance": 0.05,
+      "accuracy": 0.061,
+      "accuracy_ci95": [
+        0.04778,
+        0.07758
+      ],
+      "accuracy_options_only": 0.061,
+      "accuracy_options_only_ci95": [
+        0.04778,
+        0.07758
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "lift_over_chance": 1.22
+    },
+    "40": {
+      "n": 1000,
+      "cardinality": 40,
+      "chance": 0.025,
+      "accuracy": 0.036,
+      "accuracy_ci95": [
+        0.026116,
+        0.049436
+      ],
+      "accuracy_options_only": 0.036,
+      "accuracy_options_only_ci95": [
+        0.026116,
+        0.049436
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": true,
+      "lift_over_chance": 1.44
+    },
+    "77": {
+      "n": 1000,
+      "cardinality": 77,
+      "chance": 0.012987,
+      "accuracy": 0.011,
+      "accuracy_ci95": [
+        0.006153,
+        0.019589
+      ],
+      "accuracy_options_only": 0.011,
+      "accuracy_options_only_ci95": [
+        0.006153,
+        0.019589
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "lift_over_chance": 0.847
+    }
+  },
+  "cardinality_reading": "the head clears chance up to K=40 (lift 1.44x) and stops clearing it by K=77: what it has at small K is a weak preference, not a ranking of the real label space, and it dissolves as options are added",
+  "honesty": [
+    "the teacher's number here is CITED, not measured by us: different rows, and it was given labelled examples per prediction while our head gets none",
+    "the same-rows measurement is #T-teacher-probe and it needs a working API key; this artifact does not replace it",
+    "K is the whole label space, not our sampler's 3-8: this is the regime the product promises and the hardest one we publish"
+  ]
+}
