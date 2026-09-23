@@ -1,6 +1,6 @@
 ---
 title: Coverage matrix
-updated: 2026-09-22
+updated: 2026-09-23
 owner: architect-master
 ---
 
@@ -200,6 +200,8 @@ publicar un modelo por debajo del azar en la propiedad que lo define.
 | 14 | generalization-fix | T-gen-objective | Incentivo a comparar en vez de recordar — **priorizada primera** por el eje dominante de `#T-antiscale-diag` |
 | 14' | generalization-fix | T-unfreeze-backbone | Capacidad entrenable donde está el lenguaje — segunda; vuelve a primera si el eje 3 (cabeza ×2/×4, job `antiscale-wide`) aplana la pendiente |
 | 14'' | generalization-fix | T-labelspace-div | La mitad de datos: inventario de espacios de etiquetas y, si faltan, generarlos |
+| 14'''' | generalization-fix | T-lever-stack | Apilar las dos palancas que sí aplanan la pendiente (cabeza d512 + objetivo prior); `last-n` del backbone quedó NO-GO en `#T-unfreeze-backbone` |
+| 14''' | train-scaleout | T-metal-throughput | Coste, no métrica: una llamada de cabeza por batch en vez de una por fila — ×2,7 en la config de entreno real y GPU Metal al 97 % a B=128 (`artifacts/gates/T-metal-throughput/gate.json`) |
 | 15 | honest-eval | T-data-eval | OOD, calibración y los 4 reportes (repointed desde #data-training) |
 | 16 | honest-eval | T-release-gate | Re-evaluación sobre el checkpoint arreglado + firma del operador |
 | — | oss-release | T-repo-clean → T-candle-infer → T-readme-card | Backlog: fuera de la secuencia hasta un GO |

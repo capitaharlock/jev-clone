@@ -1,7 +1,7 @@
 ---
 id: T-unfreeze-backbone
 title: Descongelar el backbone — capacidad entrenable donde está el lenguaje
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -11,7 +11,6 @@ depends_on:
 created: 2026-09-22
 updated: 2026-09-23
 ---
-
 # Descongelar el backbone — capacidad entrenable donde está el lenguaje
 
 Todos los runs hasta hoy entrenan ~2,9 M de cabeza pointer sobre un
@@ -81,3 +80,28 @@ seed 20260922, mismo mix `decision-mix-v3` fence-clean).
   en el probe), encadena `eval.unseen gate` sobre el checkpoint de 1 M.
 - brazo `full`: **no lanzado**. Al ritmo medido cuesta 30 h+ de GPU y compite
   con el mismo MPS; se decide con la pendiente del `last-n` en la mano.
+
+## Resolution
+
+**Medido y NO-GO para `last-n=2` a `backbone-lr` 1e-5.**
+Gate: `artifacts/gates/T-unfreeze-backbone/gate.json`.
+
+El brazo `last-n` (`unfreeze-lastn3-prior-ettin-68m-s20260922`) corrió el
+mismo corpus, seed, objetivo y evals que el brazo `none`
+(`genobj-prior-1m-ettin-68m-s20260922`). La pendiente 250 k → 1 M no se
+aplana: −0,0927 frente a −0,0868, y los extremos a 1 M son
+indistinguibles (0,2354 vs 0,2347). En el gate independiente de
+`eval.unseen` (n=5624) el brazo descongelado es **peor** en unseen
+(0,2422 vs 0,2879) y algo mejor en seen (0,4864 vs 0,4753): las dos capas
+extra se gastaron en memorizar el espacio de etiquetas de entreno.
+
+El brazo `full` **no se lanza**: la hipótesis del backbone no queda
+cerrada en general (solo se midió un punto, n=2 capas a lr 1e-5), pero ha
+dejado de ser la palanca más barata. Las dos que sí aplanan la pendiente
+—cabeza ×2 (d512) y objetivo prior— nunca se han apilado, y ese run cuesta
+ahora ~2 h de GPU gracias a `#T-metal-throughput`. Relevo en
+`#T-lever-stack`.
+
+Subproducto: el brazo costó 128 min/1 M en MPS con 4,1 GB de pico, frente
+a las ~11 h que costaba el mismo entreno por la ruta fila a fila. Ese
+número es el que hace viable la siguiente tanda.

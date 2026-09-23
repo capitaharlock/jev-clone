@@ -1,0 +1,51 @@
+{
+  "task": "T-unfreeze-backbone",
+  "initiative": "generalization-fix",
+  "measured_utc": "2026-09-23T04:08:00Z",
+  "question": "Does opening the last transformer blocks of the backbone flatten the anti-scaling slope that a frozen backbone shows between 250k and 1M rows?",
+  "verdict": "NO-GO for last-n=2 at backbone-lr 1e-5",
+  "pass": false,
+  "design": {
+    "controlled": "same corpus (decision-mix-v3, --fence-clean), same seed 20260922, same mix-seed, same objective (--prior-penalty 1.0), same backbone ettin-68m, same d_model 256, same batch 64, same device mps, same stage evals",
+    "varied": "the backbone regime only",
+    "arm_none": "genobj-prior-1m-ettin-68m-s20260922 (frozen backbone; 2.9M trainable head params)",
+    "arm_last_n": "unfreeze-lastn3-prior-ettin-68m-s20260922 (--unfreeze last-n --unfreeze-layers 2 --backbone-lr 1e-5; opened layers.17, layers.18, final_norm; 4.46M trainable params)",
+    "arm_full": "not launched - see decision"
+  },
+  "curve_unseen_accuracy": {
+    "note": "trainer stage eval, held-out cut, n=3008",
+    "rows":      [62528, 125056, 250048, 500032, 1000000],
+    "arm_none":  [0.3115, 0.3494, 0.3215, 0.2769, 0.2347],
+    "arm_last_n":[0.3275, 0.3065, 0.3281, 0.1805, 0.2354]
+  },
+  "curve_seen_accuracy": {
+    "arm_none":  [0.6878, 0.6011, 0.6031, 0.6642, 0.6170],
+    "arm_last_n":[0.7011, 0.6180, 0.6041, 0.7108, 0.6124]
+  },
+  "slope_250k_to_1m": {
+    "arm_none": -0.0868,
+    "arm_last_n": -0.0927,
+    "reading": "the slope does not flatten - it is marginally steeper. The 1M endpoints are indistinguishable (0.2347 vs 0.2354, +0.0007)."
+  },
+  "independent_gate": {
+    "how": "python -m eval.unseen gate on the 1M checkpoint of each arm, n=5624 (includes banking77), a different cut from the trainer's own",
+    "arm_none_unseen": 0.287873,
+    "arm_last_n_unseen": 0.242176,
+    "arm_none_seen": 0.475327,
+    "arm_last_n_seen": 0.486419,
+    "delta_unseen": -0.045697,
+    "reading": "on the wider cut the unfrozen arm is clearly WORSE on unseen labels while being slightly better on seen ones - it memorised a little more and generalised a little less."
+  },
+  "cost": {
+    "arm_last_n_minutes_per_1m": 128.1,
+    "arm_last_n_peak_mem_gb": 4.145,
+    "note": "measured on the batched head path (#T-metal-throughput); the same arm cost ~11h on the row-by-row path before that landed"
+  },
+  "findings": [
+    "Two extra transformer blocks at lr 1e-5 do not buy generalisation: same 1M endpoint on the trainer cut, -0.046 on the independent gate.",
+    "The gain shows up on SEEN labels (+0.011), which is the signature of extra capacity being spent on memorising the training label space - exactly the failure mode the anti-scaling curve already describes.",
+    "This does NOT clear the hypothesis for the backbone in general: only one point of (n_layers=2, lr=1e-5) was measured. A larger lr, or the full backbone, may behave differently - but it is no longer the cheapest lever to test.",
+    "Still standing from #T-antiscale-diag: the two levers that DO flatten the slope are head capacity (d512: -0.1665 -> -0.0549) and the prior-penalty objective (-0.1899 -> -0.0868). They were measured separately and have never been stacked."
+  ],
+  "decision": "Close last-n as measured and NO-GO. Do not launch the `full` arm next: stacking the two levers that each flattened the slope (d_model 512 + prior-penalty on ettin-68m) is the cheaper and better-supported next run, and it is now ~2h of GPU instead of ~6h thanks to the batched head path."
+}
