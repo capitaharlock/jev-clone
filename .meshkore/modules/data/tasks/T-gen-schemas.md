@@ -70,7 +70,7 @@ nunca por fila.
 ✓ #data-training #T-gen-schemas done · 14 ficheros · commit `39e6322` · 27 tests verdes
 El generador ya no fabrica plantillas: emite esquemas de decisión completos con K 3–8, distractores y `unknown`. **1 152 esquemas desde 1 152 esqueletos únicos** — el corpus viejo tenía 190 esqueletos en 258 700 filas. Gate `pass: true`.
 
-🚀 #data-training #T-prog-gold → A022 (pid 63475 vivo)
+🚀 #data-training #T-prog-gold → A022
 · gold programático desde el grafo Wikidata — el grafo decide la respuesta, los teachers solo redactan. Es la raíz que desbloquea #T-mix-1m → #T-mix-5m → #T-data-eval.
 
 ⏳ #T-corpus-rebalance sigue vivo (A021, 14 min) · civil-comments 74,6 % → ≤15 %.
@@ -85,7 +85,7 @@ El generador ya no fabrica plantillas: emite esquemas de decisión completos con
 
 <details><summary>Trabajo de fondo</summary>
 
-- Job `train-decision` corriendo (pid 37091, 42 min de uptime) · `training-monitor` en :8794 (pid 18966).
+- Job `train-decision` corriendo · `training-monitor` en :8794.
 </details>
 
 — T-gen-schemas · el generador produce esquemas de decisión completos en vez de plantillas (commit 39e6322)

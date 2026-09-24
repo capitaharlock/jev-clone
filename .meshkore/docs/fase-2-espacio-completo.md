@@ -47,12 +47,12 @@ ventaja sobre azar aguanta hasta K=40 y se disuelve en K=77. Con K=5 damos
 
 Lectura: lo que el modelo tiene en régimen de pocas opciones es una
 **preferencia local**, no un ranking del espacio. Es exactamente lo que el
-objetivo de fase 1 pedía, y no es lo que el producto promete. **La fase 1 no
-midió mal: midió otra cosa, a propósito, y ahora toca medir la de verdad.**
+objetivo de fase 1 optimizaba. El producto promete el ranking, así que el
+objetivo de entreno y la métrica primaria suben a cardinalidad completa.
 
 ## 3. Por qué una preferencia local puede quedar por debajo del azar
 
-No es un error de medida. El azar es uniforme y sin sesgo; el head sí tiene
+No es un artefacto de medida. El azar es uniforme y sin sesgo; el head sí tiene
 sesgo — hacia etiquetas frecuentes, cortas y léxicamente cercanas al texto —
 aprendido sobre un corpus donde 9 taxonomías cubren el 83,1 % de las filas.
 Evaluado en un espacio donde ese sesgo ya no correlaciona con el gold, un
@@ -112,10 +112,10 @@ regla R4):
 ## 7. El ajuste del approach de testing
 
 El eval de fase 1 compartía régimen con el entreno (K≤8), que es lo coherente
-mientras el objetivo es K≤8 — y también la razón por la que la distancia real
-sólo aparece al medir a cardinalidad completa. Fase 2 mueve el eval primero,
-para que el objetivo no pueda volver a adelantar a la métrica. Seis reglas, de
-obligado cumplimiento para cualquier agente que toque entreno o eval:
+mientras el objetivo es K≤8 y también la razón por la que la comparación con el
+exterior exige cardinalidad completa. En fase 2 el eval se mueve primero, para
+que la métrica fije el objetivo y no al revés. Seis reglas, de obligado
+cumplimiento para cualquier agente que toque entreno o eval:
 
 - **R1 — Se entrena la tarea que se mide.** Si la métrica primaria es
   cardinalidad completa, la pérdida es sobre cardinalidad completa. Cualquier

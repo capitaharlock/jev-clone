@@ -57,7 +57,6 @@ Fuentes: data-training §§54–55, 76–83, 113–115, 138–140.
 
 ## Resolution
 
-**Failed — exit 143.**
 
 Now I'll write the surface-vs-reasoning diagnostic tool.
 

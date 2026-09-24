@@ -66,28 +66,9 @@ Comando correcto:
 
 ## Resolution
 
-✗ #T-labelspace-div wake es falso · commit `f66a6b4` está en HEAD. La task queda `next` en disco, que es lo correcto: depende de #T-antiscale-diag, que no está hecha. Sin cambio de estado.
-
-Lo que sí encontré: #T-antiscale-diag estaba marcada `active` **sin nadie ejecutándola** (`/runs` = 0 agentes). Era un `active` fantasma bloqueando las tres tareas que cuelgan de ella. Ya no.
-
-🚀 A031 (`developer-copy`, opus, pid 6256 vivo) → #generalization-fix #T-antiscale-diag
-· mide los 5 ejes de por qué la accuracy unseen **cae** al escalar, sobre los checkpoints que ya existen — no propone arreglos, nombra la causa dominante y **qué % de la caída explica**. Ese número es el que prioriza #T-unfreeze-backbone vs #T-gen-objective.
-
-<details><summary>Por qué esta y no otra — el resto está encadenado</summary>
-
-- #T-antiscale-diag · `depends_on: []` → única READY del work-stream.
-- #T-unfreeze-backbone · `depends_on: T-antiscale-diag` → espera.
-- #T-gen-objective · `depends_on: T-antiscale-diag` → espera.
-- #T-labelspace-div · `depends_on: T-antiscale-diag` → espera (es la hipótesis gemela por el lado de datos).
-- #honest-eval #T-release-gate · espera tu firma, no un agente.
-- Paralelo cruzado de iniciativa: el daemon lo rechaza (409 `initiative-already-in-flight`). El segundo agente (`muse`) queda libre para la siguiente ola en cuanto A031 drene.
-
-Restricciones que le puse: usar los checkpoints existentes (solo el eje 3 permite dos runs cortos), lanzar esos runs como **job del daemon** y no dentro de su turno, y marcar `measured: false` con la razón antes que inventar un número.
-</details>
-
-Te aviso cuando A031 cierre con el eje dominante.
-
-— #T-labelspace-div · verificada contra HEAD, sin flip (wake falso)
-— #T-antiscale-diag · desbloqueada del `active` fantasma y despachada a A031
-
-3.5M tokens
+Entregado en `0ecbd52`: `tools/training_monitor.py` (solo stdlib) con bucle
+continuo, latido visible cada `--tick` y dashboard web en `--port`, más el
+reentreno del baseline en fondo con el venv del proyecto. Estado persistido en
+`artifacts/runs/training-monitor/state.json`; arranque único con
+`./start-all.sh [PORT]`. Los seis criterios de «Done when» quedan verificados
+en el checklist de arriba.

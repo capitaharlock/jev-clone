@@ -1,6 +1,6 @@
 ---
 title: Model card — jev-clone V1 research release
-updated: 2026-09-21
+updated: 2026-09-24
 owner: general-09192230
 ---
 
@@ -10,6 +10,16 @@ Research release only (`jev-clone` is the internal name until a commercial
 name lands, plan §171). Every claim below links to a raw artifact under
 `artifacts/gates/`; the `T-release` gate recomputes the hashes and fails
 the release if any claim drifts from its evidence.
+
+## Status (2026-09-24)
+
+This card describes the **phase 1** research release: pointer head trained and
+measured over sampled option sets (K<=8) on a frozen backbone, which is the
+regime that validated the runtime, the corpus and the head architecture. The
+first full-cardinality comparison (BANKING77, 77 labels) opens **phase 2** —
+training and primary metric over the complete label space, with a trainable
+encoder. Every number below is stated with the regime it was measured in; see
+`.meshkore/docs/fase-2-espacio-completo.md` and `#full-space-training`.
 
 ## What it is
 

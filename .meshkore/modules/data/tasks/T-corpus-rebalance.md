@@ -10,7 +10,6 @@ depends_on:
   - T-optset-sampler
 created: 2026-09-21
 updated: 2026-09-21
-failed_at: 2026-09-21T15:40:21.516Z
 resolved_by: A003
 resolved_by_conv: roadmap-architect-uwgjq
 commit_shas: ['b6a75f93d1d03dd32f524837c4026d0a63ebc271']
@@ -62,10 +61,10 @@ Trabajo:
 
 El hallazgo que importa: **el corpus de 1M no existe**. Con banking77/helpsteer2/pubmedqa vallados, el registro entero da **39 981 filas** — y seis de las siete fuentes están clavadas exactamente en el cap del 15 %, así que no lo arregla ninguna semilla ni ningún target. Faltan 960 000 filas y hace falta fuente nueva. Además no hay **ni una sola fila `score`** (§48 pide 15 %) porque la única fuente ordinal está vallada, y `hard` se queda en 7,6 % contra el suelo del 10 %.
 
-🚀 A026 (pid 15022 vivo) → #data-training #T-mix-1m · continuación, no reinicio
+🚀 A026 → #data-training #T-mix-1m · continuación, no reinicio
 · ampliar el registro con fuentes independientes y medir el techo **real** (un techo honesto de 420k es resultado válido; un 1M inventado no), más supply ordinal y hard/OOD medido. Sin tocar el manifest que el job de entreno está leyendo.
 
-⏳ `mix1m-curve` (pid 11028) corriendo los 4 entrenos reales en MPS (~13 h) · cierra los otros dos checks (`top2_trained`, `synthetic_value` §128).
+⏳ `mix1m-curve` corriendo los 4 entrenos reales en MPS (~13 h) · cierra los otros dos checks (`top2_trained`, `synthetic_value` §128).
 
 <details><summary>artifacts/gates/T-mix-1m/gate.json — 6 verdes, 4 rojos</summary>
 

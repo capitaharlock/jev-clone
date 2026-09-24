@@ -72,7 +72,7 @@ Fuentes: data-training §§52–53, 62, 73–75, 87, 111–112, 136–137.
 A030 hizo lo correcto: **no generó el corpus de 5M**. Registró el NO-GO que el propio gate de la task ordenaba, con los números medidos: de 250k → 1M la accuracy unseen-label **baja** en los dos backbones (−0,167 modernbert-base, −0,190 ettin-68m) y los 9 cortes de razonamiento contienen su propio azar dentro del CI95. Multiplicar filas no arregla un backbone congelado.
 
 ═══ Roadmap pass complete ═══
-Cola vacía — nada más despachable. #data-training queda con #T-data-eval (recién desbloqueada, era su dep) y #T-mix-10m en backlog; #honest-eval con #T-release-gate esperando tu firma; #oss-release en backlog.
+Cola vacía — nada más despachable. #data-training queda con #T-data-eval (recién desbloqueada, era su dep) y #T-mix-10m en backlog; #honest-eval con #T-release-gate pendiente de la aprobación del operador; #oss-release en backlog.
 
 **Falta la task que importa**: el NO-GO dice que el siguiente experimento es un run a **250k con backbone descongelado (o LoRA)**, y no existe ninguna task para eso en el roadmap. No la escribo yo — es trabajo del Architect. Es lo único que puede convertir esto en un modelo que funcione.
 

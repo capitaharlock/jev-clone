@@ -69,7 +69,7 @@ Ya existe la única métrica que decide si el producto funciona: accuracy + ECE 
 
 ⚠ Gate en `pass: false` por **un solo** criterio — `cross_lingual_holdout`. No es un bug: falta un run de entreno que excluya it-IT/pt-PT de los samplers de MASSIVE; hasta entonces el brazo translingüe es cota superior, y así queda dicho.
 
-🚀 Opus (claude-code, pid 40301 vivo) → #honest-eval #T-release-gate · escribir el criterio de release **antes** de medir, y el gate que lo aplica solo — más las reglas de coherencia que tumban cualquier verde con kappa ≈ 0 o sin `model_version`, aplicadas hacia atrás a los gates ya publicados.
+🚀 Opus → #honest-eval #T-release-gate · escribir el criterio de release **antes** de medir, y el gate que lo aplica solo — más las reglas de coherencia que tumban cualquier verde con kappa ≈ 0 o sin `model_version`, aplicadas hacia atrás a los gates ya publicados.
 
 <details><summary>#T-unseen-labels — por qué el veredicto del wake se descarta</summary>
 
@@ -82,7 +82,7 @@ Ya existe la única métrica que decide si el producto funciona: accuracy + ECE 
 
 - `T-split-domain` done (`8e0fd9a`) · `T-unseen-labels` done (`3824995`) · `T-release-gate` **active** (A019).
 - Cadena estrictamente secuencial: `T-release-gate` es la última de la iniciativa. Al cerrarla, #honest-eval pasa a `status: done` y el pase sigue con #oss-release.
-- Jobs vivos: `train-decision` (pid 37091, reiniciado 14:42Z) y `training-monitor` (:8794, pid 18966).
+- Jobs vivos: `train-decision` y `training-monitor`.
 </details>
 
 <details><summary>Pendiente ya identificado para el cierre de pase</summary>

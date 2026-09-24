@@ -10,7 +10,6 @@ depends_on:
   - T-prog-gold
 created: 2026-09-20
 updated: 2026-09-22
-failed_at: 2026-09-21T16:48:22.933Z
 completed_at: 2026-09-22T09:30:45.998Z
 resolved_by: A003
 resolved_by_conv: roadmap-architect-uwgjq
@@ -91,7 +90,7 @@ La instancia de ayer **sí terminó** (`mix1m-curve`, exit 0 a las 01:41 UTC). E
 - **La causa está en `run.json`: `backbone.frozen: true`.** Entrena un pointer head de 2 capas d=256 (~1,6 M params) sobre un encoder congelado de 149 M. Esa cabeza puede hacer similitud léxica; no puede hacer inferencia. Más filas no arreglan eso — el 1M ya se gastó y swag no se movió del azar.
 - La métrica de producto (etiquetas no vistas: **0,220 no vistas vs 0,342 vistas, ECE 0,41**) está medida sobre el checkpoint **viejo** de 250k. El release gate sigue **NO-GO, 8 de 12 criterios**.
 
-🚀 A029 (pid 51902) → `#data-training` `#T-data-eval` · registrar la curva, **re-medir el gate de etiquetas no vistas sobre los dos modelos de 1M**, y medir un run corto con el backbone **descongelado** para confirmar la hipótesis con cifras.
+🚀 A029 → `#data-training` `#T-data-eval` · registrar la curva, **re-medir el gate de etiquetas no vistas sobre los dos modelos de 1M**, y medir un run corto con el backbone **descongelado** para confirmar la hipótesis con cifras.
 
 <details><summary>Estado del sistema — qué hay y qué falta</summary>
 

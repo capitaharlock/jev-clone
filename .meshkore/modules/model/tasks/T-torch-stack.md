@@ -64,7 +64,7 @@ Trabajo:
 ✓ #decision-rebuild #T-halt-contam done · 9 ficheros · commit `88ad4e6`
 Se acabó el verde falso: el generador synth-loop está muerto y sus 360 700 filas en cuarentena fuera de git; logiqa/reclor quedan como eval-only por firewall. Auditoría de fugas sobre 2 080 647 filas de train contra 22 752 ítems held-out: exact 0, normalized 0, paraphrase 0. 16/16 tests, dashboard honesto en :8794.
 
-🚀 Opus (claude-code, pid 33119 vivo) → #decision-rebuild #T-optset-sampler · el dataloader que alimenta al pointer head: K opciones dinámicas por fila, hard negatives medidos, filas `unknown` reales y barajado por epoch sobre banking77+massive+huffpost+boolq.
+🚀 Opus → #decision-rebuild #T-optset-sampler · el dataloader que alimenta al pointer head: K opciones dinámicas por fila, hard negatives medidos, filas `unknown` reales y barajado por epoch sobre banking77+massive+huffpost+boolq.
 
 Un solo agente esta oleada: #T-train-real cuelga de este sampler y #T-bakeoff-real de #T-train-real — la cadena es secuencial, y el daemon rechaza despachar fuera de #decision-rebuild mientras siga viva.
 

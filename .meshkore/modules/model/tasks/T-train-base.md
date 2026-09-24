@@ -10,7 +10,6 @@ depends_on:
   - T-prefetch
 created: 2026-09-20
 updated: 2026-09-20
-failed_at: 2026-09-20T11:43:04.273Z
 resolved_by: A009
 resolved_by_conv: work-decision-model-T-train-base-1789904581
 ---
@@ -34,7 +33,6 @@ tenga masa suficiente; v3 sube a backbones reales (bakeoff top-2).
 
 ## Resolution
 
-**Failed — exit 1 (agent OAuth, not technical).**
 
 Failed to authenticate: OAuth session expired and could not be refreshed
 

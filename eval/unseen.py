@@ -1,10 +1,10 @@
 """Primary metric: accuracy + ECE on labels NEVER SEEN in training
 (#T-unseen-labels, finding F of the 2026-09-21 audit).
 
-Everything this repo had published until today measured memorisation of a
-FIXED label space. The product promises the opposite: point at the right
-option in an option set it has never been trained on. This module publishes
-the only number that answers that, and it publishes it ALWAYS PAIRED —
+A number measured on a FIXED label space reports memorisation of that
+space. The product promises the opposite: point at the right option in an
+option set it has never been trained on. This module publishes the number
+that answers that, and it publishes it ALWAYS PAIRED —
 `seen` next to `unseen` — because an unseen number alone cannot tell
 "generalises" from "the cut was easy".
 

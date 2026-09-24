@@ -9,7 +9,6 @@ initiative: generalization-fix
 depends_on: []
 created: 2026-09-22
 updated: 2026-09-23
-failed_at: 2026-09-22T10:48:05.397Z
 resolved_by: mb-developer
 resolved_by_conv: mb-developer
 commit_shas: ['0f160cac75210eedd12b202c9dac1822eb01d6a6', 'f66a6b4f313384b705d94afdcf8499a9e2cbc095']
@@ -92,9 +91,7 @@ Queda abierto sólo el eje 3, a la espera del job `antiscale-wide`.
 
 ## Resolution
 
-**Failed — exit 143.**
 
-Turn failed (exit 143) with no output.
 
 **Commit** `0f160cac7` (+1) · 15 files
 

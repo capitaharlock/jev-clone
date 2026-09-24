@@ -13,7 +13,7 @@ updated: 2026-09-24
 completed_at: 2026-09-23T07:56:46.372Z
 resolved_by: A035
 resolved_by_conv: general-09222211
-commit_shas: ['17264951ad2c1ddae941d397b0b4296639dbd681', '76199c98aa8e5aba2bfd69b4643a6c817379ddde']
+commit_shas: ['c57cb5562b3c8cb25095c5a1e720b96b4e889b61', 'd6461d3f6b04a844e03645756a58bbfda7b363db']
 ---
 # Descongelar el backbone — capacidad entrenable donde está el lenguaje
 
@@ -57,8 +57,8 @@ descartada — el eje 3 de `#T-antiscale-diag` es justo lo que la mide y sigue
 `measured: false` a la espera del job `antiscale-wide` — sino porque la misma
 representación congelada sostiene accuracy unseen muy por encima del azar
 antes del punto en que la curva gira: lo que cambia en el tramo es sólo lo que
-se le enseñó a la cabeza. Descongelar bajo un objetivo que ya empuja en la
-dirección equivocada compra más capacidad para la misma lección. **Vuelve a
+se le enseñó a la cabeza. Descongelar bajo un objetivo que ya premia el mapa cerrado compra más
+capacidad para la misma lección. **Vuelve a
 ser la primera** si la cabeza ×2 o ×4 aplana la pendiente 250 k → 1 M.
 
 ## Estado (2026-09-23) — primera, y ya en ejecución
@@ -68,7 +68,7 @@ eje 3 y la cabeza ×2 aplana la pendiente 250 k → 1 M de −0,1665 a −0,0549
 capacidad entrenable **sí** mueve la pendiente, así que esta task pasa a ser la
 primera y a `active`.
 
-Implementado (commit `aa52692`): `--unfreeze {none,last-n,full}`,
+Implementado (commit `1dea217`): `--unfreeze {none,last-n,full}`,
 `--unfreeze-layers`, `--backbone-lr`, grupo de optimizador propio con LR
 discriminativo, forward con grafo para estados y textos, bypass del memo de
 textos, `backbone.safetensors` + sha256 en el checkpoint con verificación en
@@ -87,15 +87,13 @@ seed 20260922, mismo mix `decision-mix-v3` fence-clean).
 
 ## Resolution
 
-⟦anchor⟧ {"i":"generalization-fix","t":"T-lever-stack"}
+Dos cierres y un relevo en marcha.
 
-Dos cierres y un relevo ya corriendo.
-
-**GPU Metal: hecho y commiteado** (`76199c9`). Estaba dispatch-bound, no lenta: el bucle puntuaba fila a fila. Ahora una llamada por batch → **×2,7** en la config real, ×4,5 congelado, GPU al **97,4 %** a B=128. El run de 1M bajó de ~11 h a **128 min**.
+**GPU Metal (`#T-metal-throughput`, commit `d6461d3`).** Estaba dispatch-bound, no lenta: el bucle puntuaba fila a fila. Ahora una llamada por batch → **×2,7** en la config real, ×4,5 congelado, GPU al **97,4 %** a B=128. El run de 1M bajó de ~11 h a **128 min**.
 
 **Backbone descongelado: NO-GO.** El brazo `last-n=2` terminó y no aplana nada — peor en el gate independiente (0,2422 vs 0,2879 unseen). El brazo `full` no se lanza.
 
-**Corriendo ahora**: job `lever-stack-d512-prior` (~2 h) — apilar las dos palancas que sí funcionaron, nunca medidas juntas.
+**Relevo**: job `lever-stack-d512-prior` (~2 h) — apilar las dos palancas que sí funcionaron, nunca medidas juntas.
 
 <details><summary>#T-unfreeze-backbone — NO-GO, gate en disco</summary>
 
@@ -109,10 +107,7 @@ Mismo corpus, seed, objetivo y evals que el brazo congelado; única variable, el
 
 Gate independiente `eval.unseen` (n=5624, otro corte): unseen **0,2422 vs 0,2879**, seen 0,4864 vs 0,4753. Mejor en seen, peor en unseen = las dos capas extra se gastaron en memorizar el espacio de etiquetas de entreno.
 
-Coste medido: 128,1 min/1M, 4,1 GB de pico. `artifacts/gates/T-unfreeze-backbone/gate.json`.
-
-El `blocked`/exit-143 que el daemon le puso a la task era un turno cortado, no trabajo perdido — el run había terminado a las 04:08.
-</details>
+Coste medido: 128,1 min/1M, 4,1 GB de pico. `artifacts/gates/T-unfreeze-backbone/gate.json`.</details>
 
 <details><summary>#T-metal-throughput — el A/B, y por qué no toca la métrica</summary>
 
@@ -143,15 +138,12 @@ Tres hipótesis medidas contra la anti-monotonía, dos sobreviven:
 
 Nunca se han apilado, y son mecanismos distintos (capacidad vs quitar la recompensa de memorizar), así que a priori no compiten. Brazo: ettin-68m + d512 + prior a 1M, todo lo demás idéntico al brazo prior d256 que hace de control.
 
-Regla escrita antes de mirar: si el apilado no mejora −0,0549, el eje capacidad/objetivo se declara agotado y el relevo pasa al espacio de etiquetas (`#T-labelspace-div`) — ahí es donde entrarían los datasets generados y tu API.
+Regla escrita antes de mirar: si el apilado no mejora −0,0549, el eje capacidad/objetivo se declara agotado y el relevo pasa al espacio de etiquetas (`#T-labelspace-div`) — ahí es donde entran los datasets generados y la referencia externa.
 </details>
 
 
-— #T-metal-throughput · la GPU Metal deja de esperar: una llamada de cabeza por batch, ×2,7 en entreno real (`76199c9`)
-— #T-unfreeze-backbone · descongelar 2 capas del backbone cerrado en NO-GO, con gate y curvas en disco (`1726495`)
-— #T-lever-stack · abierta y corriendo: apilado cabeza d512 + objetivo prior a 1M, job `lever-stack-d512-prior`
 
-**Commit** `17264951a` (+1) · 12 files · 4.7M tokens
+**Commit** `c57cb551a` (+1) · 12 files · 4.7M tokens
 
 **Files changed (12):**
 - `.meshkore/docs/coverage.md`

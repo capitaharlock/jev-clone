@@ -12,7 +12,6 @@ created: 2026-09-20
 updated: 2026-09-21
 commit_shas:
   - 487a6ab8afe5daf43c0aaf9b3e4c8aec97e8fda4
-failed_at: 2026-09-20T18:32:20.196Z
 resolved_by: A004
 resolved_by_conv: general-09192230
 ---
@@ -56,29 +55,28 @@ Fuentes: data-training §§8, 35, 46–47, 56–60, 104–105, 129–132.
 
 ## Resolution
 
-**Failed — exit 143.**
+Pilot completo y gate en verde (`artifacts/gates/T-prog-gold/gate.json`,
+`pass: true`): **100 004 preguntas** deterministas construidas desde Wikidata
+sobre 5 taxones (city 2 789, film 1 125, book 1 835, mountain 2 627,
+human 653), 22 568 packs multi-Q (3–8 preguntas por state, ningún padre
+partido entre splits) y 13 533 pares contrafactuales.
 
-En marcha #T-prog-gold en #data-training: tests propios 14/14 en verde, pilot lanzado a 100k preguntas Wikidata (fetch city en curso). Al terminar verifica gate PASS y cierra con commit.
+<details><summary>Qué verifica el gate — 15 checks, todos en verde</summary>
 
-<details><summary>Estado — qué hay y qué falta</summary>
+- **Gold verificable**: cada respuesta se deriva del grafo y se vuelve a
+  comprobar contra él (`every_gold_verifies`); una respuesta manipulada o un
+  gold manipulado se rechazan (`tampered_answer_rejected`,
+  `tampered_gold_rejected`).
+- **Hard negatives del mismo taxón** (`distractors_same_taxon`): un
+  distractor de otra familia semántica no cuenta como negativo.
+- **Distribuciones dentro de guía**: mezcla de K (desviación ≤ 0,02),
+  dificultad easy 0,25 / medium 0,50 / hard 0,25 y share de transformaciones
+  ≤ 0,35.
+- **Calidad y limpieza**: quality score medio 1,0 (suelo 0,55, 0 rechazos por
+  validador), dedup al 0,9 con 9,87 % rechazado, firewall de benchmarks
+  limpio y un solo split por grupo.
+- **Robustez**: insertar 2 k tokens irrelevantes no mueve el top-1 más allá
+  del 5 %.
 
-- Implementación ya existente: `tools/prog_gold/` (fetch, graph, miner, sampler_k, packer, transforms, pipeline) + `data/test_prog_gold.py` 14 tests OK vía unittest.
-- Sin caché Wikidata (`artifacts/data-raw/wikidata/` vacía, store 0 entidades): el pilot hace fetch SPARQL + labels, construye records, escribe shards en `artifacts/prog_gold/v1/` y gate en `artifacts/gates/T-prog-gold/gate.json`.
-- Al completarse: comprobar `pass:true`, preguntas ≥100k, histogramas K/dificultad, y cerrar task + commit en el linaje actual.
-</details>Pilot #T-prog-gold en #data-training sigue corriendo (fetch Wikidata en curso, sin errores). Aviso al terminar con el gate y el cierre.
-
-<details><summary>Estado — sin cambios que reportar</summary>
-
-- Sin salida nueva del pilot; sigue en fase de fetch.
-- Al completarse: verificar `artifacts/gates/T-prog-gold/gate.json` (`pass:true`, ≥100k preguntas), cerrar task y commit.
-</details>⟦anchor⟧ {"i":"data-training","t":"T-prog-gold"}
-
-Pilot #T-prog-gold en #data-training sigue en fetch Wikidata (caché aún vacío, primera query en curso). Sin errores; aviso al terminar con gate y cierre.
-
-<details><summary>Detalle — progreso del fetch</summary>
-
-- `artifacts/data-raw/wikidata/` creada pero aún sin payloads: el pilot sigue en el primer taxón (`city`).
-- Wikidata SPARQL + labels suele tardar varios minutos por taxón con reintentos; el build de 100k y el gate vienen después en el mismo proceso.
+Coste: 48,9 s de build en CPU. El artefacto desbloquea `#T-mix-1m`.
 </details>
-
-28M tokens

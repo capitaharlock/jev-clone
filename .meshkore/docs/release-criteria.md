@@ -31,8 +31,8 @@ El producto promete **apuntar a la opción correcta de un conjunto de opciones
 que nunca vio en entrenamiento**. Por tanto el release se decide sobre el
 corte *unseen*, nunca sobre el corte *seen*, y siempre con los dos publicados
 al lado (`#T-unseen-labels`). Un número *seen* solo no decide nada aquí: mide
-memorización de un espacio de etiquetas fijo, que es exactamente lo que la
-auditoría señaló como la métrica equivocada.
+memorización de un espacio de etiquetas fijo, que no es lo que el producto
+promete (`#decision-rebuild`, auditoría 2026-09-21).
 
 Candidato a release = el `model_version` que publica el artefacto de
 evidencia. No hay release de "el modelo" en abstracto: se libera un

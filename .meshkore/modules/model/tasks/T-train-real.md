@@ -67,11 +67,11 @@ escala (250 k → 1 M) decide si merece la pena más.
 ## Resolution
 
 ✓ #decision-rebuild #T-train-real done · 15 ficheros · commit `855a445`
-El entrenamiento real ya sustituye al bucle de 24 h: pérdida listwise sobre los K logits + `unknown`, **un** modelo multi-dataset (head de 2 699 778 params sobre backbone congelado) en vez de siete pickles, checkpoint safetensors con `model_version` que el runtime usa como clave de caché. 18/18 tests. El job `train-decision` (pid 57323) sigue vivo hacia 1M muestras.
+El entrenamiento real ya sustituye al bucle de 24 h: pérdida listwise sobre los K logits + `unknown`, **un** modelo multi-dataset (head de 2 699 778 params sobre backbone congelado) en vez de siete pickles, checkpoint safetensors con `model_version` que el runtime usa como clave de caché. 18/18 tests. El job `train-decision` sigue vivo hacia 1M muestras.
 
 ⚠ Gate en **NO-GO** honesto (4/5): `unseen_beats_chance` da 0,058 contra 0,165 de azar en el stage 62,5k. Es la medida, no un bug — el job reescribe el gate en 125k/250k/500k/1M.
 
-🚀 Opus (claude-code, pid 71801 vivo) → #decision-rebuild #T-bakeoff-real · rehacer el Pareto solo con pesos reales entrenados, proxies aleatorios fuera, top-2 de backbone decidido con números medidos.
+🚀 Opus → #decision-rebuild #T-bakeoff-real · rehacer el Pareto solo con pesos reales entrenados, proxies aleatorios fuera, top-2 de backbone decidido con números medidos.
 
 <details><summary>Por qué el verdict "no-commit / 2 fallos → blocked" se descartó</summary>
 

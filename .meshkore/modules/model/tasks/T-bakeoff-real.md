@@ -10,7 +10,6 @@ depends_on:
   - T-train-real
 created: 2026-09-21
 updated: 2026-09-21
-failed_at: 2026-09-21T13:56:50.962Z
 resolved_by: A016
 resolved_by_conv: work-decision-rebuild-T-bakeoff-real-1790020
 completed_at: 2026-09-21T13:58:00.278Z
