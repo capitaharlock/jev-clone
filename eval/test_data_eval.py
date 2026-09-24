@@ -199,7 +199,7 @@ class TestBattery(unittest.TestCase):
             entries.append({"id": f"e{i}", "logits": logits, "probs": p,
                             "pred": 0, "label": y})
         _, held = build_ood_split(n_train=50, n_held=60, seed=6)
-        from eval.data_eval import fit_thresholds
+        from eval.calib import fit_thresholds
         cal = [{"split": "calibration", "logits": e["logits"],
                 "label": e["label"], "locale": "en-US", "cardinality": 2}
                for e in entries[:100]]

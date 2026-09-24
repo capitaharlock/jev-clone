@@ -1,11 +1,11 @@
 {
   "format": 1,
   "task": "T-release-gate",
-  "generated_utc": "2026-09-22T20:40:24Z",
+  "generated_utc": "2026-09-24T13:12:24Z",
   "verdict": "NO-GO",
-  "verdict_line": "NO-GO \u2014 failed [unseen_accuracy_all_min, unseen_accuracy_cut_min, seen_unseen_accuracy_drop_max, teacher_cohen_kappa_min, coverage_min_at_risk, latency_p95_max_ms, unknown_abstain_band, unknown_ranks_best, unknown_beats_random]; absent evidence [teacher_cohen_kappa_min]; evidence marked incoherent [T-pointer-head]",
+  "verdict_line": "NO-GO \u2014 failed [unseen_accuracy_all_min, unseen_accuracy_cut_min, unseen_above_chance_every_cut, seen_unseen_accuracy_drop_max, teacher_cohen_kappa_min, coverage_min_at_risk, latency_p95_max_ms, unknown_abstain_band, unknown_ranks_best, unknown_beats_random]; absent evidence [teacher_cohen_kappa_min]; evidence marked incoherent [T-pointer-head]",
   "criteria_path": ".meshkore/docs/release-criteria.md",
-  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
+  "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
   "criteria_version": 1,
   "criteria_signed": false,
   "signature": {
@@ -14,13 +14,13 @@
     "criteria_version": 1
   },
   "signature_note": "an unsigned criterion still produces a verdict: signing pins the criterion, it does not enable it",
-  "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-c1bb922c7d32",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
   "evidence": {
     "unseen": {
       "path": "artifacts/gates/T-unseen-labels/gate.json",
       "present": true,
-      "sha256": "4ad347a8040a4b37dc20f090df4a5ac6aeb8b8c14f13a3991f82f7543e28b834",
-      "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-c1bb922c7d32"
+      "sha256": "cffd5eb48727a47fdbb9388601e6fb5044c2e6327773aeee6a35e4e8e01b86e4",
+      "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360"
     },
     "latency": {
       "path": "artifacts/gates/T-pointer-head/gate.json",
@@ -36,10 +36,11 @@
     }
   },
   "n_criteria": 12,
-  "n_failed": 9,
+  "n_failed": 10,
   "failed_criteria": [
     "unseen_accuracy_all_min",
     "unseen_accuracy_cut_min",
+    "unseen_above_chance_every_cut",
     "seen_unseen_accuracy_drop_max",
     "teacher_cohen_kappa_min",
     "coverage_min_at_risk",
@@ -56,7 +57,7 @@
       "criterion": "unseen_accuracy_all_min",
       "threshold": 0.5,
       "why_this_number": "3x el azar (mean_k~5.5 => chance 0.166); por debajo el operador revisa mas de lo que acepta",
-      "measured": 0.287873,
+      "measured": 0.3133,
       "pass": false,
       "evidence": "present",
       "detail": "ALL cut, unseen labels, uncalibrated accuracy"
@@ -66,18 +67,18 @@
       "threshold": 0.35,
       "why_this_number": "algo mas del doble del azar del peor corte; impide que la media tape un dominio muerto",
       "measured": {
-        "banking77": 0.214418,
-        "huffpost": 0.217,
-        "massive": 0.34674,
-        "massive@eval-locales": 0.295499,
-        "massive@train-locales": 0.372149
+        "banking77": 0.221811,
+        "huffpost": 0.1805,
+        "massive": 0.415504,
+        "massive@eval-locales": 0.390411,
+        "massive@train-locales": 0.427948
       },
       "pass": false,
       "evidence": "present",
       "detail": "every non-exempt cut on its own",
       "worst_cut": [
-        "banking77",
-        0.214418
+        "huffpost",
+        0.1805
       ]
     },
     {
@@ -86,21 +87,23 @@
       "why_this_number": "sin IC95 por encima del azar la afirmacion no es falsable",
       "measured": {
         "banking77": true,
-        "huffpost": true,
+        "huffpost": false,
         "massive": true,
         "massive@eval-locales": true,
         "massive@train-locales": true
       },
-      "pass": true,
+      "pass": false,
       "evidence": "present",
       "detail": "CI95 lower bound above the cut's own chance rate",
-      "below_chance": []
+      "below_chance": [
+        "huffpost"
+      ]
     },
     {
       "criterion": "seen_unseen_accuracy_drop_max",
       "threshold": 0.1,
       "why_this_number": "los cortes no son igual de dificiles; mas de 10 puntos es vender generalizacion y entregar memorizacion",
-      "measured": 0.187454,
+      "measured": 0.147927,
       "pass": false,
       "evidence": "present",
       "detail": "accuracy_seen - accuracy_unseen on the ALL cut"
@@ -109,22 +112,22 @@
       "criterion": "unseen_ece_max",
       "threshold": 0.1,
       "why_this_number": "doble holgura que el corte donde si se ajusto la temperatura, porque sobre unseen se extrapola",
-      "measured": 0.065906,
+      "measured": 0.025002,
       "pass": true,
       "evidence": "present",
       "detail": "calibrated ECE of the unseen cut, ALL",
-      "raw_ece": 0.301284,
+      "raw_ece": 0.279127,
       "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature"
     },
     {
       "criterion": "seen_ece_max",
       "threshold": 0.05,
       "why_this_number": "es el ece_target que el repo ya fijo en #T-calib, en el corte donde la temperatura si se ajusto",
-      "measured": 0.02365,
+      "measured": 0.019681,
       "pass": true,
       "evidence": "present",
       "detail": "calibrated ECE of the seen cut, ALL",
-      "raw_ece": 0.251929,
+      "raw_ece": 0.237807,
       "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature"
     },
     {
@@ -148,7 +151,7 @@
       "detail": "max coverage on the unseen cut at selective risk <= 0.2 with the `unknown` strategy",
       "risk_max": 0.2,
       "strategy": "unknown",
-      "best_risk_on_curve": 0.712127
+      "best_risk_on_curve": 0.6867
     },
     {
       "criterion": "latency_p95_max_ms",
@@ -179,9 +182,9 @@
       "threshold": true,
       "why_this_number": "si maxprob descarta mejor que el logit unknown, la cabeza de abstencion no aprendio a abstenerse",
       "measured": {
-        "unknown": 0.762646,
-        "maxprob": 0.683897,
-        "margin": 0.69323
+        "unknown": 0.7324,
+        "maxprob": 0.619583,
+        "margin": 0.630531
       },
       "pass": false,
       "evidence": "present",
@@ -198,26 +201,30 @@
     }
   ],
   "coherence": {
-    "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u2014 all ERRORS, never warnings",
-    "n_gates": 39,
-    "n_invalid": 16,
+    "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u00b7 C4 accuracy without chance, cardinality and CI 95 % (R2) \u2014 all ERRORS, never warnings",
+    "n_gates": 45,
+    "n_invalid": 20,
     "invalid": [
       "T-bakeoff",
       "T-calib",
       "T-curriculum",
+      "T-data-eval",
       "T-distillation",
       "T-firewall",
       "T-gen-objective",
       "T-gold",
       "T-local-infer",
       "T-mix-1m",
+      "T-mix-5m",
       "T-option-mixer",
       "T-pointer-head",
       "T-release",
+      "T-release-gate",
       "T-split-domain",
       "T-state-cache",
       "T-synth-factory",
-      "T-torch-stack"
+      "T-torch-stack",
+      "T-train-real"
     ],
     "blocking_this_release": [
       "T-pointer-head"

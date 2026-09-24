@@ -1,46 +1,33 @@
 {
   "format": 1,
-  "generated_utc": "2026-09-22T20:40:24Z",
-  "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u2014 all ERRORS, never warnings",
-  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
-  "n_gates": 39,
-  "n_invalid": 16,
+  "generated_utc": "2026-09-24T13:12:24Z",
+  "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u00b7 C4 accuracy without chance, cardinality and CI 95 % (R2) \u2014 all ERRORS, never warnings",
+  "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
+  "n_gates": 45,
+  "n_invalid": 20,
   "invalid": [
     "T-bakeoff",
     "T-calib",
     "T-curriculum",
+    "T-data-eval",
     "T-distillation",
     "T-firewall",
     "T-gen-objective",
     "T-gold",
     "T-local-infer",
     "T-mix-1m",
+    "T-mix-5m",
     "T-option-mixer",
     "T-pointer-head",
     "T-release",
+    "T-release-gate",
     "T-split-domain",
     "T-state-cache",
     "T-synth-factory",
-    "T-torch-stack"
+    "T-torch-stack",
+    "T-train-real"
   ],
-  "marked": [
-    "artifacts/gates/T-bakeoff/coherence-invalid.json",
-    "artifacts/gates/T-calib/coherence-invalid.json",
-    "artifacts/gates/T-curriculum/coherence-invalid.json",
-    "artifacts/gates/T-distillation/coherence-invalid.json",
-    "artifacts/gates/T-firewall/coherence-invalid.json",
-    "artifacts/gates/T-gen-objective/coherence-invalid.json",
-    "artifacts/gates/T-gold/coherence-invalid.json",
-    "artifacts/gates/T-local-infer/coherence-invalid.json",
-    "artifacts/gates/T-mix-1m/coherence-invalid.json",
-    "artifacts/gates/T-option-mixer/coherence-invalid.json",
-    "artifacts/gates/T-pointer-head/coherence-invalid.json",
-    "artifacts/gates/T-release/coherence-invalid.json",
-    "artifacts/gates/T-split-domain/coherence-invalid.json",
-    "artifacts/gates/T-state-cache/coherence-invalid.json",
-    "artifacts/gates/T-synth-factory/coherence-invalid.json",
-    "artifacts/gates/T-torch-stack/coherence-invalid.json"
-  ],
+  "marked": [],
   "results": [
     {
       "gate": "T-antiscale-diag",
@@ -57,6 +44,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -87,7 +78,108 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 9,
+        "without_companions": 9
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 9,
+          "offending": [
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[0]/quality/unseen_per_dataset/banking77",
+              "accuracy": 0.274306,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[0]/quality/unseen_per_dataset/huffpost",
+              "accuracy": 0.139358,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[0]/quality/unseen_per_dataset/massive",
+              "accuracy": 0.290365,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[1]/quality/unseen_per_dataset/banking77",
+              "accuracy": 0.204861,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[1]/quality/unseen_per_dataset/huffpost",
+              "accuracy": 0.211149,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/pareto/rows[1]/quality/unseen_per_dataset/massive",
+              "accuracy": 0.273438,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/sanity_checks/harness_proxies[0]",
+              "accuracy": 0.7708333333333334,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/sanity_checks/harness_proxies[1]",
+              "accuracy": 0.8125,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C3",
           "severity": "error",
@@ -103,6 +195,28 @@
         }
       ],
       "pass": false
+    },
+    {
+      "gate": "T-bigk-optsets",
+      "path": "artifacts/gates/T-bigk-optsets",
+      "files": [
+        "cost.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
     },
     {
       "gate": "T-bigsrc",
@@ -125,6 +239,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -156,7 +274,86 @@
       "model_version": false,
       "sealed_split": true,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 6,
+        "without_companions": 6
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 6,
+          "offending": [
+            {
+              "file": "report.json",
+              "at": "/test/pre",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/test/post",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/ood/pre",
+              "accuracy": 0.5,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/ood/post",
+              "accuracy": 0.5,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/drift_by_locale_test/en-US",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/drift_by_locale_test/es-ES",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C2",
           "severity": "error",
@@ -241,6 +438,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -265,6 +466,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -290,6 +495,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -347,8 +556,66 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
-      "errors": [],
-      "pass": true
+      "accuracy_claims": {
+        "published": 4,
+        "without_companions": 4
+      },
+      "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 4,
+          "offending": [
+            {
+              "file": "eval.json",
+              "at": "/baselines/uniform",
+              "accuracy": 0.4558,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "eval.json",
+              "at": "/baselines/poc_cosine_uncalibrated",
+              "accuracy": 0.4558,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "eval.json",
+              "at": "/baselines/calibrated",
+              "accuracy": 0.4558,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "eval.json",
+              "at": "/general",
+              "accuracy": 0.4558,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        }
+      ],
+      "pass": false
     },
     {
       "gate": "T-data-p0",
@@ -372,6 +639,10 @@
       "model_version": false,
       "sealed_split": true,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -396,6 +667,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -421,6 +696,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -474,6 +753,29 @@
       "pass": false
     },
     {
+      "gate": "T-eval-cardinality",
+      "path": "artifacts/gates/T-eval-cardinality",
+      "files": [
+        "scoreboard.json",
+        "test-queries.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 11,
+        "latency_metrics": 4
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 11,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-firewall",
       "path": "artifacts/gates/T-firewall",
       "files": [
@@ -500,6 +802,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -563,6 +869,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -587,7 +897,108 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 30,
+        "without_companions": 30
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 30,
+          "offending": [
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/final/unseen_per_dataset/huffpost",
+              "accuracy": 0.201637,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/final/unseen_per_dataset/massive",
+              "accuracy": 0.25,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/points[0]/unseen_per_dataset/huffpost",
+              "accuracy": 0.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/points[0]/unseen_per_dataset/massive",
+              "accuracy": 0.256611,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/points[1]/unseen_per_dataset/huffpost",
+              "accuracy": 0.201637,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/baseline/points[1]/unseen_per_dataset/massive",
+              "accuracy": 0.25,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/contrastive/final/unseen_per_dataset/huffpost",
+              "accuracy": 0.105655,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/arms/contrastive/final/unseen_per_dataset/massive",
+              "accuracy": 0.280649,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C3",
           "severity": "error",
@@ -623,6 +1034,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -655,6 +1070,10 @@
           "value": 0.0
         }
       ],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C1",
@@ -736,6 +1155,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -761,6 +1184,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -779,6 +1206,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -805,6 +1236,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -856,6 +1291,38 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
+    },
+    {
+      "gate": "T-metal-throughput",
+      "path": "artifacts/gates/T-metal-throughput",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": {
+        "gate.json": {
+          "green": true,
+          "by": "pass",
+          "value": true
+        }
+      },
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -880,7 +1347,108 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 10,
+        "without_companions": 10
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 10,
+          "offending": [
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/ettin-68m/stages/stage0/seen",
+              "accuracy": 0.59375,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/ettin-68m/stages/stage0/unseen",
+              "accuracy": 0.239362,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/ettin-68m/stages/stage1/seen",
+              "accuracy": 0.577128,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/ettin-68m/stages/stage1/unseen",
+              "accuracy": 0.049535,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/modernbert-base/stages/stage0/seen",
+              "accuracy": 0.606051,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/modernbert-base/stages/stage0/unseen",
+              "accuracy": 0.194149,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/modernbert-base/stages/stage1/seen",
+              "accuracy": 0.573138,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/training/backbones/modernbert-base/stages/stage1/unseen",
+              "accuracy": 0.027593,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C3",
           "severity": "error",
@@ -913,8 +1481,110 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
-      "errors": [],
-      "pass": true
+      "accuracy_claims": {
+        "published": 33,
+        "without_companions": 24
+      },
+      "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 24,
+          "offending": [
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/boolq",
+              "accuracy": 0.614724,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/civil-comments",
+              "accuracy": 0.941328,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/dbpedia14",
+              "accuracy": 0.976364,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/detox-attack",
+              "accuracy": 0.663736,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/email-triage",
+              "accuracy": 0.694,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/goemotions",
+              "accuracy": 0.656943,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/huffpost",
+              "accuracy": 0.760444,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/massive",
+              "accuracy": 0.62531,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        }
+      ],
+      "pass": false
     },
     {
       "gate": "T-option-mixer",
@@ -938,7 +1608,53 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 3,
+        "without_companions": 3
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 3,
+          "offending": [
+            {
+              "file": "report.json",
+              "at": "/results/independent",
+              "accuracy": 0.1,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/results/deepsets",
+              "accuracy": 0.075,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "report.json",
+              "at": "/results/set_transformer",
+              "accuracy": 0.025,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C2",
           "severity": "error",
@@ -982,6 +1698,29 @@
       "pass": false
     },
     {
+      "gate": "T-option-text",
+      "path": "artifacts/gates/T-option-text",
+      "files": [
+        "optiontext.json",
+        "test-queries.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 8,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 8,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-optset-sampler",
       "path": "artifacts/gates/T-optset-sampler",
       "files": [
@@ -1002,6 +1741,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1026,6 +1769,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -1077,6 +1824,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1101,6 +1852,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1126,6 +1881,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1162,6 +1921,10 @@
           "value": 0.0
         }
       ],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C1",
@@ -1229,7 +1992,7 @@
       "unreadable": [],
       "green": null,
       "publishes": {
-        "quality_metrics": 2,
+        "quality_metrics": 55,
         "latency_metrics": 0
       },
       "model_version": true,
@@ -1237,17 +2000,119 @@
       "cohen_kappa": [
         {
           "file": "coherence-audit.json",
-          "at": "/results[13]/errors[0]/offending[0]/cohen_kappa",
+          "at": "/results[17]/errors[0]/offending[0]/cohen_kappa",
           "value": 0.0
         },
         {
           "file": "coherence-audit.json",
-          "at": "/results[25]/errors[0]/offending[0]/cohen_kappa",
+          "at": "/results[33]/errors[0]/offending[0]/cohen_kappa",
           "value": 0.0
         }
       ],
-      "errors": [],
-      "pass": true
+      "accuracy_claims": {
+        "published": 53,
+        "without_companions": 53
+      },
+      "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 53,
+          "offending": [
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[0]",
+              "accuracy": 0.274306,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[1]",
+              "accuracy": 0.139358,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[2]",
+              "accuracy": 0.290365,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[3]",
+              "accuracy": 0.204861,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[4]",
+              "accuracy": 0.211149,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[5]",
+              "accuracy": 0.273438,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[6]",
+              "accuracy": 0.7708333333333334,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "coherence-audit.json",
+              "at": "/results[1]/errors[0]/offending[7]",
+              "accuracy": 0.8125,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        }
+      ],
+      "pass": false
     },
     {
       "gate": "T-rust-skel",
@@ -1270,6 +2135,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1295,6 +2164,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1322,7 +2195,64 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 4,
+        "without_companions": 4
+      },
       "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 4,
+          "offending": [
+            {
+              "file": "contrast.json",
+              "at": "/before_index_split",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "contrast.json",
+              "at": "/after_group_split",
+              "accuracy": 0.35025,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/contrast/before_index_split",
+              "accuracy": 1.0,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/contrast/after_group_split",
+              "accuracy": 0.35025,
+              "missing": [
+                "chance",
+                "cardinality",
+                "accuracy_ci95"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        },
         {
           "rule": "C2",
           "severity": "error",
@@ -1396,6 +2326,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -1451,6 +2385,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -1493,6 +2431,29 @@
       "pass": false
     },
     {
+      "gate": "T-teacher-probe",
+      "path": "artifacts/gates/T-teacher-probe",
+      "files": [
+        "fullspace.json",
+        "subsample.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 8,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 8,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-torch-stack",
       "path": "artifacts/gates/T-torch-stack",
       "files": [
@@ -1513,6 +2474,10 @@
       "model_version": false,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [
         {
           "rule": "C2",
@@ -1567,6 +2532,78 @@
       "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 13,
+        "without_companions": 4
+      },
+      "errors": [
+        {
+          "rule": "C4",
+          "severity": "error",
+          "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+          "n_offending": 4,
+          "offending": [
+            {
+              "file": "gate.json",
+              "at": "/checks/unseen_beats_chance",
+              "accuracy": 0.093085,
+              "missing": [
+                "cardinality"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/checks/unseen_beats_chance/per_dataset/banking77",
+              "accuracy": 0.183594,
+              "missing": [
+                "cardinality"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/checks/unseen_beats_chance/per_dataset/huffpost",
+              "accuracy": 0.078947,
+              "missing": [
+                "cardinality"
+              ],
+              "citation": false
+            },
+            {
+              "file": "gate.json",
+              "at": "/checks/unseen_beats_chance/per_dataset/massive",
+              "accuracy": 0.089193,
+              "missing": [
+                "cardinality"
+              ],
+              "citation": false
+            }
+          ],
+          "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+        }
+      ],
+      "pass": false
+    },
+    {
+      "gate": "T-unfreeze-backbone",
+      "path": "artifacts/gates/T-unfreeze-backbone",
+      "files": [
+        "gate.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 0,
+        "latency_metrics": 0
+      },
+      "model_version": false,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 0,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     },
@@ -1586,6 +2623,10 @@
       "model_version": true,
       "sealed_split": true,
       "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 32,
+        "without_companions": 0
+      },
       "errors": [],
       "pass": true
     }
