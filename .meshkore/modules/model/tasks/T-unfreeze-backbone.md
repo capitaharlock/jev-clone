@@ -167,15 +167,15 @@ Regla escrita antes de mirar: si el apilado no mejora −0,0549, el eje capacida
 - `training/python/test_train_decision.py`
 - `training/python/train_decision.py`
 
-## ⚠ Veredicto no transferible (2026-09-24)
+## Alcance del veredicto — fase 1 (2026-09-24)
 
-El NO-GO de esta task se midió con la pérdida sobre K≤8 opciones muestreadas.
-Bajo ese objetivo, descongelar el encoder no puede ayudar: con 8 candidatos la
-representación congelada ya basta para acertar, así que la pérdida no tenía
-presión que transmitir al backbone. El experimento no podía dar GO aunque la
-hipótesis fuese correcta.
+El NO-GO de esta task se midió con la pérdida sobre K≤8 opciones muestreadas,
+el objetivo de fase 1. En ese régimen descongelar el encoder no tiene por qué
+ayudar: con 8 candidatos la representación congelada ya basta para acertar, así
+que la pérdida no tenía presión que transmitir al backbone.
 
-Por la regla R4 del postmortem (`.meshkore/docs/postmortem-objetivo-de-entreno.md`)
-este veredicto **no se hereda**. La pregunta se reabre en `#T-encoder-finetune`
-bajo el objetivo de espacio completo, que es el régimen donde sí tiene sentido.
-Los números de aquí se conservan como registro histórico.
+Por la regla R4 (`.meshkore/docs/fase-2-espacio-completo.md`) el veredicto vale
+dentro de su régimen y **no se transfiere**: la pregunta se rehace en
+`#T-encoder-finetune` bajo el objetivo de espacio completo, donde la presión sí
+cae sobre la representación. Los números de aquí se conservan como registro de
+fase 1.

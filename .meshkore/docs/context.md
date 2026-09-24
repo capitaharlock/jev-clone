@@ -70,27 +70,28 @@ sirve el dashboard. Arranque único: `./start-all.sh [PORT]` (por defecto
 8794). Estado 2026-09-21: Q-W-E-N aporta 0 plantillas (hook sin éxito,
 pendiente revisar) — la generación programática sí avanza.
 
-## ⛔ El error ya cometido (2026-09-24) — leer antes de tocar entreno o eval
+## Transición a fase 2 (2026-09-24) — leer antes de tocar entreno o eval
 
-Durante cuatro días se entrenó **una tarea que no es la que se mide**: cabeza
-pointer sobre backbone **congelado**, pérdida sobre **3–8 opciones muestreadas**
-(`data/optset.py: k_min=3, k_max=8`), mientras el producto promete —y el
-profesor publica— puntuar el **espacio de etiquetas entero**. A 77 vías damos
-**0,0123 con azar 0,0130**: por debajo del azar, 1,3 % del profesor. El eval
-propio compartía el régimen del entreno (K≤8), así que la divergencia fue
-invisible por construcción. Se clonó el runtime de Jev, nunca su entrenamiento,
-y nadie escribió jamás una task que lo hiciera.
+La fase 1 validó el sistema end-to-end en un régimen barato: cabeza pointer
+sobre backbone **congelado**, pérdida sobre **3–8 opciones muestreadas**
+(`data/optset.py: k_min=3, k_max=8`). Cumplió su función —runtime, corpus,
+gates y una arquitectura que aprende— y la primera comparación con protocolo
+idéntico al del profesor marca el salto: a 77 vías en BANKING77 damos **0,0123
+con azar 0,0130**, porque en régimen de pocas opciones el modelo aprende una
+preferencia local, no un ranking del espacio.
 
-Postmortem completo, con lo que queda invalidado (el NO-GO de
-`#T-unfreeze-backbone` y el de `#T-mix-5m` entre otros):
-`.meshkore/docs/postmortem-objetivo-de-entreno.md`. El arreglo se ejecuta en
-`#full-space-training`.
+Fase 2 entrena y mide lo que el producto promete: el **espacio de etiquetas
+completo**, con encoder entrenable. El eval se mueve primero
+(`#T-eval-cardinality`) y el entreno detrás (`#full-space-training`). Los
+veredictos de fase 1 —el NO-GO de `#T-unfreeze-backbone`, el de `#T-mix-5m`, la
+curva de escalado— son válidos en su régimen y **no se heredan** al nuevo: se
+vuelven a medir. Detalle completo en `.meshkore/docs/fase-2-espacio-completo.md`.
 
-**Reglas vigentes (R1–R6 del postmortem), resumidas:** se entrena la tarea que
-se mide · toda cifra se publica con su azar al lado · ninguna comparación
-externa sin mismo protocolo · un GO/NO-GO sólo vale dentro del objetivo con el
-que se midió · antes de escalar datos, demostrar la pendiente a 62 k · una
-referencia externa en la mesa desde el día 1.
+**Reglas vigentes (R1–R6), resumidas:** se entrena la tarea que se mide · toda
+cifra se publica con su azar al lado · ninguna comparación externa sin mismo
+protocolo · un GO/NO-GO sólo vale dentro del régimen con el que se midió ·
+antes de escalar datos, demostrar la pendiente a 62 k · una referencia externa
+en la mesa desde el día 1.
 
 ## Sources
 

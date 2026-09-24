@@ -12,9 +12,9 @@ updated: 2026-09-24
 
 # Entrenar con el espacio de etiquetas entero
 
-`artifacts/gates/T-teacher-probe/fullspace.json` mide lo que ninguna gate de
-este repo medía: el head sobre las 3 080 filas de test de BANKING77 con las
-**77 etiquetas** presentes, que es el régimen en el que el producto se
+`artifacts/gates/T-teacher-probe/fullspace.json` mide por primera vez el
+régimen del producto: el head sobre las 3 080 filas de test de BANKING77 con
+las **77 etiquetas** presentes, que es el régimen en el que el producto se
 promete y el único en el que la cifra publicada del profesor (0,924) es
 comparable. Da **0,0123 con azar en 0,0130** — por debajo del azar.
 
@@ -26,10 +26,10 @@ lo que tiene con K pequeño es una preferencia débil entre un puñado de
 candidatos, no un ranking del espacio.
 
 `data/optset.py` fija `k_min=3, k_max=8`. Todo el corpus —1 M de filas— se
-generó así, y toda la curva anti-escalado se midió así. Esta task cambia esa
-constante y vuelve a medir, porque es la hipótesis más barata que explica a
-la vez el suelo de generalización y la caída con más datos: un objetivo de
-8 opciones no obliga al modelo a construir nada que escale a 77.
+generó así, y toda la curva de escalado de fase 1 se midió así. Esta task
+cambia esa constante y vuelve a medir, porque es la hipótesis más barata que
+explica a la vez el suelo de generalización y la caída con más datos: un
+objetivo de 8 opciones no obliga al modelo a construir nada que escale a 77.
 
 Riesgo declarado antes de medir: subir K encarece cada fila (el coste de
 embeber opciones crece con K, aunque la caché de textos de etiqueta lo
@@ -50,9 +50,10 @@ amortigua) y puede no mover nada — en cuyo caso el NO-GO se escribe igual.
 
 ## Re-encuadre 2026-09-24
 
-Esta task nació como "subir `k_max`" dentro de `#generalization-fix`. El
-postmortem del objetivo de entreno la mueve a `#full-space-training` y le da su
-sitio real: es el **lado de datos** del cambio de objetivo. `#T-fullspace-objective`
+Esta task nació como "subir `k_max`" dentro de `#generalization-fix`. La
+transición a fase 2 (`.meshkore/docs/fase-2-espacio-completo.md`) la mueve a
+`#full-space-training` y le da su sitio real: es el **lado de datos** del
+cambio de objetivo. `#T-fullspace-objective`
 cambia el denominador de la pérdida; esta cambia el conjunto de opciones que el
 corpus entrega, para que el espacio entero esté disponible cuando el dataset lo
 permite (banking77 = 77, huffpost = 41, goemotions = 28) en vez de muestreado a 8.

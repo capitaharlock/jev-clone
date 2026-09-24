@@ -1,6 +1,6 @@
 ---
 id: generalization-fix
-title: La generalización a etiquetas nuevas (el fallo que bloquea el release)
+title: La generalización a etiquetas nuevas (fase 1 — régimen K≤8)
 status: active
 owner: architect-master
 modules:
@@ -10,7 +10,7 @@ created: 2026-09-22
 updated: 2026-09-24
 ---
 
-# La generalización a etiquetas nuevas (el fallo que bloquea el release)
+# La generalización a etiquetas nuevas (fase 1 — régimen K≤8)
 
 El modelo existe y está entrenado, pero **no hace lo que define al producto**.
 `artifacts/gates/T-release-gate/gate.json` da **NO-GO con 10 de 12 criterios
@@ -90,17 +90,17 @@ pasan a `#teacher-distill`, que nace con la API key que aportó el operador.
 
 `eval.fullspace` (2026-09-23) midió por primera vez el régimen que el producto
 promete: BANKING77 con sus **77 etiquetas**. El mejor checkpoint da **0,0123
-con azar 0,0130**. Toda esta iniciativa —los cuatro brazos, la curva
-anti-escalado, las dos palancas parciales— se midió con **K≤8**, que es el
-régimen con el que se entrenaba. No medía generalización a un espacio nuevo:
-medía preferencia entre ocho candidatos.
+con azar 0,0130**. Toda esta iniciativa —los cuatro brazos, la curva de
+escalado, las dos palancas parciales— se midió con **K≤8**, el mismo régimen
+con el que se entrenaba en fase 1: mide preferencia entre ocho candidatos, no
+ranking de un espacio nuevo.
 
-El diagnóstico está en `.meshkore/docs/postmortem-objetivo-de-entreno.md` y el
-arreglo en `#full-space-training`, que se lleva `#T-bigk-optsets`. Ninguno de
-los veredictos de aquí se hereda allí (regla R4).
+Ahí termina el alcance de esta iniciativa. La transición a cardinalidad
+completa está documentada en `.meshkore/docs/fase-2-espacio-completo.md` y se
+ejecuta en `#full-space-training`, que se lleva `#T-bigk-optsets`. Los
+veredictos de aquí valen en su régimen y no se heredan allí (regla R4).
 
 Lo que sigue vivo en esta iniciativa: `#T-labelspace-div` (su curva está
 corriendo, job `labeldiv-curve-d512`) y `#T-xlingual-holdout`, porque el corte
 cross-lingual falla por construcción en cualquier objetivo. `#T-lever-stack`
-cierra: su resultado (0,288 unseen @1M) queda como registro histórico del
-objetivo viejo.
+cierra: su resultado (0,288 unseen @1M) queda como el mejor registro de fase 1.

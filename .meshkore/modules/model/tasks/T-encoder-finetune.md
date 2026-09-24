@@ -16,16 +16,14 @@ updated: 2026-09-24
 
 `#T-unfreeze-backbone` cerró en **NO-GO** el 2026-09-23: descongelar las 2
 últimas capas a lr 1e-5 dio 0,2422 unseen contra 0,2879 del brazo congelado.
-Ese veredicto se midió **con K≤8** y por eso no se hereda (regla R4 del
-postmortem): con 8 candidatos la representación congelada ya basta para
-acertar, así que la pérdida no tenía ninguna presión que transmitir al
-encoder — el experimento no podía dar GO aunque la hipótesis fuese correcta.
+Ese veredicto se midió **con K≤8**, el objetivo de fase 1, y por eso no se
+transfiere (regla R4): con 8 candidatos la representación congelada ya basta
+para acertar, así que la pérdida no tenía presión que transmitir al encoder.
 
 Bajo la pérdida sobre el espacio entero la situación se invierte: rankear
 cientos de etiquetas por contenido es exactamente lo que exige que la
-representación cambie, y es donde Jev pone toda su capacidad (reentrena el
-encoder entero). Esta task vuelve a hacer la pregunta en el régimen donde tiene
-sentido.
+representación cambie, y es donde el profesor pone toda su capacidad (reentrena
+el encoder entero). Esta task rehace la pregunta en el régimen de fase 2.
 
 ## Brazos
 
@@ -49,6 +47,6 @@ denominador de la pérdida, bajarlo cambia la variable medida).
 - El brazo ganador repetido a 250 k para confirmar que la pendiente no se
   invierte, antes de comprometer ningún run de 1 M.
 - `#T-unfreeze-backbone` queda marcada como **superseded** por esta task, con
-  la razón escrita en su cuerpo (medida bajo objetivo no transferible).
+  la razón escrita en su cuerpo (medida en el régimen de fase 1).
 - Veredicto: cuánta capacidad entrenable hace falta, o NO-GO con la siguiente
   hipótesis nombrada (tamaño de backbone, no entrenabilidad).

@@ -230,21 +230,20 @@ referencia externa. De ahí el reparto de abajo.
 | 22 | teacher-distill | T-teacher-labelspaces | Condicionada al veredicto de #18: taxonomías del profesor, no filas |
 | 23 | honest-eval | T-data-eval → T-release-gate | Re-evaluación y firma, cuando haya algo que firmar |
 
-## Replanificación 2026-09-24 — el objetivo de entreno era el error
+## Replanificación 2026-09-24 — arranca la fase 2 del entreno
 
-`eval.fullspace` midió por fin el régimen que el producto promete y el único
-comparable con una cifra publicada: BANKING77 con sus **77 etiquetas**.
-**0,0123 con azar 0,0130** — bajo el azar, 1,3 % del profesor. El postmortem
-(`.meshkore/docs/postmortem-objetivo-de-entreno.md`) concluye que se entrenaba
-una tarea distinta de la que se mide: pérdida sobre 3–8 opciones muestreadas,
-backbone congelado, y un eval que compartía ese mismo régimen (K≤8), por lo que
-la divergencia era invisible por construcción.
+`eval.fullspace` midió el régimen que el producto promete y el único comparable
+con una cifra publicada: BANKING77 con sus **77 etiquetas**. **0,0123 con azar
+0,0130**. La fase 1 entrenó y midió con 3–8 opciones muestreadas y backbone
+congelado —un régimen barato, elegido para levantar el sistema end-to-end— y en
+él el modelo aprende una preferencia local, no un ranking del espacio. La
+transición está documentada en `.meshkore/docs/fase-2-espacio-completo.md`.
 
-Consecuencia de planificación: `#generalization-fix` deja de ser la cabeza de
-la cadena — todos sus veredictos se midieron dentro del objetivo equivocado y
-**no se heredan** (regla R4). Nace `#full-space-training`, que cambia el
-objetivo en vez de ajustar hiperparámetros, y `#honest-eval` recibe la
-reorganización del testing para que el próximo error no tarde cuatro días.
+Consecuencia de planificación: `#generalization-fix` cierra su alcance (fase 1)
+y deja de ser la cabeza de la cadena; sus veredictos valen en su régimen y no
+se heredan (regla R4). Nace `#full-space-training`, que cambia el objetivo de
+entreno en vez de ajustar hiperparámetros, y `#honest-eval` recibe el ajuste
+del approach de testing: cardinalidad completa como métrica primaria.
 
 | Orden | Initiative | Task | Qué decide |
 |---:|---|---|---|

@@ -12,14 +12,18 @@ updated: 2026-09-24
 
 # Entrenar la tarea que se mide — espacio de etiquetas completo
 
-Nace del postmortem `.meshkore/docs/postmortem-objetivo-de-entreno.md`
-(2026-09-24). Durante cuatro días se entrenó una cabeza pointer sobre un
-backbone **congelado**, con la pérdida sobre **3–8 opciones muestreadas**,
-mientras el producto promete —y el profesor publica— puntuar el **espacio de
-etiquetas entero**. Sobre las 3 080 filas de test de BANKING77 a 77 vías damos
-**0,0123 con azar 0,0130**: por debajo del azar, 1,3 % del profesor.
+Segunda fase del entreno, documentada en
+`.meshkore/docs/fase-2-espacio-completo.md` (2026-09-24). La fase 1 validó el
+sistema end-to-end con una cabeza pointer sobre backbone **congelado** y la
+pérdida sobre **3–8 opciones muestreadas** — un régimen barato, elegido para
+que cada iteración cupiera en un Mac, que cumplió su función. La primera
+comparación con el protocolo del profesor marca el salto: sobre las 3 080 filas
+de test de BANKING77 a 77 vías damos **0,0123 con azar 0,0130**, porque con
+pocas opciones el modelo aprende una preferencia local y no un ranking del
+espacio — que es lo que el producto promete.
 
-Esta iniciativa **no ajusta hiperparámetros**. Cambia el objetivo.
+Esta iniciativa **no ajusta hiperparámetros**. Cambia el objetivo de entreno
+para que sea el mismo que la métrica.
 
 ## La teoría, escrita antes de medir
 
@@ -28,8 +32,8 @@ tamaño K, no a rankear un espacio. Con K=8 y distractores muestreados, acertar
 sólo exige descartar 7 cosas; el camino más corto hacia eso es memorizar el
 mapa cerrado `texto → etiqueta` de las 9 taxonomías que cubren el 83,1 % del
 corpus — y ese mapa es justo lo que no transfiere. Por eso la accuracy *dentro*
-del corpus es 0,94–0,98 y la *unseen* cae al escalar: cada fila nueva afila el
-mapa equivocado.
+del corpus es 0,94–0,98 y la *unseen* cae al escalar: cada fila nueva afila ese
+mapa cerrado.
 
 La receta que sí produce un ranking del espacio es la de recuperación densa
 (DPR / E5 / SetFit) y es la que Jev aplica de facto: **normalizar la pérdida
@@ -42,10 +46,11 @@ práctica eso son tres cambios, y los tres son necesarios juntos:
    textos de etiqueta son cortos y se cachean: el encoder de opciones se
    ejecuta una vez por etiqueta única del batch, no una vez por fila.
 2. **Encoder entrenable** — con K=8 la representación congelada ya basta para
-   acertar, así que descongelar no podía ayudar y `#T-unfreeze-backbone` midió
-   NO-GO. Bajo una pérdida sobre el espacio entero la presión cae sobre la
-   representación, que es donde Jev pone toda su capacidad. El veredicto
-   anterior queda declarado **no transferible** (regla R4).
+   acertar, así que la pérdida no tenía presión que transmitir al encoder y
+   `#T-unfreeze-backbone` midió NO-GO en ese régimen. Bajo una pérdida sobre el
+   espacio entero la presión cae sobre la representación, que es donde el
+   profesor pone toda su capacidad. El veredicto de fase 1 es válido en su
+   régimen y **no transferible** a éste (regla R4): se vuelve a medir.
 3. **Espacios de etiquetas diversos** — un objetivo de espacio completo sobre
    9 taxonomías aprende 9 espacios muy bien. La diversidad deja de ser una
    hipótesis lateral (`#T-labelspace-div`) y pasa a ser materia prima del
@@ -59,8 +64,8 @@ que se escribe como NO-GO igual de explícito.
 ## Relación con lo que ya existe
 
 - `#generalization-fix` buscaba *por qué* la curva baja, tocando modelo y
-  mezcla **dentro** del objetivo viejo. Sus cuatro brazos medidos se conservan
-  como registro; ninguno de sus veredictos se hereda aquí.
+  mezcla **dentro** del régimen de fase 1. Sus cuatro brazos medidos se
+  conservan como registro de esa fase; ninguno de sus veredictos se hereda aquí.
 - `#honest-eval` recibe la reorganización del testing: la cardinalidad completa
   pasa a métrica primaria y K≤8 baja a diagnóstico (`#T-eval-cardinality`).
 - `#teacher-distill` aporta la referencia externa. El endpoint del profesor ya
@@ -77,9 +82,9 @@ que se escribe como NO-GO igual de explícito.
   `eval.fullspace` a 77 vías, publicada al lado de la vieja (0,0123) y de su
   azar.
 - El fine-tune del encoder está medido **bajo el objetivo nuevo**, con
-  veredicto propio que sustituye al NO-GO de `#T-unfreeze-backbone`.
+  veredicto propio que releva al de fase 1 (`#T-unfreeze-backbone`).
 - La métrica primaria del repo es la cardinalidad completa: ningún gate puede
   publicar una accuracy sin su azar ni sin declarar su K.
 - Hay un veredicto escrito: o la cifra a 77 vías supera el azar con margen y se
-  abre la curva de escalado sobre el objetivo correcto, o se declara refutada
+  abre la curva de escalado sobre el objetivo de fase 2, o se declara refutada
   la hipótesis del objetivo y se nombra la siguiente.

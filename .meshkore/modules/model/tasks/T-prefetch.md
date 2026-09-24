@@ -33,7 +33,7 @@ source register so nothing is downloaded twice.
 
 Tienes razón a medias: 1,2 GB no preentrena un LLM, pero no es lo que estamos haciendo. Nosotros afinamos encoders ya preentrenados (17M–400M), no entrenamos un 7B/30B desde cero, y para eso 2,2M de ejemplos sí es un punto de partida serio, aunque corto para razonamiento.
 
-<details><summary>Mi opinión — por qué no somos "tontos" pero sí estamos cortos</summary>
+<details><summary>Mi opinión — por qué el volumen encaja pero el balance no</summary>
 
 - Un modelo 7B/30B/500B desde cero necesita TBs de texto porque aprende el idioma desde cero. Nosotros partimos de backbones que ya saben idioma (Ettin, ModernBERT, NeoBERT, LFM) y solo les enseñamos a decidir (clasificar, elegir, calibrar). Eso se hace con millones de ejemplos, no con TBs.
 - Dicho eso, tu intuición es correcta en una cosa: lo que tenemos hoy es descompensado. 2M de filas son casi todo Civil Comments (toxicidad), y razonamiento (LogiQA, ReClor) son solo ~91k filas en crudo. Para ser "inteligente" decidiendo nos faltan justo lo previsto en roadmap: gold humano, hard negatives y datos programáticos/de dominio.

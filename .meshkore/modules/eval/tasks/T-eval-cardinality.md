@@ -12,11 +12,12 @@ updated: 2026-09-24
 
 # Ordenar el testing — la cardinalidad completa pasa a métrica primaria
 
-El postmortem del 2026-09-24 dice por qué el fallo tardó cuatro días en verse:
-**el eval vivía en el mismo régimen que el entreno**. `eval.unseen` medía con
-K≤8, que es como se entrenaba; un eval que comparte el sesgo del entreno no
-puede detectar ese sesgo. Arreglar el objetivo sin arreglar el eval deja el
-mismo agujero abierto para el siguiente error.
+Primer movimiento de la fase 2 (`.meshkore/docs/fase-2-espacio-completo.md`):
+**el eval se mueve antes que el entreno**. En fase 1 el eval compartía régimen
+con el objetivo —`eval.unseen` medía con K≤8, que es como se entrenaba—, que es
+lo coherente mientras el objetivo es K≤8 y también la razón por la que la
+distancia real sólo aparece al medir a cardinalidad completa. Cambiar el
+objetivo sin mover primero la métrica dejaría el mismo punto ciego abierto.
 
 Hoy hay **tres cortes distintos que se contradicen** y ningún sitio donde se
 lean juntos: el stage eval del trainer (n=3 008), el gate de `eval.unseen`
@@ -46,7 +47,7 @@ si la diferencia no defiende nada.
 
 **5. Régimen declarado en cada checkpoint.** El artefacto de un run dice con
 qué cardinalidad se entrenó. Comparar un run K≤8 con uno de espacio completo
-sin que el lector lo sepa es el error de este postmortem repetido.
+sin que el lector lo sepa invalida la comparación (regla R4).
 
 **6. Higiene de suite.** La suite pytest del repo pasa en verde; se le añaden
 los casos de este cambio (gate sin azar → falla; K=|espacio| → soportado) y se
