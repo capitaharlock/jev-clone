@@ -7,7 +7,7 @@ modules:
   - model
   - data
 created: 2026-09-22
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # La generalización a etiquetas nuevas (el fallo que bloquea el release)
@@ -85,3 +85,22 @@ quitarlo de en medio para poder leer los brazos nuevos.
 
 La referencia externa y el acuerdo con el profesor salen de esta iniciativa y
 pasan a `#teacher-distill`, que nace con la API key que aportó el operador.
+
+## Re-encuadre 2026-09-24 — el eje que faltaba no era ninguno de los tres
+
+`eval.fullspace` (2026-09-23) midió por primera vez el régimen que el producto
+promete: BANKING77 con sus **77 etiquetas**. El mejor checkpoint da **0,0123
+con azar 0,0130**. Toda esta iniciativa —los cuatro brazos, la curva
+anti-escalado, las dos palancas parciales— se midió con **K≤8**, que es el
+régimen con el que se entrenaba. No medía generalización a un espacio nuevo:
+medía preferencia entre ocho candidatos.
+
+El diagnóstico está en `.meshkore/docs/postmortem-objetivo-de-entreno.md` y el
+arreglo en `#full-space-training`, que se lleva `#T-bigk-optsets`. Ninguno de
+los veredictos de aquí se hereda allí (regla R4).
+
+Lo que sigue vivo en esta iniciativa: `#T-labelspace-div` (su curva está
+corriendo, job `labeldiv-curve-d512`) y `#T-xlingual-holdout`, porque el corte
+cross-lingual falla por construcción en cualquier objetivo. `#T-lever-stack`
+cierra: su resultado (0,288 unseen @1M) queda como registro histórico del
+objetivo viejo.

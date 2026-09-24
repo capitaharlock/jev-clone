@@ -5,9 +5,9 @@ status: next
 priority: high
 owner: unassigned
 category: data
-initiative: generalization-fix
+initiative: full-space-training
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # Entrenar con el espacio de etiquetas entero
@@ -47,3 +47,13 @@ amortigua) y puede no mover nada — en cuyo caso el NO-GO se escribe igual.
   BANKING77 a 77 vías publicada junto a la vieja.
 - Veredicto escrito: si la cifra a 77 vías sigue en azar, la cardinalidad
   del objetivo queda descartada como causa y se dice cuál es la siguiente.
+
+## Re-encuadre 2026-09-24
+
+Esta task nació como "subir `k_max`" dentro de `#generalization-fix`. El
+postmortem del objetivo de entreno la mueve a `#full-space-training` y le da su
+sitio real: es el **lado de datos** del cambio de objetivo. `#T-fullspace-objective`
+cambia el denominador de la pérdida; esta cambia el conjunto de opciones que el
+corpus entrega, para que el espacio entero esté disponible cuando el dataset lo
+permite (banking77 = 77, huffpost = 41, goemotions = 28) en vez de muestreado a 8.
+Las dos son necesarias: subir K sin cambiar la pérdida sólo encarece cada fila.

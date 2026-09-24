@@ -7,7 +7,7 @@ modules:
   - eval
   - data
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
@@ -54,3 +54,16 @@ consumió, y ningún experimento re-puntúa lo ya puntuado.
 - El camino de datos con profesor está decidido con el veredicto de
   `#T-labelspace-div` delante: GO y se generan espacios de etiquetas, NO-GO y se
   archiva sin gastar saldo.
+
+## Estado 2026-09-24 — endpoint identificado, credencial rechazada
+
+El proveedor es **TypeSafe**: `https://api.typesafe.ai` responde, el esquema es
+`Authorization: Bearer`, y con esa cabecera la key aportada devuelve **401
+"Cannot authenticate"** (con `x-api-key` ni se lee: 403 "Must supply an API
+key"). URL y esquema correctos, credencial no válida. Detalle y siguientes
+pasos en `#T-teacher-auth`, que pasa a ser la primera task de la cadena y
+bloquea a `#T-teacher-probe` y `#T-teacher-kappa`.
+
+Mientras no haya key válida, la referencia externa la da `#T-jev-parity`
+(`#full-space-training`), que compara contra la cifra publicada del profesor
+sin gastar saldo.

@@ -1,13 +1,13 @@
 ---
 id: T-teacher-probe
 title: Cablear el profesor y medir la distancia real — mismo corte, mismas filas
-status: active
+status: blocked
 priority: high
 owner: unassigned
 category: eval
 initiative: teacher-distill
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # Cablear el profesor y medir la distancia real

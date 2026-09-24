@@ -1,6 +1,6 @@
 ---
 title: Context — jev-clone
-updated: 2026-09-19
+updated: 2026-09-24
 owner: architect-master
 ---
 
@@ -69,6 +69,28 @@ nunca toca pesos; `tools/training_monitor.py` reentrena el baseline y
 sirve el dashboard. Arranque único: `./start-all.sh [PORT]` (por defecto
 8794). Estado 2026-09-21: Q-W-E-N aporta 0 plantillas (hook sin éxito,
 pendiente revisar) — la generación programática sí avanza.
+
+## ⛔ El error ya cometido (2026-09-24) — leer antes de tocar entreno o eval
+
+Durante cuatro días se entrenó **una tarea que no es la que se mide**: cabeza
+pointer sobre backbone **congelado**, pérdida sobre **3–8 opciones muestreadas**
+(`data/optset.py: k_min=3, k_max=8`), mientras el producto promete —y el
+profesor publica— puntuar el **espacio de etiquetas entero**. A 77 vías damos
+**0,0123 con azar 0,0130**: por debajo del azar, 1,3 % del profesor. El eval
+propio compartía el régimen del entreno (K≤8), así que la divergencia fue
+invisible por construcción. Se clonó el runtime de Jev, nunca su entrenamiento,
+y nadie escribió jamás una task que lo hiciera.
+
+Postmortem completo, con lo que queda invalidado (el NO-GO de
+`#T-unfreeze-backbone` y el de `#T-mix-5m` entre otros):
+`.meshkore/docs/postmortem-objetivo-de-entreno.md`. El arreglo se ejecuta en
+`#full-space-training`.
+
+**Reglas vigentes (R1–R6 del postmortem), resumidas:** se entrena la tarea que
+se mide · toda cifra se publica con su azar al lado · ninguna comparación
+externa sin mismo protocolo · un GO/NO-GO sólo vale dentro del objetivo con el
+que se midió · antes de escalar datos, demostrar la pendiente a 62 k · una
+referencia externa en la mesa desde el día 1.
 
 ## Sources
 

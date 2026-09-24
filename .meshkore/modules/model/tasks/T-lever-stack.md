@@ -1,7 +1,7 @@
 ---
 id: T-lever-stack
 title: Apilar las dos palancas que sí aplanan la pendiente — cabeza ×2 + objetivo prior
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -11,7 +11,7 @@ depends_on:
   - T-gen-objective
   - T-unfreeze-backbone
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # Apilar las dos palancas que sí aplanan la pendiente

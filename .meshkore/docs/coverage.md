@@ -1,6 +1,6 @@
 ---
 title: Coverage matrix
-updated: 2026-09-23
+updated: 2026-09-24
 owner: architect-master
 ---
 
@@ -229,3 +229,30 @@ referencia externa. De ahí el reparto de abajo.
 | 21 | generalization-fix | T-xlingual-holdout | `cross_lingual_holdout` falla por construcción en todos los runs: it-IT/pt-PT nunca se excluyeron |
 | 22 | teacher-distill | T-teacher-labelspaces | Condicionada al veredicto de #18: taxonomías del profesor, no filas |
 | 23 | honest-eval | T-data-eval → T-release-gate | Re-evaluación y firma, cuando haya algo que firmar |
+
+## Replanificación 2026-09-24 — el objetivo de entreno era el error
+
+`eval.fullspace` midió por fin el régimen que el producto promete y el único
+comparable con una cifra publicada: BANKING77 con sus **77 etiquetas**.
+**0,0123 con azar 0,0130** — bajo el azar, 1,3 % del profesor. El postmortem
+(`.meshkore/docs/postmortem-objetivo-de-entreno.md`) concluye que se entrenaba
+una tarea distinta de la que se mide: pérdida sobre 3–8 opciones muestreadas,
+backbone congelado, y un eval que compartía ese mismo régimen (K≤8), por lo que
+la divergencia era invisible por construcción.
+
+Consecuencia de planificación: `#generalization-fix` deja de ser la cabeza de
+la cadena — todos sus veredictos se midieron dentro del objetivo equivocado y
+**no se heredan** (regla R4). Nace `#full-space-training`, que cambia el
+objetivo en vez de ajustar hiperparámetros, y `#honest-eval` recibe la
+reorganización del testing para que el próximo error no tarde cuatro días.
+
+| Orden | Initiative | Task | Qué decide |
+|---:|---|---|---|
+| 24 | full-space-training | T-fullspace-objective | **La task central**: pérdida sobre el espacio entero (in-batch + log-Q + caché de claves de etiqueta). Brazo a 62 k antes de cualquier 1 M |
+| 25 | full-space-training | T-bigk-optsets | Lado de datos del mismo cambio: el corpus entrega el espacio entero cuando existe, no 8 opciones (repointed desde #generalization-fix) |
+| 26 | honest-eval | T-eval-cardinality | Ordena el testing: cardinalidad completa como métrica primaria, `beats_chance` obligatorio en `gate_rules`, un solo scoreboard, tres cortes contradictorios reconciliados |
+| 27 | full-space-training | T-encoder-finetune | Reabre el NO-GO de `#T-unfreeze-backbone` bajo el objetivo nuevo; incluye el brazo `full` que nunca se corrió |
+| 28 | full-space-training | T-jev-parity | La referencia externa que faltaba desde el día 1: mismas 3 080 filas, K=77, diferencias de protocolo declaradas. No gasta saldo |
+| 29 | full-space-training | T-labelspace-factory | Espacios de etiquetas (no paráfrasis) con el Qwen local; `episodic-div` 20 000 mini-taxonomías ya en disco es el primer material |
+| 30 | teacher-distill | T-teacher-auth | Endpoint identificado (`api.typesafe.ai`, Bearer); la key aportada da 401. Desbloquea #T-teacher-probe y #T-teacher-kappa |
+| — | generalization-fix | T-labelspace-div, T-xlingual-holdout | Lo único que sigue vivo allí: la curva de diversidad en marcha y el holdout cross-lingual, que falla en cualquier objetivo |
