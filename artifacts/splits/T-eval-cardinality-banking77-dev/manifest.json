@@ -1,0 +1,28 @@
+{
+  "name": "T-eval-cardinality-banking77-dev",
+  "task": "T-eval-cardinality",
+  "rule": "R7 \u2014 arms are chosen on the dev cut; the test cut is reserved and every query to it is logged",
+  "cut": "banking77-dev",
+  "reserved": false,
+  "answers": "which arm to keep: K, option text, objective, encoder, mixture, seed \u2014 as many times as it takes",
+  "dataset": "banking77",
+  "split": "train",
+  "cardinality": "the full label space of the dataset, every row",
+  "seed": 20260924,
+  "created_at": "2026-09-24T11:29:57Z",
+  "source": {
+    "path": "artifacts/data-prefetch/banking77.jsonl",
+    "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca",
+    "rows_in_split": 10003
+  },
+  "counts": {
+    "rows": 1000
+  },
+  "files": {
+    "banking77-dev.ids": {
+      "rows": 1000,
+      "sha256": "e878f5542c05e1a3000fc97a141898562ac5255b07ae3ee51f1b86e986cc4c88"
+    }
+  },
+  "manifest_sha256": "a5980a80149c7b9022d35be9a7072fa94a47d65124f1ba2c569c305e3883972b"
+}

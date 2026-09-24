@@ -16,6 +16,20 @@ never here:
 * **C3** — a quality metric measured on a split with no seal. A `seed` alone
   is not a seal: finding C (`i % 10`) was perfectly reproducible and still
   measured contamination.
+* **C4** — an `accuracy` published with no `chance`, no cardinality and no
+  95 % interval beside it (rule R2 of
+  `.meshkore/docs/fase-2-espacio-completo.md` §7). An accuracy without its
+  chance rate is not a result, it is a number: 0.215 is a win at K=77 and a
+  coin flip at K=5, and the reader cannot tell which without the three.
+  Unlike C1-C3 this one does NOT wait for a green claim — a bare accuracy
+  misleads whatever verdict sits next to it.
+  A quoted third-party number is exempt when it says so (`citation: true`, or
+  `who` + `source`): a citation is somebody else's measurement, and R3 already
+  forces it to carry its own protocol.
+
+The companions may sit on the accuracy's own object or on any object that
+ENCLOSES it: a per-dataset breakdown under a cut that publishes `chance`,
+`mean_k` and `accuracy_ci95` is read with those in hand, so it passes.
 
 These are ERRORS, never warnings: `scan()` returns a non-empty `errors` list
 and the CLI exits non-zero. Offending gates are MARKED (a
@@ -62,6 +76,12 @@ LATENCY_METRIC_KEYS = frozenset({
 METRIC_KEYS = QUALITY_METRIC_KEYS | LATENCY_METRIC_KEYS
 KAPPA_KEYS = frozenset({"cohen_kappa", "kappa"})
 
+#: R2: the three companions an accuracy needs to be readable at all.
+ACCURACY_KEY = "accuracy"
+CHANCE_KEYS = frozenset({"chance"})
+CARDINALITY_KEYS = frozenset({"cardinality", "mean_k", "k"})
+CI95_KEYS = frozenset({"accuracy_ci95", "ci95"})
+
 #: A seal is a content digest, not an intention.
 SEAL_KEYS = frozenset({"split_sha256", "manifest_sha256", "splits_sha256"})
 SEALED_CHECK_KEYS = frozenset({"group_split_sealed"})
@@ -74,6 +94,9 @@ FALLBACK_COHERENCE = {
     "cohen_kappa_floor": 0.10,
     "require_model_version": True,
     "require_sealed_split": True,
+    # C4 has no threshold to tune — it is a shape, not a number — so it is
+    # on by default and the criteria file only ever turns it OFF on purpose.
+    "require_chance_next_to_accuracy": True,
 }
 
 
@@ -179,7 +202,68 @@ def split_seal(doc, root: Path | None = None) -> dict:
             "broken": bad}
 
 
+# ------------------------------------------------------- R2: accuracy shape
+
+def _number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _interval(value) -> bool:
+    """Two numbers, in order. A scalar is not an interval."""
+    return (isinstance(value, list) and len(value) == 2
+            and all(_number(v) for v in value) and value[0] <= value[1])
+
+
+def is_citation(node: dict) -> bool:
+    """A quoted third-party number, not a measurement of ours (R3)."""
+    return bool(node.get("citation") is True
+                or (node.get("who") and node.get("source")))
+
+
+def accuracy_claims(doc) -> list[dict]:
+    """Every published `accuracy`, and which of its R2 companions is missing.
+
+    The companions are looked up on the accuracy's own object first and then
+    on every object that encloses it, because that is how a reader reads the
+    file: a `per_dataset` breakdown sitting under a cut that publishes
+    `chance`, `mean_k` and `accuracy_ci95` is read with those in hand.
+    """
+    out: list[dict] = []
+
+    def visit(node, path: str, chain: tuple) -> None:
+        if isinstance(node, dict):
+            chain = chain + (node,)
+            if _number(node.get(ACCURACY_KEY)):
+                missing = []
+                if not any(_number(o.get(k)) for o in chain
+                           for k in CHANCE_KEYS):
+                    missing.append("chance")
+                if not any(_number(o.get(k)) for o in chain
+                           for k in CARDINALITY_KEYS):
+                    missing.append("cardinality")
+                if not any(_interval(o.get(k)) for o in chain
+                           for k in CI95_KEYS):
+                    missing.append("accuracy_ci95")
+                out.append({"at": path or "/", "accuracy": node[ACCURACY_KEY],
+                            "missing": missing,
+                            "citation": is_citation(node)})
+            for key, value in node.items():
+                visit(value, f"{path}/{key}", chain)
+        elif isinstance(node, list):
+            for i, value in enumerate(node):
+                visit(value, f"{path}[{i}]", chain)
+
+    visit(doc, "", ())
+    return out
+
+
 # ------------------------------------------------------------------- rules
+
+def setting(coherence: dict, name: str, default):
+    """One knob of the criteria file, whether or not it carries its `why`."""
+    spec = coherence.get(name, default)
+    return spec["value"] if isinstance(spec, dict) else spec
+
 
 def check_document(doc, name: str, coherence: dict,
                    root: Path | None = None) -> dict:
@@ -192,7 +276,8 @@ def check_document(doc, name: str, coherence: dict,
               if isinstance(v, (int, float)) and not isinstance(v, bool)]
     seal = split_seal(doc, root)
     return {"file": name, "claim": claim, "metrics": metrics,
-            "model_version": has_mv, "kappa": kappas, "seal": seal}
+            "model_version": has_mv, "kappa": kappas, "seal": seal,
+            "accuracy_claims": accuracy_claims(doc)}
 
 
 def check_gate_dir(path: Path, coherence: dict | None = None,
@@ -200,9 +285,7 @@ def check_gate_dir(path: Path, coherence: dict | None = None,
     """Apply C1/C2/C3 to one `artifacts/gates/<task>/` directory."""
     coherence = coherence or FALLBACK_COHERENCE
     root = root or ROOT
-    floor = coherence["cohen_kappa_floor"]["value"] \
-        if isinstance(coherence.get("cohen_kappa_floor"), dict) \
-        else coherence.get("cohen_kappa_floor", 0.10)
+    floor = setting(coherence, "cohen_kappa_floor", 0.10)
 
     docs, unreadable = {}, []
     for f in sorted(path.glob("*.json")):
@@ -224,6 +307,20 @@ def check_gate_dir(path: Path, coherence: dict | None = None,
     n_latency = sum(f["metrics"]["n_latency"] for f in facts.values())
 
     errors = []
+    # C4 is not conditional on a green claim: a bare accuracy misleads
+    # whatever verdict sits beside it, and most of them sit beside none.
+    bare = [{"file": n, **c} for n, f in facts.items()
+            for c in f["accuracy_claims"]
+            if c["missing"] and not c["citation"]]
+    if bare and setting(coherence, "require_chance_next_to_accuracy", True):
+        errors.append({
+            "rule": "C4", "severity": "error",
+            "why": "accuracy published without chance, cardinality and a "
+                   "95 % interval beside it: rule R2 — an accuracy with no "
+                   "chance rate is a number, not a result",
+            "n_offending": len(bare), "offending": bare[:8],
+            "exempt": "a cited third-party number (`citation: true`, or "
+                      "`who` + `source`), which carries its own protocol"})
     if green:
         claimed_by = sorted(green)
         low = [{"file": n, "at": p, "cohen_kappa": v}
@@ -276,6 +373,9 @@ def check_gate_dir(path: Path, coherence: dict | None = None,
         "sealed_split": any_seal,
         "cohen_kappa": [{"file": n, "at": p, "value": v}
                         for n, p, v in all_kappa],
+        "accuracy_claims": {"published": sum(len(f["accuracy_claims"])
+                                             for f in facts.values()),
+                            "without_companions": len(bare)},
         "errors": errors,
         "pass": not errors,
     }
@@ -289,9 +389,10 @@ def invalid_marker(result: dict, criteria_sha: str | None) -> dict:
         "marked_by": "T-release-gate",
         "marked_utc": utcnow(),
         "gate": result["gate"],
-        "rules": ".meshkore/docs/release-criteria.md §5 (C1/C2/C3)",
+        "rules": ".meshkore/docs/release-criteria.md §5 (C1/C2/C3) + "
+                 "R2 (C4), .meshkore/docs/fase-2-espacio-completo.md §7",
         "criteria_sha": criteria_sha,
-        "verdict": "INVALID — published green against a coherence rule",
+        "verdict": "INVALID — published against a coherence rule",
         "kept": "this artifact is MARKED, not deleted: a bad published "
                 "number is part of the record",
         "green_claimed_by": sorted(result["green"] or {}),
@@ -323,7 +424,8 @@ def scan(gates_dir: Path | None = None, coherence: dict | None = None,
         "format": 1,
         "generated_utc": utcnow(),
         "rules": "C1 kappa<=floor · C2 metric without model_version · "
-                 "C3 unsealed split — all ERRORS, never warnings",
+                 "C3 unsealed split · C4 accuracy without chance, "
+                 "cardinality and CI 95 % (R2) — all ERRORS, never warnings",
         "criteria_sha": criteria_sha,
         "n_gates": len(results),
         "n_invalid": len(failed),
@@ -350,11 +452,13 @@ def _coherence_from_criteria():
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser(prog="eval.gate_rules")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("scan", help="apply C1/C2/C3 to every published gate")
+    s = sub.add_parser("scan",
+                       help="apply C1/C2/C3/C4 to every published gate")
     s.add_argument("--mark", action="store_true",
                    help=f"write {MARKER_NAME} next to each offending gate")
     s.add_argument("--out", default="")
-    c = sub.add_parser("check", help="apply C1/C2/C3 to one gate directory")
+    c = sub.add_parser("check",
+                       help="apply C1/C2/C3/C4 to one gate directory")
     c.add_argument("dir")
     args = ap.parse_args(argv)
 

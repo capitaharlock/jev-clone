@@ -241,6 +241,40 @@ class TestTrainingRun(unittest.TestCase):
         self.assertLess(manifest["samples_seen"], self.SAMPLES + 32)
         self.assertGreater(manifest["tokens_seen"], 0)
 
+    def test_the_run_and_the_manifest_declare_the_cardinality_regime(self):
+        """R4 (#T-eval-cardinality): a checkpoint that does not say what
+        cardinality it trained at turns every later comparison into a
+        guess — a K<=8 verdict read next to a full-space one."""
+        run = self.records("run")[0]
+        with open(os.path.join(self.ckpt, "manifest.json")) as fh:
+            manifest = json.load(fh)
+        for where, doc in (("run.json", run), ("manifest", manifest)):
+            with self.subTest(where=where):
+                regime = doc["cardinality_regime"]
+                self.assertEqual(regime["mode"], "sampled options")
+                self.assertEqual((regime["k_min"], regime["k_max"]),
+                                 (SamplerConfig().k_min,
+                                  SamplerConfig().k_max))
+                self.assertIn("denominator",
+                              regime["loss_normalised_over"])
+                self.assertIn("R4", regime["rule"])
+        self.assertEqual(run["cardinality_regime"],
+                         manifest["cardinality_regime"])
+
+    def test_the_stage_eval_is_labelled_a_diagnostic_with_its_n_and_k(self):
+        """It shares its regime with the objective, so it may not head a
+        report — and it says so where it is published (R1/R2)."""
+        stage = self.records("stage")[0]
+        for side in ("seen", "unseen"):
+            with self.subTest(side=side):
+                report = stage[side]
+                self.assertEqual(report["role"], "diagnostic")
+                self.assertIn(f"n={report['n']}", report["why_diagnostic"])
+                self.assertIn(f"mean K={report['mean_k']}",
+                              report["why_diagnostic"])
+                self.assertIsNotNone(report["chance"])
+                self.assertIsNotNone(report["accuracy_ci95"])
+
     def test_the_head_stays_label_free_after_training(self):
         engine, _ = td.load_checkpoint(self.ckpt, "cpu")
         report = engine.head.label_free_report()

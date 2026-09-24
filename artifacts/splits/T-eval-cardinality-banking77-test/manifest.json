@@ -1,0 +1,28 @@
+{
+  "name": "T-eval-cardinality-banking77-test",
+  "task": "T-eval-cardinality",
+  "rule": "R7 \u2014 arms are chosen on the dev cut; the test cut is reserved and every query to it is logged",
+  "cut": "banking77-test",
+  "reserved": true,
+  "answers": "what the model scores on the rows the outside world's numbers are quoted on \u2014 read rarely, logged always",
+  "dataset": "banking77",
+  "split": "test",
+  "cardinality": "the full label space of the dataset, every row",
+  "seed": null,
+  "created_at": "2026-09-24T11:29:57Z",
+  "source": {
+    "path": "artifacts/data-prefetch/banking77.jsonl",
+    "sha256": "abfd60052afa0bbb4a119876dad653a9582d0f580ed35148491a6535735cbaca",
+    "rows_in_split": 3080
+  },
+  "counts": {
+    "rows": 3080
+  },
+  "files": {
+    "banking77-test.ids": {
+      "rows": 3080,
+      "sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570"
+    }
+  },
+  "manifest_sha256": "40c14a64c34f25e7335c3294501cefc3f58a219936f0d40a7fc9fed14d54bd0f"
+}

@@ -855,6 +855,36 @@ class RunningMetrics:
         }
 
 
+# -- the regime a run was trained at ---------------------------------------
+
+def cardinality_regime(config, episodic_resample: bool = False) -> dict:
+    """R4 — the cardinality this run trains at, written into the artifact.
+
+    A GO/NO-GO is only valid inside the regime it was measured in, so a
+    checkpoint that does not say which regime produced it turns every later
+    comparison into a guess. This block travels in `run.json` and in EVERY
+    checkpoint manifest, and `eval.scoreboard` prints it above the table
+    (`#T-eval-cardinality`, rule R4).
+    """
+    full = config.k_min == config.k_max == 0
+    return {
+        "mode": "full label space" if full else "sampled options",
+        "k_min": config.k_min,
+        "k_max": config.k_max,
+        "options_per_row": (f"{config.k_min}-{config.k_max} sampled from the "
+                            "row's label space, plus the `unknown` logit"),
+        "unknown_fraction": config.unknown_fraction,
+        "hard_fraction": config.hard_fraction,
+        "resampled_each_epoch": bool(episodic_resample),
+        "loss_normalised_over": "the [K + 1] columns handed to "
+                                "`cross_entropy` — that is the denominator, "
+                                "and it is this K, not the label space",
+        "rule": "R4 — a verdict measured in this regime does not transfer "
+                "to another one; it is marked non-transferable instead of "
+                "inherited",
+    }
+
+
 # -- evaluation ------------------------------------------------------------
 
 def evaluate(engine, samplers: dict, max_samples: int = 4000,
@@ -889,6 +919,17 @@ def evaluate(engine, samplers: dict, max_samples: int = 4000,
     report["beats_chance"] = bool(report["accuracy_ci95"][0] > report["chance"])
     report["ranking_beats_chance"] = bool(
         report["accuracy_options_only_ci95"][0] > report["chance_options_only"])
+    # #T-eval-cardinality: this cut shares its regime with the objective —
+    # the sampler's K, not the label space — which is what makes it useful
+    # during a run and blind to the transfer the product sells. It is a
+    # DIAGNOSTIC and says so wherever it is published, with the n and the
+    # mean K that make it readable at all (rules R1/R2).
+    report["role"] = "diagnostic"
+    report["why_diagnostic"] = (
+        f"n={report['n']}, mean K={report.get('mean_k')} — the training "
+        "regime's cardinality, not the label space. The primary metric is "
+        "full-cardinality accuracy (`eval.scoreboard`); this number may not "
+        "head a report")
     return report
 
 
@@ -993,6 +1034,9 @@ def save_checkpoint(engine, out_dir: str, run: dict, samples: int,
         "samples_seen": samples,
         "tokens_seen": tokens,
         "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+        # R4: every checkpoint says what cardinality it was trained at, so a
+        # K<=8 run and a full-space run cannot be compared by accident.
+        "cardinality_regime": run.get("cardinality_regime"),
         "datasets": run["datasets"],
         "data_manifest": run["data_manifest"],
         "holdout": run["holdout_path"],
@@ -1447,6 +1491,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                      "lr": regime["lr"],
                      "unfreeze": regime,
                      "revision": BACKBONES[backbone_id]["revision"]},
+        "cardinality_regime": cardinality_regime(config, episodic_resample),
         "data_manifest": data_manifest(sorted(tr), root),
         "mix": ({"version": mix_manifest["version"],
                  "seed": mix_manifest["seed"],
@@ -1756,6 +1801,9 @@ def compose_gate(ckpt_dir: str, manifest: dict, seen: dict, unseen: dict,
             "ci95": unseen.get("accuracy_ci95"),
             "chance": unseen.get("chance"),
             "n": unseen.get("n"),
+            # R2: without the K this accuracy cannot be read at all, and
+            # the per-dataset breakdown below inherits it from here.
+            "mean_k": unseen.get("mean_k"),
             "per_dataset": unseen.get("per_dataset"),
             "abstain_rate": unseen.get("abstain_rate"),
             "diagnostic_not_a_criterion": {
@@ -1787,6 +1835,18 @@ def compose_gate(ckpt_dir: str, manifest: dict, seen: dict, unseen: dict,
     gate = {
         "task": "T-train-real",
         "pass": all(c["pass"] for c in checks.values()),
+        "role": {
+            "kind": "diagnostic",
+            "n": unseen.get("n"),
+            "mean_k": unseen.get("mean_k"),
+            "cardinality_regime": manifest.get("cardinality_regime"),
+            "why": "this gate measures the run in the regime it trains in "
+                   "(the sampler's K, not the label space). It says whether "
+                   "the run is learning; it does not say what the product "
+                   "promises, and it may not head a report",
+            "primary_metric": "artifacts/gates/T-eval-cardinality/"
+                              "scoreboard.json (#T-eval-cardinality)",
+        },
         "run_id": manifest["run_id"],
         "model_version": manifest["model_version"],
         "checkpoint": os.path.relpath(ckpt_dir, ROOT),

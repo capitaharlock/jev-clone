@@ -1,0 +1,1260 @@
+{
+  "format": "jev.scoreboard.v1",
+  "task": "T-eval-cardinality",
+  "generated_utc": "2026-09-24T11:37:56Z",
+  "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+  "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+  "hierarchy": [
+    "primary",
+    "diagnostics",
+    "parity",
+    "cost"
+  ],
+  "rule": "no number heads a report without its chance rate, its K, its n and its 95 % interval (R2); a diagnostic never heads one at all (R1)",
+  "primary": {
+    "role": "PRIMARY — the number the product promises",
+    "metric": "accuracy at the full cardinality of the label space, on labels this run never trained on",
+    "cut": "banking77-dev",
+    "reserved_cut": false,
+    "dataset": "banking77",
+    "split": "train",
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+    "checkpoint_sha256": "be9f0d454360eb344dada8362cdb9e13c4b348fb174a53298cc71d16c557cf8c",
+    "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+    "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+    "split_sha256": "e878f5542c05e1a3000fc97a141898562ac5255b07ae3ee51f1b86e986cc4c88",
+    "manifest": "artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json",
+    "manifest_sha256": "a5980a80149c7b9022d35be9a7072fa94a47d65124f1ba2c569c305e3883972b",
+    "data_sha256": null,
+    "n": 1000,
+    "hits": 9,
+    "cardinality": 77,
+    "chance": 0.012987,
+    "accuracy": 0.009,
+    "accuracy_ci95": [
+      0.004742,
+      0.017016
+    ],
+    "hits_options_only": 9,
+    "accuracy_options_only": 0.009,
+    "accuracy_options_only_ci95": [
+      0.004742,
+      0.017016
+    ],
+    "abstain_rate": 0.0,
+    "beats_chance": false,
+    "ranking_beats_chance": false,
+    "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+    "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+    "seen_or_unseen": {
+      "claim": "unseen",
+      "evidence": "run.json declares fence.clean_1m=True with fenced_datasets=['banking77', 'helpsteer2', 'pubmedqa']; the run's 12 training sources are ['boolq', 'civil-comments', 'dbpedia14', 'detox-attack', 'email-triage', 'goemotions', 'huffpost', 'massive', 'prog-gold', 'snli', 'swag', 'synth-v1']",
+      "not_verified": [
+        "literal absence of each label string from the other training sources — dataset exclusion is not string absence (#T-jev-parity)",
+        "the pretrained backbone's prior exposure to this benchmark, which is not auditable at all"
+      ]
+    },
+    "examples_protocol": {
+      "labelled_examples_in_state": 0,
+      "option_text": "raw label identifiers (`data/adapters.py:146` builds `Option(id=l, text=l)`)",
+      "option_text_examples": [
+        "Refund_not_showing_up",
+        "activate_my_card",
+        "age_limit"
+      ],
+      "state": "the row's own text only — no category definitions, no retrieved neighbours, no demonstrations",
+      "state_truncation_tokens": 256,
+      "why_it_is_here": "R8 — the information in the options is part of the protocol, and it is the one documented difference with the teacher that nobody has measured yet (#T-option-text)"
+    },
+    "training_regime": {
+      "declared": false,
+      "why": "this checkpoint predates R4: its manifest does not say what cardinality it was trained at, and it is not inferred here",
+      "how_to_fix": "every run from #T-eval-cardinality onward writes `cardinality_regime` into run.json and into every checkpoint manifest",
+      "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+      "backbone_frozen": true
+    },
+    "cost": {
+      "role": "COST — what the number cost, so a regime can be priced before a run is committed to",
+      "device": "mps",
+      "rows": 1000,
+      "cardinality": 77,
+      "seconds": 5.48,
+      "ms_per_row": 5.48,
+      "rows_per_s": 182.39,
+      "note": "the head attends BETWEEN options (`model/decision_head.py:105-110`), so this grows about K² per row: a cost measured at K=8 does not price a run at K=77",
+      "published_serving_bench": {
+        "artifact": "artifacts/gates/T-state-cache/bench.json",
+        "warm_p50_ms": 0.006042,
+        "cold_ms": 0.041417
+      }
+    }
+  },
+  "diagnostics": {
+    "role": "DIAGNOSTIC — none of these may head a report (R1/R2): their K is the sampler's 3-8, not the label space",
+    "eval_unseen_gate": {
+      "role": "diagnostic",
+      "artifact": "artifacts/gates/T-unseen-labels/gate.json",
+      "answers": "does the head point at an option whose LABEL it never trained on, in the K it was trained at",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "n": 21694,
+      "cuts": {
+        "ALL": {
+          "n_seen": 9646,
+          "n_unseen": 5624
+        },
+        "banking77": {
+          "n_seen": 1646,
+          "n_unseen": 541
+        },
+        "boolq": {
+          "n_seen": 2000,
+          "n_unseen": 0
+        },
+        "huffpost": {
+          "n_seen": 2000,
+          "n_unseen": 2000
+        },
+        "massive": {
+          "n_seen": 4000,
+          "n_unseen": 3083
+        },
+        "massive@eval-locales": {
+          "n_seen": 1347,
+          "n_unseen": 1022
+        },
+        "massive@train-locales": {
+          "n_seen": 2653,
+          "n_unseen": 2061
+        }
+      },
+      "unseen": {
+        "n": 5624,
+        "mean_k": 5.4929,
+        "chance": 0.166216,
+        "accuracy": 0.3133,
+        "accuracy_ci95": [
+          0.301309,
+          0.325547
+        ]
+      },
+      "not_comparable_with": "any number measured at K=77 — R8 and a different K make it a different task"
+    },
+    "trainer_stage_eval": {
+      "role": "diagnostic",
+      "artifact": "the `metrics` block of every checkpoint manifest",
+      "answers": "is the run still learning, stage by stage",
+      "seen": {
+        "n": 3008,
+        "mean_k": 4.3684,
+        "chance": 0.206669,
+        "accuracy": 0.620678,
+        "accuracy_ci95": [
+          0.603195,
+          0.637854
+        ],
+        "beats_chance": true
+      },
+      "unseen": {
+        "n": 3008,
+        "mean_k": 5.5229,
+        "chance": 0.165236,
+        "accuracy": 0.288231,
+        "accuracy_ci95": [
+          0.272323,
+          0.30468
+        ],
+        "beats_chance": true
+      },
+      "why_it_is_not_the_primary": "it shares its regime with the objective, which is what makes it useful during a run and blind to the transfer the product sells"
+    },
+    "cardinality_sweep": {
+      "role": "diagnostic, exploratory",
+      "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "points": {
+        "5": {
+          "n": 1000,
+          "cardinality": 5,
+          "hits": 215,
+          "accuracy": 0.215,
+          "accuracy_ci95": [
+            0.190653,
+            0.241528
+          ],
+          "chance": 0.2,
+          "beats_chance": false,
+          "ranking_beats_chance": false
+        },
+        "8": {
+          "n": 1000,
+          "cardinality": 8,
+          "hits": 151,
+          "accuracy": 0.151,
+          "accuracy_ci95": [
+            0.130146,
+            0.174525
+          ],
+          "chance": 0.125,
+          "beats_chance": true,
+          "ranking_beats_chance": true
+        },
+        "20": {
+          "n": 1000,
+          "cardinality": 20,
+          "hits": 61,
+          "accuracy": 0.061,
+          "accuracy_ci95": [
+            0.04778,
+            0.07758
+          ],
+          "chance": 0.05,
+          "beats_chance": false,
+          "ranking_beats_chance": false
+        },
+        "40": {
+          "n": 1000,
+          "cardinality": 40,
+          "hits": 36,
+          "accuracy": 0.036,
+          "accuracy_ci95": [
+            0.026116,
+            0.049436
+          ],
+          "chance": 0.025,
+          "beats_chance": true,
+          "ranking_beats_chance": true
+        },
+        "77": {
+          "n": 1000,
+          "cardinality": 77,
+          "hits": 11,
+          "accuracy": 0.011,
+          "accuracy_ci95": [
+            0.006153,
+            0.019589
+          ],
+          "chance": 0.012987,
+          "beats_chance": false,
+          "ranking_beats_chance": false
+        }
+      },
+      "reading": "clears chance by the 95 % lower bound at K=[8, 40], does not at K=[5, 20, 77] — these are OUT OF ORDER: a K that clears sits above one that does not, so there is no progression to read off this sweep and no cardinality at which the advantage can be said to break. Counts: K=5: 215/1000 = 0.215 CI [0.190653, 0.241528] vs chance 0.2; K=8: 151/1000 = 0.151 CI [0.130146, 0.174525] vs chance 0.125; K=20: 61/1000 = 0.061 CI [0.04778, 0.07758] vs chance 0.05; K=40: 36/1000 = 0.036 CI [0.026116, 0.049436] vs chance 0.025; K=77: 11/1000 = 0.011 CI [0.006153, 0.019589] vs chance 0.012987",
+      "no_progression": "the points are published with their counts and intervals and no narrative: K=5 and K=20 do not clear their chance rate while K=8 and K=40 do, which is not a curve"
+    }
+  },
+  "parity": {
+    "role": "PARITY — somebody else's number, and every way the protocol differs from ours (R3/R8)",
+    "references": [
+      {
+        "who": "Jev (teacher)",
+        "citation": true,
+        "accuracy": 0.924,
+        "setup": "all 3 080 official test messages, 77 intents, category definitions + 24 labelled examples per prediction, no weight updates",
+        "source": "github.com/simonmesmith/jev-banking77-experiment",
+        "caveat": "BANKING77 is public; nobody can inspect Jev's training data, so this is not a held-out claim"
+      },
+      {
+        "who": "fine-tuned BERT (BANKING77 paper)",
+        "citation": true,
+        "accuracy": 0.9366,
+        "setup": "supervised fine-tune on the 10 003 training messages",
+        "source": "Casanueva et al. 2020, BANKING77",
+        "caveat": "trained ON this label space; our head never was"
+      }
+    ],
+    "same_rows": false,
+    "differences_declared": [
+      "the teacher is given natural-language definitions of the 77 categories and retrieves 24 labelled examples per prediction; our head is given raw identifiers and no examples",
+      "the teacher was never scored through our pipeline and there is no row-by-row evidence, so 'same rows' is not established",
+      "BANKING77 is public: the teacher's training data cannot be inspected, ours is fenced and the fence is auditable"
+    ],
+    "measured_by": {
+      "#T-jev-parity": "turns the citation into a measurement with the differences enumerated — not run yet",
+      "#T-teacher-kappa": "agreement with the teacher on the same rows — needs a working API key",
+      "#T-option-text": "the three option-text arms that price the information difference — not run yet"
+    }
+  },
+  "cost": {
+    "role": "COST — what the number cost, so a regime can be priced before a run is committed to",
+    "device": "mps",
+    "rows": 1000,
+    "cardinality": 77,
+    "seconds": 5.48,
+    "ms_per_row": 5.48,
+    "rows_per_s": 182.39,
+    "note": "the head attends BETWEEN options (`model/decision_head.py:105-110`), so this grows about K² per row: a cost measured at K=8 does not price a run at K=77",
+    "published_serving_bench": {
+      "artifact": "artifacts/gates/T-state-cache/bench.json",
+      "warm_p50_ms": 0.006042,
+      "cold_ms": 0.041417
+    }
+  },
+  "training_regime": {
+    "declared": false,
+    "why": "this checkpoint predates R4: its manifest does not say what cardinality it was trained at, and it is not inferred here",
+    "how_to_fix": "every run from #T-eval-cardinality onward writes `cardinality_regime` into run.json and into every checkpoint manifest",
+    "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
+    "backbone_frozen": true
+  },
+  "prediction_frequency": {
+    "n": 1000,
+    "labels_in_space": 77,
+    "distinct_predicted": 26,
+    "distinct_gold": 77,
+    "top1_label": "lost_or_stolen_phone",
+    "top1_share": 0.339,
+    "top5_share": 0.726,
+    "reading": "skewed: 26 of 77 labels are ever predicted and 'lost_or_stolen_phone' takes 33.9% of the rows where uniform would be 1.3% — a strong prior over part of the space, not a collapse onto one label and not an even spread. It says nothing about accuracy",
+    "predicted": [
+      {
+        "label": "lost_or_stolen_phone",
+        "count": 339,
+        "share": 0.339,
+        "gold_count": 10
+      },
+      {
+        "label": "change_pin",
+        "count": 143,
+        "share": 0.143,
+        "gold_count": 11
+      },
+      {
+        "label": "top_up_limits",
+        "count": 88,
+        "share": 0.088,
+        "gold_count": 10
+      },
+      {
+        "label": "contactless_not_working",
+        "count": 83,
+        "share": 0.083,
+        "gold_count": 1
+      },
+      {
+        "label": "Refund_not_showing_up",
+        "count": 73,
+        "share": 0.073,
+        "gold_count": 15
+      },
+      {
+        "label": "country_support",
+        "count": 47,
+        "share": 0.047,
+        "gold_count": 16
+      },
+      {
+        "label": "wrong_amount_of_cash_received",
+        "count": 45,
+        "share": 0.045,
+        "gold_count": 22
+      },
+      {
+        "label": "exchange_via_app",
+        "count": 41,
+        "share": 0.041,
+        "gold_count": 11
+      },
+      {
+        "label": "fiat_currency_support",
+        "count": 19,
+        "share": 0.019,
+        "gold_count": 14
+      },
+      {
+        "label": "supported_cards_and_currencies",
+        "count": 17,
+        "share": 0.017,
+        "gold_count": 15
+      },
+      {
+        "label": "age_limit",
+        "count": 17,
+        "share": 0.017,
+        "gold_count": 13
+      },
+      {
+        "label": "virtual_card_not_working",
+        "count": 14,
+        "share": 0.014,
+        "gold_count": 3
+      }
+    ],
+    "never_predicted": [
+      "activate_my_card",
+      "atm_support",
+      "automatic_top_up",
+      "balance_not_updated_after_bank_transfer",
+      "balance_not_updated_after_cheque_or_cash_deposit",
+      "beneficiary_not_allowed",
+      "cancel_transfer",
+      "card_about_to_expire",
+      "card_acceptance",
+      "card_arrival",
+      "card_delivery_estimate",
+      "card_linking"
+    ],
+    "n_never_predicted": 51
+  },
+  "confusion": {
+    "format": "gold -> predicted -> count, zero cells omitted",
+    "cells": {
+      "Refund_not_showing_up": {
+        "contactless_not_working": 4,
+        "change_pin": 4,
+        "Refund_not_showing_up": 2,
+        "lost_or_stolen_phone": 2,
+        "virtual_card_not_working": 1,
+        "lost_or_stolen_card": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "activate_my_card": {
+        "Refund_not_showing_up": 5,
+        "lost_or_stolen_phone": 3,
+        "wrong_amount_of_cash_received": 2,
+        "exchange_via_app": 2,
+        "change_pin": 1,
+        "pin_blocked": 1
+      },
+      "age_limit": {
+        "Refund_not_showing_up": 5,
+        "contactless_not_working": 3,
+        "lost_or_stolen_phone": 2,
+        "wrong_amount_of_cash_received": 1,
+        "lost_or_stolen_card": 1,
+        "exchange_via_app": 1
+      },
+      "apple_pay_or_google_pay": {
+        "change_pin": 4,
+        "exchange_via_app": 4,
+        "lost_or_stolen_phone": 3,
+        "top_up_limits": 3,
+        "supported_cards_and_currencies": 1,
+        "request_refund": 1,
+        "verify_top_up": 1,
+        "edit_personal_details": 1
+      },
+      "atm_support": {
+        "exchange_via_app": 4,
+        "lost_or_stolen_phone": 2,
+        "country_support": 2,
+        "fiat_currency_support": 1,
+        "age_limit": 1,
+        "Refund_not_showing_up": 1,
+        "reverted_card_payment?": 1
+      },
+      "automatic_top_up": {
+        "lost_or_stolen_phone": 5,
+        "top_up_limits": 2,
+        "country_support": 2,
+        "verify_my_identity": 1
+      },
+      "balance_not_updated_after_bank_transfer": {
+        "lost_or_stolen_phone": 8,
+        "top_up_limits": 5,
+        "country_support": 2,
+        "Refund_not_showing_up": 1,
+        "change_pin": 1
+      },
+      "balance_not_updated_after_cheque_or_cash_deposit": {
+        "lost_or_stolen_phone": 15,
+        "change_pin": 8,
+        "contactless_not_working": 3,
+        "failed_transfer": 1,
+        "top_up_limits": 1,
+        "Refund_not_showing_up": 1
+      },
+      "beneficiary_not_allowed": {
+        "lost_or_stolen_phone": 6,
+        "change_pin": 2,
+        "contactless_not_working": 2,
+        "country_support": 1
+      },
+      "cancel_transfer": {
+        "lost_or_stolen_phone": 9,
+        "top_up_limits": 2,
+        "contactless_not_working": 2,
+        "card_not_working": 1,
+        "exchange_via_app": 1,
+        "change_pin": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "card_about_to_expire": {
+        "contactless_not_working": 4,
+        "country_support": 2,
+        "lost_or_stolen_phone": 1,
+        "exchange_via_app": 1,
+        "Refund_not_showing_up": 1,
+        "fiat_currency_support": 1
+      },
+      "card_acceptance": {
+        "lost_or_stolen_phone": 6,
+        "country_support": 2,
+        "supported_cards_and_currencies": 1,
+        "virtual_card_not_working": 1
+      },
+      "card_arrival": {
+        "change_pin": 7,
+        "contactless_not_working": 2,
+        "country_support": 2,
+        "card_not_working": 1,
+        "virtual_card_not_working": 1,
+        "verify_top_up": 1,
+        "wrong_amount_of_cash_received": 1,
+        "lost_or_stolen_phone": 1,
+        "fiat_currency_support": 1
+      },
+      "card_delivery_estimate": {
+        "lost_or_stolen_phone": 4,
+        "exchange_via_app": 1,
+        "Refund_not_showing_up": 1,
+        "change_pin": 1,
+        "country_support": 1,
+        "verify_top_up": 1,
+        "top_up_limits": 1
+      },
+      "card_linking": {
+        "lost_or_stolen_phone": 5,
+        "country_support": 3,
+        "Refund_not_showing_up": 2,
+        "edit_personal_details": 2,
+        "change_pin": 1,
+        "fiat_currency_support": 1,
+        "supported_cards_and_currencies": 1,
+        "request_refund": 1,
+        "verify_my_identity": 1
+      },
+      "card_not_working": {
+        "Refund_not_showing_up": 3,
+        "lost_or_stolen_phone": 2,
+        "change_pin": 1,
+        "age_limit": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "card_payment_fee_charged": {
+        "lost_or_stolen_phone": 14,
+        "contactless_not_working": 3,
+        "top_up_limits": 3,
+        "card_not_working": 1,
+        "change_pin": 1,
+        "Refund_not_showing_up": 1,
+        "pin_blocked": 1
+      },
+      "card_payment_not_recognised": {
+        "lost_or_stolen_phone": 7,
+        "contactless_not_working": 4,
+        "change_pin": 1
+      },
+      "card_payment_wrong_exchange_rate": {
+        "lost_or_stolen_phone": 5,
+        "top_up_limits": 5,
+        "change_pin": 1
+      },
+      "card_swallowed": {
+        "change_pin": 3,
+        "Refund_not_showing_up": 1,
+        "virtual_card_not_working": 1,
+        "reverted_card_payment?": 1
+      },
+      "cash_withdrawal_charge": {
+        "lost_or_stolen_phone": 7,
+        "change_pin": 5,
+        "Refund_not_showing_up": 3,
+        "top_up_limits": 3,
+        "exchange_via_app": 1,
+        "failed_transfer": 1,
+        "virtual_card_not_working": 1
+      },
+      "cash_withdrawal_not_recognised": {
+        "lost_or_stolen_phone": 7,
+        "contactless_not_working": 3,
+        "Refund_not_showing_up": 1,
+        "wrong_amount_of_cash_received": 1,
+        "change_pin": 1
+      },
+      "change_pin": {
+        "Refund_not_showing_up": 5,
+        "lost_or_stolen_phone": 2,
+        "virtual_card_not_working": 2,
+        "change_pin": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "compromised_card": {
+        "change_pin": 3,
+        "Refund_not_showing_up": 2,
+        "lost_or_stolen_phone": 1,
+        "contactless_not_working": 1
+      },
+      "contactless_not_working": {
+        "lost_or_stolen_phone": 1
+      },
+      "country_support": {
+        "lost_or_stolen_phone": 8,
+        "country_support": 4,
+        "change_pin": 2,
+        "edit_personal_details": 1,
+        "Refund_not_showing_up": 1
+      },
+      "declined_card_payment": {
+        "lost_or_stolen_phone": 9,
+        "change_pin": 2,
+        "wrong_amount_of_cash_received": 2,
+        "contactless_not_working": 1
+      },
+      "declined_cash_withdrawal": {
+        "change_pin": 4,
+        "lost_or_stolen_phone": 4,
+        "top_up_limits": 2,
+        "Refund_not_showing_up": 1,
+        "verify_top_up": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "declined_transfer": {
+        "lost_or_stolen_phone": 8,
+        "change_pin": 4,
+        "contactless_not_working": 3,
+        "top_up_limits": 1,
+        "wrong_amount_of_cash_received": 1,
+        "age_limit": 1
+      },
+      "direct_debit_payment_not_recognised": {
+        "contactless_not_working": 6,
+        "lost_or_stolen_phone": 3,
+        "change_pin": 3,
+        "top_up_limits": 2,
+        "pin_blocked": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "disposable_card_limits": {
+        "lost_or_stolen_phone": 5,
+        "change_pin": 5,
+        "lost_or_stolen_card": 2,
+        "Refund_not_showing_up": 2,
+        "contactless_not_working": 1,
+        "wrong_amount_of_cash_received": 1,
+        "supported_cards_and_currencies": 1
+      },
+      "edit_personal_details": {
+        "lost_or_stolen_phone": 7,
+        "wrong_amount_of_cash_received": 3,
+        "pin_blocked": 1
+      },
+      "exchange_charge": {
+        "top_up_limits": 6,
+        "lost_or_stolen_phone": 6,
+        "exchange_via_app": 4,
+        "country_support": 3,
+        "pin_blocked": 1,
+        "contactless_not_working": 1
+      },
+      "exchange_rate": {
+        "top_up_limits": 7,
+        "exchange_via_app": 3,
+        "lost_or_stolen_phone": 2,
+        "contactless_not_working": 2,
+        "fiat_currency_support": 2,
+        "age_limit": 1,
+        "country_support": 1
+      },
+      "exchange_via_app": {
+        "lost_or_stolen_phone": 7,
+        "country_support": 3,
+        "top_up_limits": 1
+      },
+      "extra_charge_on_statement": {
+        "lost_or_stolen_phone": 4,
+        "contactless_not_working": 2,
+        "change_pin": 2,
+        "verify_top_up": 2,
+        "age_limit": 1
+      },
+      "failed_transfer": {
+        "lost_or_stolen_phone": 5,
+        "contactless_not_working": 5,
+        "change_pin": 2,
+        "age_limit": 1,
+        "virtual_card_not_working": 1,
+        "verify_top_up": 1,
+        "top_up_failed": 1,
+        "top_up_limits": 1
+      },
+      "fiat_currency_support": {
+        "lost_or_stolen_phone": 3,
+        "country_support": 3,
+        "change_pin": 3,
+        "top_up_limits": 2,
+        "fiat_currency_support": 1,
+        "age_limit": 1,
+        "exchange_via_app": 1
+      },
+      "get_disposable_virtual_card": {
+        "age_limit": 2,
+        "lost_or_stolen_phone": 2,
+        "fiat_currency_support": 1,
+        "supported_cards_and_currencies": 1,
+        "Refund_not_showing_up": 1,
+        "getting_spare_card": 1
+      },
+      "get_physical_card": {
+        "Refund_not_showing_up": 4,
+        "change_pin": 2,
+        "wrong_amount_of_cash_received": 1,
+        "contactless_not_working": 1,
+        "lost_or_stolen_phone": 1
+      },
+      "getting_spare_card": {
+        "Refund_not_showing_up": 2,
+        "age_limit": 1,
+        "exchange_via_app": 1,
+        "apple_pay_or_google_pay": 1,
+        "change_pin": 1,
+        "contactless_not_working": 1,
+        "wrong_amount_of_cash_received": 1,
+        "virtual_card_not_working": 1
+      },
+      "getting_virtual_card": {
+        "supported_cards_and_currencies": 4,
+        "Refund_not_showing_up": 2,
+        "lost_or_stolen_phone": 1,
+        "edit_personal_details": 1,
+        "contactless_not_working": 1,
+        "exchange_via_app": 1
+      },
+      "lost_or_stolen_card": {
+        "change_pin": 3,
+        "contactless_not_working": 2,
+        "Refund_not_showing_up": 2,
+        "wrong_amount_of_cash_received": 1,
+        "supported_cards_and_currencies": 1
+      },
+      "lost_or_stolen_phone": {
+        "card_not_working": 4,
+        "virtual_card_not_working": 2,
+        "wrong_amount_of_cash_received": 2,
+        "change_pin": 1,
+        "Refund_not_showing_up": 1
+      },
+      "order_physical_card": {
+        "supported_cards_and_currencies": 2,
+        "age_limit": 2,
+        "wrong_amount_of_cash_received": 1,
+        "change_pin": 1,
+        "lost_or_stolen_phone": 1,
+        "Refund_not_showing_up": 1
+      },
+      "passcode_forgotten": {
+        "lost_or_stolen_phone": 4,
+        "change_pin": 3,
+        "wrong_amount_of_cash_received": 3,
+        "age_limit": 1
+      },
+      "pending_card_payment": {
+        "lost_or_stolen_phone": 3,
+        "contactless_not_working": 3,
+        "top_up_limits": 3,
+        "virtual_card_not_working": 1
+      },
+      "pending_cash_withdrawal": {
+        "lost_or_stolen_phone": 8,
+        "change_pin": 5,
+        "top_up_limits": 1,
+        "reverted_card_payment?": 1
+      },
+      "pending_top_up": {
+        "lost_or_stolen_phone": 4,
+        "change_pin": 3,
+        "pin_blocked": 2,
+        "apple_pay_or_google_pay": 1
+      },
+      "pending_transfer": {
+        "lost_or_stolen_phone": 7,
+        "change_pin": 5,
+        "top_up_limits": 2,
+        "wrong_amount_of_cash_received": 2,
+        "fiat_currency_support": 1,
+        "exchange_via_app": 1,
+        "country_support": 1
+      },
+      "pin_blocked": {
+        "lost_or_stolen_phone": 4,
+        "Refund_not_showing_up": 2,
+        "wrong_amount_of_cash_received": 2,
+        "change_pin": 1,
+        "virtual_card_not_working": 1,
+        "card_not_working": 1
+      },
+      "receiving_money": {
+        "contactless_not_working": 2,
+        "top_up_limits": 2,
+        "Refund_not_showing_up": 2,
+        "country_support": 1,
+        "change_pin": 1
+      },
+      "request_refund": {
+        "lost_or_stolen_phone": 10,
+        "contactless_not_working": 3,
+        "exchange_via_app": 1,
+        "Refund_not_showing_up": 1
+      },
+      "reverted_card_payment?": {
+        "lost_or_stolen_phone": 7,
+        "top_up_limits": 3,
+        "contactless_not_working": 3
+      },
+      "supported_cards_and_currencies": {
+        "top_up_limits": 3,
+        "country_support": 3,
+        "fiat_currency_support": 2,
+        "Refund_not_showing_up": 2,
+        "exchange_via_app": 1,
+        "edit_personal_details": 1,
+        "age_limit": 1,
+        "lost_or_stolen_phone": 1,
+        "contactless_not_working": 1
+      },
+      "terminate_account": {
+        "lost_or_stolen_phone": 4,
+        "Refund_not_showing_up": 3,
+        "change_pin": 1,
+        "wrong_amount_of_cash_received": 1
+      },
+      "top_up_by_bank_transfer_charge": {
+        "lost_or_stolen_phone": 3,
+        "country_support": 2,
+        "pin_blocked": 1,
+        "supported_cards_and_currencies": 1,
+        "fiat_currency_support": 1,
+        "Refund_not_showing_up": 1,
+        "edit_personal_details": 1
+      },
+      "top_up_by_card_charge": {
+        "contactless_not_working": 4,
+        "lost_or_stolen_phone": 3,
+        "change_pin": 3,
+        "top_up_limits": 2,
+        "fiat_currency_support": 1,
+        "request_refund": 1,
+        "age_limit": 1
+      },
+      "top_up_by_cash_or_cheque": {
+        "change_pin": 4,
+        "contactless_not_working": 2,
+        "age_limit": 1,
+        "exchange_via_app": 1,
+        "Refund_not_showing_up": 1,
+        "country_support": 1,
+        "card_not_working": 1,
+        "wrong_amount_of_cash_received": 1,
+        "lost_or_stolen_phone": 1
+      },
+      "top_up_failed": {
+        "lost_or_stolen_phone": 9,
+        "change_pin": 3,
+        "top_up_limits": 2,
+        "transaction_charged_twice": 1,
+        "pin_blocked": 1
+      },
+      "top_up_limits": {
+        "lost_or_stolen_phone": 6,
+        "Refund_not_showing_up": 2,
+        "exchange_via_app": 1,
+        "change_pin": 1
+      },
+      "top_up_reverted": {
+        "lost_or_stolen_phone": 4,
+        "top_up_limits": 2,
+        "fiat_currency_support": 1,
+        "verify_my_identity": 1,
+        "pin_blocked": 1,
+        "wrong_amount_of_cash_received": 1,
+        "change_pin": 1
+      },
+      "topping_up_by_card": {
+        "change_pin": 2,
+        "Refund_not_showing_up": 2,
+        "supported_cards_and_currencies": 1,
+        "exchange_via_app": 1,
+        "verify_top_up": 1
+      },
+      "transaction_charged_twice": {
+        "lost_or_stolen_phone": 8,
+        "top_up_limits": 3,
+        "wrong_amount_of_cash_received": 2,
+        "change_pin": 2
+      },
+      "transfer_fee_charged": {
+        "lost_or_stolen_phone": 9,
+        "contactless_not_working": 3,
+        "top_up_limits": 3,
+        "reverted_card_payment?": 1,
+        "exchange_via_app": 1
+      },
+      "transfer_into_account": {
+        "top_up_limits": 3,
+        "fiat_currency_support": 3,
+        "Refund_not_showing_up": 1,
+        "lost_or_stolen_phone": 1
+      },
+      "transfer_not_received_by_recipient": {
+        "lost_or_stolen_phone": 12,
+        "change_pin": 4,
+        "top_up_limits": 1,
+        "age_limit": 1,
+        "request_refund": 1,
+        "contactless_not_working": 1,
+        "card_not_working": 1,
+        "virtual_card_not_working": 1
+      },
+      "transfer_timing": {
+        "country_support": 3,
+        "Refund_not_showing_up": 2,
+        "change_pin": 2,
+        "lost_or_stolen_phone": 1,
+        "exchange_via_app": 1,
+        "top_up_limits": 1
+      },
+      "unable_to_verify_identity": {
+        "lost_or_stolen_phone": 4,
+        "wrong_amount_of_cash_received": 4,
+        "change_pin": 3,
+        "lost_or_stolen_card": 1
+      },
+      "verify_my_identity": {
+        "lost_or_stolen_phone": 4,
+        "Refund_not_showing_up": 2,
+        "wrong_amount_of_cash_received": 1,
+        "card_not_working": 1,
+        "request_refund": 1,
+        "top_up_limits": 1,
+        "verify_my_identity": 1,
+        "contactless_not_working": 1
+      },
+      "verify_source_of_funds": {
+        "top_up_limits": 4,
+        "exchange_via_app": 2,
+        "fiat_currency_support": 1
+      },
+      "verify_top_up": {
+        "exchange_via_app": 2,
+        "country_support": 2,
+        "verify_my_identity": 1,
+        "request_refund": 1,
+        "wrong_amount_of_cash_received": 1,
+        "fiat_currency_support": 1
+      },
+      "virtual_card_not_working": {
+        "top_up_limits": 1,
+        "lost_or_stolen_phone": 1,
+        "change_pin": 1
+      },
+      "visa_or_mastercard": {
+        "edit_personal_details": 4,
+        "exchange_via_app": 4,
+        "change_pin": 3,
+        "supported_cards_and_currencies": 3,
+        "lost_or_stolen_phone": 3,
+        "wrong_amount_of_cash_received": 2,
+        "country_support": 2,
+        "top_up_limits": 1
+      },
+      "why_verify_identity": {
+        "lost_or_stolen_phone": 6,
+        "contactless_not_working": 2,
+        "wrong_amount_of_cash_received": 1,
+        "verify_my_identity": 1,
+        "change_pin": 1,
+        "card_swallowed": 1,
+        "pin_blocked": 1,
+        "request_refund": 1
+      },
+      "wrong_amount_of_cash_received": {
+        "lost_or_stolen_phone": 10,
+        "change_pin": 9,
+        "failed_transfer": 1,
+        "top_up_limits": 1,
+        "card_not_working": 1
+      },
+      "wrong_exchange_rate_for_cash_withdrawal": {
+        "lost_or_stolen_phone": 8,
+        "change_pin": 3,
+        "top_up_limits": 2,
+        "contactless_not_working": 1,
+        "edit_personal_details": 1,
+        "country_support": 1
+      }
+    },
+    "top_confusions": [
+      {
+        "gold": "balance_not_updated_after_cheque_or_cash_deposit",
+        "predicted": "lost_or_stolen_phone",
+        "count": 15
+      },
+      {
+        "gold": "card_payment_fee_charged",
+        "predicted": "lost_or_stolen_phone",
+        "count": 14
+      },
+      {
+        "gold": "transfer_not_received_by_recipient",
+        "predicted": "lost_or_stolen_phone",
+        "count": 12
+      },
+      {
+        "gold": "wrong_amount_of_cash_received",
+        "predicted": "lost_or_stolen_phone",
+        "count": 10
+      },
+      {
+        "gold": "request_refund",
+        "predicted": "lost_or_stolen_phone",
+        "count": 10
+      },
+      {
+        "gold": "wrong_amount_of_cash_received",
+        "predicted": "change_pin",
+        "count": 9
+      },
+      {
+        "gold": "transfer_fee_charged",
+        "predicted": "lost_or_stolen_phone",
+        "count": 9
+      },
+      {
+        "gold": "top_up_failed",
+        "predicted": "lost_or_stolen_phone",
+        "count": 9
+      },
+      {
+        "gold": "declined_card_payment",
+        "predicted": "lost_or_stolen_phone",
+        "count": 9
+      },
+      {
+        "gold": "cancel_transfer",
+        "predicted": "lost_or_stolen_phone",
+        "count": 9
+      },
+      {
+        "gold": "wrong_exchange_rate_for_cash_withdrawal",
+        "predicted": "lost_or_stolen_phone",
+        "count": 8
+      },
+      {
+        "gold": "transaction_charged_twice",
+        "predicted": "lost_or_stolen_phone",
+        "count": 8
+      }
+    ],
+    "n_off_diagonal": 991
+  },
+  "errors": [
+    {
+      "id": "banking77:banking77-2:banking77-intent-2",
+      "state": "I have been waiting over a week. Is the card still coming?",
+      "gold": "card_arrival",
+      "p_gold": 0.012762,
+      "predicted": "card_not_working",
+      "p_predicted": 0.05571,
+      "gold_rank": 29
+    },
+    {
+      "id": "banking77:banking77-838:banking77-intent-838",
+      "state": "I made a cash withdrawal and it is still listed as a pending transaction.",
+      "gold": "pending_cash_withdrawal",
+      "p_gold": 0.012422,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.055979,
+      "gold_rank": 30
+    },
+    {
+      "id": "banking77:banking77-1683:banking77-intent-1683",
+      "state": "I entered a wrong PIN too many times. How can I fix this?",
+      "gold": "pin_blocked",
+      "p_gold": 0.026901,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.053283,
+      "gold_rank": 11
+    },
+    {
+      "id": "banking77:banking77-2528:banking77-intent-2528",
+      "state": "I noticed a new fee on my account. I didn't know there were fees for these payments. What is the policy?",
+      "gold": "card_payment_fee_charged",
+      "p_gold": 0.003284,
+      "predicted": "contactless_not_working",
+      "p_predicted": 0.062631,
+      "gold_rank": 64
+    },
+    {
+      "id": "banking77:banking77-3210:banking77-intent-3210",
+      "state": "Why does my top-up get cancelled?",
+      "gold": "top_up_reverted",
+      "p_gold": 0.015739,
+      "predicted": "verify_my_identity",
+      "p_predicted": 0.040532,
+      "gold_rank": 25
+    },
+    {
+      "id": "banking77:banking77-3958:banking77-intent-3958",
+      "state": "How come I can't seem to verify my id?",
+      "gold": "unable_to_verify_identity",
+      "p_gold": 0.028244,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.039735,
+      "gold_rank": 5
+    },
+    {
+      "id": "banking77:banking77-4664:banking77-intent-4664",
+      "state": "This debit is not my transcation. How do I get my money out back?",
+      "gold": "direct_debit_payment_not_recognised",
+      "p_gold": 0.0057,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.048105,
+      "gold_rank": 56
+    },
+    {
+      "id": "banking77:banking77-5604:banking77-intent-5604",
+      "state": "I am unable to transfer money. I believe it is not working because it states it was declined.",
+      "gold": "declined_transfer",
+      "p_gold": 0.007679,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.06254,
+      "gold_rank": 43
+    },
+    {
+      "id": "banking77:banking77-6477:banking77-intent-6477",
+      "state": "Why is there are there two of the same transaction?",
+      "gold": "transaction_charged_twice",
+      "p_gold": 0.014228,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.052149,
+      "gold_rank": 27
+    },
+    {
+      "id": "banking77:banking77-7455:banking77-intent-7455",
+      "state": "I have tried sending a standard transfer five times and it hasn't gone through. What is the problem?",
+      "gold": "failed_transfer",
+      "p_gold": 0.016244,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.0683,
+      "gold_rank": 22
+    },
+    {
+      "id": "banking77:banking77-8454:banking77-intent-8454",
+      "state": "How do I know if i need a disposable card?",
+      "gold": "get_disposable_virtual_card",
+      "p_gold": 0.007545,
+      "predicted": "lost_or_stolen_phone",
+      "p_predicted": 0.047058,
+      "gold_rank": 44
+    },
+    {
+      "id": "banking77:banking77-9158:banking77-intent-9158",
+      "state": "Will I be charged a fee for topping up using a European card?",
+      "gold": "top_up_by_card_charge",
+      "p_gold": 0.007818,
+      "predicted": "contactless_not_working",
+      "p_predicted": 0.043668,
+      "gold_rank": 49
+    }
+  ],
+  "cuts": {
+    "dev": {
+      "cut": "banking77-dev",
+      "dataset": "banking77",
+      "split": "train",
+      "reserved": false,
+      "answers": "which arm to keep: K, option text, objective, encoder, mixture, seed — as many times as it takes",
+      "seed": 20260924,
+      "manifest": "artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json",
+      "manifest_sha256": "a5980a80149c7b9022d35be9a7072fa94a47d65124f1ba2c569c305e3883972b",
+      "split_sha256": "e878f5542c05e1a3000fc97a141898562ac5255b07ae3ee51f1b86e986cc4c88",
+      "rows": 1000
+    },
+    "test": {
+      "cut": "banking77-test",
+      "dataset": "banking77",
+      "split": "test",
+      "reserved": true,
+      "answers": "what the model scores on the rows the outside world's numbers are quoted on — read rarely, logged always",
+      "seed": null,
+      "manifest": "artifacts/splits/T-eval-cardinality-banking77-test/manifest.json",
+      "manifest_sha256": "40c14a64c34f25e7335c3294501cefc3f58a219936f0d40a7fc9fed14d54bd0f",
+      "split_sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570",
+      "rows": 3080
+    },
+    "queries_to_the_reserved_cut": [
+      {
+        "when": "2026-09-21T14:41:53Z",
+        "checkpoint": "artifacts/checkpoints/decision/train-real-v1/stage-000250000",
+        "reason": "#T-unseen-labels gate: the banking77 rows of the seen/unseen cuts are drawn from this split (EVAL_SPLIT['banking77'] = 'test'), at the sampler's K<=8",
+        "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/train-real-v1-stage-000250000.json",
+        "rows": 2187,
+        "by": "eval.unseen",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-22T09:38:42Z",
+        "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000",
+        "reason": "#T-unseen-labels gate on the modernbert arm of the 1M curve, same K<=8 banking77 rows",
+        "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-modernbert-base-s20260922-stage-001000000.json",
+        "rows": 2187,
+        "by": "eval.unseen",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-22T09:42:43Z",
+        "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000",
+        "reason": "#T-unseen-labels gate on the ettin-68m arm of the 1M curve, same K<=8 banking77 rows",
+        "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-ettin-68m-s20260922-stage-001000000.json",
+        "rows": 2187,
+        "by": "eval.unseen",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-23T20:40:20Z",
+        "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+        "reason": "#T-unseen-labels gate on the reference checkpoint (leverstack d512 prior, 1M rows), same K<=8 banking77 rows",
+        "artifact": "artifacts/gates/T-unseen-labels/gate.json",
+        "rows": 2187,
+        "by": "eval.unseen",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-23T20:47:42Z",
+        "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+        "reason": "#T-teacher-probe subsample: 38 banking77 rows of the unseen cut written out for the teacher probe",
+        "artifact": "artifacts/gates/T-teacher-probe/subsample.json",
+        "rows": 38,
+        "by": "eval.teacher_probe",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-23T20:53:44Z",
+        "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+        "reason": "#T-teacher-probe fullspace: the first measurement at the full cardinality (K=77) on all 3 080 official test rows, against the teacher's published 0.924",
+        "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+        "rows": 3080,
+        "by": "eval.fullspace",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-23T20:53:44Z",
+        "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+        "reason": "#T-teacher-probe cardinality sweep K=5/8/20/40/77 on the first 1 000 rows of the same cut, as the control that tells 'no signal' from 'a K it never saw'",
+        "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+        "rows": 1000,
+        "by": "eval.fullspace",
+        "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+      },
+      {
+        "when": "2026-09-24T11:36:31Z",
+        "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+        "reason": "re-publish under the corrected beats_chance semantics and the non-narrative sweep reading (#T-eval-cardinality); same checkpoint, same rows, no arm chosen here",
+        "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+        "rows": 3080,
+        "by": "eval.fullspace"
+      }
+    ]
+  },
+  "reconciliation": ".meshkore/docs/cortes-de-evaluacion.md"
+}

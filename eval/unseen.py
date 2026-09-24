@@ -577,9 +577,34 @@ def compose_gate(model_version: str, ckpt_dir: str, table: dict,
         "cross_lingual_holdout": cross,
     }
     failed = sorted(k for k, v in criteria.items() if not v.get("pass"))
+    overall = (table.get("ALL") or {}).get("unseen", {}).get("raw", {})
     return {
         "format": 1,
         "task": TASK,
+        # #T-eval-cardinality (R1/R2): this gate measures at the SAMPLER's
+        # cardinality — 3-8 options and the `unknown` logit — which is the
+        # regime the run trains in. It is the right question for "is the
+        # head learning to read option text"; it is not the question the
+        # product promises, and its number may not head a report. The n and
+        # the mean K sit in the header so nobody has to dig for them.
+        "role": {
+            "kind": "diagnostic",
+            "n": n_scored,
+            "n_published_cut": overall.get("n"),
+            "mean_k": overall.get("mean_k"),
+            "chance": overall.get("chance"),
+            "cardinality": "the sampler's 3-8 sampled options + `unknown`, "
+                           "not the label space",
+            "why": "K<=8 shares its regime with the training objective: it "
+                   "tracks whether the run is learning and is blind to the "
+                   "transfer to a full label space",
+            "primary_metric": "artifacts/gates/T-eval-cardinality/"
+                              "scoreboard.json — full cardinality, with its "
+                              "chance rate and its 95 % interval",
+            "not_comparable_with": "any externally published number measured "
+                                   "at the full cardinality of its benchmark "
+                                   "(R3/R8)",
+        },
         "generated_utc": utcnow(),
         "model_version": model_version,
         "checkpoint": ckpt_dir,

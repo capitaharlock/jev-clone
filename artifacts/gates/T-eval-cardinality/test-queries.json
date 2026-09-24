@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "task": "T-eval-cardinality",
+  "rule": "R7 — every read of the reserved cut is logged with its date, its checkpoint and its reason. The ledger does not grant or refuse access; it makes adaptive selection visible to whoever reads the numbers later",
+  "cut": "T-eval-cardinality-banking77-test",
+  "queries": [
+    {
+      "when": "2026-09-21T14:41:53Z",
+      "checkpoint": "artifacts/checkpoints/decision/train-real-v1/stage-000250000",
+      "reason": "#T-unseen-labels gate: the banking77 rows of the seen/unseen cuts are drawn from this split (EVAL_SPLIT['banking77'] = 'test'), at the sampler's K<=8",
+      "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/train-real-v1-stage-000250000.json",
+      "rows": 2187,
+      "by": "eval.unseen",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-22T09:38:42Z",
+      "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000",
+      "reason": "#T-unseen-labels gate on the modernbert arm of the 1M curve, same K<=8 banking77 rows",
+      "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-modernbert-base-s20260922-stage-001000000.json",
+      "rows": 2187,
+      "by": "eval.unseen",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-22T09:42:43Z",
+      "checkpoint": "artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-unseen-labels gate on the ettin-68m arm of the 1M curve, same K<=8 banking77 rows",
+      "artifact": "artifacts/gates/T-unseen-labels/by-checkpoint/mix1m-curve-ettin-68m-s20260922-stage-001000000.json",
+      "rows": 2187,
+      "by": "eval.unseen",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-23T20:40:20Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-unseen-labels gate on the reference checkpoint (leverstack d512 prior, 1M rows), same K<=8 banking77 rows",
+      "artifact": "artifacts/gates/T-unseen-labels/gate.json",
+      "rows": 2187,
+      "by": "eval.unseen",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-23T20:47:42Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-teacher-probe subsample: 38 banking77 rows of the unseen cut written out for the teacher probe",
+      "artifact": "artifacts/gates/T-teacher-probe/subsample.json",
+      "rows": 38,
+      "by": "eval.teacher_probe",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-23T20:53:44Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-teacher-probe fullspace: the first measurement at the full cardinality (K=77) on all 3 080 official test rows, against the teacher's published 0.924",
+      "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "rows": 3080,
+      "by": "eval.fullspace",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-23T20:53:44Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-teacher-probe cardinality sweep K=5/8/20/40/77 on the first 1 000 rows of the same cut, as the control that tells 'no signal' from 'a K it never saw'",
+      "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "rows": 1000,
+      "by": "eval.fullspace",
+      "recorded": "RECONSTRUCTED from the artifact on disk — this query was made before the ledger existed, so its reason is read off the task that produced it, not off a note written at the time"
+    },
+    {
+      "when": "2026-09-24T11:36:31Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "re-publish under the corrected beats_chance semantics and the non-narrative sweep reading (#T-eval-cardinality); same checkpoint, same rows, no arm chosen here",
+      "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "rows": 3080,
+      "by": "eval.fullspace"
+    }
+  ],
+  "updated_utc": "2026-09-24T11:36:31Z",
+  "n_queries": 8
+}

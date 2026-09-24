@@ -273,3 +273,27 @@ le dan definiciones y 24 ejemplos, a nosotros identificadores crudos.
 | 34 | full-space-training | T-fullspace-objective (ahora `next`) | La **vía muestreada**: in-batch + log-Q, con especificación matemática y tests como puerta de entrada, y la atención entre opciones de la cabeza resuelta antes del run |
 | 35 | full-space-training | T-encoder-finetune | Corregido: la acumulación de gradiente no conserva los negativos in-batch; memoria medida en la configuración real antes de prometer el run |
 | 36 | oss-release | **T-serve-engine** (nueva) | Servidor sin `Engine`, cargador Rust que ignoraría el encoder afinado, y colisión de la clave de caché en `/v1/choice`. Bloquea servir el modelo de fase 2, no lo explica |
+
+## Entregado 2026-09-24 — `#T-eval-cardinality` (etapa 1 de la fase 2)
+
+El protocolo de medición, que bloqueaba el resto de la fase. Nada de esto
+entrena: reordena el testing.
+
+| Entregable | Dónde |
+|---|---|
+| Regla **C4**: una `accuracy` sin `chance`, sin cardinalidad y sin IC 95 % al lado hace fallar el gate, verde o rojo; la cita ajena declarada se exime | `eval/gate_rules.py`, `eval/test_gate_rules.py` |
+| `beats_chance` se decide con la accuracy real y `ranking_beats_chance` con el ranking forzado (abstención total → `beats_chance: false`) | `eval/fullspace.py`, `eval/test_fullspace.py` |
+| El barrido de K se publica con conteos e IC y **sin narrativa de progresión**: K=8 y K=40 baten su azar, K=5, K=20 y K=77 no, y están desordenados | `eval/fullspace.py: sweep_reading` |
+| Un comando, una tabla: primaria + diagnósticos + paridad + coste + frecuencia de predicción + confusión + muestra de errores | `eval/scoreboard.py`, `artifacts/gates/T-eval-cardinality/scoreboard.json` |
+| Corte de desarrollo sellado (1 000 filas del split train) distinto del test reservado (3 080), sin solape, con registro de consultas que arranca con las 7 ya hechas | `eval/cuts.py`, `artifacts/splits/T-eval-cardinality-*`, `artifacts/gates/T-eval-cardinality/test-queries.json` |
+| `eval.unseen` y el stage eval del trainer etiquetados `role: diagnostic` con su `n` y su K en el encabezado | `eval/unseen.py`, `training/python/train_decision.py` |
+| Todo checkpoint nuevo publica `cardinality_regime` (R4) en `run.json` y en su manifest | `training/python/train_decision.py` |
+| Qué corte contesta qué pregunta y cuál manda | [cortes-de-evaluacion.md](cortes-de-evaluacion.md) |
+
+Primer resultado del scoreboard sobre `leverstack-d512-prior-ettin-68m-s20260922`:
+en el corte de desarrollo, 9/1 000 = 0,0090 con IC [0,0047, 0,0170] y azar
+0,0130 — el mismo cuadro que el corte reservado, indistinguible del azar. El
+diagnóstico nuevo añade lo que ninguna accuracy decía: sólo 26 de las 77
+etiquetas se predicen alguna vez y `lost_or_stolen_phone` se lleva el 33,9 % de
+las filas (uniforme sería 1,3 %). Causa no medida: `#T-option-text` y
+`#T-bigk-optsets`.

@@ -21,7 +21,11 @@ COHERENCE = {
     "cohen_kappa_floor": {"value": 0.10, "why": "test"},
     "require_model_version": {"value": True, "why": "test"},
     "require_sealed_split": {"value": True, "why": "test"},
+    "require_chance_next_to_accuracy": {"value": True, "why": "test"},
 }
+#: the three companions R2 demands beside every accuracy
+R2 = {"chance": 0.012987, "cardinality": 77,
+      "accuracy_ci95": [0.009002, 0.016888]}
 
 
 def gate_dir(tmp: str, name: str, **files) -> Path:
@@ -113,7 +117,7 @@ class TestC2ModelVersion(unittest.TestCase):
     def test_a_metric_without_model_version_fails_a_green(self):
         with tempfile.TemporaryDirectory() as tmp:
             d = gate_dir(tmp, "T-nomv", gate={
-                "pass": True, "split_sha256": SEALED, "accuracy": 0.9})
+                "pass": True, "split_sha256": SEALED, "accuracy": 0.9, **R2})
             self.assertIn("C2", rules_of(G.check_gate_dir(d, COHERENCE,
                                                           Path(tmp))))
 
@@ -129,7 +133,7 @@ class TestC2ModelVersion(unittest.TestCase):
             d = gate_dir(tmp, "T-pair",
                          gate={"pass": True, "model_version": "m-1",
                                "split_sha256": SEALED},
-                         report={"accuracy": 0.9})
+                         report={"accuracy": 0.9, **R2})
             self.assertNotIn("C2", rules_of(G.check_gate_dir(d, COHERENCE,
                                                              Path(tmp))))
 
@@ -137,7 +141,7 @@ class TestC2ModelVersion(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             d = gate_dir(tmp, "T-blank", gate={
                 "pass": True, "model_version": "  ",
-                "split_sha256": SEALED, "accuracy": 0.9})
+                "split_sha256": SEALED, "accuracy": 0.9, **R2})
             self.assertIn("C2", rules_of(G.check_gate_dir(d, COHERENCE,
                                                           Path(tmp))))
 
@@ -159,10 +163,10 @@ class TestC3SealedSplit(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             seeded = gate_dir(tmp, "T-seed", gate={
                 "pass": True, "model_version": "m-1", "seed": 20260921,
-                "accuracy": 0.9})
+                "accuracy": 0.9, **R2})
             sealed = gate_dir(tmp, "T-sealed", gate={
                 "pass": True, "model_version": "m-1", "seed": 20260921,
-                "split_sha256": SEALED, "accuracy": 0.9})
+                "split_sha256": SEALED, "accuracy": 0.9, **R2})
             self.assertIn("C3", rules_of(G.check_gate_dir(seeded, COHERENCE,
                                                           Path(tmp))))
             self.assertNotIn("C3", rules_of(G.check_gate_dir(sealed, COHERENCE,
@@ -171,7 +175,7 @@ class TestC3SealedSplit(unittest.TestCase):
     def test_a_passing_group_split_sealed_check_is_a_seal(self):
         with tempfile.TemporaryDirectory() as tmp:
             d = gate_dir(tmp, "T-grp", gate={
-                "pass": True, "model_version": "m-1", "accuracy": 0.9,
+                "pass": True, "model_version": "m-1", "accuracy": 0.9, **R2,
                 "criteria": {"group_split_sealed": {"pass": True}}})
             self.assertNotIn("C3", rules_of(G.check_gate_dir(d, COHERENCE,
                                                              Path(tmp))))
@@ -186,7 +190,7 @@ class TestC3SealedSplit(unittest.TestCase):
     def test_a_referenced_manifest_that_is_missing_breaks_the_seal(self):
         with tempfile.TemporaryDirectory() as tmp:
             d = gate_dir(tmp, "T-ghost", gate={
-                "pass": True, "model_version": "m-1", "accuracy": 0.9,
+                "pass": True, "model_version": "m-1", "accuracy": 0.9, **R2,
                 "splits": {"x": {"manifest": "artifacts/splits/x/manifest.json",
                                  "manifest_sha256": SEALED}}})
             r = G.check_gate_dir(d, COHERENCE, Path(tmp))
@@ -199,13 +203,134 @@ class TestC3SealedSplit(unittest.TestCase):
             man.parent.mkdir(parents=True)
             man.write_text('{"rows": 10}')
             d = gate_dir(tmp, "T-stale", gate={
-                "pass": True, "model_version": "m-1", "accuracy": 0.9,
+                "pass": True, "model_version": "m-1", "accuracy": 0.9, **R2,
                 "splits": {"x": {"manifest": "artifacts/splits/x/manifest.json",
                                  "manifest_sha256": SEALED}}})
             r = G.check_gate_dir(d, COHERENCE, Path(tmp))
             self.assertIn("C3", rules_of(r))
             broken = next(e for e in r["errors"] if "broken" in e)
             self.assertEqual(broken["broken"][0]["why"], "sha256 mismatch")
+
+
+class TestC4AccuracyNeedsItsChance(unittest.TestCase):
+    """R2 — an accuracy with no chance rate beside it is not a result."""
+
+    def test_a_bare_accuracy_fails_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-bare", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.215})
+            r = G.check_gate_dir(d, COHERENCE, Path(tmp))
+            self.assertFalse(r["pass"])
+            self.assertIn("C4", rules_of(r))
+            err = next(e for e in r["errors"] if e["rule"] == "C4")
+            self.assertEqual(err["severity"], "error")
+            self.assertEqual(sorted(err["offending"][0]["missing"]),
+                             ["accuracy_ci95", "cardinality", "chance"])
+
+    def test_each_companion_is_required_on_its_own(self):
+        for drop in ("chance", "cardinality", "accuracy_ci95"):
+            with self.subTest(missing=drop), \
+                    tempfile.TemporaryDirectory() as tmp:
+                doc = {"pass": True, "model_version": "m-1",
+                       "split_sha256": SEALED, "accuracy": 0.215, **R2}
+                doc.pop(drop)
+                d = gate_dir(tmp, "T-partial", gate=doc)
+                r = G.check_gate_dir(d, COHERENCE, Path(tmp))
+                self.assertIn("C4", rules_of(r))
+                err = next(e for e in r["errors"] if e["rule"] == "C4")
+                self.assertEqual(err["offending"][0]["missing"], [drop])
+
+    def test_a_complete_accuracy_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-full", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.012338, **R2})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
+
+    def test_a_red_gate_does_not_escape_the_rule(self):
+        """C1-C3 police green claims. A bare accuracy misleads whatever
+        verdict sits beside it, so C4 does not wait for one."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-red", gate={
+                "pass": False, "model_version": "m-1", "accuracy": 0.05})
+            self.assertIn("C4", rules_of(G.check_gate_dir(d, COHERENCE,
+                                                          Path(tmp))))
+
+    def test_an_enclosing_object_may_carry_the_companions(self):
+        """A per-dataset breakdown is read with its cut's K and chance."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-nested", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED,
+                "unseen": {"accuracy": 0.093, **R2,
+                           "per_dataset": {"huffpost": {"accuracy": 0.078,
+                                                        "n": 38}}}})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
+
+    def test_a_sibling_cut_does_not_lend_its_chance(self):
+        """`seen` publishing K does not make `unseen`'s bare accuracy
+        readable: the companions must ENCLOSE the number, not neighbour it."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-sibling", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED,
+                "seen": {"accuracy": 0.62, **R2},
+                "unseen": {"accuracy": 0.093, "n": 3008}})
+            r = G.check_gate_dir(d, COHERENCE, Path(tmp))
+            self.assertIn("C4", rules_of(r))
+            off = next(e for e in r["errors"] if e["rule"] == "C4")
+            self.assertEqual([o["at"] for o in off["offending"]],
+                             ["/unseen"])
+
+    def test_a_cited_third_party_number_is_exempt(self):
+        """R3 keeps citations honest; C4 is about OUR measurements."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-cite", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "same_rows": False,
+                "references": [{"who": "Jev (teacher)", "accuracy": 0.924,
+                                "source": "github.com/...",
+                                "caveat": "public benchmark"}]})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
+
+    def test_a_scalar_is_not_an_interval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-scalar", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.215,
+                "chance": 0.2, "cardinality": 5, "accuracy_ci95": 0.19})
+            self.assertIn("C4", rules_of(G.check_gate_dir(d, COHERENCE,
+                                                          Path(tmp))))
+
+    def test_mean_k_counts_as_the_cardinality_of_a_variable_k_cut(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-meank", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.093,
+                "chance": 0.2067, "mean_k": 4.3684,
+                "accuracy_ci95": [0.081, 0.106]})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
+
+    def test_the_rule_can_be_turned_off_only_from_the_criteria(self):
+        off = dict(COHERENCE,
+                   require_chance_next_to_accuracy={"value": False,
+                                                    "why": "t"})
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-bare", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.215})
+            self.assertIn("C4", rules_of(G.check_gate_dir(d, COHERENCE,
+                                                          Path(tmp))))
+            self.assertNotIn("C4", rules_of(G.check_gate_dir(d, off,
+                                                             Path(tmp))))
+
+    def test_the_runner_exits_non_zero_on_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-bare", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED, "accuracy": 0.215})
+            self.assertEqual(G.main(["check", str(d)]), 1)
 
 
 class TestScanAndMarking(unittest.TestCase):
@@ -215,7 +340,7 @@ class TestScanAndMarking(unittest.TestCase):
                                      "cohen_kappa": 0.0})
         gate_dir(tmp, "T-good", gate={"pass": True, "model_version": "m-1",
                                       "split_sha256": SEALED,
-                                      "accuracy": 0.9})
+                                      "accuracy": 0.9, **R2})
         gate_dir(tmp, "T-empty")
 
     def test_scan_marks_the_offender_and_leaves_the_artifact_alone(self):
@@ -279,11 +404,32 @@ class TestPublishedGates(unittest.TestCase):
         self.assertEqual(release["numbers"]["cohen_kappa"], 0.0)
         self.assertEqual(release["numbers"]["exact_agree_rate"], 0.852)
 
-    def test_the_honest_red_gates_are_not_flagged(self):
-        for task in ("T-unseen-labels", "T-train-real"):
-            with self.subTest(task=task):
-                r = G.check_gate_dir(G.GATES_DIR / task, COHERENCE)
-                self.assertTrue(r["pass"], r["errors"])
+    def test_the_honest_red_gate_is_not_flagged(self):
+        """#T-unseen-labels publishes 30+ accuracies, every one of them with
+        its chance, its mean K and its interval: red, and coherent."""
+        r = G.check_gate_dir(G.GATES_DIR / "T-unseen-labels", COHERENCE)
+        self.assertTrue(r["pass"], r["errors"])
+        self.assertGreater(r["accuracy_claims"]["published"], 20)
+        self.assertEqual(r["accuracy_claims"]["without_companions"], 0)
+
+    def test_the_full_space_artifact_is_not_flagged(self):
+        """Its two teacher numbers are citations; ours carries R2 in full."""
+        r = G.check_gate_dir(G.GATES_DIR / "T-teacher-probe", COHERENCE)
+        self.assertTrue(r["pass"], r["errors"])
+        self.assertEqual(r["accuracy_claims"]["without_companions"], 0)
+
+    def test_t_train_real_trips_c4_on_its_per_dataset_breakdown(self):
+        """The rule earns its keep on the real tree: the 2026-09-21 gate
+        publishes `checks.unseen_beats_chance.accuracy` and a per-dataset
+        split of it with chance and CI but no K, so the reader cannot tell
+        0.1836 on banking77 from its own chance. `compose_gate` now emits
+        `mean_k` there; the artifact on disk predates the fix and stays as
+        published — marked, never rewritten."""
+        r = G.check_gate_dir(G.GATES_DIR / "T-train-real", COHERENCE)
+        self.assertEqual(rules_of(r), {"C4"})
+        err = next(e for e in r["errors"] if e["rule"] == "C4")
+        self.assertTrue(all(o["missing"] == ["cardinality"]
+                            for o in err["offending"]))
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
   "format": "jev.gate.v1",
   "task": "T-teacher-probe",
   "artifact": "fullspace",
-  "generated_utc": "2026-09-23T20:53:44+00:00",
+  "generated_utc": "2026-09-24T11:36:31+00:00",
   "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
   "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
   "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
@@ -11,6 +11,7 @@
     "banking77": {
       "ours": {
         "n": 3080,
+        "hits": 38,
         "cardinality": 77,
         "chance": 0.012987,
         "accuracy": 0.012338,
@@ -18,17 +19,22 @@
           0.009002,
           0.016888
         ],
+        "hits_options_only": 38,
         "accuracy_options_only": 0.012338,
         "accuracy_options_only_ci95": [
           0.009002,
           0.016888
         ],
         "abstain_rate": 0.0,
-        "beats_chance": false
+        "beats_chance": false,
+        "ranking_beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
       },
       "references": [
         {
           "who": "Jev (teacher)",
+          "citation": true,
           "accuracy": 0.924,
           "setup": "all 3 080 official test messages, 77 intents, category definitions + 24 labelled examples per prediction, no weight updates",
           "source": "github.com/simonmesmith/jev-banking77-experiment",
@@ -36,6 +42,7 @@
         },
         {
           "who": "fine-tuned BERT (BANKING77 paper)",
+          "citation": true,
           "accuracy": 0.9366,
           "setup": "supervised fine-tune on the 10 003 training messages",
           "source": "Casanueva et al. 2020, BANKING77",
@@ -49,6 +56,7 @@
   "cardinality_sweep": {
     "5": {
       "n": 1000,
+      "hits": 215,
       "cardinality": 5,
       "chance": 0.2,
       "accuracy": 0.215,
@@ -56,6 +64,7 @@
         0.190653,
         0.241528
       ],
+      "hits_options_only": 215,
       "accuracy_options_only": 0.215,
       "accuracy_options_only_ci95": [
         0.190653,
@@ -63,10 +72,14 @@
       ],
       "abstain_rate": 0.0,
       "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
       "lift_over_chance": 1.075
     },
     "8": {
       "n": 1000,
+      "hits": 151,
       "cardinality": 8,
       "chance": 0.125,
       "accuracy": 0.151,
@@ -74,6 +87,7 @@
         0.130146,
         0.174525
       ],
+      "hits_options_only": 151,
       "accuracy_options_only": 0.151,
       "accuracy_options_only_ci95": [
         0.130146,
@@ -81,10 +95,14 @@
       ],
       "abstain_rate": 0.0,
       "beats_chance": true,
+      "ranking_beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
       "lift_over_chance": 1.208
     },
     "20": {
       "n": 1000,
+      "hits": 61,
       "cardinality": 20,
       "chance": 0.05,
       "accuracy": 0.061,
@@ -92,6 +110,7 @@
         0.04778,
         0.07758
       ],
+      "hits_options_only": 61,
       "accuracy_options_only": 0.061,
       "accuracy_options_only_ci95": [
         0.04778,
@@ -99,10 +118,14 @@
       ],
       "abstain_rate": 0.0,
       "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
       "lift_over_chance": 1.22
     },
     "40": {
       "n": 1000,
+      "hits": 36,
       "cardinality": 40,
       "chance": 0.025,
       "accuracy": 0.036,
@@ -110,6 +133,7 @@
         0.026116,
         0.049436
       ],
+      "hits_options_only": 36,
       "accuracy_options_only": 0.036,
       "accuracy_options_only_ci95": [
         0.026116,
@@ -117,10 +141,14 @@
       ],
       "abstain_rate": 0.0,
       "beats_chance": true,
+      "ranking_beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
       "lift_over_chance": 1.44
     },
     "77": {
       "n": 1000,
+      "hits": 11,
       "cardinality": 77,
       "chance": 0.012987,
       "accuracy": 0.011,
@@ -128,6 +156,7 @@
         0.006153,
         0.019589
       ],
+      "hits_options_only": 11,
       "accuracy_options_only": 0.011,
       "accuracy_options_only_ci95": [
         0.006153,
@@ -135,10 +164,13 @@
       ],
       "abstain_rate": 0.0,
       "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
       "lift_over_chance": 0.847
     }
   },
-  "cardinality_reading": "the head clears chance up to K=40 (lift 1.44x) and stops clearing it by K=77: what it has at small K is a weak preference, not a ranking of the real label space, and it dissolves as options are added",
+  "cardinality_reading": "clears chance by the 95 % lower bound at K=[8, 40], does not at K=[5, 20, 77] — these are OUT OF ORDER: a K that clears sits above one that does not, so there is no progression to read off this sweep and no cardinality at which the advantage can be said to break. Counts: K=5: 215/1000 = 0.215 CI [0.190653, 0.241528] vs chance 0.2; K=8: 151/1000 = 0.151 CI [0.130146, 0.174525] vs chance 0.125; K=20: 61/1000 = 0.061 CI [0.04778, 0.07758] vs chance 0.05; K=40: 36/1000 = 0.036 CI [0.026116, 0.049436] vs chance 0.025; K=77: 11/1000 = 0.011 CI [0.006153, 0.019589] vs chance 0.012987",
   "honesty": [
     "the teacher's number here is CITED, not measured by us: different rows, and it was given labelled examples per prediction while our head gets none",
     "the same-rows measurement is #T-teacher-probe and it needs a working API key; this artifact does not replace it",

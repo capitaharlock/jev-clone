@@ -24,9 +24,15 @@ the exact benchmark, the exact split and the exact cardinality the published
 number was reported on. Our option sets everywhere else cap K at 8; here K
 is the whole space, which is the regime the product actually promises.
 
+This module reads the RESERVED cut (`eval.cuts`, rule R7): every run is
+logged in `artifacts/gates/T-eval-cardinality/test-queries.json`. Choosing
+between arms is done on the development cut — `eval.scoreboard --cut dev` —
+and never here.
+
 CLI:
     CKPT=artifacts/checkpoints/decision/lever-stack-d512-prior/stage-001000000
-    .venv-train/bin/python -m eval.fullspace gate --checkpoint $CKPT
+    .venv-train/bin/python -m eval.fullspace gate --checkpoint $CKPT \
+        --reason "why the reserved cut is being read"
 """
 from __future__ import annotations
 
@@ -58,6 +64,7 @@ REFERENCES = {
     "banking77": [
         {
             "who": "Jev (teacher)",
+            "citation": True,
             "accuracy": 0.9240,
             "setup": "all 3 080 official test messages, 77 intents, "
                      "category definitions + 24 labelled examples per "
@@ -68,6 +75,7 @@ REFERENCES = {
         },
         {
             "who": "fine-tuned BERT (BANKING77 paper)",
+            "citation": True,
             "accuracy": 0.9366,
             "setup": "supervised fine-tune on the 10 003 training messages",
             "source": "Casanueva et al. 2020, BANKING77",
@@ -89,17 +97,24 @@ def utcnow() -> str:
 
 
 def full_samples(dataset: str, limit: int = DEFAULT_ROWS,
-                 cfg: SamplerConfig | None = None) -> list:
+                 cfg: SamplerConfig | None = None, split: str | None = None,
+                 keep: set | None = None) -> list:
     """One `Sample` per row with EVERY label of the space as an option.
 
     The option order is the sorted label space, identical on every row, so
     the gold's position carries no signal: a head that learned "the answer
     is last" — which our sampler's layout could teach — scores at chance
     here, and that is the point.
+
+    `split` and `keep` are what `eval.cuts` injects: the sealed development
+    cut is a seeded subset of another split of the same dataset, and it is
+    named by sample id (`dataset:row:question`) so the seal says exactly
+    which rows were scored.
     """
     from dataclasses import asdict
     cfg = U.eval_config(cfg)
-    cfg = SamplerConfig(**{**asdict(cfg), "split": SPLIT.get(dataset, "test")})
+    cfg = SamplerConfig(**{**asdict(cfg),
+                           "split": split or SPLIT.get(dataset, "test")})
     # deliberately NOT `make_sampler`: that one `restrict`s the pool to a
     # label subset, and the whole point here is that nothing is restricted.
     sampler = OptionSetSampler(datasets=(dataset,), config=cfg,
@@ -108,6 +123,10 @@ def full_samples(dataset: str, limit: int = DEFAULT_ROWS,
     out: list = []
     for n, row in enumerate(sampler.rows[dataset]):
         for question in row.get("questions", []):
+            sample_id = (f"{dataset}:{dataset}-{n}:"
+                         f"{question.get('id', '')}")
+            if keep is not None and sample_id not in keep:
+                continue
             gold = question.get("answer")
             pool, index = sampler.space_of(dataset, question)
             ids = sorted(o["id"] for o in pool)
@@ -131,6 +150,17 @@ def score(engine, samples: list, batch_size: int = 16) -> dict:
     entries = C.entries_from_samples(engine, samples, "test", "full-space",
                                      samples[0].dataset if samples else "",
                                      batch_size)
+    return tally(samples, entries)
+
+
+def tally(samples: list, entries: list) -> dict:
+    """The published numbers of one cut, off rows already scored.
+
+    Split out of `score` so a caller that needs the entries for something
+    else — `eval.scoreboard` wants the confusion matrix and the prediction
+    histogram off the same forward pass — publishes the SAME arithmetic
+    instead of a second implementation of it.
+    """
     n = len(entries)
     hits = forced = 0
     abstain = 0
@@ -149,14 +179,25 @@ def score(engine, samples: list, batch_size: int = 16) -> dict:
     k = len(samples[0].options) if samples else 0
     return {
         "n": n,
+        "hits": hits,
         "cardinality": k,
         "chance": round(1.0 / k, 6) if k else None,
         "accuracy": round(hits / n, 6) if n else None,
         "accuracy_ci95": [round(lo, 6), round(hi, 6)],
+        "hits_options_only": forced,
         "accuracy_options_only": round(forced / n, 6) if n else None,
         "accuracy_options_only_ci95": [round(flo, 6), round(fhi, 6)],
         "abstain_rate": round(abstain / n, 6) if n else None,
-        "beats_chance": bool(n and flo > 1.0 / k),
+        # `beats_chance` is about the number this artifact publishes, which
+        # is `accuracy` — the [K + 1] argmax, abstentions included. Deciding
+        # it with `flo` (the forced ranking) would let a head that abstains
+        # on every row publish `accuracy: 0` beside `beats_chance: true`.
+        "beats_chance": bool(n and lo > 1.0 / k),
+        "ranking_beats_chance": bool(n and flo > 1.0 / k),
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by":
+            "accuracy_options_only_ci95[0] > chance — the ranking with "
+            "`unknown` taken out of the race, a diagnostic",
     }
 
 
@@ -201,30 +242,41 @@ def cardinality_sweep(engine, samples: list, ks: tuple = K_SWEEP,
 
 
 def sweep_reading(sweep: dict) -> str:
-    """Read the sweep off the CIs, not off the point estimates.
+    """The sweep, stated as counts and intervals and nothing else.
 
-    The lift ratio is noisy at n=1 000 (one extra hit at K=40 moves it by
-    0.04), so the statement this returns is built from `beats_chance` —
-    whether the 95 % lower bound still clears 1/K — which is the only claim
-    the sample size supports.
+    An earlier version of this function wrote "the head clears chance up to
+    K=40 and stops by K=77", which reads as a progression — accuracy holding
+    and then breaking at some cardinality. The intervals do not carry that:
+    on the published cut K=5 (0.215, CI [0.191, 0.242] against chance 0.200)
+    and K=20 do NOT clear their chance rate while K=8 and K=40 do, which is
+    not a monotone anything. So this returns which K clear their chance by
+    the 95 % lower bound and which do not, says the points are out of order,
+    and leaves the explanation to whoever can measure one (#T-option-text,
+    #T-bigk-optsets). Rule 2-bis of #T-eval-cardinality.
     """
     ks = sorted(int(k) for k in sweep)
     if not ks:
         return "not enough points to read"
+
+    def cell(k: int) -> str:
+        rep = sweep[str(k)]
+        return (f"K={k}: {rep.get('hits')}/{rep.get('n')} = "
+                f"{rep.get('accuracy')} CI {rep.get('accuracy_ci95')} vs "
+                f"chance {rep.get('chance')}")
+
     clears = [k for k in ks if sweep[str(k)].get("beats_chance")]
-    lifts = {k: sweep[str(k)].get("lift_over_chance") for k in ks}
+    flat = "; ".join(cell(k) for k in ks)
     if not clears:
-        return ("the head does not clear chance at ANY cardinality on this "
-                "cut: there is no signal to transfer")
-    top = max(clears)
-    if top == max(ks):
-        return (f"the head still clears chance at K={top} "
-                f"(lift {lifts[top]}x): the full-space number is a "
-                "cardinality-transfer problem, not an absence of signal")
-    return (f"the head clears chance up to K={top} (lift {lifts[top]}x) and "
-            f"stops clearing it by K={min(k for k in ks if k > top)}: what "
-            "it has at small K is a weak preference, not a ranking of the "
-            "real label space, and it dissolves as options are added")
+        return (f"no cardinality on this cut clears its chance rate by the "
+                f"95 % lower bound — {flat}")
+    misses = [k for k in ks if k not in clears]
+    monotone = clears == [k for k in ks if k <= max(clears)]
+    tail = ("" if monotone else
+            " — these are OUT OF ORDER: a K that clears sits above one that "
+            "does not, so there is no progression to read off this sweep and "
+            "no cardinality at which the advantage can be said to break")
+    return (f"clears chance by the 95 % lower bound at K={clears}, does not "
+            f"at K={misses}{tail}. Counts: {flat}")
 
 
 def compose_gate(ckpt_dir: str, manifest: dict, results: dict,
@@ -268,7 +320,15 @@ def compose_gate(ckpt_dir: str, manifest: dict, results: dict,
 
 def run(ckpt_dir: str, datasets: tuple = ("banking77",),
         limit: int = DEFAULT_ROWS, device: str = "auto",
-        write: bool = True, sweep: bool = True, log=print) -> dict:
+        write: bool = True, sweep: bool = True, reason: str = "",
+        log=print) -> dict:
+    """Score the RESERVED cut. Rule R7: the query goes in the ledger.
+
+    These are the 3 080 official test rows — the cut `eval.cuts` keeps
+    reserved — so running this is a read of the test set and is written down
+    with its date, its checkpoint and its reason. Arms are chosen on the dev
+    cut (`eval.scoreboard`, `--cut dev`), never here.
+    """
     engine, manifest = U.T.load_checkpoint(ckpt_dir, device)
     results = {}
     first = None
@@ -287,6 +347,14 @@ def run(ckpt_dir: str, datasets: tuple = ("banking77",),
         GATE_DIR.mkdir(parents=True, exist_ok=True)
         GATE_PATH.write_text(json.dumps(gate, indent=2,
                                         ensure_ascii=False) + "\n")
+        from eval import cuts as K  # here: `eval.cuts` imports this module
+        K.record_query(
+            os.path.relpath(ckpt_dir, ROOT),
+            reason or "eval.fullspace gate, no reason given on the command "
+                      "line — the read happened anyway and is logged as "
+                      "unexplained",
+            os.path.relpath(GATE_PATH, ROOT), rows=limit, by="eval.fullspace")
+        gate["test_cut_query_logged"] = os.path.relpath(K.LEDGER_PATH, ROOT)
     return gate
 
 
@@ -299,9 +367,13 @@ def main(argv: list) -> int:
     p.add_argument("--limit", type=int, default=DEFAULT_ROWS)
     p.add_argument("--device", default="auto")
     p.add_argument("--no-sweep", action="store_true")
+    p.add_argument("--reason", default="",
+                   help="why the reserved test cut is being read (R7); it "
+                        "goes into artifacts/gates/T-eval-cardinality/"
+                        "test-queries.json")
     args = ap.parse_args(argv)
     gate = run(args.checkpoint, tuple(args.datasets.split(",")), args.limit,
-               args.device, sweep=not args.no_sweep)
+               args.device, sweep=not args.no_sweep, reason=args.reason)
     print(json.dumps(gate["table"], indent=2, ensure_ascii=False))
     print(gate.get("cardinality_reading") or "")
     return 0
