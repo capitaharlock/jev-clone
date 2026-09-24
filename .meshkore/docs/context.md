@@ -77,8 +77,10 @@ sobre backbone **congelado**, pérdida sobre **3–8 opciones muestreadas**
 (`data/optset.py: k_min=3, k_max=8`). Cumplió su función —runtime, corpus,
 gates y una arquitectura que aprende— y la primera comparación con protocolo
 idéntico al del profesor marca el salto: a 77 vías en BANKING77 damos **0,0123
-con azar 0,0130**, porque en régimen de pocas opciones el modelo aprende una
-preferencia local, no un ranking del espacio.
+con azar 0,0130** e IC 95 % [0,0090, 0,0169] — indistinguible del azar. La
+hipótesis de trabajo es que en régimen de pocas opciones el modelo aprende una
+preferencia local y no un ranking del espacio; no está aislada de las otras
+(texto de las opciones, encoder, diversidad, capacidad).
 
 Fase 2 entrena y mide lo que el producto promete: el **espacio de etiquetas
 completo**, con encoder entrenable. El eval se mueve primero
@@ -87,11 +89,21 @@ veredictos de fase 1 —el NO-GO de `#T-unfreeze-backbone`, el de `#T-mix-5m`, l
 curva de escalado— son válidos en su régimen y **no se heredan** al nuevo: se
 vuelven a medir. Detalle completo en `.meshkore/docs/fase-2-espacio-completo.md`.
 
-**Reglas vigentes (R1–R6), resumidas:** se entrena la tarea que se mide · toda
+**Reglas vigentes (R1–R9), resumidas:** se entrena la tarea que se mide · toda
 cifra se publica con su azar al lado · ninguna comparación externa sin mismo
 protocolo · un GO/NO-GO sólo vale dentro del régimen con el que se midió ·
 antes de escalar datos, demostrar la pendiente a 62 k · una referencia externa
-en la mesa desde el día 1.
+en la mesa desde el día 1 · los brazos se eligen en desarrollo y el test final
+se reserva y se registra · la información que recibe el modelo (texto de las
+opciones, ejemplos, tokens retenidos) es parte del protocolo · un NO-GO barato
+limita gasto, no establece causa.
+
+**Revisión externa (2026-09-24):** una auditoría independiente repasó plan,
+código y artefactos antes del primer run de fase 2. Sus hallazgos —verificados
+contra el árbol— están en `.meshkore/docs/revision-externa-2026-09-24.md` y ya
+fijan el orden de trabajo: protocolo → información en las opciones → vía exacta
+del objetivo → vía muestreada → encoder → diversidad. Incluye tres hallazgos de
+runtime (`#T-serve-engine`) que bloquean servir el modelo de fase 2.
 
 ## Sources
 

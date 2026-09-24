@@ -255,3 +255,21 @@ del approach de testing: cardinalidad completa como métrica primaria.
 | 29 | full-space-training | T-labelspace-factory | Espacios de etiquetas (no paráfrasis) con el Qwen local; `episodic-div` 20 000 mini-taxonomías ya en disco es el primer material |
 | 30 | teacher-distill | T-teacher-auth | Endpoint identificado (`api.typesafe.ai`, Bearer); la key aportada da 401. Desbloquea #T-teacher-probe y #T-teacher-kappa |
 | — | generalization-fix | T-labelspace-div, T-xlingual-holdout | Lo único que sigue vivo allí: la curva de diversidad en marcha y el holdout cross-lingual, que falla en cualquier objetivo |
+
+## Reordenación 2026-09-24 — tras la revisión externa
+
+Una auditoría externa independiente leyó plan, código y artefactos antes del
+primer run de fase 2 (`.meshkore/docs/revision-externa-2026-09-24.md`, hallazgos
+verificados contra el árbol). Cambia el **orden** y añade dos tasks: la vía
+exacta del objetivo es más barata que la muestreada y va antes, y antes que
+ambas se mide qué información recibe el modelo en las opciones — al profesor se
+le dan definiciones y 24 ejemplos, a nosotros identificadores crudos.
+
+| Orden | Initiative | Task | Qué decide |
+|---:|---|---|---|
+| 31 | honest-eval | T-eval-cardinality (ampliada) | Añade: `beats_chance` con la accuracy real (hoy usa el ranking forzado), corte de desarrollo separado del test con registro de consultas, frecuencia de predicciones y matriz de confusión |
+| 32 | full-space-training | **T-option-text** (nueva) | Tres brazos a K=77 sobre el checkpoint actual, sin entrenar: identificadores / descripciones / con ejemplos. Decide si el denominador sigue siendo la primera hipótesis |
+| 33 | full-space-training | T-bigk-optsets (ahora activa) | La **vía exacta**: `cross_entropy` ya normaliza sobre las columnas que recibe, así que el espacio enumerable completo no necesita fórmula nueva. Coste de la cabeza a K=8/41/77 publicado |
+| 34 | full-space-training | T-fullspace-objective (ahora `next`) | La **vía muestreada**: in-batch + log-Q, con especificación matemática y tests como puerta de entrada, y la atención entre opciones de la cabeza resuelta antes del run |
+| 35 | full-space-training | T-encoder-finetune | Corregido: la acumulación de gradiente no conserva los negativos in-batch; memoria medida en la configuración real antes de prometer el run |
+| 36 | oss-release | **T-serve-engine** (nueva) | Servidor sin `Engine`, cargador Rust que ignoraría el encoder afinado, y colisión de la clave de caché en `/v1/choice`. Bloquea servir el modelo de fase 2, no lo explica |

@@ -7,6 +7,7 @@ owner: unassigned
 category: model
 initiative: full-space-training
 depends_on:
+  - T-bigk-optsets
   - T-fullspace-objective
 created: 2026-09-24
 updated: 2026-09-24
@@ -35,17 +36,34 @@ el encoder entero). Esta task rehace la pregunta en el régimen de fase 2.
 | `full` | encoder entero (68 M) | 5e-6 → 2e-5, warmup + cosine |
 
 El brazo `full` es el que reproduce la receta del profesor y es el que nunca se
-ha ejecutado en este repo. Ettin-68M cabe entero en MPS a B=128 por la ruta
-batched de `#T-metal-throughput`; si no cabe con el batch que pide el objetivo
-nuevo, se acumula gradiente en vez de bajar el batch (el batch **es** el
-denominador de la pérdida, bajarlo cambia la variable medida).
+ha ejecutado en este repo.
+
+## Dos correcciones de la revisión externa
+
+**La acumulación de gradiente NO conserva los negativos in-batch** (hallazgo I).
+Acumular cuatro pérdidas calculadas por separado con B=32 actualiza cada 128
+filas, pero cada fila sigue viendo sólo los candidatos de su microbatch: el
+promedio de cuatro log-softmax no es el log-softmax sobre la unión. Si no cabe
+el batch que pide el objetivo muestreado, o se comparten las representaciones y
+se calcula la pérdida conjunta preservando gradientes, o **se declara que se ha
+cambiado el objetivo**. Cuando cada fila lleva ya su espacio exacto completo
+(la vía de `#T-bigk-optsets`) esta limitación no aplica igual: los dos modos se
+distinguen en el gate.
+
+**La memoria no está medida para esta configuración.** `T-metal-throughput/gate.json`
+mide encoder congelado y `last-n (2 capas)` con cabeza d256: no acredita full
+fine-tuning con d512 y K grande. Antes de prometer el run, una medición breve de
+memoria y de pasos completos en la configuración real de cada brazo.
 
 ## Done when
 
-- Los cuatro brazos corridos a 62 k con el objetivo de `#T-fullspace-objective`,
-  misma seed y mismo corpus, y sus `eval.fullspace` a 77 vías en una tabla.
-- El brazo ganador repetido a 250 k para confirmar que la pendiente no se
-  invierte, antes de comprometer ningún run de 1 M.
+- Medidas memoria y velocidad de paso de los cuatro brazos en su configuración
+  real (d512, K del objetivo ganador) antes de lanzar ninguno.
+- Los cuatro brazos corridos a 62 k con el objetivo que haya ganado entre la vía
+  exacta y la muestreada, misma seed y mismo corpus, y sus `eval.fullspace` a 77
+  vías en una tabla con azar, K e IC.
+- El brazo ganador repetido a 250 k **y en otra seed** para confirmar que la
+  pendiente no se invierte, antes de comprometer ningún run de 1 M (R9).
 - `#T-unfreeze-backbone` queda marcada como **superseded** por esta task, con
   la razón escrita en su cuerpo (medida en el régimen de fase 1).
 - Veredicto: cuánta capacidad entrenable hace falta, o NO-GO con la siguiente

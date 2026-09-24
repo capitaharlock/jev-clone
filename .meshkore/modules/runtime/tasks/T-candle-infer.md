@@ -13,9 +13,15 @@ updated: 2026-09-21
 ---
 # Inferencia local real — Candle Metal/CUDA en jev-model con fallback Python
 
-Hallazgo H: **no hay Candle en `Cargo.toml`**. El workspace Rust no tiene
-backend de inferencia neuronal, así que "ejecutar en Metal/CUDA" no existe
-todavía ni como camino. Lo que sí existe y es sólido es
+> **Actualización 2026-09-24.** El punto de partida de abajo está desfasado:
+> `crates/jev-model/src/{engine,modernbert,pointer}.rs` ya tiene implementación
+> Candle real del encoder y del pointer head. Lo que falta es la integración de
+> producto —servidor conectado al `Engine`, cargador que lea el encoder
+> afinado— y vive en `#T-serve-engine`. Lo que queda aquí es la paridad
+> numérica y las latencias por backend.
+
+Punto de partida original: **no había Candle en `Cargo.toml`**. El workspace
+Rust no tenía backend de inferencia neuronal. Lo que sí existía y es sólido es
 `crates/jev-runtime`: cache de estado con clave compuesta
 (`model_version`, `state_hash`, `tokenizer_hash`), LRU, batching dinámico con
 ventana 0-2 ms, backpressure y cancelación. Se reutiliza tal cual — le falta
