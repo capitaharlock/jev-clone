@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "generated_utc": "2026-09-24T13:12:24Z",
+  "generated_utc": "2026-09-24T13:54:01Z",
   "rules": "C1 kappa<=floor \u00b7 C2 metric without model_version \u00b7 C3 unsealed split \u00b7 C4 accuracy without chance, cardinality and CI 95 % (R2) \u2014 all ERRORS, never warnings",
   "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
-  "n_gates": 45,
+  "n_gates": 46,
   "n_invalid": 20,
   "invalid": [
     "T-bakeoff",
@@ -27,7 +27,28 @@
     "T-torch-stack",
     "T-train-real"
   ],
-  "marked": [],
+  "marked": [
+    "artifacts/gates/T-bakeoff/coherence-invalid.json",
+    "artifacts/gates/T-calib/coherence-invalid.json",
+    "artifacts/gates/T-curriculum/coherence-invalid.json",
+    "artifacts/gates/T-data-eval/coherence-invalid.json",
+    "artifacts/gates/T-distillation/coherence-invalid.json",
+    "artifacts/gates/T-firewall/coherence-invalid.json",
+    "artifacts/gates/T-gen-objective/coherence-invalid.json",
+    "artifacts/gates/T-gold/coherence-invalid.json",
+    "artifacts/gates/T-local-infer/coherence-invalid.json",
+    "artifacts/gates/T-mix-1m/coherence-invalid.json",
+    "artifacts/gates/T-mix-5m/coherence-invalid.json",
+    "artifacts/gates/T-option-mixer/coherence-invalid.json",
+    "artifacts/gates/T-pointer-head/coherence-invalid.json",
+    "artifacts/gates/T-release/coherence-invalid.json",
+    "artifacts/gates/T-release-gate/coherence-invalid.json",
+    "artifacts/gates/T-split-domain/coherence-invalid.json",
+    "artifacts/gates/T-state-cache/coherence-invalid.json",
+    "artifacts/gates/T-synth-factory/coherence-invalid.json",
+    "artifacts/gates/T-torch-stack/coherence-invalid.json",
+    "artifacts/gates/T-train-real/coherence-invalid.json"
+  ],
   "results": [
     {
       "gate": "T-antiscale-diag",
@@ -200,19 +221,20 @@
       "gate": "T-bigk-optsets",
       "path": "artifacts/gates/T-bigk-optsets",
       "files": [
-        "cost.json"
+        "cost.json",
+        "gate.json"
       ],
       "unreadable": [],
       "green": null,
       "publishes": {
-        "quality_metrics": 0,
+        "quality_metrics": 23,
         "latency_metrics": 0
       },
-      "model_version": false,
+      "model_version": true,
       "sealed_split": false,
       "cohen_kappa": [],
       "accuracy_claims": {
-        "published": 0,
+        "published": 19,
         "without_companions": 0
       },
       "errors": [],
@@ -1192,6 +1214,29 @@
       "pass": true
     },
     {
+      "gate": "T-jev-parity",
+      "path": "artifacts/gates/T-jev-parity",
+      "files": [
+        "contamination.json",
+        "parity.json"
+      ],
+      "unreadable": [],
+      "green": null,
+      "publishes": {
+        "quality_metrics": 15,
+        "latency_metrics": 0
+      },
+      "model_version": true,
+      "sealed_split": false,
+      "cohen_kappa": [],
+      "accuracy_claims": {
+        "published": 15,
+        "without_companions": 0
+      },
+      "errors": [],
+      "pass": true
+    },
+    {
       "gate": "T-labelspace-div",
       "path": "artifacts/gates/T-labelspace-div",
       "files": [
@@ -1992,7 +2037,7 @@
       "unreadable": [],
       "green": null,
       "publishes": {
-        "quality_metrics": 55,
+        "quality_metrics": 63,
         "latency_metrics": 0
       },
       "model_version": true,
@@ -2010,15 +2055,15 @@
         }
       ],
       "accuracy_claims": {
-        "published": 53,
-        "without_companions": 53
+        "published": 61,
+        "without_companions": 61
       },
       "errors": [
         {
           "rule": "C4",
           "severity": "error",
           "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
-          "n_offending": 53,
+          "n_offending": 61,
           "offending": [
             {
               "file": "coherence-audit.json",
