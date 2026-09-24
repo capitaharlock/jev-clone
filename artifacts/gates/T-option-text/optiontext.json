@@ -1,0 +1,631 @@
+{
+  "format": "jev.gate.v1",
+  "task": "T-option-text",
+  "artifact": "artifacts/gates/T-option-text/optiontext.json",
+  "generated_utc": "2026-09-24T12:11:05Z",
+  "question": "how much of the distance to the teacher is explained by WHAT THE MODEL IS SHOWN, rather than by what it was trained to optimise",
+  "trains_nothing": true,
+  "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+  "checkpoint_sha256": "be9f0d454360eb344dada8362cdb9e13c4b348fb174a53298cc71d16c557cf8c",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+  "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "cut": {
+    "name": "banking77-dev",
+    "reserved": false,
+    "dataset": "banking77",
+    "split": "train",
+    "seed": 20260924,
+    "rows_sealed": 1000,
+    "rows_scored": 1000,
+    "manifest": "artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json",
+    "manifest_sha256": "a5980a80149c7b9022d35be9a7072fa94a47d65124f1ba2c569c305e3883972b",
+    "split_sha256": "e878f5542c05e1a3000fc97a141898562ac5255b07ae3ee51f1b86e986cc4c88",
+    "rule": "R7 — arms are chosen here; the reserved cut is read once, with the arm already chosen, and logged"
+  },
+  "cardinality": 77,
+  "chance": 0.012987,
+  "protocol_is_the_only_difference": "the three arms score the same sealed rows with the same gold in the same 77-option order on the same weights; only the option strings and the state differ (R8)",
+  "sources": {
+    "definitions": {
+      "file": "data/taxonomies/banking77-jev/descriptions.json",
+      "card": "data/taxonomies/banking77-jev/card.json",
+      "source": "https://github.com/simonmesmith/jev-banking77-experiment",
+      "revision": "5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+      "sha256": "ea930901fa349f167ad392e432b68f34b15fef97cca3fbd9944a4119131aa3ed",
+      "labels": 77,
+      "license": "CC-BY-4.0",
+      "license_caveat": "the repository has NO root LICENSE file: the CC-BY-4.0 above is the licence its authors declared for the data the definitions derive from, not an explicit licence grant on `configs/descriptions.json` itself. It is redistributed here, unmodified and attributed, as a citation of a published experimental configuration, pinned to the commit above. If the author declares a different licence, this file has to be revisited — that is why the caveat is in the card and not only in a commit message.",
+      "attribution": "Simon Mesmith, 'Experiment 003: Jev on BANKING77' (jev-banking77-experiment), configs/descriptions.json, commit 5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+      "usage": "eval-only"
+    },
+    "examples": {
+      "what": "the labelled examples arm C retrieves are NOT in this file: they are BANKING77 train rows",
+      "dataset": "banking77",
+      "path": "artifacts/data-prefetch/banking77.jsonl",
+      "split": "train",
+      "license": "CC-BY-4.0",
+      "source_original": "https://github.com/PolyAI-LDN/task-specific-datasets, mirror https://huggingface.co/datasets/PolyAI/banking77",
+      "register": ".meshkore/docs/source-register.md",
+      "support_pool": "every train row whose sample id is NOT in the sealed dev cut (artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json), minus any row whose normalised text equals the query's — the teacher excludes normalised-text duplicates of a held-out message from its retrieval support too",
+      "retrieval": "BM25 over word unigrams and adjacent word pairs, k1=1.5, b=0.75 — the algorithm PROTOCOL.md declares; deterministic, no seed, reimplemented in `eval/optiontext.py` (the teacher's own implementation is not vendored)",
+      "retrieved_in_this_read": true,
+      "support_rows_indexed": 9003,
+      "support_labels": 77,
+      "excluded_scored_rows": 1000
+    },
+    "readable_name_transform": "label.replace('_',' ').replace('-',' ') with the first character upper-cased (`data/taxonomy.py: readable`) — one rule, no acronym table, so the string is reproducible from the identifier"
+  },
+  "arms": {
+    "A": {
+      "arm": "A",
+      "name": "A — actual",
+      "role": "measured arm",
+      "protocol": {
+        "option_text": "raw label identifier: `Option(id=l, text=l)`, `data/adapters.py:146`",
+        "state": "the row's own text, nothing else",
+        "labelled_examples_in_state": 0,
+        "definitions_source": null
+      },
+      "n": 1000,
+      "hits": 9,
+      "cardinality": 77,
+      "chance": 0.012987,
+      "accuracy": 0.009,
+      "accuracy_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "hits_options_only": 9,
+      "accuracy_options_only": 0.009,
+      "accuracy_options_only_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+      "chance_printed_beside": 0.012987,
+      "lift_over_chance": 0.693,
+      "context_budget": {
+        "window_tokens": 256,
+        "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+        "rows": 1000,
+        "state_tokens_requested_mean": 16.038,
+        "state_tokens_requested_max": 73,
+        "state_tokens_retained_mean": 16.038,
+        "state_tokens_retained_max": 73,
+        "rows_truncated": 0,
+        "rows_truncated_share": 0.0,
+        "tokens_dropped_total": 0,
+        "examples_offered_mean": 0.0,
+        "examples_offered_total": 0,
+        "examples_complete_mean": 0.0,
+        "examples_complete_total": 0,
+        "examples_complete_share": null,
+        "query_survives_whole": 1000,
+        "query_survives_share": 1.0,
+        "query_starts_at_state_fraction_mean": 0.0,
+        "query_last_token_position_mean": 16.038,
+        "query_position": "first — the query is the head of the state, so it is the last thing the window could lose"
+      },
+      "option_budget": {
+        "distinct_option_texts": 77,
+        "window_tokens": 512,
+        "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+        "option_tokens_mean": 8.325,
+        "option_tokens_max": 19,
+        "options_truncated": 0,
+        "sample": [
+          "Refund_not_showing_up",
+          "activate_my_card",
+          "age_limit"
+        ]
+      },
+      "cost": {
+        "seconds": 4.78,
+        "rows": 1000,
+        "device": "mps",
+        "ms_per_row": 4.78
+      }
+    },
+    "B": {
+      "arm": "B",
+      "name": "B — readable",
+      "role": "measured arm",
+      "protocol": {
+        "option_text": "`<readable name> — <definition>`, the teacher's own 77 definitions",
+        "state": "the row's own text, nothing else",
+        "labelled_examples_in_state": 0,
+        "definitions_source": "data/taxonomies/banking77-jev/descriptions.json"
+      },
+      "n": 1000,
+      "hits": 14,
+      "cardinality": 77,
+      "chance": 0.012987,
+      "accuracy": 0.014,
+      "accuracy_ci95": [
+        0.008358,
+        0.023362
+      ],
+      "hits_options_only": 14,
+      "accuracy_options_only": 0.014,
+      "accuracy_options_only_ci95": [
+        0.008358,
+        0.023362
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+      "chance_printed_beside": 0.012987,
+      "lift_over_chance": 1.078,
+      "context_budget": {
+        "window_tokens": 256,
+        "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+        "rows": 1000,
+        "state_tokens_requested_mean": 16.038,
+        "state_tokens_requested_max": 73,
+        "state_tokens_retained_mean": 16.038,
+        "state_tokens_retained_max": 73,
+        "rows_truncated": 0,
+        "rows_truncated_share": 0.0,
+        "tokens_dropped_total": 0,
+        "examples_offered_mean": 0.0,
+        "examples_offered_total": 0,
+        "examples_complete_mean": 0.0,
+        "examples_complete_total": 0,
+        "examples_complete_share": null,
+        "query_survives_whole": 1000,
+        "query_survives_share": 1.0,
+        "query_starts_at_state_fraction_mean": 0.0,
+        "query_last_token_position_mean": 16.038,
+        "query_position": "first — the query is the head of the state, so it is the last thing the window could lose"
+      },
+      "option_budget": {
+        "distinct_option_texts": 77,
+        "window_tokens": 512,
+        "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+        "option_tokens_mean": 21.636,
+        "option_tokens_max": 36,
+        "options_truncated": 0,
+        "sample": [
+          "Activate my card — How to activate a new card, or a problem completing card activation.",
+          "Age limit — Minimum age to open/use an account, or accounts for children.",
+          "Apple pay or google pay — Using or setting up Apple Pay or Google Pay, including top-ups through these wallets."
+        ]
+      },
+      "cost": {
+        "seconds": 5.17,
+        "rows": 1000,
+        "device": "mps",
+        "ms_per_row": 5.17
+      }
+    },
+    "C": {
+      "arm": "C",
+      "name": "C — with examples (query first)",
+      "role": "measured arm",
+      "protocol": {
+        "option_text": "same as arm B",
+        "state": "the row's own text, then up to 24 BM25-retrieved labelled training examples — the query is first so the 256-token window cannot eat it",
+        "labelled_examples_in_state": 24,
+        "definitions_source": "data/taxonomies/banking77-jev/descriptions.json"
+      },
+      "n": 1000,
+      "hits": 13,
+      "cardinality": 77,
+      "chance": 0.012987,
+      "accuracy": 0.013,
+      "accuracy_ci95": [
+        0.007613,
+        0.022114
+      ],
+      "hits_options_only": 13,
+      "accuracy_options_only": 0.013,
+      "accuracy_options_only_ci95": [
+        0.007613,
+        0.022114
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+      "chance_printed_beside": 0.012987,
+      "lift_over_chance": 1.001,
+      "context_budget": {
+        "window_tokens": 256,
+        "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+        "rows": 1000,
+        "state_tokens_requested_mean": 487.298,
+        "state_tokens_requested_max": 1074,
+        "state_tokens_retained_mean": 255.845,
+        "state_tokens_retained_max": 256,
+        "rows_truncated": 999,
+        "rows_truncated_share": 0.999,
+        "tokens_dropped_total": 231453,
+        "examples_offered_mean": 23.982,
+        "examples_offered_total": 23982,
+        "examples_complete_mean": 11.886,
+        "examples_complete_total": 11886,
+        "examples_complete_share": 0.495622,
+        "query_survives_whole": 1000,
+        "query_survives_share": 1.0,
+        "query_starts_at_state_fraction_mean": 0.0,
+        "query_last_token_position_mean": 14.038,
+        "query_position": "first — the query is the head of the state, so it is the last thing the window could lose"
+      },
+      "option_budget": {
+        "distinct_option_texts": 77,
+        "window_tokens": 512,
+        "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+        "option_tokens_mean": 21.636,
+        "option_tokens_max": 36,
+        "options_truncated": 0,
+        "sample": [
+          "Activate my card — How to activate a new card, or a problem completing card activation.",
+          "Age limit — Minimum age to open/use an account, or accounts for children.",
+          "Apple pay or google pay — Using or setting up Apple Pay or Google Pay, including top-ups through these wallets."
+        ]
+      },
+      "cost": {
+        "seconds": 19.8,
+        "rows": 1000,
+        "device": "mps",
+        "ms_per_row": 19.8
+      }
+    },
+    "C-teacher-order": {
+      "arm": "C-teacher-order",
+      "name": "C-teacher-order — with examples (examples first)",
+      "role": "DIAGNOSTIC — the same arm C in the teacher's own order",
+      "protocol": {
+        "option_text": "same as arm B",
+        "state": "the examples first and the query last, which is the order the teacher's prompt uses. Published as a DIAGNOSTIC: at 256 tokens this is what the budget does to a protocol copied literally",
+        "labelled_examples_in_state": 24,
+        "definitions_source": "data/taxonomies/banking77-jev/descriptions.json"
+      },
+      "n": 1000,
+      "hits": 12,
+      "cardinality": 77,
+      "chance": 0.012987,
+      "accuracy": 0.012,
+      "accuracy_ci95": [
+        0.006878,
+        0.020857
+      ],
+      "hits_options_only": 12,
+      "accuracy_options_only": 0.012,
+      "accuracy_options_only_ci95": [
+        0.006878,
+        0.020857
+      ],
+      "abstain_rate": 0.0,
+      "beats_chance": false,
+      "ranking_beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+      "chance_printed_beside": 0.012987,
+      "lift_over_chance": 0.924,
+      "context_budget": {
+        "window_tokens": 256,
+        "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+        "rows": 1000,
+        "state_tokens_requested_mean": 486.298,
+        "state_tokens_requested_max": 1073,
+        "state_tokens_retained_mean": 255.844,
+        "state_tokens_retained_max": 256,
+        "rows_truncated": 999,
+        "rows_truncated_share": 0.999,
+        "tokens_dropped_total": 230454,
+        "examples_offered_mean": 23.982,
+        "examples_offered_total": 23982,
+        "examples_complete_mean": 12.707,
+        "examples_complete_total": 12707,
+        "examples_complete_share": 0.529856,
+        "query_survives_whole": 1,
+        "query_survives_share": 0.001,
+        "query_starts_at_state_fraction_mean": 0.971,
+        "query_last_token_position_mean": 253.844,
+        "query_position": "after the examples — the window reaches it only once the demonstrations are paid for"
+      },
+      "option_budget": {
+        "distinct_option_texts": 77,
+        "window_tokens": 512,
+        "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+        "option_tokens_mean": 21.636,
+        "option_tokens_max": 36,
+        "options_truncated": 0,
+        "sample": [
+          "Activate my card — How to activate a new card, or a problem completing card activation.",
+          "Age limit — Minimum age to open/use an account, or accounts for children.",
+          "Apple pay or google pay — Using or setting up Apple Pay or Google Pay, including top-ups through these wallets."
+        ]
+      },
+      "cost": {
+        "seconds": 49.82,
+        "rows": 1000,
+        "device": "mps",
+        "ms_per_row": 49.82
+      }
+    }
+  },
+  "verdict": {
+    "teacher": {
+      "who": "Jev (teacher)",
+      "citation": true,
+      "accuracy": 0.924,
+      "setup": "all 3 080 official test messages, 77 intents, category definitions + up to 24 BM25-retrieved labelled examples per prediction, no weight updates",
+      "source": "github.com/simonmesmith/jev-banking77-experiment",
+      "caveat": "BANKING77 is public; nobody can inspect the teacher's training data, so this is not a held-out claim"
+    },
+    "baseline_arm": "A",
+    "best_measured_arm": "B",
+    "gap_to_teacher_from_baseline": 0.915,
+    "point_shift_best_vs_baseline": 0.005,
+    "share_of_gap_explained_by_input": 0.005464,
+    "arms_that_move_the_number": [],
+    "any_arm_beats_chance": false,
+    "fullspace_objective_priority": "first — unchanged, and now with the input-information hypothesis ruled out rather than merely unranked",
+    "line": "the information in the input explains none of the 0.9150 gap to the teacher — every arm stays inside the chance interval at K=77, n=1000, chance 0.012987 (A 0.0090 CI [0.004742, 0.017016], best B 0.0140 CI [0.008358, 0.023362], point shift +0.0050 = 0.5% of the gap and not distinguishable from zero), so #T-fullspace-objective keeps first priority with one competitor fewer"
+  },
+  "honesty": [
+    "the teacher's 0.924 is CITED, not measured by us: its rows are the reserved test cut and it is not scored through our pipeline (same_rows: false)",
+    "arm C reproduces the teacher's retrieval regime, not its model: BM25 over words and adjacent word pairs, ≤24 examples, ≤4 per class, re-implemented from PROTOCOL.md",
+    "R9 — a single seed and a single checkpoint. This prices the input; it does not establish a cause, and the winning arm has to repeat on another seed before any causal verdict"
+  ],
+  "same_rows": false,
+  "reserved_cut_confirmation": {
+    "format": "jev.gate.v1",
+    "task": "T-option-text",
+    "artifact": "artifacts/gates/T-option-text/optiontext.json",
+    "generated_utc": "2026-09-24T12:11:52Z",
+    "question": "how much of the distance to the teacher is explained by WHAT THE MODEL IS SHOWN, rather than by what it was trained to optimise",
+    "trains_nothing": true,
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+    "checkpoint_sha256": "be9f0d454360eb344dada8362cdb9e13c4b348fb174a53298cc71d16c557cf8c",
+    "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+    "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+    "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+    "cut": {
+      "name": "banking77-test",
+      "reserved": true,
+      "dataset": "banking77",
+      "split": "test",
+      "seed": null,
+      "rows_sealed": 3080,
+      "rows_scored": 3080,
+      "manifest": "artifacts/splits/T-eval-cardinality-banking77-test/manifest.json",
+      "manifest_sha256": "40c14a64c34f25e7335c3294501cefc3f58a219936f0d40a7fc9fed14d54bd0f",
+      "split_sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570",
+      "rule": "R7 — arms are chosen here; the reserved cut is read once, with the arm already chosen, and logged"
+    },
+    "cardinality": 77,
+    "chance": 0.012987,
+    "protocol_is_the_only_difference": "the three arms score the same sealed rows with the same gold in the same 77-option order on the same weights; only the option strings and the state differ (R8)",
+    "sources": {
+      "definitions": {
+        "file": "data/taxonomies/banking77-jev/descriptions.json",
+        "card": "data/taxonomies/banking77-jev/card.json",
+        "source": "https://github.com/simonmesmith/jev-banking77-experiment",
+        "revision": "5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+        "sha256": "ea930901fa349f167ad392e432b68f34b15fef97cca3fbd9944a4119131aa3ed",
+        "labels": 77,
+        "license": "CC-BY-4.0",
+        "license_caveat": "the repository has NO root LICENSE file: the CC-BY-4.0 above is the licence its authors declared for the data the definitions derive from, not an explicit licence grant on `configs/descriptions.json` itself. It is redistributed here, unmodified and attributed, as a citation of a published experimental configuration, pinned to the commit above. If the author declares a different licence, this file has to be revisited — that is why the caveat is in the card and not only in a commit message.",
+        "attribution": "Simon Mesmith, 'Experiment 003: Jev on BANKING77' (jev-banking77-experiment), configs/descriptions.json, commit 5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+        "usage": "eval-only"
+      },
+      "examples": {
+        "what": "the labelled examples arm C retrieves are NOT in this file: they are BANKING77 train rows",
+        "dataset": "banking77",
+        "path": "artifacts/data-prefetch/banking77.jsonl",
+        "split": "train",
+        "license": "CC-BY-4.0",
+        "source_original": "https://github.com/PolyAI-LDN/task-specific-datasets, mirror https://huggingface.co/datasets/PolyAI/banking77",
+        "register": ".meshkore/docs/source-register.md",
+        "support_pool": "every train row whose sample id is NOT in the sealed dev cut (artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json), minus any row whose normalised text equals the query's — the teacher excludes normalised-text duplicates of a held-out message from its retrieval support too",
+        "retrieval": "BM25 over word unigrams and adjacent word pairs, k1=1.5, b=0.75 — the algorithm PROTOCOL.md declares; deterministic, no seed, reimplemented in `eval/optiontext.py` (the teacher's own implementation is not vendored)",
+        "retrieved_in_this_read": false,
+        "why": "no arm C in this read (arms ['A', 'B']), so nothing was retrieved and no support pool was indexed — not an empty pool"
+      },
+      "readable_name_transform": "label.replace('_',' ').replace('-',' ') with the first character upper-cased (`data/taxonomy.py: readable`) — one rule, no acronym table, so the string is reproducible from the identifier"
+    },
+    "arms": {
+      "A": {
+        "arm": "A",
+        "name": "A — actual",
+        "role": "measured arm",
+        "protocol": {
+          "option_text": "raw label identifier: `Option(id=l, text=l)`, `data/adapters.py:146`",
+          "state": "the row's own text, nothing else",
+          "labelled_examples_in_state": 0,
+          "definitions_source": null
+        },
+        "n": 3080,
+        "hits": 38,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012338,
+        "accuracy_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "hits_options_only": 38,
+        "accuracy_options_only": 0.012338,
+        "accuracy_options_only_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "abstain_rate": 0.0,
+        "beats_chance": false,
+        "ranking_beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+        "chance_printed_beside": 0.012987,
+        "lift_over_chance": 0.95,
+        "context_budget": {
+          "window_tokens": 256,
+          "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+          "rows": 3080,
+          "state_tokens_requested_mean": 14.711,
+          "state_tokens_requested_max": 81,
+          "state_tokens_retained_mean": 14.711,
+          "state_tokens_retained_max": 81,
+          "rows_truncated": 0,
+          "rows_truncated_share": 0.0,
+          "tokens_dropped_total": 0,
+          "examples_offered_mean": 0.0,
+          "examples_offered_total": 0,
+          "examples_complete_mean": 0.0,
+          "examples_complete_total": 0,
+          "examples_complete_share": null,
+          "query_survives_whole": 3080,
+          "query_survives_share": 1.0,
+          "query_starts_at_state_fraction_mean": 0.0,
+          "query_last_token_position_mean": 14.711,
+          "query_position": "first — the query is the head of the state, so it is the last thing the window could lose"
+        },
+        "option_budget": {
+          "distinct_option_texts": 77,
+          "window_tokens": 512,
+          "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+          "option_tokens_mean": 8.325,
+          "option_tokens_max": 19,
+          "options_truncated": 0,
+          "sample": [
+            "Refund_not_showing_up",
+            "activate_my_card",
+            "age_limit"
+          ]
+        },
+        "cost": {
+          "seconds": 9.77,
+          "rows": 3080,
+          "device": "mps",
+          "ms_per_row": 3.17
+        }
+      },
+      "B": {
+        "arm": "B",
+        "name": "B — readable",
+        "role": "measured arm",
+        "protocol": {
+          "option_text": "`<readable name> — <definition>`, the teacher's own 77 definitions",
+          "state": "the row's own text, nothing else",
+          "labelled_examples_in_state": 0,
+          "definitions_source": "data/taxonomies/banking77-jev/descriptions.json"
+        },
+        "n": 3080,
+        "hits": 37,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012013,
+        "accuracy_ci95": [
+          0.008728,
+          0.016514
+        ],
+        "hits_options_only": 37,
+        "accuracy_options_only": 0.012013,
+        "accuracy_options_only_ci95": [
+          0.008728,
+          0.016514
+        ],
+        "abstain_rate": 0.0,
+        "beats_chance": false,
+        "ranking_beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic",
+        "chance_printed_beside": 0.012987,
+        "lift_over_chance": 0.925,
+        "context_budget": {
+          "window_tokens": 256,
+          "window_source": "training.python.train_decision.TRAIN_MAX_LENGTH, applied by eval/calib.py:373-375 — read here, never overridden: raising it to make an arm fit would be changing the protocol to like the answer",
+          "rows": 3080,
+          "state_tokens_requested_mean": 14.711,
+          "state_tokens_requested_max": 81,
+          "state_tokens_retained_mean": 14.711,
+          "state_tokens_retained_max": 81,
+          "rows_truncated": 0,
+          "rows_truncated_share": 0.0,
+          "tokens_dropped_total": 0,
+          "examples_offered_mean": 0.0,
+          "examples_offered_total": 0,
+          "examples_complete_mean": 0.0,
+          "examples_complete_total": 0,
+          "examples_complete_share": null,
+          "query_survives_whole": 3080,
+          "query_survives_share": 1.0,
+          "query_starts_at_state_fraction_mean": 0.0,
+          "query_last_token_position_mean": 14.711,
+          "query_position": "first — the query is the head of the state, so it is the last thing the window could lose"
+        },
+        "option_budget": {
+          "distinct_option_texts": 77,
+          "window_tokens": 512,
+          "window_source": "model/encoder.py DEFAULT_MAX_LENGTH, used by DecisionEngine.embed_texts",
+          "option_tokens_mean": 21.636,
+          "option_tokens_max": 36,
+          "options_truncated": 0,
+          "sample": [
+            "Activate my card — How to activate a new card, or a problem completing card activation.",
+            "Age limit — Minimum age to open/use an account, or accounts for children.",
+            "Apple pay or google pay — Using or setting up Apple Pay or Google Pay, including top-ups through these wallets."
+          ]
+        },
+        "cost": {
+          "seconds": 8.87,
+          "rows": 3080,
+          "device": "mps",
+          "ms_per_row": 2.88
+        }
+      }
+    },
+    "verdict": {
+      "teacher": {
+        "who": "Jev (teacher)",
+        "citation": true,
+        "accuracy": 0.924,
+        "setup": "all 3 080 official test messages, 77 intents, category definitions + up to 24 BM25-retrieved labelled examples per prediction, no weight updates",
+        "source": "github.com/simonmesmith/jev-banking77-experiment",
+        "caveat": "BANKING77 is public; nobody can inspect the teacher's training data, so this is not a held-out claim"
+      },
+      "baseline_arm": "A",
+      "best_measured_arm": "A",
+      "gap_to_teacher_from_baseline": 0.911662,
+      "point_shift_best_vs_baseline": 0.0,
+      "share_of_gap_explained_by_input": 0.0,
+      "arms_that_move_the_number": [],
+      "any_arm_beats_chance": false,
+      "fullspace_objective_priority": "first — unchanged, and now with the input-information hypothesis ruled out rather than merely unranked",
+      "line": "the information in the input explains none of the 0.9117 gap to the teacher — every arm stays inside the chance interval at K=77, n=3080, chance 0.012987 (A 0.0123 CI [0.009002, 0.016888], best A 0.0123 CI [0.009002, 0.016888], point shift +0.0000 = 0.0% of the gap and not distinguishable from zero), so #T-fullspace-objective keeps first priority with one competitor fewer"
+    },
+    "honesty": [
+      "the teacher's 0.924 is CITED, not measured by us: its rows are the reserved test cut and it is not scored through our pipeline (same_rows: false)",
+      "arm C reproduces the teacher's retrieval regime, not its model: BM25 over words and adjacent word pairs, ≤24 examples, ≤4 per class, re-implemented from PROTOCOL.md",
+      "R9 — a single seed and a single checkpoint. This prices the input; it does not establish a cause, and the winning arm has to repeat on another seed before any causal verdict"
+    ],
+    "same_rows": false,
+    "reason": "single confirmation read of #T-option-text: the arm was already chosen on the sealed dev cut (B — readable name + the teacher's own 77 definitions, best point estimate 0.0140 CI [0.0084, 0.0234] against A 0.0090 CI [0.0047, 0.0170], chance 0.012987, K=77, n=1000). A is read in the same pass as B's paired control on the same rows, so the delta is measured and not taken from the 0.0123 published by eval.fullspace in an earlier run. One read, both arms, no arm C — its verdict is a context-budget finding already settled on dev.",
+    "role": "CONFIRMATION — the arm already chosen on the dev cut, read once on the reserved rows the teacher's number is quoted on (R7)",
+    "test_cut_query": {
+      "when": "2026-09-24T12:11:52Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "single confirmation read of #T-option-text: the arm was already chosen on the sealed dev cut (B — readable name + the teacher's own 77 definitions, best point estimate 0.0140 CI [0.0084, 0.0234] against A 0.0090 CI [0.0047, 0.0170], chance 0.012987, K=77, n=1000). A is read in the same pass as B's paired control on the same rows, so the delta is measured and not taken from the 0.0123 published by eval.fullspace in an earlier run. One read, both arms, no arm C — its verdict is a context-budget finding already settled on dev.",
+      "artifact": "artifacts/gates/T-option-text/optiontext.json",
+      "rows": 3080,
+      "arms": [
+        "A",
+        "B"
+      ],
+      "by": "eval.optiontext"
+    },
+    "verdict_line": "[banking77-test] the information in the input explains none of the 0.9117 gap to the teacher — every arm stays inside the chance interval at K=77, n=3080, chance 0.012987 (A 0.0123 CI [0.009002, 0.016888], best A 0.0123 CI [0.009002, 0.016888], point shift +0.0000 = 0.0% of the gap and not distinguishable from zero), so #T-fullspace-objective keeps first priority with one competitor fewer"
+  },
+  "updated_utc": "2026-09-24T12:11:52Z",
+  "verdict_line": "[banking77-dev + banking77-test, RESERVED, read once] the information in the input explains none of the 0.9150 gap to the teacher — every arm stays inside the chance interval at K=77, n=1000, chance 0.012987 (A 0.0090 CI [0.004742, 0.017016], best B 0.0140 CI [0.008358, 0.023362], point shift +0.0050 = 0.5% of the gap and not distinguishable from zero), so #T-fullspace-objective keeps first priority with one competitor fewer — and the reserved cut confirms it rather than the dev-cut ordering: A 38/3080 = 0.0123 CI [0.009002, 0.016888]; B 37/3080 = 0.0120 CI [0.008728, 0.016514] at K=77, n=3080, chance 0.012987, every interval containing chance, so the best dev arm does not reproduce; the teacher's regime is additionally out of reach on budget alone (11.886 of 23.982 retrieved examples survive the 256-token window), and #T-fullspace-objective keeps first priority with the input-information hypothesis ruled out rather than unranked"
+}

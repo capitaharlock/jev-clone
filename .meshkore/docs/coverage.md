@@ -268,11 +268,34 @@ le dan definiciones y 24 ejemplos, a nosotros identificadores crudos.
 | Orden | Initiative | Task | Qué decide |
 |---:|---|---|---|
 | 31 | honest-eval | T-eval-cardinality (ampliada) | Añade: `beats_chance` con la accuracy real (hoy usa el ranking forzado), corte de desarrollo separado del test con registro de consultas, frecuencia de predicciones y matriz de confusión |
-| 32 | full-space-training | **T-option-text** (nueva) | Tres brazos a K=77 sobre el checkpoint actual, sin entrenar: identificadores / descripciones / con ejemplos. Decide si el denominador sigue siendo la primera hipótesis |
+| 32 | full-space-training | **T-option-text** (entregada 2026-09-24) | Tres brazos a K=77 sobre el checkpoint actual, sin entrenar: identificadores / descripciones / con ejemplos. Los tres se quedan en el azar — el denominador sigue siendo la primera hipótesis |
 | 33 | full-space-training | T-bigk-optsets (ahora activa) | La **vía exacta**: `cross_entropy` ya normaliza sobre las columnas que recibe, así que el espacio enumerable completo no necesita fórmula nueva. Coste de la cabeza a K=8/41/77 publicado |
 | 34 | full-space-training | T-fullspace-objective (ahora `next`) | La **vía muestreada**: in-batch + log-Q, con especificación matemática y tests como puerta de entrada, y la atención entre opciones de la cabeza resuelta antes del run |
 | 35 | full-space-training | T-encoder-finetune | Corregido: la acumulación de gradiente no conserva los negativos in-batch; memoria medida en la configuración real antes de prometer el run |
 | 36 | oss-release | **T-serve-engine** (nueva) | Servidor sin `Engine`, cargador Rust que ignoraría el encoder afinado, y colisión de la clave de caché en `/v1/choice`. Bloquea servir el modelo de fase 2, no lo explica |
+
+## Entregado 2026-09-24 — `#T-option-text` (etapa 2 de la fase 2)
+
+Qué información recibe el modelo, puesta a precio a K=77. No entrena nada:
+un forward por brazo sobre el checkpoint que ya existía.
+
+| Entregable | Dónde |
+|---|---|
+| Tres brazos + un diagnóstico, mismas filas selladas, mismo checkpoint, K=77, con aciertos, IC 95 %, azar y abstención en **un solo** artefacto | `eval/optiontext.py`, `artifacts/gates/T-option-text/optiontext.json` |
+| Presupuesto de contexto por brazo (R8): tokens pedidos/retenidos, ejemplos completos, posición de la consulta — medido con el tokenizador real, no estimado | `eval/optiontext.py: budget`, `option_budget` |
+| Las 77 definiciones del profesor, byte a byte, con commit inmutable, sha256, licencia y su salvedad; el cargador rechaza un fichero que se haya editado en local | `data/taxonomies/banking77-jev/`, `data/taxonomy.py`, `data/test_taxonomy.py` |
+| BM25 del profesor (palabras + pares adyacentes, ≤24, ≤4 por clase) sobre las filas de train **menos** el corte sellado | `eval/optiontext.py: BM25`, `support_pool` |
+| Una sola consulta al corte reservado, registrada en el gate de la task **y** en el registro R7 del repo | `artifacts/gates/T-option-text/test-queries.json`, `artifacts/gates/T-eval-cardinality/test-queries.json` |
+
+Resultado: los cuatro brazos se quedan dentro del intervalo del azar en el
+corte de desarrollo (A 9/1 000 = 0,0090 [0,0047, 0,0170]; B 14/1 000 = 0,0140
+[0,0084, 0,0234]; C 13/1 000 = 0,0130 [0,0076, 0,0221]; azar 0,012987) y la
+ventaja de B **no reproduce** en el corte reservado (A 38/3 080 = 0,0123,
+B 37/3 080 = 0,0120). El presupuesto añade lo que faltaba: con 24 ejemplos el
+estado pide 487 tokens y retiene 256 — sólo el 49,6 % de las demostraciones
+entra entera, y en el orden del profesor la consulta sobrevive en 1 fila de
+1 000. La información de entrada queda **descartada** como causa;
+`#T-fullspace-objective` conserva la primera prioridad.
 
 ## Entregado 2026-09-24 — `#T-eval-cardinality` (etapa 1 de la fase 2)
 

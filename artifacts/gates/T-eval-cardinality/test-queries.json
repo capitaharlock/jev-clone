@@ -74,8 +74,16 @@
       "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
       "rows": 3080,
       "by": "eval.fullspace"
+    },
+    {
+      "when": "2026-09-24T12:11:52Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "single confirmation read of #T-option-text: the arm was already chosen on the sealed dev cut (B — readable name + the teacher's own 77 definitions, best point estimate 0.0140 CI [0.0084, 0.0234] against A 0.0090 CI [0.0047, 0.0170], chance 0.012987, K=77, n=1000). A is read in the same pass as B's paired control on the same rows, so the delta is measured and not taken from the 0.0123 published by eval.fullspace in an earlier run. One read, both arms, no arm C — its verdict is a context-budget finding already settled on dev.",
+      "artifact": "artifacts/gates/T-option-text/optiontext.json",
+      "rows": 3080,
+      "by": "eval.optiontext"
     }
   ],
-  "updated_utc": "2026-09-24T11:36:31Z",
-  "n_queries": 8
+  "updated_utc": "2026-09-24T12:11:52Z",
+  "n_queries": 9
 }

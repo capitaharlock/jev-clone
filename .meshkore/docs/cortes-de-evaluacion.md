@@ -108,6 +108,15 @@ las produjo, no de una nota escrita en su momento. `eval.fullspace` y
 El registro no da ni quita permiso —no puede— y tampoco compensa las lecturas
 ya hechas: hace visible la selección adaptativa a quien lea los números después.
 
+Una task puede llevar además su propio registro dentro de su gate —
+`#T-option-text` lo hace en `artifacts/gates/T-option-text/test-queries.json`
+— pero **nunca en vez del de aquí**: escribe en los dos, porque un registro
+por task que el recuento del repo no viera haría parecer el corte reservado
+menos consultado de lo que está. A 2026-09-24 el registro central lleva 9
+consultas: las 7 reconstruidas, la republicación de `eval.fullspace` bajo la
+semántica corregida de `beats_chance`, y la de `#T-option-text` — una sola
+lectura, con los dos brazos dentro.
+
 ## Lo que el gate rechaza desde ahora
 
 `eval/gate_rules.py` añade la regla **C4**: cualquier artefacto que publique una
@@ -135,3 +144,12 @@ sólo llega a **26 de las 77 etiquetas** y contesta `lost_or_stolen_phone` en el
 una constante ni un error semántico repartido: es un prior fuerte sobre una
 parte del espacio. Qué lo causa no lo dice este corte — lo miden
 `#T-option-text` y `#T-bigk-optsets`.
+
+`#T-option-text` ya contestó su mitad (2026-09-24,
+`artifacts/gates/T-option-text/optiontext.json`): darle al head los nombres
+legibles y las 77 definiciones del profesor, o además hasta 24 ejemplos
+etiquetados en el `STATE`, deja la cifra donde estaba — 0,0090 / 0,0140 /
+0,0130 sobre 1 000 filas de desarrollo contra un azar de 0,012987, los tres
+intervalos conteniendo el azar, y la ventaja del mejor brazo sin reproducir
+en el corte reservado (0,0123 → 0,0120 sobre 3 080). El prior sobre 26
+etiquetas no viene de lo que el modelo lee.

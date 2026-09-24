@@ -51,6 +51,17 @@ run. Esto no sustituye una revisión legal.
 | ReClor | [`sxiong/ReClor`](https://huggingface.co/datasets/sxiong/ReClor) | MIT declarada en la card | Train P1 tras reservar un holdout y revisar procedencia |
 | ANLI | [`facebook/anli`](https://huggingface.co/datasets/facebook/anli) | No comercial según el plan maestro; verificar por revisión | Research/eval-only; no pesos comerciales |
 
+## Material de texto de etiqueta (no es un dataset de entreno)
+
+| Material | Fuente | Licencia declarada | Decisión |
+|---|---|---|---|
+| Definiciones de las 77 intenciones de BANKING77 | [`simonmesmith/jev-banking77-experiment`](https://github.com/simonmesmith/jev-banking77-experiment) `configs/descriptions.json`, commit `5cac4ff7783a4cfc0badba4124a309dd2a2b9862`, sha256 `ea930901fa349f167ad392e432b68f34b15fef97cca3fbd9944a4119131aa3ed` | CC-BY-4.0 **de los datos de los que derivan** (`sources/DATA_LICENSE` del mismo repo); el repo NO lleva LICENSE en la raíz — salvedad completa en la card | `eval-only`: son las definiciones del experimento con el que nos comparamos, así que meterlas en una mezcla de entreno sería entrenar sobre el protocolo de referencia. Usadas por `#T-option-text` |
+
+Vive en `data/taxonomies/banking77-jev/` (`descriptions.json` byte a byte +
+`card.json` con procedencia, revisión, sha256, licencia y salvedad).
+`data/taxonomy.py` verifica el sha256 antes de devolver nada: un fichero
+editado en local deja de ser la fuente que la card cita.
+
 ## Firewall de evaluación
 
 MMLU-Pro, GPQA, SimpleQA, MuSR, RewardBench 2, ARC Challenge y OpenBookQA

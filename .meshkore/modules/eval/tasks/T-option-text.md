@@ -1,7 +1,7 @@
 ---
 id: T-option-text
 title: Qué información recibe el modelo en las opciones — tres brazos a K=77 sin entrenar
-status: next
+status: done
 priority: high
 owner: unassigned
 category: eval
@@ -82,3 +82,67 @@ decisión que hay que tomar a propósito, no por omisión.
   licencia, para que el brazo sea reproducible.
 - Veredicto escrito en una línea: cuánta de la distancia con el profesor explica
   la información de entrada, y qué prioridad le queda al denominador.
+
+## Resultado (2026-09-24)
+
+Artefacto único: `artifacts/gates/T-option-text/optiontext.json`. Comando:
+`.venv-train/bin/python -m eval.optiontext run --checkpoint <ckpt>`. No
+entrena nada: un forward por brazo sobre
+`leverstack-d512-prior-ettin-68m-s20260922/stage-001000000`.
+
+Corte de desarrollo sellado (`banking77-dev`, 1 000 filas, K=77, azar
+0,012987):
+
+| brazo | aciertos | accuracy | IC 95 % | bate azar | ejemplos completos | consulta entera |
+|---|---:|---:|---:|---|---:|---:|
+| A — actual | 9 / 1 000 | 0,0090 | [0,0047, 0,0170] | no | — | 100 % |
+| B — legible + definición | 14 / 1 000 | 0,0140 | [0,0084, 0,0234] | no | — | 100 % |
+| C — con ejemplos | 13 / 1 000 | 0,0130 | [0,0076, 0,0221] | no | 11,9 / 24,0 | 100 % |
+| C-orden-profesor *(diagnóstico)* | 12 / 1 000 | 0,0120 | [0,0069, 0,0209] | no | 12,7 / 24,0 | **0,1 %** |
+
+Los cuatro intervalos contienen el azar y se solapan entre sí. El mejor
+punto en desarrollo era B; **no reproduce**. Una sola consulta al corte
+reservado (`banking77-test`, 3 080 filas, registrada en
+`artifacts/gates/T-option-text/test-queries.json` y en el registro R7 de
+`#T-eval-cardinality`), con el brazo ya elegido y A como control pareado:
+A 38/3 080 = 0,0123 [0,0090, 0,0169] — reproduce exactamente la cifra
+publicada — y B 37/3 080 = 0,0120 [0,0087, 0,0165]. Azar 0,012987 en ambos.
+
+### El presupuesto de contexto (R8)
+
+La ventana es `TRAIN_MAX_LENGTH = 256`, leída, nunca subida. Con 24 ejemplos
+recuperados el estado pide 487 tokens de media y retiene 256: se caen
+231 453 tokens en 1 000 filas y **sólo la mitad de las demostraciones entra
+entera** (49,6 %). Y el orden decide qué mitad: con la consulta primero
+sobrevive en el 100 % de las filas; en el orden del profesor —ejemplos
+primero, consulta al final, que es lo que «reproducir el régimen» significa
+literalmente— la consulta entera sobrevive en **1 fila de 1 000**. El
+régimen del profesor no cabe en esta ventana, y eso es el resultado, no un
+obstáculo que se rodee.
+
+El texto de las opciones sí cabe: van por `embed_texts` con ventana 512 y el
+brazo B gasta 21,6 tokens de media (máximo 36), cero truncados.
+
+### Fuentes
+
+- Definiciones: `data/taxonomies/banking77-jev/descriptions.json`, las 77 del
+  propio experimento del profesor, byte a byte, commit
+  `5cac4ff7783a4cfc0badba4124a309dd2a2b9862`, sha256 `ea930901…`, CC-BY-4.0
+  con la salvedad declarada en `card.json` (el repo de origen no lleva
+  LICENSE en la raíz; la CC-BY-4.0 es la de los datos de los que derivan).
+- Ejemplos: filas de train de BANKING77 (CC-BY-4.0), menos las 1 000 del
+  corte sellado; BM25 sobre palabras y pares adyacentes, ≤24, ≤4 por clase,
+  reimplementado desde `PROTOCOL.md`.
+
+### Veredicto
+
+La información de entrada no explica nada de la distancia con el profesor:
+desplaza el punto +0,0050 en desarrollo (0,5 % del hueco de 0,915) y −0,0003
+en el corte reservado, ambos dentro del ruido. `#T-fullspace-objective`
+conserva la primera prioridad, ahora con la hipótesis de la información de
+entrada **descartada** en vez de sin ordenar. Corolario para el corpus:
+entrenar con identificadores crudos deja de ser una decisión por omisión —
+medida, no cuesta nada a K=77 sobre este checkpoint.
+
+Límite declarado (R9): una semilla y un checkpoint. Esto pone precio a la
+entrada; no establece una causa.

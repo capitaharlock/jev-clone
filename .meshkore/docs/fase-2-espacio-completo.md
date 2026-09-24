@@ -69,9 +69,18 @@ mandan el orden de trabajo son:
   interacciones de la cabeza, que hace atención entre candidatos.
 - **La información disponible en las opciones.** Al profesor se le entregan
   definiciones de las 77 categorías y 24 ejemplos etiquetados; a nuestro modelo,
-  identificadores crudos (`card_arrival`, `data/adapters.py:146`). Es medible
-  sobre el checkpoint que ya existe, sin entrenar nada, y por eso va primero
-  (`#T-option-text`).
+  identificadores crudos (`card_arrival`, `data/adapters.py:146`). Era medible
+  sobre el checkpoint que ya existe, sin entrenar nada, y por eso fue primero.
+  **Medido y descartado** (`#T-option-text`, 2026-09-24): con las definiciones
+  del propio profesor en las opciones y hasta 24 ejemplos recuperados en el
+  `STATE`, la cifra no se mueve — 0,0090 / 0,0140 / 0,0130 sobre 1 000 filas
+  de desarrollo contra un azar de 0,012987, los tres intervalos conteniendo el
+  azar, y el mejor brazo de desarrollo sin reproducir en el corte reservado
+  (0,0123 → 0,0120 sobre 3 080). De paso deja escrito el límite de presupuesto
+  (R8): con 24 ejemplos el estado pide 487 tokens y la ventana retiene 256, así
+  que sólo la mitad de las demostraciones entra entera y en el orden del
+  profesor la consulta sobrevive en 1 fila de 1 000. El régimen del profesor no
+  cabe en esta ventana, y eso se publica como resultado.
 
 Que una preferencia sesgada *pueda* caer por debajo del azar sigue siendo cierto
 —el azar es uniforme y el head no—, pero es un mecanismo posible, no un
