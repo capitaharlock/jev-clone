@@ -1,0 +1,76 @@
+{
+  "architecture": {
+    "backbone": "ettin-68m",
+    "batch_size": 64,
+    "d_model": 512,
+    "frozen_backbone": true,
+    "max_length": 256,
+    "n_heads": 8,
+    "n_layers": 2
+  },
+  "artifact": "cost",
+  "device": "mps",
+  "format": "jev.gate.v1",
+  "generated_utc": "2026-09-24T12:44:23Z",
+  "head_slowdown_vs_k8": {
+    "41": 2.15,
+    "77": 3.43,
+    "8": 1.0
+  },
+  "honesty": [
+    "states and label texts are real rows of massive, huffpost \u2014 trainable, not fenced. A single space of 77 labels does not exist among them, so for K larger than a space the option list is extended with the other space's label texts: a cost harness, not a corpus. No checkpoint is written and no fenced dataset is read",
+    "one MPS lane, nothing else running: a parallel CPU job costs this measurement about a third of its throughput"
+  ],
+  "per_k": {
+    "41": {
+      "batch_size": 64,
+      "head_share_of_step": 0.2914,
+      "k": 41,
+      "minutes_per_1m_rows": 57.4,
+      "minutes_per_62500_rows": 3.59,
+      "ms_per_step": 220.6,
+      "ms_per_step_head_only": 64.3,
+      "peak_mem_gb": 1.107,
+      "rows_per_s": 290.14,
+      "steps_timed": 8,
+      "warmup_steps": 2
+    },
+    "77": {
+      "batch_size": 64,
+      "head_share_of_step": 0.393,
+      "k": 77,
+      "minutes_per_1m_rows": 68.1,
+      "minutes_per_62500_rows": 4.26,
+      "ms_per_step": 261.4,
+      "ms_per_step_head_only": 102.7,
+      "peak_mem_gb": 2.113,
+      "rows_per_s": 244.8,
+      "steps_timed": 8,
+      "warmup_steps": 2
+    },
+    "8": {
+      "batch_size": 64,
+      "head_share_of_step": 0.1971,
+      "k": 8,
+      "minutes_per_1m_rows": 39.6,
+      "minutes_per_62500_rows": 2.47,
+      "ms_per_step": 151.9,
+      "ms_per_step_head_only": 29.9,
+      "peak_mem_gb": 1.102,
+      "rows_per_s": 421.24,
+      "steps_timed": 8,
+      "warmup_steps": 2
+    }
+  },
+  "reading": [
+    "the option text cache removes the ENCODER cost of a bigger K (a label space is a few dozen short strings, embedded once); what it cannot remove is the set attention among options, which is quadratic in K per row",
+    "`ms_per_step_head_only` is the slice that grows; the state encode is the same forward at every K"
+  ],
+  "slowdown_vs_k8": {
+    "41": 1.45,
+    "77": 1.72,
+    "8": 1.0
+  },
+  "task": "T-bigk-optsets",
+  "what_is_measured": "one full training step: state encode (no grad), option text embeddings through the cache, `forward_batch`, `cross_entropy`, backward, clip, optimiser step. Median of 8 steps after 2 warmups"
+}

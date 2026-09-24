@@ -17,8 +17,10 @@ from __future__ import annotations
 import os
 import unittest
 
+from .mix import MIX_1M_FENCED
 from .optset import (
     ALLOWED_DATASETS,
+    FULL_SPACE,
     MIN_CHI2_SAMPLES,
     OptionSetSampler,
     Sample,
@@ -38,14 +40,25 @@ CORPUS_READY = all(os.path.exists(dataset_path(d)) for d in ALLOWED_DATASETS)
 _SAMPLER: OptionSetSampler | None = None
 _SAMPLES: list[Sample] = []
 
+#: the full-space arm of #T-bigk-optsets, on the datasets a `--fence-clean`
+#: run may actually train on (banking77 is fenced out, which is what the
+#: firewall test below checks)
+FULL_DATASETS = ("huffpost", "massive", "boolq")
+FULL_CONFIG = SamplerConfig(k_min=FULL_SPACE, k_max=FULL_SPACE)
+_FULL: OptionSetSampler | None = None
+_FULL_SAMPLES: list[Sample] = []
+
 
 def setUpModule() -> None:
     """One sampler for the whole suite: ~3k rows/dataset -> >10k samples."""
-    global _SAMPLER, _SAMPLES
+    global _SAMPLER, _SAMPLES, _FULL, _FULL_SAMPLES
     if not CORPUS_READY:
         return
     _SAMPLER = OptionSetSampler(rows_per_dataset=3000)
     _SAMPLES = list(_SAMPLER.epoch(0))
+    _FULL = OptionSetSampler(datasets=FULL_DATASETS, config=FULL_CONFIG,
+                             rows_per_dataset=1200)
+    _FULL_SAMPLES = list(_FULL.epoch(0))
 
 
 needs_corpus = unittest.skipUnless(
@@ -234,6 +247,181 @@ class EpochShuffleAndContract(unittest.TestCase):
     def test_pool_is_the_full_label_space_of_the_file(self):
         self.assertEqual(len(label_pool("huffpost")), 41)
         self.assertEqual(len(label_pool("boolq")), 2)
+
+
+class CardinalityRegimeIsDeclared(unittest.TestCase):
+    """#T-bigk-optsets: K is configurable up to |space|, and declared."""
+
+    def test_full_space_sentinel_is_the_only_k_below_two(self):
+        self.assertTrue(SamplerConfig(k_min=FULL_SPACE,
+                                      k_max=FULL_SPACE).full_space)
+        self.assertFalse(SamplerConfig().full_space)
+        for bad in ({"k_min": FULL_SPACE, "k_max": 8},
+                    {"k_min": 3, "k_max": FULL_SPACE},
+                    {"k_min": 1, "k_max": 1}):
+            with self.assertRaises(ValueError):
+                SamplerConfig(**bad)
+
+    def test_a_large_k_max_is_accepted_without_the_sentinel(self):
+        """`k_max = |space|` is a plain configuration, not a special case."""
+        cfg = SamplerConfig(k_min=3, k_max=77)
+        self.assertFalse(cfg.full_space)
+        self.assertEqual(cfg.regime()["mode"], "sampled options")
+
+    def test_the_regime_declares_what_the_loss_normalises_over(self):
+        sampled = SamplerConfig().regime()
+        full = FULL_CONFIG.regime()
+        self.assertEqual(sampled["mode"], "sampled options")
+        self.assertIn("SUBSET", sampled["loss_denominator"])
+        self.assertTrue(sampled["hard_fraction_applies"])
+        self.assertEqual(full["mode"], "full space")
+        self.assertIn("whole space", full["loss_denominator"])
+        self.assertFalse(full["hard_fraction_applies"])
+        self.assertIn("none", full["distractor_sampling"])
+
+    def test_draw_k_is_clamped_by_the_space_in_both_regimes(self):
+        rng = __import__("random").Random(0)
+        self.assertEqual(FULL_CONFIG.draw_k(rng, 77), 77)
+        self.assertEqual(FULL_CONFIG.draw_k(rng, 2), 2)
+        for _ in range(50):
+            self.assertLessEqual(SamplerConfig().draw_k(rng, 77), 8)
+            self.assertLessEqual(SamplerConfig(k_min=3, k_max=77)
+                                 .draw_k(rng, 41), 41)
+
+
+@needs_corpus
+class GateCheck1FullSpaceReachesTheWholeSpace(unittest.TestCase):
+    """K = |espacio|: the case the sampled regime could never emit."""
+
+    def test_every_answerable_row_offers_its_whole_space(self):
+        checked = 0
+        for s in _FULL_SAMPLES:
+            if s.is_unknown:
+                continue
+            checked += 1
+            self.assertEqual(s.k, s.space_size, s.row_id)
+            self.assertEqual(set(s.option_ids()),
+                             _FULL.space_members[s.space])
+        self.assertGreater(checked, 0)
+
+    def test_an_unknown_row_offers_the_space_minus_the_withheld_gold(self):
+        checked = 0
+        for s in _FULL_SAMPLES:
+            if not s.is_unknown or s.dropped_gold is None:
+                continue
+            checked += 1
+            self.assertEqual(s.k, s.space_size - 1)
+            self.assertEqual(s.gold_index, s.k)
+            self.assertNotIn(s.dropped_gold, s.option_ids())
+            self.assertEqual(set(s.option_ids()) | {s.dropped_gold},
+                             _FULL.space_members[s.space])
+        self.assertGreater(checked, 0)
+
+    def test_the_composition_counts_full_cardinality_at_100_pct(self):
+        comp = _FULL.composition(_FULL_SAMPLES)
+        self.assertEqual(comp["pct_k_is_full_space"], 100.0)
+        self.assertEqual(comp["regime"]["mode"], "full space")
+        per = comp["per_dataset"]
+        self.assertEqual(per["huffpost"]["max_k"], 41)
+        self.assertEqual(per["huffpost"]["pool_size"], 41)
+        self.assertGreater(comp["mean_k"], 8.0)
+        # the sampled arm, same corpus, for contrast: nothing but the
+        # binary pool (boolq: yes/no, whose option set IS the question)
+        # ever reaches its space there
+        sampled = _SAMPLER.composition(_SAMPLES)
+        self.assertLessEqual(sampled["per_dataset"]["huffpost"]["max_k"], 8)
+        for name, row in sampled["per_dataset"].items():
+            expected = 100.0 if row["binary_pool"] else 0.0
+            self.assertEqual(row["pct_k_is_full_space"], expected, name)
+        self.assertEqual(per["boolq"]["pct_k_is_full_space"], 100.0)
+
+    def test_gold_position_is_still_uniform_at_full_cardinality(self):
+        report = gold_position_chi2(_FULL_SAMPLES)
+        self.assertGreater(report["pooled_p"], 0.01, report)
+
+    def test_option_order_still_reshuffles_every_epoch(self):
+        report = epoch_shuffle_report(_FULL, (0, 1), limit=400)
+        self.assertTrue(report["set_stable"], report)
+        self.assertGreaterEqual(report["reordered_rate"], 0.5, report)
+
+    def test_k_max_at_the_space_size_reaches_it_without_the_sentinel(self):
+        """The other half of "configurable": a big `k_max`, not a mode."""
+        sampler = OptionSetSampler(datasets=("huffpost",),
+                                   config=SamplerConfig(k_min=3, k_max=41),
+                                   rows_per_dataset=300)
+        ks = {s.k for s in sampler.epoch(0)}
+        self.assertEqual(max(ks), 41)
+        self.assertGreater(len(ks), 10, sorted(ks))
+
+    def test_unknown_is_measured_in_both_regimes(self):
+        """Done-when 5: abstention supervision at small and full K."""
+        small = _SAMPLER.composition(_SAMPLES)["pct_unknown"]
+        full = _FULL.composition(_FULL_SAMPLES)["pct_unknown"]
+        for pct in (small, full):
+            self.assertAlmostEqual(pct, 100.0 * FULL_CONFIG.unknown_fraction,
+                                   delta=2.0)
+
+
+@needs_corpus
+class GateCheck4FirewallSurvivesTheWiderOptionSet(unittest.TestCase):
+    """Done-when 6: a wider option set cannot cross a space or a fence."""
+
+    def test_no_option_comes_from_another_space(self):
+        self.assertEqual(_FULL.cross_space_violations(_FULL_SAMPLES), [])
+        self.assertEqual(_SAMPLER.cross_space_violations(_SAMPLES), [])
+
+    def test_the_check_catches_a_planted_crossing(self):
+        stray = Sample(dataset="huffpost", row_id="huffpost-0",
+                       question_id="q", state="s", question="q",
+                       options=[{"id": "card_arrival", "text": "x"}],
+                       answer="card_arrival", gold_index=0,
+                       space="huffpost", space_size=41)
+        found = _FULL.cross_space_violations([stray])
+        self.assertEqual(len(found), 1, found)
+        self.assertEqual(found[0]["stray_options"], ["card_arrival"])
+
+    def test_the_check_catches_a_sample_from_a_foreign_dataset(self):
+        alien = Sample(dataset="banking77", row_id="banking77-0",
+                       question_id="q", state="s", question="q",
+                       options=[{"id": "card_arrival", "text": "x"}],
+                       answer="card_arrival", gold_index=0,
+                       space="banking77", space_size=77)
+        found = _FULL.cross_space_violations([alien])
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("not built on", found[0]["why"])
+
+    def test_no_label_of_a_fenced_benchmark_is_ever_offered(self):
+        forbidden = {d: {o["id"] for o in label_pool(d)}
+                     for d in MIX_1M_FENCED
+                     if d not in FULL_DATASETS
+                     and os.path.exists(dataset_path(d))}
+        self.assertIn("banking77", forbidden)
+        self.assertEqual(
+            _FULL.foreign_label_violations(_FULL_SAMPLES, forbidden), [])
+
+    def test_the_fence_check_catches_a_planted_benchmark_label(self):
+        leak = Sample(dataset="huffpost", row_id="huffpost-0",
+                      question_id="q", state="s", question="q",
+                      options=[{"id": "card_arrival", "text": "x"}],
+                      answer="card_arrival", gold_index=0,
+                      space="huffpost", space_size=41)
+        found = _FULL.foreign_label_violations(
+            [leak], {"banking77": {"card_arrival"}})
+        self.assertEqual(len(found), 1, found)
+        self.assertEqual(found[0]["fenced_dataset"], "banking77")
+
+    def test_eval_only_corpora_are_still_refused_in_the_full_regime(self):
+        for blocked in ("synth-loop", "logiqa", "reclor"):
+            with self.assertRaises(ValueError):
+                OptionSetSampler(datasets=(blocked,), config=FULL_CONFIG,
+                                 rows_per_dataset=1)
+
+    def test_the_global_space_check_is_replaced_not_relaxed(self):
+        """In the full regime the option set IS the space, on purpose."""
+        self.assertEqual(_FULL.global_space_violations(_FULL_SAMPLES), [])
+        self.assertTrue(_FULL.config.full_space)
+        # and the sampled regime still forbids it
+        self.assertEqual(_SAMPLER.global_space_violations(_SAMPLES), [])
 
 
 if __name__ == "__main__":

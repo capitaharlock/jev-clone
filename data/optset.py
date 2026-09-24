@@ -29,6 +29,14 @@ finding C) and `logiqa`/`reclor` (eval-only, finding G) are refused twice
 over: by `ALLOWED_DATASETS` and by `data.firewall.check_job_allowed`, which
 raises rather than warns.
 
+* **Cardinality regime** (`k_min`/`k_max`, #T-bigk-optsets): the default
+  3-8 is the *sampled-options* regime all of phase 1 trained in. Setting
+  `k_min = k_max = 0` (`FULL_SPACE`) switches to the *full-space* regime:
+  the row offers EVERY label of its own space, so `cross_entropy` over the
+  emitted columns already normalises over the whole space plus `unknown`.
+  Which regime a run used is declared by `distractor_regime()` and travels
+  in the gate — never inferred from a constant in this file.
+
 * **Space-scoped pools** (`space_scoped=`, #T-labelspace-div): the default
   pool of a dataset is its GLOBAL label space, keyed on the option id. That
   is right for a taxonomy (`dbpedia14`: Album, Animal, …) and wrong for a
@@ -72,6 +80,7 @@ from dataclasses import asdict, dataclass, field
 from .firewall import check_job_allowed
 from .hardneg import _cos, _embed
 from .leakage import jaccard, trigrams
+from .mix import MIX_1M_FENCED
 from .mix import SOURCES as MIX_SOURCES
 from .mix import TRAINABLE_DATASETS
 
@@ -84,6 +93,12 @@ ALLOWED_DATASETS = ("banking77", "massive", "huffpost", "boolq")
 
 UNKNOWN_ID = "unknown"
 DEFAULT_SEED = 20260921
+
+#: `k_min == k_max == FULL_SPACE` means "K is the size of the row's own
+#: label space". Zero cannot be a real K (a row with no options is not a
+#: question), so it is free to carry the regime, and
+#: `train_decision.cardinality_regime` already reads this exact sentinel.
+FULL_SPACE = 0
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PREFETCH_DIR = os.path.join(ROOT, "artifacts", "data-prefetch")
@@ -99,6 +114,11 @@ BINARY_POOL_SIZE = 2
 class SamplerConfig:
     """Every knob the gate has to report is a field here, not a constant."""
 
+    #: `k_min`/`k_max`: the per-row cardinality. `FULL_SPACE` in BOTH
+    #: (0, 0) is the full-space regime — K is the size of the row's own
+    #: label space, whatever that is. Any other pair is the sampled-options
+    #: regime, and `k_max` may be as large as the space (77 for banking77,
+    #: 41 for huffpost): it is clamped per row by `min(k_max, |space|)`.
     k_min: int = 3
     k_max: int = 8
     #: target share of the distractors of a row drawn from the hard bucket
@@ -114,8 +134,10 @@ class SamplerConfig:
     seed: int = DEFAULT_SEED
 
     def __post_init__(self) -> None:
-        if not 2 <= self.k_min <= self.k_max:
-            raise ValueError("need 2 <= k_min <= k_max")
+        if not (self.full_space or 2 <= self.k_min <= self.k_max):
+            raise ValueError(
+                "need 2 <= k_min <= k_max, or k_min == k_max == 0 "
+                "(FULL_SPACE) for the full-space regime")
         if not 0.0 <= self.hard_fraction <= 1.0:
             raise ValueError("hard_fraction must be in [0, 1]")
         if not 0.0 <= self.unknown_fraction < 1.0:
@@ -124,6 +146,61 @@ class SamplerConfig:
             raise ValueError("hard_top_ratio must be in (0, 1]")
         if not 0.0 <= self.cos_weight <= 1.0:
             raise ValueError("cos_weight must be in [0, 1]")
+
+    @property
+    def full_space(self) -> bool:
+        """Is this the full-space regime? (#T-bigk-optsets)"""
+        return self.k_min == FULL_SPACE and self.k_max == FULL_SPACE
+
+    def draw_k(self, rng: random.Random, space_size: int) -> int:
+        """How many options a row of a `space_size` space offers.
+
+        The `randint` is consumed in BOTH regimes even though the
+        full-space answer does not depend on it, so two arms that share a
+        seed keep the same random stream per row: the same rows become
+        `unknown` rows, and the only difference between the arms is the
+        cardinality. That is what makes them comparable.
+        """
+        k_hi = space_size if self.full_space else min(self.k_max, space_size)
+        k_lo = min(self.k_min, k_hi)
+        drawn = rng.randint(k_lo, k_hi)
+        return space_size if self.full_space else drawn
+
+    def regime(self) -> dict:
+        """The cardinality regime, declared — never inferred by a reader."""
+        if self.full_space:
+            return {
+                "mode": "full space",
+                "k_min": self.k_min, "k_max": self.k_max,
+                "k_per_row": ("|space| for an answerable row; |space| - 1 "
+                              "for an `unknown` row, which is the space "
+                              "with the gold withheld"),
+                "distractor_sampling": ("none — every other label of the "
+                                        "row's own space is offered, so "
+                                        "the hard and easy buckets are "
+                                        "both exhausted"),
+                "hard_fraction_applies": False,
+                "loss_denominator": ("the [K + 1] columns handed to "
+                                     "`cross_entropy` ARE the row's whole "
+                                     "space plus `unknown`"),
+                "unknown_fraction": self.unknown_fraction,
+            }
+        return {
+            "mode": "sampled options",
+            "k_min": self.k_min, "k_max": self.k_max,
+            "k_per_row": (f"{self.k_min}-{self.k_max} drawn uniformly, "
+                          "clamped by |space|"),
+            "distractor_sampling": (
+                f"{round(100.0 * self.hard_fraction)} % of the distractors "
+                f"from the hard bucket (the top "
+                f"{round(100.0 * self.hard_top_ratio)} % of the difficulty "
+                f"ranking, at least {self.hard_top_min} labels), the rest "
+                "from the easy bucket, both without replacement"),
+            "hard_fraction_applies": True,
+            "loss_denominator": ("the [K + 1] columns handed to "
+                                 "`cross_entropy` — a SUBSET of the space"),
+            "unknown_fraction": self.unknown_fraction,
+        }
 
 
 @dataclass
@@ -143,6 +220,12 @@ class Sample:
     n_hard: int = 0
     n_easy: int = 0
     epoch: int = 0
+    #: name of the label space this row drew from — the dataset for a
+    #: global pool, `dataset#n` for a space-scoped one. `cross_space_
+    #: violations()` proves every option came from THIS space and no other.
+    space: str = ""
+    #: size of that space, so `k == space_size` is checkable per sample
+    space_size: int = 0
 
     @property
     def k(self) -> int:
@@ -353,6 +436,11 @@ class OptionSetSampler:
         #: as spaces are met: 20 000 six-label indexes, not one 99 544-label
         #: index whose per-gold ranking never finishes.
         self._spaces: dict[str, dict] = {d: {} for d in self.datasets}
+        #: space name -> the ids it contains. A global pool is named after
+        #: its dataset; a space-scoped one gets `dataset#n` in first-seen
+        #: order. This is what `cross_space_violations` checks against.
+        self.space_members: dict[str, set] = {}
+        self._space_names: dict[str, dict] = {d: {} for d in self.datasets}
         self.root = root
         self.rows_per_dataset = rows_per_dataset
         self.keep = dict(keep or {})
@@ -364,6 +452,9 @@ class OptionSetSampler:
             for d in self.datasets}
         self.pool_ids: dict[str, set[str]] = {
             d: {o["id"] for o in p} for d, p in self.pools.items()}
+        for d, ids in self.pool_ids.items():
+            if d not in self.space_scoped:
+                self.space_members[d] = ids
         self.index: dict[str, DistractorIndex] = {
             d: DistractorIndex(p, self.config) for d, p in self.pools.items()}
         self.rows: dict[str, list[dict]] = {
@@ -486,7 +577,25 @@ class OptionSetSampler:
                     for o in options]
             cached = (pool, DistractorIndex(pool, self.config))
             self._spaces[dataset][key] = cached
+            name = f"{dataset}#{len(self._spaces[dataset])}"
+            self._space_names[dataset][key] = name
+            self.space_members[name] = {o["id"] for o in pool}
         return cached
+
+    def space_name(self, dataset: str, question: dict) -> str:
+        """Name of the space a question draws from — `space_members` key.
+
+        A global pool is the dataset itself; a space-scoped question is
+        named after the FIRST time its option-id set was met, which is
+        stable within a run because the row order is.
+        """
+        if dataset not in self.space_scoped:
+            return dataset
+        key = "\x00".join(sorted(o.get("id", "")
+                                 for o in question.get("options", [])))
+        if key not in self._space_names[dataset]:
+            self.space_of(dataset, question)  # registers it
+        return self._space_names[dataset][key]
 
     def spaces_seen(self, dataset: str) -> int:
         """Distinct label spaces this sampler has drawn from so far."""
@@ -502,9 +611,7 @@ class OptionSetSampler:
         by_id = index.text
         rng = self._set_rng(dataset, row_id, question.get("id", ""))
 
-        k_hi = min(cfg.k_max, len(pool))
-        k_lo = min(cfg.k_min, k_hi)
-        k_wanted = rng.randint(k_lo, k_hi)
+        k_wanted = cfg.draw_k(rng, len(pool))
         # A row whose own answer is absent or already `unknown` stays an
         # unknown row; the draw is consumed either way so the stream of a
         # row does not depend on its gold.
@@ -534,7 +641,9 @@ class OptionSetSampler:
             gold_index=len(options) if is_unknown else len(options) - 1,
             dropped_gold=(gold_id if is_unknown and not gold_missing
                           else None),
-            n_hard=n_hard, n_easy=n_easy)
+            n_hard=n_hard, n_easy=n_easy,
+            space=self.space_name(dataset, question),
+            space_size=len(pool))
 
     def epoch(self, epoch: int = 0):
         """Yield every sample of one epoch, options reshuffled for `epoch`."""
@@ -590,6 +699,13 @@ class OptionSetSampler:
         claim `test_optset` makes instead — no option ever comes from
         another space.
         """
+        # The full-space regime offers the row's whole space ON PURPOSE
+        # (#T-bigk-optsets): this check is not relaxed there, it is
+        # REPLACED by `cross_space_violations`, which is the strictly
+        # stronger claim — no option ever comes from another space, and no
+        # sample from a dataset this sampler was not built on.
+        if self.config.full_space:
+            return []
         exempt = set(self.fixed_option_datasets()) | self.space_scoped
         out = []
         for s in samples:
@@ -599,6 +715,70 @@ class OptionSetSampler:
             if set(s.option_ids()) == pool:
                 out.append({"dataset": s.dataset, "row_id": s.row_id,
                             "k": s.k, "pool_size": len(pool)})
+        return out
+
+    def cross_space_violations(self, samples: list[Sample]) -> list[dict]:
+        """The firewall claim: no option crosses a space or a dataset.
+
+        Widening the option set is exactly the change that could smuggle a
+        label in, so the proof has to be per sample and not per config:
+
+        1. the sample's dataset is one this sampler was built on — and
+           every one of those went through `assert_trainable` (registry +
+           `data.firewall.check_job_allowed`), so a fenced or eval-only
+           corpus cannot be the source of an option;
+        2. every option id belongs to the space the row itself drew from,
+           named on the sample. For a space-scoped dataset that is the
+           row's own taxonomy, not the union of 20 000 of them.
+
+        Empty list = no violation. This is the check the full-space gate
+        passes on, in place of `global_space_violations`.
+        """
+        out = []
+        for s in samples:
+            if s.dataset not in self.datasets:
+                out.append({"why": "sample from a dataset this sampler was "
+                                   "not built on",
+                            "dataset": s.dataset, "row_id": s.row_id,
+                            "allowed_datasets": list(self.datasets)})
+                continue
+            allowed = self.space_members.get(s.space)
+            if allowed is None:
+                out.append({"why": "sample names a space that was never "
+                                   "registered",
+                            "dataset": s.dataset, "row_id": s.row_id,
+                            "space": s.space})
+                continue
+            stray = sorted(set(s.option_ids()) - allowed)
+            if stray:
+                out.append({"why": "option from outside the row's space",
+                            "dataset": s.dataset, "row_id": s.row_id,
+                            "space": s.space, "space_size": len(allowed),
+                            "stray_options": stray[:5]})
+        return out
+
+    def foreign_label_violations(self, samples: list[Sample],
+                                 forbidden: dict) -> list[dict]:
+        """Options that match a label of a corpus this run must not touch.
+
+        `forbidden` is `{dataset: {label ids}}` — for a `--fence-clean`
+        run, the label spaces of `data.mix.MIX_1M_FENCED`. An id shared by
+        a fenced dataset and a trained one is reported with both names so
+        the reader can see it is a collision and not a leak.
+        """
+        out = []
+        for s in samples:
+            own = self.space_members.get(s.space) or set()
+            for name, ids in forbidden.items():
+                if name in self.datasets:
+                    continue
+                hit = sorted(set(s.option_ids()) & set(ids))
+                if hit:
+                    out.append({"dataset": s.dataset, "row_id": s.row_id,
+                                "space": s.space, "fenced_dataset": name,
+                                "labels": hit[:5],
+                                "also_in_own_space": sorted(
+                                    set(hit) & own)[:5]})
         return out
 
     def binary_exempt_datasets(self) -> list[str]:
@@ -633,10 +813,22 @@ class OptionSetSampler:
             d["unknown"] += int(s.is_unknown)
             d["hard"] += s.n_hard
             d["easy"] += s.n_easy
+            d["k_sum"] = d.get("k_sum", 0) + s.k
+            d["spaces"] = d.get("spaces", set()) | {s.space}
+            # `unknown` rows offer the space MINUS the withheld gold, so
+            # "K is the whole space" is |space| - 1 for them. Both count
+            # as full cardinality; the offset is the gold, not a cap.
+            target = s.space_size - (1 if s.is_unknown else 0)
+            d["k_is_space"] = d.get("k_is_space", 0) + int(
+                s.space_size > 0 and s.k >= target)
             d["k_distribution"][str(s.k)] = \
                 d["k_distribution"].get(str(s.k), 0) + 1
         for d in per.values():
             distract = d["hard"] + d["easy"]
+            d["mean_k"] = round(d.pop("k_sum", 0) / max(d["samples"], 1), 4)
+            d["spaces_seen"] = len(d.pop("spaces", ()) or ())
+            d["pct_k_is_full_space"] = round(
+                100.0 * d.pop("k_is_space", 0) / max(d["samples"], 1), 4)
             d["distractors"] = distract
             d["pct_hard_negatives"] = round(
                 100.0 * d["hard"] / distract, 4) if distract else 0.0
@@ -653,6 +845,14 @@ class OptionSetSampler:
                 overall_k[k] = overall_k.get(k, 0) + n
         return {
             "samples": len(samples),
+            "regime": self.config.regime(),
+            "mean_k": round(sum(s.k for s in samples) / len(samples), 4)
+            if samples else 0.0,
+            "pct_k_is_full_space": round(
+                100.0 * sum(1 for s in samples if s.space_size > 0
+                            and s.k >= s.space_size - (1 if s.is_unknown
+                                                       else 0))
+                / len(samples), 4) if samples else 0.0,
             "per_dataset": dict(sorted(per.items())),
             "k_distribution": dict(
                 sorted(overall_k.items(), key=lambda t: int(t[0]))),
@@ -805,6 +1005,12 @@ def run_gate(rows_per_dataset: int = 4000, config: SamplerConfig | None = None,
     samples = list(sampler.epoch(0))
     composition = sampler.composition(samples)
     violations = sampler.global_space_violations(samples)
+    crossings = sampler.cross_space_violations(samples)
+    fenced = sampler.foreign_label_violations(
+        samples, {d: {o["id"] for o in label_pool(d, root)}
+                  for d in MIX_1M_FENCED
+                  if d not in sampler.datasets
+                  and os.path.exists(dataset_path(d, root))})
     positions = gold_position_chi2(samples)
     shuffle = epoch_shuffle_report(sampler, (0, 1))
     firewall = firewall_report()
@@ -817,9 +1023,33 @@ def run_gate(rows_per_dataset: int = 4000, config: SamplerConfig | None = None,
                      - 100.0 * sampler.config.unknown_fraction) <= mix_tolerance
     hard_ok = counted_hard > 0 and counted_easy > 0
 
+    full = sampler.config.full_space
     checks = {
+        "cross_space_firewall": {
+            # The check that decides the full-space gate, and a second
+            # belt in the sampled regime. Widening the option set is the
+            # change that could smuggle a label in; this is the proof it
+            # did not.
+            "pass": not crossings and not fenced,
+            "crossings": len(crossings),
+            "examples": crossings[:5],
+            "fenced_label_hits": len(fenced),
+            "fenced_examples": fenced[:5],
+            "fenced_datasets_checked": [d for d in MIX_1M_FENCED
+                                        if d not in sampler.datasets],
+            "criterion": ("every option id belongs to the space the row "
+                          "itself drew from, every sample comes from a "
+                          "dataset that passed `assert_trainable`, and no "
+                          "option matches a label of a fenced corpus"),
+            "spaces_registered": len(sampler.space_members),
+        },
         "no_global_label_space": {
             "pass": not violations,
+            "applies": not full,
+            "why_not": ("the full-space regime offers the row's whole "
+                        "space on purpose; `cross_space_firewall` is the "
+                        "check that replaces it — strictly stronger"
+                        if full else ""),
             "violations": len(violations),
             "examples": violations[:5],
             "exempt_binary_datasets": sampler.binary_exempt_datasets(),
@@ -862,6 +1092,9 @@ def run_gate(rows_per_dataset: int = 4000, config: SamplerConfig | None = None,
         "task": "T-optset-sampler",
         "pass": all(c["pass"] for c in checks.values()),
         "config": asdict(sampler.config),
+        "cardinality_regime": sampler.config.regime(),
+        "mean_k": composition["mean_k"],
+        "pct_k_is_full_space": composition["pct_k_is_full_space"],
         "datasets": sampler.datasets,
         "rows_per_dataset": rows_per_dataset,
         "samples": composition["samples"],
@@ -885,11 +1118,14 @@ def run_gate(rows_per_dataset: int = 4000, config: SamplerConfig | None = None,
 
 def main(argv: list[str]) -> int:
     cmd = argv[1] if len(argv) > 1 else "gate"
-    if cmd != "gate":
+    if cmd not in ("gate",):
         print(f"unknown command {cmd!r}; use gate", file=sys.stderr)
         return 2
     rows = int(argv[2]) if len(argv) > 2 else 4000
-    gate = run_gate(rows_per_dataset=rows)
+    config = None
+    if "--full-space" in argv:
+        config = SamplerConfig(k_min=FULL_SPACE, k_max=FULL_SPACE)
+    gate = run_gate(rows_per_dataset=rows, config=config)
     print(json.dumps({k: v for k, v in gate.items()
                       if k not in ("checks", "per_dataset")},
                      indent=2, sort_keys=True))

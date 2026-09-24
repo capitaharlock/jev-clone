@@ -98,9 +98,9 @@ if ROOT not in sys.path:  # the trainer runs both as -m and as a script
     sys.path.insert(0, ROOT)
 
 from data import mix as mixmod  # noqa: E402
-from data.optset import (ALLOWED_DATASETS, DistractorIndex,  # noqa: E402
-                         OptionSetSampler, Sample, SamplerConfig, UNKNOWN_ID,
-                         difficulty)
+from data.optset import (ALLOWED_DATASETS, FULL_SPACE,  # noqa: E402
+                         DistractorIndex, OptionSetSampler, Sample,
+                         SamplerConfig, UNKNOWN_ID, difficulty)
 
 RUNS_DIR = os.path.join(ROOT, "artifacts", "runs")
 CKPT_DIR = os.path.join(ROOT, "artifacts", "checkpoints", "decision")
@@ -857,7 +857,8 @@ class RunningMetrics:
 
 # -- the regime a run was trained at ---------------------------------------
 
-def cardinality_regime(config, episodic_resample: bool = False) -> dict:
+def cardinality_regime(config, episodic_resample: bool = False,
+                       eval_config=None) -> dict:
     """R4 — the cardinality this run trains at, written into the artifact.
 
     A GO/NO-GO is only valid inside the regime it was measured in, so a
@@ -865,24 +866,53 @@ def cardinality_regime(config, episodic_resample: bool = False) -> dict:
     comparison into a guess. This block travels in `run.json` and in EVERY
     checkpoint manifest, and `eval.scoreboard` prints it above the table
     (`#T-eval-cardinality`, rule R4).
+
+    `eval_config` is the regime the STAGE eval was measured in. When it
+    differs from the training one the divergence is stated here rather
+    than left for a reader to infer — rule R1.
     """
-    full = config.k_min == config.k_max == 0
-    return {
+    full = config.full_space
+    regime = {
         "mode": "full label space" if full else "sampled options",
         "k_min": config.k_min,
         "k_max": config.k_max,
-        "options_per_row": (f"{config.k_min}-{config.k_max} sampled from the "
-                            "row's label space, plus the `unknown` logit"),
+        "options_per_row": (
+            "every label of the row's own label space (|space| - 1 when the "
+            "gold is withheld for an `unknown` row), plus the `unknown` "
+            "logit" if full else
+            f"{config.k_min}-{config.k_max} sampled from the "
+            "row's label space, plus the `unknown` logit"),
         "unknown_fraction": config.unknown_fraction,
         "hard_fraction": config.hard_fraction,
         "resampled_each_epoch": bool(episodic_resample),
-        "loss_normalised_over": "the [K + 1] columns handed to "
-                                "`cross_entropy` — that is the denominator, "
-                                "and it is this K, not the label space",
+        "loss_normalised_over": (
+            "the [K + 1] columns handed to `cross_entropy` — in this regime "
+            "those columns ARE the row's whole label space plus `unknown`"
+            if full else
+            "the [K + 1] columns handed to `cross_entropy` — that is the "
+            "denominator, and it is this K, not the label space"),
+        "sampler_regime": config.regime(),
         "rule": "R4 — a verdict measured in this regime does not transfer "
                 "to another one; it is marked non-transferable instead of "
                 "inherited",
     }
+    if eval_config is not None:
+        same = (eval_config.k_min == config.k_min
+                and eval_config.k_max == config.k_max)
+        regime["stage_eval"] = {
+            "k_min": eval_config.k_min, "k_max": eval_config.k_max,
+            "mode": eval_config.regime()["mode"],
+            "same_as_training": bool(same),
+            "why": ("the stage eval is pinned to the phase-1 diagnostic "
+                    "regime so this run is comparable with the arms that "
+                    "came before it; the primary metric at full "
+                    "cardinality is `eval.fullspace`, not this one"
+                    if not same else
+                    "train and eval share the regime"),
+            "rule": "R1 — a divergence between the training regime and the "
+                    "eval regime is declared in the gate, not discovered",
+        }
+    return regime
 
 
 # -- evaluation ------------------------------------------------------------
@@ -1333,7 +1363,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           episodic_resample: bool = False,
           contrastive_weight: float = 0.0, contrastive_tau: float = 0.07,
           prior_penalty: float = 0.0, unfreeze: str = "none",
-          unfreeze_layers: int = 2, backbone_lr: float = 1e-5) -> dict:
+          unfreeze_layers: int = 2, backbone_lr: float = 1e-5,
+          k_min: int | None = None, k_max: int | None = None) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -1349,7 +1380,21 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     if contrastive_tau <= 0:
         raise ValueError("contrastive_tau must be positive")
     gen_rng = random.Random(f"{seed}\x00gen-objective")
-    config = SamplerConfig(seed=seed)
+    # The TRAIN cardinality regime (#T-bigk-optsets): `k_min = k_max = 0`
+    # trains on the row's whole label space, so the `cross_entropy` below
+    # normalises over that space plus `unknown` instead of over 3-8
+    # sampled candidates. `None` keeps the phase-1 default.
+    config = SamplerConfig(
+        seed=seed,
+        **{k: v for k, v in (("k_min", k_min), ("k_max", k_max))
+           if v is not None})
+    # The stage EVAL regime is pinned to the phase-1 default on purpose:
+    # it is the diagnostic that every earlier arm was measured in, and a
+    # run that moved both regimes at once would have nothing to compare
+    # against. The divergence is declared in `cardinality_regime` (R1)
+    # and the primary metric lives at full cardinality in `eval.fullspace`
+    # either way. With no `--k-*` flag the two configs are identical.
+    eval_cfg = SamplerConfig(seed=seed)
     spec = pools = None
     train_rows = rows_per_dataset
     if use_mix:
@@ -1416,9 +1461,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
 
     tr = train_samplers(holdout, config, train_rows, root, spec, pools)
     prior_counts = fit_label_prior(tr) if prior_penalty > 0 else {}
-    ev_seen = eval_samplers(holdout, "seen", config, rows_per_dataset, root,
-                            pools)
-    ev_unseen = eval_samplers(holdout, "unseen", config, rows_per_dataset,
+    ev_seen = eval_samplers(holdout, "seen", eval_cfg, rows_per_dataset,
+                            root, pools)
+    ev_unseen = eval_samplers(holdout, "unseen", eval_cfg, rows_per_dataset,
                               root, pools)
     stream = MixtureStream(tr, batch_size, dataset_cap=cap_d,
                            family_cap=cap_f)
@@ -1491,7 +1536,8 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                      "lr": regime["lr"],
                      "unfreeze": regime,
                      "revision": BACKBONES[backbone_id]["revision"]},
-        "cardinality_regime": cardinality_regime(config, episodic_resample),
+        "cardinality_regime": cardinality_regime(config, episodic_resample,
+                                                 eval_cfg),
         "data_manifest": data_manifest(sorted(tr), root),
         "mix": ({"version": mix_manifest["version"],
                  "seed": mix_manifest["seed"],
@@ -2033,6 +2079,17 @@ def main(argv: list) -> int:
                          "checkpoint manifest"))
     t.add_argument("--unfreeze-layers", type=int, default=2, metavar="N",
                    help="how many top blocks --unfreeze last-n opens")
+    t.add_argument("--k-min", type=int, default=None, metavar="N",
+                   help="per-row option cardinality, low end (default 3)")
+    t.add_argument("--k-max", type=int, default=None, metavar="N",
+                   help="per-row option cardinality, high end (default 8); "
+                        "may be as large as the label space")
+    t.add_argument("--full-space", action="store_true",
+                   help="#T-bigk-optsets: train on the row's WHOLE label "
+                        "space (K = |space|, `--k-min 0 --k-max 0`), so "
+                        "`cross_entropy` normalises over the space plus "
+                        "`unknown`. The stage eval stays in the phase-1 "
+                        "K<=8 regime and the divergence is declared")
     t.add_argument("--backbone-lr", type=float, default=1e-5,
                    help=("LR of the encoder param group — deliberately far "
                          "below --lr: the head is learning a task, the "
@@ -2089,7 +2146,9 @@ def main(argv: list) -> int:
                         prior_penalty=args.prior_penalty,
                         unfreeze=args.unfreeze,
                         unfreeze_layers=args.unfreeze_layers,
-                        backbone_lr=args.backbone_lr)
+                        backbone_lr=args.backbone_lr,
+                        k_min=FULL_SPACE if args.full_space else args.k_min,
+                        k_max=FULL_SPACE if args.full_space else args.k_max)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0
