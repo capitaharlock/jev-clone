@@ -1,0 +1,860 @@
+{
+  "format": "jev.gate.v1",
+  "task": "T-jev-parity",
+  "artifact": "contamination",
+  "generated_utc": "2026-09-24T13:38:19Z",
+  "question": "does any of the 77 BANKING77 label strings occur literally in the other training sources",
+  "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+  "declared_fence": {
+    "clean_1m": true,
+    "fenced_datasets": [
+      "banking77",
+      "helpsteer2",
+      "pubmedqa"
+    ],
+    "why": "§§18, 77: zero Banking77/HelpSteer2/PubMedQA rows in train",
+    "training_sources": [
+      "boolq",
+      "civil-comments",
+      "dbpedia14",
+      "detox-attack",
+      "email-triage",
+      "goemotions",
+      "huffpost",
+      "massive",
+      "prog-gold",
+      "snli",
+      "swag",
+      "synth-v1"
+    ],
+    "evidence": "artifacts/runs/leverstack-d512-prior-ettin-68m-s20260922/run.json",
+    "proves": "the banking77 DATASET contributed zero rows to the mixture",
+    "does_not_prove": "that no banking77 LABEL STRING occurs in the other sources — a different claim, and the one this scan measures"
+  },
+  "scan": {
+    "labels": 77,
+    "forms": "counted APART, because they are different findings: the identifier (`card_arrival`) is a label another source could have trained on; the readable form (`card arrival`) is an English phrase and its appearance in somebody's sentence is a collision of language, not contamination. Case-insensitive, with boundaries so a label is not matched inside a longer identifier",
+    "sources_scanned": [
+      "boolq",
+      "civil-comments",
+      "dbpedia14",
+      "detox-attack",
+      "email-triage",
+      "goemotions",
+      "huffpost",
+      "massive",
+      "prog-gold",
+      "snli",
+      "swag",
+      "synth-v1"
+    ],
+    "shards_scanned": 20,
+    "sources_missing_locally": [],
+    "resolver": "data.optset.source_paths — the trainer's own, so a multi-shard source cannot be silently skipped",
+    "scope": "the WHOLE prefetched file of each source, which is a superset of the rows the mixture actually drew: a scan that misses is then a stronger statement, and a scan that hits is triaged by hand",
+    "bytes": 2607690307,
+    "seconds": 160.71
+  },
+  "labels_found": {
+    "age_limit": {
+      "boolq": {
+        "readable_phrase": 18
+      },
+      "civil-comments": {
+        "readable_phrase": 86
+      },
+      "dbpedia14": {
+        "readable_phrase": 3
+      },
+      "detox-attack": {
+        "readable_phrase": 2
+      },
+      "huffpost": {
+        "readable_phrase": 2
+      },
+      "synth-v1": {
+        "readable_phrase": 81
+      }
+    },
+    "exchange_rate": {
+      "boolq": {
+        "readable_phrase": 13
+      },
+      "civil-comments": {
+        "readable_phrase": 205
+      },
+      "dbpedia14": {
+        "readable_phrase": 4
+      },
+      "detox-attack": {
+        "readable_phrase": 2
+      },
+      "goemotions": {
+        "readable_phrase": 1
+      },
+      "huffpost": {
+        "readable_phrase": 2
+      },
+      "massive": {
+        "readable_phrase": 83
+      },
+      "synth-v1": {
+        "readable_phrase": 46
+      }
+    },
+    "visa_or_mastercard": {
+      "boolq": {
+        "readable_phrase": 2
+      },
+      "civil-comments": {
+        "readable_phrase": 4
+      },
+      "dbpedia14": {
+        "readable_phrase": 1
+      },
+      "synth-v1": {
+        "readable_phrase": 11
+      }
+    },
+    "country_support": {
+      "civil-comments": {
+        "readable_phrase": 11
+      }
+    },
+    "pending_transfer": {
+      "civil-comments": {
+        "readable_phrase": 1
+      }
+    },
+    "receiving_money": {
+      "civil-comments": {
+        "readable_phrase": 46
+      },
+      "detox-attack": {
+        "readable_phrase": 3
+      },
+      "snli": {
+        "readable_phrase": 2
+      }
+    },
+    "verify_my_identity": {
+      "civil-comments": {
+        "readable_phrase": 1
+      },
+      "detox-attack": {
+        "readable_phrase": 1
+      }
+    }
+  },
+  "labels_found_total": 7,
+  "labels_found_as_identifier": {},
+  "labels_found_as_identifier_total": 0,
+  "labels_found_as_answer": {},
+  "labels_found_as_answer_total": 0,
+  "per_source": {
+    "boolq": {
+      "paths": [
+        "artifacts/data-prefetch/boolq.jsonl"
+      ],
+      "bytes": 10279023,
+      "seconds": 0.7,
+      "labels_found": 3,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 18
+        },
+        "exchange_rate": {
+          "readable_phrase": 13
+        },
+        "visa_or_mastercard": {
+          "readable_phrase": 2
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "the european exchange rate mechanism finally broke the one-for-one link that existed between the irish pound and the pound sterling; by 30 march 1979 an exchang"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "the european exchange rate mechanism finally broke the one-for-one link that existed between the irish pound and the pound sterling; by 30 march 1979 an exchang"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "the result of the 2016 uk referendum on eu membership caused a major decline in the pound against other world currencies as the future of international trade re"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "unlike most western countries, 18 of the u.s. states do not have a legal minimum age of marriage. individuals aged 18 have the ability to marry in u.s. states e"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "the gold standard was temporarily abandoned during the first world war and definitively abolished on april 10, 1933. at the outbreak of the second world war, th"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "no person except a natural born citizen, or a citizen of the united states, at the time of the adoption of this constitution, shall be eligible to the office of"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "the minimum age to purchase and consume varies, but the most common age is 18 years. however, in north america the age limits varies between 18 and 21 years of "
+        }
+      ],
+      "sha256_declared_by_the_run": "d6054f599f484e15a90850ad99d7478e736f522345f11fcbf06c145de3c3e54a"
+    },
+    "civil-comments": {
+      "paths": [
+        "artifacts/data-prefetch/civil-comments.jsonl"
+      ],
+      "bytes": 1062302574,
+      "seconds": 80.52,
+      "labels_found": 7,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 86
+        },
+        "country_support": {
+          "readable_phrase": 11
+        },
+        "exchange_rate": {
+          "readable_phrase": 205
+        },
+        "pending_transfer": {
+          "readable_phrase": 1
+        },
+        "receiving_money": {
+          "readable_phrase": 46
+        },
+        "verify_my_identity": {
+          "readable_phrase": 1
+        },
+        "visa_or_mastercard": {
+          "readable_phrase": 4
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "as noted in another article posted a short while ago, dillon took the high road again and said, \"me and coach k, that conversation should have stayed with us,\" "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "you do realize college is a choice and you don't *have* to go to college, right? i graduated in college in 2004 and still paying loans and came off my parents i"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "three quarters of the lac received campaign donations from mark pfeffer or his employees during the timeframe that the lio lease was 'negotiated'.  is yours in "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "uptil i looked at the check for $7047 , i did not believe ...that...my neighbours mother could truley receiving money parttime from there computar. . there sist"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "very intelligent. we could use more inexperienced folks, like vinis, to make the current mess even worse.\n \nhmm. maybe we should have an upper age limit, say 15"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "enlighten me, wavemaker, how you came to believe that i would either think trump would/could make america great again ( i know it's his slogan), or that i would"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "is there an age limit for roughing up those in custody? would a thirty-something have gotten less money, or more?"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "the 'state' lost its ability to hold anyone 'accountable' when if cut its support down to its current abysmal level.  \n\nit isn't the responsibility of the u of "
+        }
+      ],
+      "sha256_declared_by_the_run": "9524ba4638ac20f7838f4b8159db7137fcf984ad16463aff1dd24ea7f191534c"
+    },
+    "dbpedia14": {
+      "paths": [
+        "artifacts/data-prefetch/dbpedia14.jsonl"
+      ],
+      "bytes": 634742744,
+      "seconds": 33.58,
+      "labels_found": 3,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 3
+        },
+        "exchange_rate": {
+          "readable_phrase": 4
+        },
+        "visa_or_mastercard": {
+          "readable_phrase": 1
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "nexopia\nnexopia.com is a canadian social networking website created by timo ewalds. it was designed as a general interactive site for people aged 14 and up but "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "xe.com\nxe.com inc. (xe) is a privately held online foreign exchange tools and services provider. headquartered in newmarket ontario xe offers exchange rate info"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "visa or mastercard",
+          "excerpt": "edhance\nedhance is a now inoperative american corporation that operated a student discount program prior to its acquisition by buywithme inc. the company allowe"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "domingo cavallo\ndomingo felipe mingo cavallo (born july 21 1946) is an argentine economist and politician. he has a long history of public service and is known "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "a todo rock\na todo rock is menudo's thirteenth album in spanish. it features ricky meléndez johnny lozada charlie massó and new members ray reyes and roy rossel"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "reaching out\nreaching out (1984) is menudo's 14th album and the first one in english.it features ricky meléndez charlie massó ray reyes roy rosselló and new mem"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "economic policy (journal)\neconomic policy is a quarterly peer-reviewed academic journal published by wiley-blackwell on behalf of the centre for economic policy"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "localbitcoins\nlocalbitcoins is a bitcoin startup company based in helsinki finland. its service facilitates over-the-counter trading of local currency for bitco"
+        }
+      ],
+      "sha256_declared_by_the_run": "3dfe940b4ca8e4d6129fe873fbbd7ac5c3133fd04ad67ec9f2a116b6b713e5ba"
+    },
+    "detox-attack": {
+      "paths": [
+        "artifacts/data-prefetch/detox-attack.jsonl"
+      ],
+      "bytes": 171736569,
+      "seconds": 12.29,
+      "labels_found": 4,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 2
+        },
+        "exchange_rate": {
+          "readable_phrase": 2
+        },
+        "receiving_money": {
+          "readable_phrase": 3
+        },
+        "verify_my_identity": {
+          "readable_phrase": 1
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "`\n\n== extensive welfare system? ==\n\npresently, singapore can be politically analysed as a democratic socialist country and has an extensive welfare system, alth"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "the fields medal can impossibly be considered the top honor mathematics award since there is an age limit on the winner. a prize not recognizing half (age 40+) "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "verify my identity",
+          "excerpt": "`\n\ni think it is very revealing that felix-felix, given an opportunity to verify my identity, has made it clear he does not want to. he is more interested in th"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "`\n\n:::``disturbing`` meaning ``difficult to believe, but it can be true``.  as you see i have not removed the sentence, i am simply asking for sources.  the val"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "::so we're now in the situation where the zimbabwean dollar is both the highest and lowest valued currency unit, depending on which exchange rate you take? i lo"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "`\n\n== d15b8 - just you leave it alone ==\n\n``could`` ?? you snobinavian... then do it! an intelligent person (me) took time to improve the d15 page, and you remo"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "`\n\n==receiving money from kgb (edit request)==\nrajiv gandhi and his family including sonia gandhi and rahul gandhi received money from kgb. the payments were au"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "`\n\n== age limit ==\n\nit has now been added several times that play is recommended for teenagers age 12 and up, (with a minimum suggested age of 10 and up. the pl"
+        }
+      ],
+      "sha256_declared_by_the_run": "91e823c38cdc1f03c806a0f3d65c5732a088b6c0d42a7b19056053ec2e0f51f4"
+    },
+    "email-triage": {
+      "paths": [
+        "artifacts/data-prefetch/email-triage.jsonl"
+      ],
+      "bytes": 2820195,
+      "seconds": 0.15,
+      "labels_found": 0,
+      "labels_found_as_identifier": [],
+      "occurrences": {},
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [],
+      "sha256_declared_by_the_run": "009b45868b0ecc7add9c564427422977b526335ba69bad03bab152ea5590e25d"
+    },
+    "goemotions": {
+      "paths": [
+        "artifacts/data-prefetch/goemotions.jsonl"
+      ],
+      "bytes": 69875904,
+      "seconds": 4.25,
+      "labels_found": 1,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "exchange_rate": {
+          "readable_phrase": 1
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "so many [name] killed in hoi an. [name] damn do i love that exchange rate."
+        }
+      ],
+      "sha256_declared_by_the_run": "b3ecb12219a30bfacd04b1eac1dae7f47b1199c2565e11278ab6bef9fcee2ab2"
+    },
+    "huffpost": {
+      "paths": [
+        "artifacts/data-prefetch/huffpost.jsonl"
+      ],
+      "bytes": 88534603,
+      "seconds": 5.31,
+      "labels_found": 2,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 2
+        },
+        "exchange_rate": {
+          "readable_phrase": 2
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "broncos punter britton colquitt forced to buy $1800 super bowl ticket for his week-old baby\n\"there’s no age limit to tickets.\""
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "volunteering knows no age limit\ni can tell that this is not just a one-off experience with volunteering for mariah.  it is a way of life for her family."
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "non-dollar trading is killing the petrodollar -- and the foundation of u.s.-saudi policy in the middle east\nthis new oil price drop simply is crushing producers"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "london travel: 9 money-saving tips for visitors (video)\nlondon is known as a notoriously expensive town, and the dollar to pound exchange rate isn't helping mat"
+        }
+      ],
+      "sha256_declared_by_the_run": "ddcfcb0babb6e5d8b5aaddc4a9e349fa4952836d29df494442ea0453f5d41cfd"
+    },
+    "massive": {
+      "paths": [
+        "artifacts/data-prefetch/massive.jsonl"
+      ],
+      "bytes": 40814161,
+      "seconds": 2.28,
+      "labels_found": 1,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "exchange_rate": {
+          "readable_phrase": 83
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the exchange rate of us dollar to pound sterling"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the exchange rate between the us and canada"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the euro to dollar exchange rate"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the exchange rate between the dollar and the euro currently"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the us dollar euro exchange rate"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the yen us dollar exchange rate"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the exchange rate between pound sterling and the u. s. dollar"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "[en-us] what is the exchange rate between us dollars and yen is"
+        }
+      ],
+      "sha256_declared_by_the_run": "c254e88d7011824b946b8c4cafb77e47cc32dc3b072a11cdbeaf9b13b3647e07"
+    },
+    "prog-gold": {
+      "paths": [
+        "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+        "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+        "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+        "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl"
+      ],
+      "bytes": 44655633,
+      "seconds": 1.57,
+      "labels_found": 0,
+      "labels_found_as_identifier": [],
+      "occurrences": {},
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [],
+      "sha256_declared_by_the_run": [
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-000.jsonl",
+          "sha256": "aba913022be269f3f7579f8cf6212f763e10d4064e15ce97cc2446d910188200"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-001.jsonl",
+          "sha256": "49fcccd3208a90d0af9c294fb48317a868e6b2697cf829c95061d7ebbdbe5d98"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-002.jsonl",
+          "sha256": "3b4c7e5ea25d8536fb320e3c8eda2365510a4638c12420c51410fa2d7c036015"
+        },
+        {
+          "path": "artifacts/prog_gold/v1/prog-gold-v1-003.jsonl",
+          "sha256": "5759201eca2204dcbfe433437d3a2837153b02659dd7c9b6fd128c96d3a65723"
+        }
+      ]
+    },
+    "snli": {
+      "paths": [
+        "artifacts/data-prefetch/snli.jsonl"
+      ],
+      "bytes": 352457023,
+      "seconds": 16.15,
+      "labels_found": 1,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "receiving_money": {
+          "readable_phrase": 2
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "premise: a young girl is donating money to a salvation army collection woman.\nhypothesis: a young girl is receiving money for her birthday from a woman."
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "receiving money",
+          "excerpt": "premise: a young woman with dark hair and a slight smile receives a check on behalf of kids' food basket for$ 37,000.\nhypothesis: the woman is receiving money."
+        }
+      ],
+      "sha256_declared_by_the_run": "475081b03c9ba6a2580e10da677d00baa66eb5e00c6dd9895c11cf9f7b2e7bfc"
+    },
+    "swag": {
+      "paths": [
+        "artifacts/data-prefetch/swag.jsonl"
+      ],
+      "bytes": 71149592,
+      "seconds": 1.79,
+      "labels_found": 0,
+      "labels_found_as_identifier": [],
+      "occurrences": {},
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [],
+      "sha256_declared_by_the_run": "058867e9dc06101cf6946facbd1cf21cb75ca590851bd06a713be81f222d5f88"
+    },
+    "synth-v1": {
+      "paths": [
+        "artifacts/synth/v1/synth-v1-000.jsonl",
+        "artifacts/synth/v1/synth-v1-001.jsonl",
+        "artifacts/synth/v1/synth-v1-002.jsonl",
+        "artifacts/synth/v1/synth-v1-003.jsonl",
+        "artifacts/synth/v1/synth-v1-004.jsonl",
+        "artifacts/synth/v1/synth-v1-005.jsonl"
+      ],
+      "bytes": 58322286,
+      "seconds": 2.12,
+      "labels_found": 3,
+      "labels_found_as_identifier": [],
+      "occurrences": {
+        "age_limit": {
+          "readable_phrase": 81
+        },
+        "exchange_rate": {
+          "readable_phrase": 46
+        },
+        "visa_or_mastercard": {
+          "readable_phrase": 11
+        }
+      },
+      "as_gold_answer": {},
+      "as_option_id": {},
+      "examples": [
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "versión alternativa: in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a representative, as "
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "age limit",
+          "excerpt": "dicho de otro modo: in the united states, a person must be aged 35 or over to be president or vice president, 30 or over to be a senator, and 25 or over to be a"
+        },
+        {
+          "where": [
+            "state_text"
+          ],
+          "matched": "exchange rate",
+          "excerpt": "the european exchange rate mechanism finally broke the one-for-one link that existed between the irish pound and the pound sterling; by 30 march 1979 an exchang"
+        }
+      ],
+      "sha256_declared_by_the_run": [
+        {
+          "path": "artifacts/synth/v1/synth-v1-000.jsonl",
+          "sha256": "a8df96950215f95fe065b95fe927c771a4fe5ec8d38bd28a3b86645b0841f076"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-001.jsonl",
+          "sha256": "36ed207da7b7b71203bdd32c50ad5b79884196d1ea8c5a9e2e33e69d145a3b16"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-002.jsonl",
+          "sha256": "accec211d3f9c76a555a8370816164daedcd7e16cf136249ddac67222c999011"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-003.jsonl",
+          "sha256": "62791bfe30516363f34241c5279a58e08023f4dd1f8b46821073117d52ea7547"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-004.jsonl",
+          "sha256": "f924ae0ebbf890d210020a20ff49d02446055b282e5319388e39c4836e5b552b"
+        },
+        {
+          "path": "artifacts/synth/v1/synth-v1-005.jsonl",
+          "sha256": "aeab7522b581e69e1ff0702bcbbfe09efc0d835a96c26051cddac516ad60f342"
+        }
+      ]
+    }
+  },
+  "reading": "no banking77 label occurs as an IDENTIFIER in the other 12 sources, and none is a gold answer anywhere in them. 7 occur only as the English phrase (['age_limit', 'country_support', 'exchange_rate', 'pending_transfer', 'receiving_money', 'verify_my_identity']…), which is a collision of language and not contamination: the model was never shown them as labels",
+  "not_auditable": {
+    "what": "the pretrained backbone's prior exposure to BANKING77",
+    "why": "the backbone is a public checkpoint trained on a corpus this repo does not hold and cannot inspect. BANKING77 is a public benchmark, so exposure is plausible and unmeasurable",
+    "consequence": "no claim in this repo — including 'unseen labels' — extends to the backbone's pretraining, and it is stated separately so the corpus fence's evidence is not read as covering it",
+    "same_for_the_teacher": "and nobody can inspect the teacher's training data at all, which is why its 0.924 is not a held-out claim"
+  },
+  "artifact_path": "artifacts/gates/T-jev-parity/contamination.json"
+}

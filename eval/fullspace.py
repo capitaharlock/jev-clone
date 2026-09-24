@@ -10,12 +10,17 @@ published.
 
 What this is NOT
 ----------------
-It is not a same-rows comparison. The teacher's number here is a citation,
-not a measurement we made: different rows may have been sampled, the teacher
-saw labelled examples per prediction, and BANKING77 is public so nothing
-guarantees it was unseen for it. Every reference carries its source and its
-caveat in the artifact, and `same_rows: false` is stamped on the whole file
-so no reader can mistake it for the probe.
+It is not a same-rows comparison, and — this is the correction #T-jev-parity
+made — that is not the same as saying the rows are different. Nobody has
+compared them. What is actually known is narrower: the teacher has never
+been scored through our pipeline, it publishes no per-row evidence to align
+against our ids, and it was handed category definitions and 24 retrieved
+examples per prediction while our head gets identifiers. So `same_rows:
+false` is stamped on the file in the sense rule R3 gives it — this is a
+citation, not a measurement of ours — and the parity artifact
+(`eval.parity`, `artifacts/gates/T-jev-parity/parity.json`) carries the
+enumeration of every protocol difference and of exactly what is unverified.
+Every reference carries its source and its caveat.
 
 What it IS
 ----------
@@ -41,6 +46,7 @@ import json
 import os
 import random
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -82,6 +88,38 @@ REFERENCES = {
             "caveat": "trained ON this label space; our head never was",
         },
     ],
+}
+
+#: What `same_rows: false` actually stands for, and the correction
+#: #T-jev-parity made to it. The file used to say "different rows", which
+#: asserts a fact nobody established: the two row sets have never been
+#: compared, because one side of the comparison publishes no row list. The
+#: canonical list lives here, as one string per thing that is unverified, so
+#: `eval.parity` and this gate cannot drift into two different accounts of
+#: the same absence of evidence.
+SAME_ROWS_NOT_VERIFIED = [
+    "the teacher has never been scored with our pipeline: 0.924 is read off "
+    "a published report, and no forward pass of it has ever gone through "
+    "`eval.calib.entries_from_samples`",
+    "there is no row-by-row evidence from the teacher's side — no per-row "
+    "prediction list to align against our ids — so neither 'same rows' nor "
+    "'different rows' can be asserted",
+    "the information regime differs even where the rows do match: "
+    "definitions and up to 24 retrieved examples against raw identifiers "
+    "(R8), which makes two numbers on identical rows still not the same "
+    "measurement",
+]
+SAME_ROWS_READING = {
+    "value_means": "NOT ESTABLISHED. It does not say the rows differ — "
+                   "nobody has compared them. `false` reads as 'this is a "
+                   "citation, not a same-rows measurement' (R3)",
+    "verified": False,
+    "what_is_NOT_verified": SAME_ROWS_NOT_VERIFIED,
+    "enumerated_in_full": "artifacts/gates/T-jev-parity/parity.json — "
+                          "#T-jev-parity carries every protocol difference "
+                          "with `matched: true | false | unverifiable`, the "
+                          "per-row evidence for our side, and what would "
+                          "verify the rest",
 }
 
 SPLIT = {"banking77": "test"}
@@ -144,13 +182,25 @@ def full_samples(dataset: str, limit: int = DEFAULT_ROWS,
     return out
 
 
-def score(engine, samples: list, batch_size: int = 16) -> dict:
+def scored(engine, samples: list, batch_size: int = 16) -> tuple:
+    """`(entries, report)` — the forward pass and the arithmetic off it.
+
+    Split from `score` because the parity artifact (`eval.parity`) is
+    composed from the SAME rows this gate already scored: emitting it needs
+    the per-row entries, and re-scoring 3 080 rows to get them back would be
+    a second read of the reserved cut for a number that came out of the
+    first one.
+    """
     from eval import calib as C
 
     entries = C.entries_from_samples(engine, samples, "test", "full-space",
                                      samples[0].dataset if samples else "",
                                      batch_size)
-    return tally(samples, entries)
+    return entries, tally(samples, entries)
+
+
+def score(engine, samples: list, batch_size: int = 16) -> dict:
+    return scored(engine, samples, batch_size)[1]
 
 
 def tally(samples: list, entries: list) -> dict:
@@ -303,19 +353,76 @@ def compose_gate(ckpt_dir: str, manifest: dict, results: dict,
         "run_id": manifest.get("run_id"),
         "checkpoint": ckpt_dir,
         "same_rows": False,
+        "same_rows_reading": SAME_ROWS_READING,
         "table": table,
         "cardinality_sweep": sweep or {},
         "cardinality_reading": sweep_reading(sweep) if sweep else None,
         "honesty": [
-            "the teacher's number here is CITED, not measured by us: "
-            "different rows, and it was given labelled examples per "
-            "prediction while our head gets none",
+            "the teacher's number here is CITED, not measured by us: it was "
+            "never scored through this pipeline, it publishes no per-row "
+            "evidence to align against ours, and it was given labelled "
+            "examples per prediction while our head gets none",
+            "`same_rows: false` says 'citation, not a same-rows "
+            "measurement' (R3). It does NOT say the rows differ — nobody "
+            "has compared them, and `same_rows_reading` spells out which of "
+            "the two is the case for each part",
             "the same-rows measurement is #T-teacher-probe and it needs a "
             "working API key; this artifact does not replace it",
             "K is the whole label space, not our sampler's 3-8: this is the "
             "regime the product promises and the hardest one we publish",
         ],
     }
+
+
+def emit_parity(ckpt_rel: str, manifest: dict, scoring: dict,
+                reason: str = "", write: bool = True, log=print) -> dict:
+    """The parity artifact, off the rows this gate has already scored.
+
+    Done-when 6 of #T-jev-parity: the gate "runs over any checkpoint by path
+    and enters the report of every run without manual intervention". This is
+    that hook, and it is deliberately parasitic — it composes
+    `artifacts/gates/T-jev-parity/parity.json` from the entries of the read
+    that just happened, so a run gets its parity headline for free and the
+    reserved cut is not read a second time to produce it.
+
+    It only fires for the full official BANKING77 test set, because that is
+    the only row-set the teacher's number is quoted on: a shorter `--limit`
+    or another dataset gets a block saying why there is no parity number
+    rather than a parity number measured on something else.
+    """
+    from eval import cuts as K
+    from eval import parity as P
+
+    samples, entries, elapsed, device = scoring.get(P.DATASET,
+                                                    (None, None, 0.0, ""))
+    if not samples:
+        return {"emitted": False,
+                "why": f"this read scored {sorted(scoring)} and the "
+                       f"teacher's number is quoted on {P.DATASET}"}
+    if len(samples) != P.OFFICIAL_TEST_ROWS:
+        return {"emitted": False,
+                "why": f"this read scored {len(samples)} rows, not the "
+                       f"{P.OFFICIAL_TEST_ROWS} official test rows the "
+                       "teacher's number is quoted on; a parity headline "
+                       "measured on a subset would not be one",
+                "how": ".venv-train/bin/python -m eval.parity gate "
+                       f"--checkpoint {ckpt_rel} --reason '<why>'"}
+    if not write:
+        return {"emitted": False,
+                "why": "this read is not writing artifacts (--no-write)"}
+    cut = K.TEST
+    cost = {"device": device, "rows": len(entries),
+            "cardinality": len(samples[0].options), "seconds": elapsed,
+            "ms_per_row": round(1000 * elapsed / max(1, len(entries)), 2),
+            "note": "the head attends BETWEEN options, so this grows about "
+                    "K² per row: a cost measured at K=8 does not price K=77"}
+    doc = P.emit(ckpt_rel, cut, K.sealed(cut), samples, entries, manifest,
+                 cost, reason, log=log)
+    log(f"[fullspace] parity: {doc['parity_line']}")
+    return {"emitted": True, "artifact": doc.get("artifact"),
+            "line": doc.get("parity_line"),
+            "why": "composed from the rows this gate just scored — no "
+                   "second forward pass, no second read of the reserved cut"}
 
 
 def run(ckpt_dir: str, datasets: tuple = ("banking77",),
@@ -331,18 +438,25 @@ def run(ckpt_dir: str, datasets: tuple = ("banking77",),
     """
     engine, manifest = U.T.load_checkpoint(ckpt_dir, device)
     results = {}
+    scoring = {}
     first = None
     for dataset in datasets:
         samples = full_samples(dataset, limit)
         first = first or samples
         log(f"[fullspace] {dataset}: {len(samples)} rows, "
             f"K={len(samples[0].options) if samples else 0}")
-        results[dataset] = score(engine, samples)
+        started = time.perf_counter()
+        entries, results[dataset] = scored(engine, samples)
+        scoring[dataset] = (samples, entries,
+                            round(time.perf_counter() - started, 2),
+                            str(engine.device))
         log(f"[fullspace] {dataset}: {json.dumps(results[dataset])}")
     curve = cardinality_sweep(engine, first, log=log) if sweep and first \
         else {}
     gate = compose_gate(os.path.relpath(ckpt_dir, ROOT), manifest, results,
                         curve)
+    gate["parity"] = emit_parity(os.path.relpath(ckpt_dir, ROOT), manifest,
+                                 scoring, reason, write, log)
     if write:
         GATE_DIR.mkdir(parents=True, exist_ok=True)
         GATE_PATH.write_text(json.dumps(gate, indent=2,

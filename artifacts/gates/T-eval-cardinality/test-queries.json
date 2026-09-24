@@ -82,8 +82,24 @@
       "artifact": "artifacts/gates/T-option-text/optiontext.json",
       "rows": 3080,
       "by": "eval.optiontext"
+    },
+    {
+      "when": "2026-09-24T13:41:42Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-jev-parity: first publication of the parity artifact over the 3 080 official BANKING77 test rows at K=77 — the row-set the teacher's 0.924 is quoted on. Reads the reserved cut once, on the checkpoint the 0.0123 baseline was measured on, to establish the baseline line every phase-2 run now publishes its distance to.",
+      "artifact": "artifacts/gates/T-jev-parity/parity.json",
+      "rows": 3080,
+      "by": "eval.parity"
+    },
+    {
+      "when": "2026-09-24T13:44:38Z",
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "reason": "#T-jev-parity: verify the parity artifact is emitted by the run's own gate without manual intervention (done-when 6); same checkpoint and same rows as the 0.0123 baseline, re-scored on CPU because MPS is held by the bigk-fullspace job",
+      "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "rows": 3080,
+      "by": "eval.fullspace"
     }
   ],
-  "updated_utc": "2026-09-24T12:11:52Z",
-  "n_queries": 9
+  "updated_utc": "2026-09-24T13:44:38Z",
+  "n_queries": 11
 }

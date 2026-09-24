@@ -222,8 +222,26 @@ class TestComposition(unittest.TestCase):
         parity = SB.parity_section("banking77")
         self.assertFalse(parity["same_rows"])
         self.assertTrue(all(r["citation"] for r in parity["references"]))
-        self.assertEqual(len(parity["differences_declared"]), 3)
+        self.assertTrue(parity["differences_declared"])
         self.assertIn("#T-jev-parity", parity["measured_by"])
+
+    def test_same_rows_false_is_not_read_as_different_rows(self):
+        """#T-jev-parity: the section used to assert a fact nobody has."""
+        reading = SB.parity_section("banking77")["same_rows_reading"]
+        self.assertFalse(reading["verified"])
+        self.assertIn("NOT ESTABLISHED", reading["value_means"])
+        self.assertIn("nobody has compared them", reading["value_means"])
+        self.assertTrue(reading["what_is_NOT_verified"])
+
+    def test_the_parity_gate_is_attached_and_never_borrowed(self):
+        """done-when 6: the number enters the report by itself, and a
+        report for a checkpoint with no parity read says so instead of
+        quoting somebody else's."""
+        attached = SB.parity_section("banking77", "no/such/checkpoint")
+        self.assertFalse(attached["jev_parity"]["measured"])
+        self.assertIn("eval.parity gate", attached["jev_parity"]["how"])
+        self.assertEqual(attached["jev_parity"]["baseline"]["accuracy"],
+                         0.012338)
 
     def test_cost_warns_that_it_does_not_scale_linearly_in_k(self):
         cost = SB.cost_section(12.5, 1000, 77, "mps")

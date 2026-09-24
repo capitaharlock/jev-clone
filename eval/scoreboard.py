@@ -374,28 +374,46 @@ def diagnostics_section(manifest: dict) -> dict:
     return out
 
 
-def parity_section(dataset: str) -> dict:
+def parity_section(dataset: str, ckpt_rel: str | None = None) -> dict:
+    """Somebody else's number, and every way our protocol differs from it.
+
+    The enumeration is not written here any more: `eval.parity` owns it and
+    this section ATTACHES what that gate published for this very checkpoint
+    (done-when 6 of #T-jev-parity — the parity number enters every run's
+    report without anybody remembering to put it there). When no parity read
+    exists for this checkpoint the attached block says so and names the
+    command, which is the one thing a report must never quietly replace with
+    somebody else's number.
+    """
+    from eval import parity as P
+
+    attached = P.attach(ckpt_rel)
     return {
         "role": "PARITY — somebody else's number, and every way the "
                 "protocol differs from ours (R3/R8)",
         "references": F.REFERENCES.get(dataset, []),
         "same_rows": False,
+        "same_rows_reading": F.SAME_ROWS_READING,
         "differences_declared": [
-            "the teacher is given natural-language definitions of the 77 "
-            "categories and retrieves 24 labelled examples per prediction; "
-            "our head is given raw identifiers and no examples",
-            "the teacher was never scored through our pipeline and there is "
-            "no row-by-row evidence, so 'same rows' is not established",
-            "BANKING77 is public: the teacher's training data cannot be "
-            "inspected, ours is fenced and the fence is auditable",
+            f"{d['id']}: {d['dimension']} — teacher: {d['teacher']}; ours: "
+            f"{d['ours']} (matched: {d['matched']})"
+            for d in (attached.get("protocol_differences") or [])
+        ] or [
+            "the enumeration lives in #T-jev-parity and no parity read "
+            "exists for this checkpoint yet; the list is not copied here "
+            "so it cannot drift",
         ],
+        "jev_parity": attached,
         "measured_by": {
             "#T-jev-parity": "turns the citation into a measurement with "
-                             "the differences enumerated — not run yet",
+                             "the differences enumerated, the per-row "
+                             "evidence for our side and the contamination "
+                             "audit — attached above as `jev_parity`",
             "#T-teacher-kappa": "agreement with the teacher on the same "
                                 "rows — needs a working API key",
             "#T-option-text": "the three option-text arms that price the "
-                              "information difference — not run yet",
+                              "information difference — measured, and "
+                              "carried inside the parity artifact",
         },
     }
 
@@ -465,7 +483,7 @@ def build(ckpt_dir: str, cut_key: str = "dev", limit: int | None = None,
                 "one at all (R1)",
         "primary": primary,
         "diagnostics": diagnostics_section(manifest),
-        "parity": parity_section(cut.dataset),
+        "parity": parity_section(cut.dataset, rel),
         "cost": cost,
         "training_regime": primary["training_regime"],
         "prediction_frequency": prediction_frequency(samples, entries),
@@ -535,11 +553,14 @@ def render(board: dict) -> str:
             f"clears={'yes' if pt.get('beats_chance') else 'no'}")
     add(f"  reading: {d['cardinality_sweep']['reading']}")
     add("")
-    add("PARITY — cited, not measured (same_rows: false)")
+    add("PARITY — cited, not measured (same_rows: false, and that means "
+        "NOT ESTABLISHED, not 'different rows')")
     for ref in board["parity"]["references"]:
         add(f"  {ref['who']:<34} {ref['accuracy']:.4f}  {ref['setup'][:70]}")
+    jev = board["parity"]["jev_parity"]
+    add("  #T-jev-parity: " + (jev.get("line") or jev.get("why") or ""))
     add("  differences: " + "; ".join(
-        x.split(";")[0] for x in board["parity"]["differences_declared"]))
+        x.split(":")[0] for x in board["parity"]["differences_declared"]))
     add("")
     c = board["cost"]
     add(f"COST  {c['rows']} rows at K={c['cardinality']} on "

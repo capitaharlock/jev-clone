@@ -1,0 +1,695 @@
+{
+  "format": "jev.gate.v1",
+  "task": "T-jev-parity",
+  "generated_utc": "2026-09-24T13:44:38Z",
+  "question": "what does this checkpoint score on the rows, the label space and the split the teacher's 0.924 is quoted on, and in what ways is the protocol still not the same",
+  "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+  "checkpoint_sha256": "be9f0d454360eb344dada8362cdb9e13c4b348fb174a53298cc71d16c557cf8c",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+  "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+  "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
+  "cut": {
+    "name": "banking77-test",
+    "reserved": true,
+    "dataset": "banking77",
+    "split": "test",
+    "rows_official": 3080,
+    "rows_sealed": 3080,
+    "rows_scored": 3080,
+    "is_the_whole_official_test_set": true,
+    "manifest": "artifacts/splits/T-eval-cardinality-banking77-test/manifest.json",
+    "manifest_sha256": "40c14a64c34f25e7335c3294501cefc3f58a219936f0d40a7fc9fed14d54bd0f",
+    "split_sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570",
+    "rule": "R7 — the reserved cut is read rarely and every read is logged with its date, its checkpoint and its reason"
+  },
+  "cardinality": 77,
+  "chance": 0.012987,
+  "ours": {
+    "n": 3080,
+    "hits": 38,
+    "cardinality": 77,
+    "chance": 0.012987,
+    "accuracy": 0.012338,
+    "accuracy_ci95": [
+      0.009002,
+      0.016888
+    ],
+    "hits_options_only": 38,
+    "accuracy_options_only": 0.012338,
+    "accuracy_options_only_ci95": [
+      0.009002,
+      0.016888
+    ],
+    "abstain_rate": 0.0,
+    "beats_chance": false,
+    "ranking_beats_chance": false,
+    "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+    "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+  },
+  "baseline": {
+    "what": "the first accuracy this repo published at the full BANKING77 cardinality, and the one the phase-2 plan is written against",
+    "published_as": "0,0123",
+    "n": 3080,
+    "hits": 38,
+    "cardinality": 77,
+    "chance": 0.012987,
+    "accuracy": 0.012338,
+    "accuracy_ci95": [
+      0.009002,
+      0.016888
+    ],
+    "beats_chance": false,
+    "reading": "indistinguishable from chance — the 95 % interval CONTAINS the chance rate. Not 'below chance': below would be a measured bias, and what is measured is the absence of signal",
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+    "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+    "first_published": "2026-09-23",
+    "regime": "trained at the sampler's K=3-8 with the backbone frozen (phase 1); scored here at K=77. R4: it is a phase-1 checkpoint measured under the phase-2 metric, which is exactly what makes it the baseline and not a target"
+  },
+  "references": [
+    {
+      "who": "Jev (teacher)",
+      "citation": true,
+      "accuracy": 0.924,
+      "setup": "all 3 080 official test messages, 77 intents, category definitions + 24 labelled examples per prediction, no weight updates",
+      "source": "github.com/simonmesmith/jev-banking77-experiment",
+      "caveat": "BANKING77 is public; nobody can inspect Jev's training data, so this is not a held-out claim"
+    },
+    {
+      "who": "fine-tuned BERT (BANKING77 paper)",
+      "citation": true,
+      "accuracy": 0.9366,
+      "setup": "supervised fine-tune on the 10 003 training messages",
+      "source": "Casanueva et al. 2020, BANKING77",
+      "caveat": "trained ON this label space; our head never was"
+    }
+  ],
+  "distances": {
+    "to_baseline": {
+      "baseline": 0.012338,
+      "baseline_artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
+      "ours": 0.012338,
+      "delta": 0.0,
+      "intervals_overlap": true,
+      "reading": "the two intervals overlap, so this run has not been shown to differ from the first 77-way number this repo published"
+    },
+    "to_teacher": {
+      "teacher": 0.924,
+      "teacher_is_a_citation": true,
+      "ours": 0.012338,
+      "delta": 0.911662,
+      "ratio": 0.013353,
+      "reading": "a distance to a CITED number: the protocol differences in this artifact are part of it, and the arms of #T-option-text say how much of it the input information accounts for"
+    },
+    "chance": {
+      "chance": 0.012987,
+      "clears_it": false,
+      "reading": "R2 — the distance to chance is the first distance, because a number that does not clear it has no distance to anything else worth reading"
+    }
+  },
+  "rows": {
+    "scheme": "<dataset>:<dataset>-<row index within the split>:<question id>",
+    "why": "so 'same rows' is a set comparison and not an assertion — and so a future run that scores a different subset cannot publish its number under the same heading",
+    "n": 3080,
+    "unique": true,
+    "ids_sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570",
+    "sample": [
+      "banking77:banking77-0:banking77-intent-10003",
+      "banking77:banking77-1000:banking77-intent-11003",
+      "banking77:banking77-1001:banking77-intent-11004"
+    ],
+    "file": "artifacts/gates/T-jev-parity/rows/artifacts_checkpoints_decision_leverstack_d512_prior_ettin_68m_s20260922_stage_001000000__banking77-test.jsonl",
+    "file_contents": "one JSON object per row: id, gold, whether that gold was seen in training, our prediction, whether it was right, p(gold) and the gold's rank",
+    "sealed_cut": {
+      "rows_in_seal": 3080,
+      "split_sha256": "0cd9fb01c974ca746ba6bb118ec80d1d4835b535d46dbeddf2d9bdec9ea9e570",
+      "covers_the_whole_sealed_cut": true,
+      "rows_scored_not_in_seal": []
+    }
+  },
+  "gold_exposure": {
+    "seen": [],
+    "n_seen": 0,
+    "n_unseen": 77,
+    "basis": {
+      "dataset_in_mixture": false,
+      "dataset_evidence": "run.json: fence.clean_1m=True, fenced_datasets=['banking77', 'helpsteer2', 'pubmedqa']; the run's training sources are ['boolq', 'civil-comments', 'dbpedia14', 'detox-attack', 'email-triage', 'goemotions', 'huffpost', 'massive', 'prog-gold', 'snli', 'swag', 'synth-v1']",
+      "label_string_as_gold_in_another_source": [],
+      "label_string_evidence": "contamination"
+    },
+    "why_two_routes": "excluding the DATASET is not the same claim as the label strings being absent from the other sources; a run that fences banking77 and trains on a source that happens to use the same intent identifiers has seen those labels",
+    "by_side": {
+      "unseen_gold": {
+        "n": 3080,
+        "hits": 38,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012338,
+        "accuracy_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "hits_options_only": 38,
+        "accuracy_options_only": 0.012338,
+        "accuracy_options_only_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "abstain_rate": 0.0,
+        "beats_chance": false,
+        "ranking_beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "seen_gold": {
+        "n": 0,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "why_empty": "no row of this cut has a gold on that side of the fence in this run"
+      },
+      "how": "the same rows, the same K, the same forward pass — partitioned by whether the row's GOLD label was seen in training, not by cut and not by cardinality",
+      "covers_every_row": true
+    }
+  },
+  "information_regime": {
+    "measured": true,
+    "artifact": "artifacts/gates/T-option-text/optiontext.json",
+    "task": "#T-option-text",
+    "question": "how much of the distance to the teacher is bought by WHAT THE MODEL IS SHOWN",
+    "arms_quoted_from": "each arm carries its own cut: A on banking77-test, B on banking77-test, C on banking77-dev, C-teacher-order on banking77-dev. The reserved cut is the rows this artifact scores; a development arm beside it is the same protocol measured on other rows of the same population, and is labelled as such",
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+    "arms": {
+      "A": {
+        "arm": "A",
+        "name": "A — actual",
+        "cut": "banking77-test",
+        "reserved_cut": true,
+        "option_text": "raw label identifier: `Option(id=l, text=l)`, `data/adapters.py:146`",
+        "labelled_examples_in_state": 0,
+        "n": 3080,
+        "hits": 38,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012338,
+        "accuracy_ci95": [
+          0.009002,
+          0.016888
+        ],
+        "beats_chance": false
+      },
+      "B": {
+        "arm": "B",
+        "name": "B — readable",
+        "cut": "banking77-test",
+        "reserved_cut": true,
+        "option_text": "`<readable name> — <definition>`, the teacher's own 77 definitions",
+        "labelled_examples_in_state": 0,
+        "n": 3080,
+        "hits": 37,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012013,
+        "accuracy_ci95": [
+          0.008728,
+          0.016514
+        ],
+        "beats_chance": false
+      },
+      "C": {
+        "arm": "C",
+        "name": "C — with examples (query first)",
+        "cut": "banking77-dev",
+        "reserved_cut": false,
+        "option_text": "same as arm B",
+        "labelled_examples_in_state": 24,
+        "n": 1000,
+        "hits": 13,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.013,
+        "accuracy_ci95": [
+          0.007613,
+          0.022114
+        ],
+        "beats_chance": false
+      },
+      "C-teacher-order": {
+        "arm": "C-teacher-order",
+        "name": "C-teacher-order — with examples (examples first)",
+        "cut": "banking77-dev",
+        "reserved_cut": false,
+        "option_text": "same as arm B",
+        "labelled_examples_in_state": 24,
+        "n": 1000,
+        "hits": 12,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.012,
+        "accuracy_ci95": [
+          0.006878,
+          0.020857
+        ],
+        "beats_chance": false
+      }
+    },
+    "arms_by_cut": {
+      "banking77-dev": {
+        "A": {
+          "arm": "A",
+          "name": "A — actual",
+          "cut": "banking77-dev",
+          "reserved_cut": false,
+          "option_text": "raw label identifier: `Option(id=l, text=l)`, `data/adapters.py:146`",
+          "labelled_examples_in_state": 0,
+          "n": 1000,
+          "hits": 9,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.009,
+          "accuracy_ci95": [
+            0.004742,
+            0.017016
+          ],
+          "beats_chance": false
+        },
+        "B": {
+          "arm": "B",
+          "name": "B — readable",
+          "cut": "banking77-dev",
+          "reserved_cut": false,
+          "option_text": "`<readable name> — <definition>`, the teacher's own 77 definitions",
+          "labelled_examples_in_state": 0,
+          "n": 1000,
+          "hits": 14,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.014,
+          "accuracy_ci95": [
+            0.008358,
+            0.023362
+          ],
+          "beats_chance": false
+        },
+        "C": {
+          "arm": "C",
+          "name": "C — with examples (query first)",
+          "cut": "banking77-dev",
+          "reserved_cut": false,
+          "option_text": "same as arm B",
+          "labelled_examples_in_state": 24,
+          "n": 1000,
+          "hits": 13,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.013,
+          "accuracy_ci95": [
+            0.007613,
+            0.022114
+          ],
+          "beats_chance": false
+        },
+        "C-teacher-order": {
+          "arm": "C-teacher-order",
+          "name": "C-teacher-order — with examples (examples first)",
+          "cut": "banking77-dev",
+          "reserved_cut": false,
+          "option_text": "same as arm B",
+          "labelled_examples_in_state": 24,
+          "n": 1000,
+          "hits": 12,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.012,
+          "accuracy_ci95": [
+            0.006878,
+            0.020857
+          ],
+          "beats_chance": false
+        }
+      },
+      "banking77-test": {
+        "A": {
+          "arm": "A",
+          "name": "A — actual",
+          "cut": "banking77-test",
+          "reserved_cut": true,
+          "option_text": "raw label identifier: `Option(id=l, text=l)`, `data/adapters.py:146`",
+          "labelled_examples_in_state": 0,
+          "n": 3080,
+          "hits": 38,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.012338,
+          "accuracy_ci95": [
+            0.009002,
+            0.016888
+          ],
+          "beats_chance": false
+        },
+        "B": {
+          "arm": "B",
+          "name": "B — readable",
+          "cut": "banking77-test",
+          "reserved_cut": true,
+          "option_text": "`<readable name> — <definition>`, the teacher's own 77 definitions",
+          "labelled_examples_in_state": 0,
+          "n": 3080,
+          "hits": 37,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "accuracy": 0.012013,
+          "accuracy_ci95": [
+            0.008728,
+            0.016514
+          ],
+          "beats_chance": false
+        }
+      }
+    },
+    "arithmetic": {
+      "comparable_within": {
+        "banking77-dev": [
+          "A",
+          "B",
+          "C",
+          "C-teacher-order"
+        ],
+        "banking77-test": [
+          "A",
+          "B"
+        ]
+      },
+      "why": "a difference between two arms is readable only when both were scored on the same rows; two arms on different cuts are two measurements and their difference carries the change of rows as well as the change of protocol",
+      "deltas": {
+        "B - A on banking77-dev": {
+          "cut": "banking77-dev",
+          "n": 1000,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "point_shift": 0.005,
+          "intervals_overlap": true,
+          "reading": "a point shift inside overlapping intervals is not a move: the information regime changed and the number did not"
+        },
+        "C - A on banking77-dev": {
+          "cut": "banking77-dev",
+          "n": 1000,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "point_shift": 0.004,
+          "intervals_overlap": true,
+          "reading": "a point shift inside overlapping intervals is not a move: the information regime changed and the number did not"
+        },
+        "C-teacher-order - A on banking77-dev": {
+          "cut": "banking77-dev",
+          "n": 1000,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "point_shift": 0.003,
+          "intervals_overlap": true,
+          "reading": "a point shift inside overlapping intervals is not a move: the information regime changed and the number did not"
+        },
+        "B - A on banking77-test": {
+          "cut": "banking77-test",
+          "n": 3080,
+          "cardinality": 77,
+          "chance": 0.012987,
+          "point_shift": -0.000325,
+          "intervals_overlap": true,
+          "reading": "a point shift inside overlapping intervals is not a move: the information regime changed and the number did not"
+        }
+      }
+    },
+    "budget_finding": {
+      "window_tokens": 256,
+      "examples_offered_mean": 23.982,
+      "examples_complete_mean": 11.886,
+      "examples_complete_share": 0.495622,
+      "query_survives_share": 1.0,
+      "query_survives_share_teacher_order": 0.001,
+      "measured_on": "banking77-dev",
+      "reading": "R8 — the teacher's regime does not fit in this window, so 'we reproduced the teacher's protocol' is false by budget before it is false by anything else"
+    },
+    "point_shift_best_vs_identifiers": 0.005,
+    "share_of_gap_to_teacher_explained": 0.005464,
+    "arms_that_move_the_number": [],
+    "reading": "the information in the input explains none of the 0.9150 gap to the teacher — every arm stays inside the chance interval at K=77, n=1000, chance 0.012987 (A 0.0090 CI [0.004742, 0.017016], best B 0.0140 CI [0.008358, 0.023362], point shift +0.0050 = 0.5% of the gap and not distinguishable from zero), so #T-fullspace-objective keeps first priority with one competitor fewer"
+  },
+  "contamination": {
+    "artifact": "artifacts/gates/T-jev-parity/contamination.json",
+    "generated_utc": "2026-09-24T13:38:19Z",
+    "declared_fence": {
+      "clean_1m": true,
+      "fenced_datasets": [
+        "banking77",
+        "helpsteer2",
+        "pubmedqa"
+      ],
+      "why": "§§18, 77: zero Banking77/HelpSteer2/PubMedQA rows in train",
+      "training_sources": [
+        "boolq",
+        "civil-comments",
+        "dbpedia14",
+        "detox-attack",
+        "email-triage",
+        "goemotions",
+        "huffpost",
+        "massive",
+        "prog-gold",
+        "snli",
+        "swag",
+        "synth-v1"
+      ],
+      "evidence": "artifacts/runs/leverstack-d512-prior-ettin-68m-s20260922/run.json",
+      "proves": "the banking77 DATASET contributed zero rows to the mixture",
+      "does_not_prove": "that no banking77 LABEL STRING occurs in the other sources — a different claim, and the one this scan measures"
+    },
+    "labels_found_total": 7,
+    "labels_found": {
+      "age_limit": {
+        "boolq": {
+          "readable_phrase": 18
+        },
+        "civil-comments": {
+          "readable_phrase": 86
+        },
+        "dbpedia14": {
+          "readable_phrase": 3
+        },
+        "detox-attack": {
+          "readable_phrase": 2
+        },
+        "huffpost": {
+          "readable_phrase": 2
+        },
+        "synth-v1": {
+          "readable_phrase": 81
+        }
+      },
+      "exchange_rate": {
+        "boolq": {
+          "readable_phrase": 13
+        },
+        "civil-comments": {
+          "readable_phrase": 205
+        },
+        "dbpedia14": {
+          "readable_phrase": 4
+        },
+        "detox-attack": {
+          "readable_phrase": 2
+        },
+        "goemotions": {
+          "readable_phrase": 1
+        },
+        "huffpost": {
+          "readable_phrase": 2
+        },
+        "massive": {
+          "readable_phrase": 83
+        },
+        "synth-v1": {
+          "readable_phrase": 46
+        }
+      },
+      "visa_or_mastercard": {
+        "boolq": {
+          "readable_phrase": 2
+        },
+        "civil-comments": {
+          "readable_phrase": 4
+        },
+        "dbpedia14": {
+          "readable_phrase": 1
+        },
+        "synth-v1": {
+          "readable_phrase": 11
+        }
+      },
+      "country_support": {
+        "civil-comments": {
+          "readable_phrase": 11
+        }
+      },
+      "pending_transfer": {
+        "civil-comments": {
+          "readable_phrase": 1
+        }
+      },
+      "receiving_money": {
+        "civil-comments": {
+          "readable_phrase": 46
+        },
+        "detox-attack": {
+          "readable_phrase": 3
+        },
+        "snli": {
+          "readable_phrase": 2
+        }
+      },
+      "verify_my_identity": {
+        "civil-comments": {
+          "readable_phrase": 1
+        },
+        "detox-attack": {
+          "readable_phrase": 1
+        }
+      }
+    },
+    "labels_found_as_identifier": {},
+    "labels_found_as_answer": {},
+    "reading": "no banking77 label occurs as an IDENTIFIER in the other 12 sources, and none is a gold answer anywhere in them. 7 occur only as the English phrase (['age_limit', 'country_support', 'exchange_rate', 'pending_transfer', 'receiving_money', 'verify_my_identity']…), which is a collision of language and not contamination: the model was never shown them as labels",
+    "not_auditable": {
+      "what": "the pretrained backbone's prior exposure to BANKING77",
+      "why": "the backbone is a public checkpoint trained on a corpus this repo does not hold and cannot inspect. BANKING77 is a public benchmark, so exposure is plausible and unmeasurable",
+      "consequence": "no claim in this repo — including 'unseen labels' — extends to the backbone's pretraining, and it is stated separately so the corpus fence's evidence is not read as covering it",
+      "same_for_the_teacher": "and nobody can inspect the teacher's training data at all, which is why its 0.924 is not a held-out claim"
+    }
+  },
+  "same_rows": false,
+  "same_rows_reading": {
+    "value_means": "NOT ESTABLISHED. It does not say the rows differ — nobody has compared them. `false` reads as 'this is a citation, not a same-rows measurement' (R3)",
+    "verified": false,
+    "what_is_verified_on_our_side": [
+      "the rows we scored are named one by one: 3080 ids of the form <dataset>:<dataset>-<row index within the split>:<question id>, digest 0cd9fb01c974ca74…",
+      "they are the sealed official test cut (`artifacts/splits/T-eval-cardinality-banking77-test`), whose seal is a content digest and not an intention",
+      "one line per row with its gold, our prediction and the gold's rank is written to the file this artifact names, so anybody can recompute our accuracy from the rows themselves"
+    ],
+    "what_is_NOT_verified": [
+      "the teacher has never been scored with our pipeline: 0.924 is read off a published report, and no forward pass of it has ever gone through `eval.calib.entries_from_samples`",
+      "there is no row-by-row evidence from the teacher's side — no per-row prediction list to align against our ids — so neither 'same rows' nor 'different rows' can be asserted",
+      "the information regime differs even where the rows do match: definitions and up to 24 retrieved examples against raw identifiers (R8), which makes two numbers on identical rows still not the same measurement"
+    ],
+    "what_would_verify_it": "either #T-teacher-probe scoring the teacher on these exact ids through our scorer (it needs a working API key), or a per-row prediction file published by the teacher that can be aligned to `rows.file`"
+  },
+  "protocol_differences": [
+    {
+      "id": "label-space",
+      "dimension": "cardinality of the decision",
+      "teacher": "all 77 BANKING77 intents present on every row",
+      "ours": "all 77 intents present on every row, chance 0.012987",
+      "matched": true,
+      "evidence": "every row is built with the whole sorted label space as its options (`eval.fullspace.full_samples`), and `cardinality` is published per row-set"
+    },
+    {
+      "id": "split",
+      "dimension": "which rows",
+      "teacher": "the 3 080 official test messages, per the published report",
+      "ours": "the 3080 official test messages, sealed by sha256 as `T-eval-cardinality-banking77-test`",
+      "matched": "unverifiable",
+      "evidence": "our side names every row it scored (`rows.ids_sha256`, and the per-row file); the teacher's side publishes a count and a split name, not a row list, so the two sets cannot be compared"
+    },
+    {
+      "id": "scored-by",
+      "dimension": "who produced the number",
+      "teacher": "the teacher's own harness. It has never been scored through this repo's pipeline",
+      "ours": "`eval.calib.entries_from_samples` over a checkpoint in this repo, named by sha256",
+      "matched": false,
+      "evidence": "`#T-teacher-probe` is the task that would score the teacher on our rows with our scorer; it needs a working API key and has not run"
+    },
+    {
+      "id": "row-evidence",
+      "dimension": "row-by-row evidence",
+      "teacher": "none published: an aggregate accuracy, no per-row predictions",
+      "ours": "one line per row (id, gold, prediction, p(gold), rank of the gold) in the `rows.file` this artifact names",
+      "matched": false,
+      "evidence": "with no per-row list on the other side there is nothing to align ours to, which is precisely why `same_rows` is UNVERIFIED rather than false"
+    },
+    {
+      "id": "option-text",
+      "dimension": "what the options say (R8)",
+      "teacher": "a natural-language definition of each of the 77 categories",
+      "ours": "the raw label identifier — `Option(id=l, text=l)`, `data/adapters.py:146`",
+      "matched": false,
+      "measured": "#T-option-text arm B replaces the identifiers with the teacher's own definitions: 37/3080 = 0.012013 CI [0.008728, 0.016514] against chance 0.012987 at K=77 on the banking77-test cut"
+    },
+    {
+      "id": "labelled-examples",
+      "dimension": "demonstrations in the context (R8)",
+      "teacher": "up to 24 BM25-retrieved labelled training examples per prediction",
+      "ours": "none — the row's own text and nothing else",
+      "matched": false,
+      "measured": "#T-option-text arm C retrieves them the same way: 13/1000 = 0.013 CI [0.007613, 0.022114] against chance 0.012987 at K=77 on the banking77-dev cut"
+    },
+    {
+      "id": "context-budget",
+      "dimension": "how much of that context survives",
+      "teacher": "a context window large enough for the whole prompt",
+      "ours": "256 tokens (`train_decision.TRAIN_MAX_LENGTH`), applied by `eval/calib.py`",
+      "matched": false,
+      "measured": "11.886 of 23.982 retrieved examples survive the 256-token window, and in the teacher's own order the query itself survives in 0.001 of rows. The teacher's regime does not fit in this window, which is a result and not an excuse"
+    },
+    {
+      "id": "abstention",
+      "dimension": "may the model decline to answer",
+      "teacher": "no: it names one of the 77 categories on every row",
+      "ours": "yes: the head scores [K + 1] and `unknown` can win, so our published accuracy is not a forced choice",
+      "matched": false,
+      "evidence": "`abstain_rate` and `accuracy_options_only` (the same ranking with `unknown` taken out of the race) are published beside the headline, so the forced comparison is available without being the headline"
+    },
+    {
+      "id": "weight-updates",
+      "dimension": "training on this label space",
+      "teacher": "none claimed: no weight updates for the task",
+      "ours": "none on this label space — the head trained on 12 other sources at the sampler's K=3-8, with banking77 fenced",
+      "matched": true,
+      "evidence": "`gold_exposure` in this artifact, computed from `run.json` and the contamination scan rather than asserted"
+    },
+    {
+      "id": "training-data-audit",
+      "dimension": "can the training data be inspected",
+      "teacher": "no. BANKING77 is public and nobody outside can look at what the teacher was trained on, so its number is not a held-out claim",
+      "ours": "yes for the 12 sources of the mixture: the fence is declared in `run.json` and the label strings are scanned for literally",
+      "matched": false,
+      "measured": "0 of 77 label strings occur as identifiers in the other sources and 0 as gold answers there — the fence excludes the DATASET, this scan is what excludes the STRINGS"
+    },
+    {
+      "id": "backbone-exposure",
+      "dimension": "what the pretrained backbone had already seen",
+      "teacher": "unknown and unauditable",
+      "ours": "unknown and unauditable — a public web-scale pretrain is not something this repo can inspect either",
+      "matched": "unverifiable",
+      "evidence": "declared separately from the corpus fence on purpose: the fence is evidence, this is an absence of evidence, and merging them would let the second borrow the credibility of the first"
+    }
+  ],
+  "cost": {
+    "device": "cpu",
+    "rows": 3080,
+    "cardinality": 77,
+    "seconds": 53.65,
+    "ms_per_row": 17.42,
+    "note": "the head attends BETWEEN options, so this grows about K² per row: a cost measured at K=8 does not price K=77"
+  },
+  "honesty": [
+    "the teacher's 0.924 is a CITATION. It was not produced by this pipeline and there is no per-row evidence to align against ours, so this artifact publishes a distance to a quoted number, not a head-to-head result",
+    "every difference of protocol we know of is enumerated above with `matched: true | false | unverifiable`; the third value is not a polite way of saying false",
+    "R2 — no accuracy in this file appears without its cardinality, its chance rate and its 95 % interval",
+    "R4 — a verdict measured in one training regime does not transfer to another; the baseline is a phase-1 checkpoint read under the phase-2 metric and is kept as a line, not a target"
+  ],
+  "reason": "#T-jev-parity: verify the parity artifact is emitted by the run's own gate without manual intervention (done-when 6); same checkpoint and same rows as the 0.0123 baseline, re-scored on CPU because MPS is held by the bigk-fullspace job",
+  "parity_line": "[banking77-test RESERVED] 38/3080 = 0.012338 CI [0.009002, 0.016888] at K=77 against chance 0.012987 — does not clear its chance rate; 0.911662 from the teacher's cited 0.924 and +0.000000 from the first published 77-way number 0.012338. The two protocols differ on 7 declared dimensions (scored-by, row-evidence, option-text, labelled-examples, context-budget, abstention, training-data-audit) and 2 cannot be checked from either side (split, backbone-exposure), so same_rows stays UNVERIFIED: the teacher has never been scored through this pipeline and publishes no per-row evidence to align against ours",
+  "emitted_by": {
+    "who": "eval.fullspace",
+    "how": "composed from the rows that run had already scored — no extra forward pass and no extra read of the reserved cut"
+  },
+  "artifact_path": "artifacts/gates/T-jev-parity/parity.json",
+  "also_written_to": "artifacts/gates/T-jev-parity/by-checkpoint/artifacts_checkpoints_decision_leverstack_d512_prior_ettin_68m_s20260922_stage_001000000.json"
+}

@@ -2,11 +2,21 @@
   "format": "jev.gate.v1",
   "task": "T-teacher-probe",
   "artifact": "fullspace",
-  "generated_utc": "2026-09-24T11:36:31+00:00",
+  "generated_utc": "2026-09-24T13:44:38+00:00",
   "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
   "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
   "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
   "same_rows": false,
+  "same_rows_reading": {
+    "value_means": "NOT ESTABLISHED. It does not say the rows differ — nobody has compared them. `false` reads as 'this is a citation, not a same-rows measurement' (R3)",
+    "verified": false,
+    "what_is_NOT_verified": [
+      "the teacher has never been scored with our pipeline: 0.924 is read off a published report, and no forward pass of it has ever gone through `eval.calib.entries_from_samples`",
+      "there is no row-by-row evidence from the teacher's side — no per-row prediction list to align against our ids — so neither 'same rows' nor 'different rows' can be asserted",
+      "the information regime differs even where the rows do match: definitions and up to 24 retrieved examples against raw identifiers (R8), which makes two numbers on identical rows still not the same measurement"
+    ],
+    "enumerated_in_full": "artifacts/gates/T-jev-parity/parity.json — #T-jev-parity carries every protocol difference with `matched: true | false | unverifiable`, the per-row evidence for our side, and what would verify the rest"
+  },
   "table": {
     "banking77": {
       "ours": {
@@ -172,8 +182,15 @@
   },
   "cardinality_reading": "clears chance by the 95 % lower bound at K=[8, 40], does not at K=[5, 20, 77] — these are OUT OF ORDER: a K that clears sits above one that does not, so there is no progression to read off this sweep and no cardinality at which the advantage can be said to break. Counts: K=5: 215/1000 = 0.215 CI [0.190653, 0.241528] vs chance 0.2; K=8: 151/1000 = 0.151 CI [0.130146, 0.174525] vs chance 0.125; K=20: 61/1000 = 0.061 CI [0.04778, 0.07758] vs chance 0.05; K=40: 36/1000 = 0.036 CI [0.026116, 0.049436] vs chance 0.025; K=77: 11/1000 = 0.011 CI [0.006153, 0.019589] vs chance 0.012987",
   "honesty": [
-    "the teacher's number here is CITED, not measured by us: different rows, and it was given labelled examples per prediction while our head gets none",
+    "the teacher's number here is CITED, not measured by us: it was never scored through this pipeline, it publishes no per-row evidence to align against ours, and it was given labelled examples per prediction while our head gets none",
+    "`same_rows: false` says 'citation, not a same-rows measurement' (R3). It does NOT say the rows differ — nobody has compared them, and `same_rows_reading` spells out which of the two is the case for each part",
     "the same-rows measurement is #T-teacher-probe and it needs a working API key; this artifact does not replace it",
     "K is the whole label space, not our sampler's 3-8: this is the regime the product promises and the hardest one we publish"
-  ]
+  ],
+  "parity": {
+    "emitted": true,
+    "artifact": "artifacts/gates/T-jev-parity/parity.json",
+    "line": "[banking77-test RESERVED] 38/3080 = 0.012338 CI [0.009002, 0.016888] at K=77 against chance 0.012987 — does not clear its chance rate; 0.911662 from the teacher's cited 0.924 and +0.000000 from the first published 77-way number 0.012338. The two protocols differ on 7 declared dimensions (scored-by, row-evidence, option-text, labelled-examples, context-budget, abstention, training-data-audit) and 2 cannot be checked from either side (split, backbone-exposure), so same_rows stays UNVERIFIED: the teacher has never been scored through this pipeline and publishes no per-row evidence to align against ours",
+    "why": "composed from the rows this gate just scored — no second forward pass, no second read of the reserved cut"
+  }
 }
