@@ -1,7 +1,7 @@
 ---
 id: T-fullspace-objective
 title: La pérdida sobre el espacio entero — extensión muestreada con log-Q
-status: next
+status: active
 priority: high
 owner: unassigned
 category: model

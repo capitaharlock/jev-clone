@@ -299,5 +299,97 @@ class TestBatchedForward(unittest.TestCase):
                                torch.zeros(2, 2, 64), omask)
 
 
+class TestIndependentScoringAblation(unittest.TestCase):
+    """`set_attention=False` — la ablación de #T-fullspace-objective.
+
+    Es un CAMBIO DE ARQUITECTURA, no «la misma cabeza con otro
+    denominador», y estos tests fijan las dos mitades de esa frase: apagada
+    la atención entre candidatos el logit de una opción deja de depender de
+    sus rivales, y con el flag por defecto la cabeza publicada no cambia.
+    """
+
+    @unittest.skipUnless(HAVE_TORCH, "needs torch")
+    def test_the_default_head_is_untouched(self):
+        import torch
+        torch.manual_seed(1789)
+        a = PointerDecisionHead(d_state=64, d_model=32, n_layers=2, n_heads=4)
+        torch.manual_seed(1789)
+        b = PointerDecisionHead(d_state=64, d_model=32, n_layers=2, n_heads=4,
+                                set_attention=True)
+        self.assertEqual(a.n_params(), b.n_params())
+        for (na, pa), (nb, pb) in zip(a.named_parameters(),
+                                      b.named_parameters()):
+            self.assertEqual(na, nb)
+            self.assertTrue(torch.equal(pa, pb))
+
+    @unittest.skipUnless(HAVE_TORCH, "needs torch")
+    def test_without_set_attention_a_logit_ignores_the_other_candidates(self):
+        import torch
+        torch.manual_seed(20260924)
+        head = PointerDecisionHead(d_state=32, d_model=32, n_layers=2,
+                                   n_heads=4, set_attention=False)
+        mem = torch.randn(1, 6, 32)
+        mask = torch.ones(1, 6, dtype=torch.bool)
+        q = torch.randn(32)
+        opts = torch.randn(5, 32)
+        small = head(mem, mask, q, opts[:2])[0]
+        big = head(mem, mask, q, opts)[0]
+        self.assertAlmostEqual(small.item(), big.item(), places=4)
+
+    @unittest.skipUnless(HAVE_TORCH, "needs torch")
+    def test_with_set_attention_it_does_not(self):
+        """El contraste: por eso los logits de conjuntos distintos no se unen."""
+        import torch
+        torch.manual_seed(20260924)
+        head = PointerDecisionHead(d_state=32, d_model=32, n_layers=2,
+                                   n_heads=4)
+        mem = torch.randn(1, 6, 32)
+        mask = torch.ones(1, 6, dtype=torch.bool)
+        q = torch.randn(32)
+        opts = torch.randn(5, 32)
+        small = head(mem, mask, q, opts[:2])[0]
+        big = head(mem, mask, q, opts)[0]
+        self.assertGreater(abs(small.item() - big.item()), 1e-4)
+
+    @unittest.skipUnless(HAVE_TORCH, "needs torch")
+    def test_the_ablation_drops_exactly_the_set_attention_parameters(self):
+        import torch
+        torch.manual_seed(1789)
+        full = PointerDecisionHead(d_state=64, d_model=32, n_layers=2,
+                                   n_heads=4)
+        torch.manual_seed(1789)
+        thin = PointerDecisionHead(d_state=64, d_model=32, n_layers=2,
+                                   n_heads=4, set_attention=False)
+        dropped = ({n for n, _ in full.named_parameters()}
+                   - {n for n, _ in thin.named_parameters()})
+        self.assertTrue(dropped)
+        self.assertTrue(all("set_attn" in n or "ln_set" in n
+                            for n in dropped), dropped)
+        self.assertTrue(thin.label_free_report()["label_free"])
+
+    @unittest.skipUnless(HAVE_TORCH, "needs torch")
+    def test_the_ablation_still_agrees_row_by_row_with_the_batched_path(self):
+        import torch
+        torch.manual_seed(7)
+        head = PointerDecisionHead(d_state=64, d_model=32, n_layers=1,
+                                   n_heads=4, set_attention=False)
+        head.eval()
+        mem = torch.randn(2, 5, 64)
+        mmask = torch.ones(2, 5, dtype=torch.bool)
+        q = torch.randn(2, 64)
+        ks = [3, 2]
+        kmax = max(ks)
+        opts = torch.randn(2, kmax, 64)
+        omask = torch.tensor([[True] * k + [False] * (kmax - k) for k in ks])
+        with torch.no_grad():
+            batched = head.forward_batch(mem, mmask, q, opts, omask)
+            for i, k in enumerate(ks):
+                row = head(mem[i:i + 1], mmask[i:i + 1], q[i], opts[i, :k])
+                self.assertTrue(torch.allclose(row[:k], batched[i, :k],
+                                               atol=1e-5))
+                self.assertTrue(torch.allclose(row[k], batched[i, kmax],
+                                               atol=1e-5))
+
+
 if __name__ == "__main__":
     unittest.main()

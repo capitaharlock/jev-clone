@@ -1,0 +1,228 @@
+{
+  "architecture": {
+    "backbone": "ettin-68m",
+    "batch_size": 64,
+    "d_model": 512,
+    "frozen_backbone": true,
+    "max_length": 256,
+    "n_heads": 8,
+    "n_layers": 2
+  },
+  "artifact": "cost",
+  "current_head_set_attention": {
+    "measured_here": [
+      "154",
+      "308"
+    ],
+    "noise_check": {
+      "inversions": [],
+      "monotone_in_k": true,
+      "reading": "no inversion: the table reads as a curve"
+    },
+    "per_k": {
+      "154": {
+        "batch_size": 64,
+        "head_params": 9987074,
+        "head_share_of_step": 0.4406,
+        "k": 154,
+        "minutes_per_1m_rows": 199.9,
+        "minutes_per_62500_rows": 12.49,
+        "ms_per_step": 767.4,
+        "ms_per_step_head_only": 338.1,
+        "peak_mem_gb": 2.094,
+        "rows_per_s": 83.4,
+        "set_attention": true,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "308": {
+        "batch_size": 64,
+        "head_params": 9987074,
+        "head_share_of_step": 0.5368,
+        "k": 308,
+        "minutes_per_1m_rows": 348.9,
+        "minutes_per_62500_rows": 21.81,
+        "ms_per_step": 1339.8,
+        "ms_per_step_head_only": 719.2,
+        "peak_mem_gb": 4.121,
+        "rows_per_s": 47.77,
+        "set_attention": true,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "41": {
+        "batch_size": 64,
+        "head_share_of_step": 0.2914,
+        "k": 41,
+        "minutes_per_1m_rows": 57.4,
+        "minutes_per_62500_rows": 3.59,
+        "ms_per_step": 220.6,
+        "ms_per_step_head_only": 64.3,
+        "peak_mem_gb": 1.107,
+        "rows_per_s": 290.14,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "77": {
+        "batch_size": 64,
+        "head_share_of_step": 0.393,
+        "k": 77,
+        "minutes_per_1m_rows": 68.1,
+        "minutes_per_62500_rows": 4.26,
+        "ms_per_step": 261.4,
+        "ms_per_step_head_only": 102.7,
+        "peak_mem_gb": 2.113,
+        "rows_per_s": 244.8,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "8": {
+        "batch_size": 64,
+        "head_share_of_step": 0.1971,
+        "k": 8,
+        "minutes_per_1m_rows": 39.6,
+        "minutes_per_62500_rows": 2.47,
+        "ms_per_step": 151.9,
+        "ms_per_step_head_only": 29.9,
+        "peak_mem_gb": 1.102,
+        "rows_per_s": 421.24,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      }
+    },
+    "reused_from": {
+      "artifact": "artifacts/gates/T-bigk-optsets/cost.json",
+      "generated_utc": "2026-09-24T12:44:23Z",
+      "ks": [
+        "8",
+        "41",
+        "77"
+      ],
+      "why": "R5/economy — already measured on this machine with this same harness; it is reused, not repeated"
+    }
+  },
+  "device": "mps",
+  "failures": {},
+  "format": "jev.gate.v1",
+  "generated_utc": "2026-09-24T14:42:00Z",
+  "honesty": [
+    "the harness needs K distinct strings; 176 real label texts exist across the trainable spaces, and above that the list is cycled with a numeric suffix so every column stays a distinct cache key. Cost depends on K, on token length and on B, not on what each label says",
+    "no checkpoint is written, no fenced corpus is read, and the weights are thrown away",
+    "every measurement runs in its OWN subprocess: the MPS pool is a high-water mark inside a process, so measuring several K in one run publishes the largest K's memory for all of them, and the first measurement after a big K comes out slow from memory pressure. The K values are walked in pairs (current head and ablation back to back at the same K) so machine drift hits both sides of the pair",
+    "this Mac was NOT idle: another agent was working in parallel while these ran. `#T-bigk-optsets` already measured that a parallel job costs about a third of the throughput, and `noise_check` reports the inversions that proves it here. The same-K pairs survive that; the curve down the K axis does not",
+    "the reused K=8/41/77 rows for the current head were measured on a different day; the pair inside a single K is the comparison that does not depend on the machine's state"
+  ],
+  "independent_scoring_ablation": {
+    "head_ms_ratio_vs_set_attention": {
+      "154": 0.31,
+      "308": 0.58,
+      "41": 1.3,
+      "77": 1.7,
+      "8": 2.86
+    },
+    "how_to_read": "only the SAME-K pair is a comparison: the two sides were measured back to back, so machine drift hits both. The column down the K axis is not a clean curve wherever `noise_check` reports an inversion",
+    "label": "CHANGE OF ARCHITECTURE — an arm that adopts this is not `the same head with another denominator`, and any verdict of the current head does not transfer to it (R4, R9)",
+    "noise_check": {
+      "inversions": [
+        {
+          "from_k": 77,
+          "rows_per_s": [
+            108.75,
+            277.1
+          ],
+          "to_k": 154
+        }
+      ],
+      "monotone_in_k": false,
+      "reading": "rows/s can only fall as K grows; an inversion is machine noise, not cardinality. Where there are inversions, read the same-K PAIRS (measured back to back) and not the curve"
+    },
+    "per_k": {
+      "154": {
+        "batch_size": 64,
+        "head_params": 7883778,
+        "head_share_of_step": 0.4549,
+        "k": 154,
+        "minutes_per_1m_rows": 60.1,
+        "minutes_per_62500_rows": 3.76,
+        "ms_per_step": 231.0,
+        "ms_per_step_head_only": 105.1,
+        "peak_mem_gb": 2.086,
+        "rows_per_s": 277.1,
+        "set_attention": false,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "308": {
+        "batch_size": 64,
+        "head_params": 7883778,
+        "head_share_of_step": 0.4315,
+        "k": 308,
+        "minutes_per_1m_rows": 250.6,
+        "minutes_per_62500_rows": 15.66,
+        "ms_per_step": 962.2,
+        "ms_per_step_head_only": 415.2,
+        "peak_mem_gb": 3.113,
+        "rows_per_s": 66.51,
+        "set_attention": false,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "41": {
+        "batch_size": 64,
+        "head_params": 7883778,
+        "head_share_of_step": 0.1493,
+        "k": 41,
+        "minutes_per_1m_rows": 146.0,
+        "minutes_per_62500_rows": 9.13,
+        "ms_per_step": 560.7,
+        "ms_per_step_head_only": 83.7,
+        "peak_mem_gb": 1.072,
+        "rows_per_s": 114.14,
+        "set_attention": false,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "77": {
+        "batch_size": 64,
+        "head_params": 7883778,
+        "head_share_of_step": 0.2962,
+        "k": 77,
+        "minutes_per_1m_rows": 153.3,
+        "minutes_per_62500_rows": 9.58,
+        "ms_per_step": 588.5,
+        "ms_per_step_head_only": 174.3,
+        "peak_mem_gb": 1.076,
+        "rows_per_s": 108.75,
+        "set_attention": false,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "8": {
+        "batch_size": 64,
+        "head_params": 7883778,
+        "head_share_of_step": 0.3338,
+        "k": 8,
+        "minutes_per_1m_rows": 66.7,
+        "minutes_per_62500_rows": 4.17,
+        "ms_per_step": 256.1,
+        "ms_per_step_head_only": 85.5,
+        "peak_mem_gb": 1.086,
+        "rows_per_s": 249.9,
+        "set_attention": false,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      }
+    },
+    "rows_per_s_speedup_vs_set_attention": {
+      "154": 3.32,
+      "308": 1.39,
+      "41": 0.39,
+      "77": 0.44,
+      "8": 0.59
+    },
+    "what": "the same head with `set_attention=False`: no attention among candidates, so a logit depends only on (state, question, this option's text)"
+  },
+  "recomposed_utc": "2026-09-24T14:47:15Z",
+  "task": "T-fullspace-objective",
+  "what_is_measured": "one full training step through `tools.bigk_cost.measure`: state encode (no grad), option text embeddings through the cache, `forward_batch`, `cross_entropy`, backward, clip, optimiser step. Median of 8 steps after 2 warmups"
+}

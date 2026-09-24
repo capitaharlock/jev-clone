@@ -98,6 +98,9 @@ if ROOT not in sys.path:  # the trainer runs both as -m and as a script
     sys.path.insert(0, ROOT)
 
 from data import mix as mixmod  # noqa: E402
+from training.python import inbatch  # noqa: E402
+from training.python.fullspace_loss import (  # noqa: E402
+    sampled_loss_batch)
 from data.optset import (ALLOWED_DATASETS, FULL_SPACE,  # noqa: E402
                          DistractorIndex, OptionSetSampler, Sample,
                          SamplerConfig, UNKNOWN_ID, difficulty)
@@ -596,7 +599,13 @@ def batch_prior_penalty(batch: list, counts: dict, kmax: int, device,
     """
     rows = []
     for sample in batch:
-        pen = [prior_penalty_for(sample.dataset, o["id"], counts)
+        # `o["space"]` only exists on a column the in-batch extension
+        # appended from ANOTHER dataset (#T-fullspace-objective): its train
+        # count lives under that dataset, not under this row's. Every
+        # option of an unextended batch lacks the key and falls back to the
+        # row's dataset, so the pre-existing path is byte for byte the same.
+        pen = [prior_penalty_for(o.get("space", sample.dataset), o["id"],
+                                 counts)
                for o in sample.options]
         rows.append(pen + [0.0] * (kmax + 1 - len(pen)))
     return torch.tensor(rows, device=device, dtype=dtype)
@@ -858,7 +867,7 @@ class RunningMetrics:
 # -- the regime a run was trained at ---------------------------------------
 
 def cardinality_regime(config, episodic_resample: bool = False,
-                       eval_config=None) -> dict:
+                       eval_config=None, in_batch: dict | None = None) -> dict:
     """R4 — the cardinality this run trains at, written into the artifact.
 
     A GO/NO-GO is only valid inside the regime it was measured in, so a
@@ -896,6 +905,13 @@ def cardinality_regime(config, episodic_resample: bool = False,
                 "to another one; it is marked non-transferable instead of "
                 "inherited",
     }
+    if in_batch is not None:
+        # the sampled extension (#T-fullspace-objective): the denominator
+        # leaves the row's own space, so `mode` and `loss_normalised_over`
+        # above describe only its FIRST half and would mislead on their own
+        regime["in_batch_negatives"] = in_batch
+        regime["mode"] = in_batch["mode"]
+        regime["loss_normalised_over"] = in_batch["loss_normalised_over"]
     if eval_config is not None:
         same = (eval_config.k_min == config.k_min
                 and eval_config.k_max == config.k_max)
@@ -1364,7 +1380,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
           contrastive_weight: float = 0.0, contrastive_tau: float = 0.07,
           prior_penalty: float = 0.0, unfreeze: str = "none",
           unfreeze_layers: int = 2, backbone_lr: float = 1e-5,
-          k_min: int | None = None, k_max: int | None = None) -> dict:
+          k_min: int | None = None, k_max: int | None = None,
+          in_batch_negatives: bool = False,
+          inbatch_calib_batches: int = 200) -> dict:
     """One model, one capped mixture, listwise loss, stage curve to 1 M."""
     _require_torch()
     t_start = time.perf_counter()
@@ -1468,6 +1486,15 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     stream = MixtureStream(tr, batch_size, dataset_cap=cap_d,
                            family_cap=cap_f)
     epoch_size = stream.total()
+    # -- the sampled extension (#T-fullspace-objective) -----------------
+    # `q(c)` is calibrated on a DRY pass over `stream.epoch(0)`, which
+    # builds fresh generators and consumes nothing of the training stream.
+    inbatch_log_pi, inbatch_regime, inbatch_stats = None, None, {}
+    if in_batch_negatives:
+        calib = inbatch.calibrate_offer_rates(stream, inbatch_calib_batches,
+                                              batch_size)
+        inbatch_log_pi = inbatch.inclusion_log_pi(calib, batch_size)
+        inbatch_regime = inbatch.regime(calib, batch_size, {})
     # -- the shortfall guardrail (#T-mix-1m) ---------------------------
     # `stream.stream()` loops the mixture forever, so a budget larger than
     # the corpus used to be filled by silently re-reading it. It is an
@@ -1537,7 +1564,7 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
                      "unfreeze": regime,
                      "revision": BACKBONES[backbone_id]["revision"]},
         "cardinality_regime": cardinality_regime(config, episodic_resample,
-                                                 eval_cfg),
+                                                 eval_cfg, inbatch_regime),
         "data_manifest": data_manifest(sorted(tr), root),
         "mix": ({"version": mix_manifest["version"],
                  "seed": mix_manifest["seed"],
@@ -1599,7 +1626,9 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
     last_ckpt = None
     epochs_run = 0
 
-    for epoch, batch in stream.stream():
+    source = (inbatch.mixed_stream(stream, batch_size)
+              if in_batch_negatives else stream.stream())
+    for epoch, batch in source:
         if seen_samples >= max_samples:
             break
         epochs_run = epoch + 1
@@ -1612,6 +1641,13 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
         if label_dropout > 0:  # candidate 1: novel option texts
             batch, _drop = apply_label_dropout(batch, label_dropout,
                                                gen_rng)
+        shift_rows = None
+        if in_batch_negatives:
+            # every label text the OTHER rows offered that does not collide
+            # by normalised key with one of this row's own, each carrying
+            # its `log pi` (#T-fullspace-objective)
+            batch, shift_rows, inbatch_stats = inbatch.extend_batch(
+                batch, inbatch_log_pi)
         tokens, mask, n_tok = encode_states(engine.backbone,
                                             [s.state for s in batch],
                                             max_length,
@@ -1631,7 +1667,16 @@ def train(max_samples: int = 250_000, batch_size: int = 32,
             logits = logits - prior_penalty * batch_prior_penalty(
                 batch, prior_counts, kmax, engine.device, logits.dtype)
         gold = batch_gold(batch, kmax, engine.device)
-        loss = nn.functional.cross_entropy(logits, gold)
+        if shift_rows is not None:
+            # equation (3) of `fullspace_loss`: subtract `log pi` from the
+            # foreign columns only, then the same cross-entropy
+            loss = sampled_loss_batch(
+                logits,
+                inbatch.shift_tensor(shift_rows, kmax, engine.device,
+                                     logits.dtype),
+                gold)
+        else:
+            loss = nn.functional.cross_entropy(logits, gold)
         if contrastive_weight > 0:  # candidate 3: q<->opt signal
             contrast_q, contrast_opts, contrast_golds = [], [], []
             for i, sample in enumerate(batch):
@@ -2090,6 +2135,17 @@ def main(argv: list) -> int:
                         "`cross_entropy` normalises over the space plus "
                         "`unknown`. The stage eval stays in the phase-1 "
                         "K<=8 regime and the divergence is declared")
+    t.add_argument("--in-batch-negatives", action="store_true",
+                   help="#T-fullspace-objective: serve MIXED batches and "
+                        "extend every row's denominator with the label "
+                        "texts the other rows offered, each corrected by "
+                        "`log pi(c)` (inclusion, NOT m*q). Foreign labels "
+                        "colliding by normalised key with one of the row's "
+                        "own are dropped. The head is unchanged")
+    t.add_argument("--inbatch-calib-batches", type=int, default=200,
+                   metavar="N",
+                   help="dry-pass batches used to calibrate `q(c)` for the "
+                        "inclusion correction (default 200)")
     t.add_argument("--backbone-lr", type=float, default=1e-5,
                    help=("LR of the encoder param group — deliberately far "
                          "below --lr: the head is learning a task, the "
@@ -2148,7 +2204,9 @@ def main(argv: list) -> int:
                         unfreeze_layers=args.unfreeze_layers,
                         backbone_lr=args.backbone_lr,
                         k_min=FULL_SPACE if args.full_space else args.k_min,
-                        k_max=FULL_SPACE if args.full_space else args.k_max)
+                        k_max=FULL_SPACE if args.full_space else args.k_max,
+                        in_batch_negatives=args.in_batch_negatives,
+                        inbatch_calib_batches=args.inbatch_calib_batches)
         print(json.dumps({k: v for k, v in summary.items() if k != "stages"},
                          indent=2, sort_keys=True))
         return 0

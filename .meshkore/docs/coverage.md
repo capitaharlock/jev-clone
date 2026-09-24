@@ -270,7 +270,7 @@ le dan definiciones y 24 ejemplos, a nosotros identificadores crudos.
 | 31 | honest-eval | T-eval-cardinality (ampliada) | Añade: `beats_chance` con la accuracy real (hoy usa el ranking forzado), corte de desarrollo separado del test con registro de consultas, frecuencia de predicciones y matriz de confusión |
 | 32 | full-space-training | **T-option-text** (entregada 2026-09-24) | Tres brazos a K=77 sobre el checkpoint actual, sin entrenar: identificadores / descripciones / con ejemplos. Los tres se quedan en el azar — el denominador sigue siendo la primera hipótesis |
 | 33 | full-space-training | T-bigk-optsets (ahora activa) | La **vía exacta**: `cross_entropy` ya normaliza sobre las columnas que recibe, así que el espacio enumerable completo no necesita fórmula nueva. Coste de la cabeza a K=8/41/77 publicado |
-| 34 | full-space-training | T-fullspace-objective (ahora `next`) | La **vía muestreada**: in-batch + log-Q, con especificación matemática y tests como puerta de entrada, y la atención entre opciones de la cabeza resuelta antes del run |
+| 34 | full-space-training | **T-fullspace-objective** (entregada 2026-09-24) | La **vía muestreada**: pérdida especificada con ecuación y tests, distribución real de etiquetas por batch medida, coste a cientos y decisión escrita sobre la cabeza, y el brazo a 62 k con veredicto pre-registrado |
 | 35 | full-space-training | T-encoder-finetune | Corregido: la acumulación de gradiente no conserva los negativos in-batch; memoria medida en la configuración real antes de prometer el run |
 | 36 | oss-release | **T-serve-engine** (nueva) | Servidor sin `Engine`, cargador Rust que ignoraría el encoder afinado, y colisión de la clave de caché en `/v1/choice`. Bloquea servir el modelo de fase 2, no lo explica |
 
@@ -320,3 +320,25 @@ diagnóstico nuevo añade lo que ninguna accuracy decía: sólo 26 de las 77
 etiquetas se predicen alguna vez y `lost_or_stolen_phone` se lleva el 33,9 % de
 las filas (uniforme sería 1,3 %). Causa no medida: `#T-option-text` y
 `#T-bigk-optsets`.
+
+## Entregado 2026-09-24 — `#T-fullspace-objective` (etapa 4 de la fase 2)
+
+Degradada por el NO-GO de `#T-bigk-optsets`: deja de ser la continuación de
+la hipótesis de cardinalidad y pasa a cerrar la especificación y el coste
+que `#T-encoder-finetune` necesita, más la vía de los espacios no
+enumerables. Por eso los done-when de **especificación y medida** van
+primero y el brazo de entreno último.
+
+| Entregable | Dónde |
+|---|---|
+| La pérdida escrita con ecuación: modo exacto verificado en **valor y gradiente** contra el softmax completo, y modo muestreado con su estimador | `training/python/fullspace_loss.py`, `artifacts/gates/T-fullspace-objective/loss-spec.json` |
+| Las propiedades del estimador por **enumeración exacta**, no Monte Carlo: `E[R̂]=R` bajo propuesta y bajo inclusión, y el sesgo de usar `m·Q` sobre un conjunto deduplicado, medido | `training/python/test_fullspace_loss.py` |
+| La pérdida muestreada **subestima** (Jensen, `log` cóncava), no sobreestima — el signo se mide, y el veredicto declara que una `train_loss` más baja no es una mejora | `test_the_loss_estimator_underestimates` |
+| Colisiones y falsos negativos entre espacios: filtro sobre el POOL antes de muestrear (quitar un duplicado ya extraído rompe el insesgamiento) y lo indetectable, declarado | `fullspace_loss.filter_pool` |
+| Cuándo se omite `log Q` y por qué — tres motivos, ninguno más; y `prior_penalty` **no** es una corrección log-Q, medido | `fullspace_loss.OMISSIONS`, `test_prior_penalty_is_not_a_log_q_correction` |
+| Distribución real del cargador: **100 % de los batches son de un solo dataset**, mediana de 5 etiquetas ofrecidas únicas. «Cientos por batch» retirado | `tools/fullspace_batches.py`, `artifacts/gates/T-fullspace-objective/batch-composition.json` |
+| El contrafactual de batches mixtos (mediana 90,5 ofrecidas, 12 espacios) y la tasa de falso negativo por masa (97,7 % de filas con colisión de oro) que obliga al filtro | mismo artefacto |
+| Coste a **cientos** con la cabeza actual y la ablación de scoring independiente, cada medida en su subproceso; K=8/41/77 reutilizados de `#T-bigk-optsets`, no repetidos | `tools/fullspace_cost.py`, `artifacts/gates/T-fullspace-objective/cost.json` |
+| Decisión escrita sobre la cabeza: se conserva o se cambia, y si se cambia el brazo se etiqueta CAMBIO DE ARQUITECTURA | `artifacts/gates/T-fullspace-objective/head-decision.md` |
+| El brazo: batches mixtos + negativos in-batch entre espacios con `log π` (inclusión, no `m·Q`), cabeza intacta, régimen declarado en `run.json` | `training/python/inbatch.py`, `training/python/train_decision.py --in-batch-negatives` |
+| Veredicto **pre-registrado** antes del run, con la regla 6 que impide publicar como veredicto un brazo corrido sobre batches de un solo dataset | `artifacts/gates/T-fullspace-objective/verdict.md` |

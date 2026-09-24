@@ -74,16 +74,26 @@ class CrossBlock(nn.Module):
     the block is permutation-equivariant over options by construction.
     """
 
-    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.0):
+    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.0,
+                 set_attention: bool = True):
         super().__init__()
         self.ln_cross = nn.LayerNorm(d_model)
         self.cross = nn.MultiheadAttention(d_model, n_heads,
                                            dropout=dropout,
                                            batch_first=True)
-        self.ln_set = nn.LayerNorm(d_model)
-        self.set_attn = nn.MultiheadAttention(d_model, n_heads,
-                                              dropout=dropout,
-                                              batch_first=True)
+        # `set_attention=False` is the INDEPENDENT-SCORING ablation
+        # (#T-fullspace-objective): no attention among candidates, so a
+        # logit depends only on (state, question, this option's text) and
+        # the block stops being quadratic in K. It is a CHANGE OF
+        # ARCHITECTURE, not the same head with another denominator, and
+        # nothing on the default path touches it: True reproduces the
+        # published head parameter for parameter.
+        self.set_attention = set_attention
+        self.ln_set = nn.LayerNorm(d_model) if set_attention else None
+        self.set_attn = (nn.MultiheadAttention(d_model, n_heads,
+                                               dropout=dropout,
+                                               batch_first=True)
+                         if set_attention else None)
         self.ln_ff = nn.LayerNorm(d_model)
         self.ff = nn.Sequential(
             nn.Linear(d_model, 4 * d_model),
@@ -100,14 +110,15 @@ class CrossBlock(nn.Module):
                                  key_padding_mask=pad_mask,
                                  need_weights=False)
         x = x + attended
-        h = self.ln_set(x)
-        # `set_pad_mask` only exists in the batched path, where rows with
-        # fewer options are padded up to K_max: a real option must not
-        # read a padding slot, or the batched forward would stop agreeing
-        # with the per-row one.
-        mixed, _ = self.set_attn(h, h, h, key_padding_mask=set_pad_mask,
-                                 need_weights=False)
-        x = x + mixed
+        if self.set_attention:
+            h = self.ln_set(x)
+            # `set_pad_mask` only exists in the batched path, where rows
+            # with fewer options are padded up to K_max: a real option must
+            # not read a padding slot, or the batched forward would stop
+            # agreeing with the per-row one.
+            mixed, _ = self.set_attn(h, h, h, key_padding_mask=set_pad_mask,
+                                     need_weights=False)
+            x = x + mixed
         return x + self.ff(self.ln_ff(x))
 
 
@@ -122,7 +133,8 @@ class PointerDecisionHead(nn.Module):
 
     def __init__(self, d_state: int, d_model: int = DEFAULT_D_MODEL,
                  n_layers: int = DEFAULT_LAYERS,
-                 n_heads: int = DEFAULT_HEADS, dropout: float = 0.0):
+                 n_heads: int = DEFAULT_HEADS, dropout: float = 0.0,
+                 set_attention: bool = True):
         super().__init__()
         if not 1 <= n_layers <= 3:
             raise ValueError("n_layers must be 1..3 (plan: 1-3 layers)")
@@ -130,12 +142,14 @@ class PointerDecisionHead(nn.Module):
         self.d_model = d_model
         self.n_layers = n_layers
         self.n_heads = n_heads
+        self.set_attention = set_attention
         self.state_proj = nn.Linear(d_state, d_model)
         self.state_ln = nn.LayerNorm(d_model)
         self.q_proj = nn.Linear(d_state, d_model)
         self.opt_proj = nn.Linear(d_state, d_model)
         self.blocks = nn.ModuleList(
-            [CrossBlock(d_model, n_heads, dropout) for _ in range(n_layers)])
+            [CrossBlock(d_model, n_heads, dropout, set_attention)
+             for _ in range(n_layers)])
         self.ln_out = nn.LayerNorm(d_model)
         # Pointer: query from the contextualised option, key from the
         # option's OWN text embedding. Output width is 1 per option.

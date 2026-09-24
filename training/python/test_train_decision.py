@@ -754,5 +754,67 @@ class TestUnfrozenRun(unittest.TestCase):
         self.assertGreater(cost["minutes_per_1m"], 0)
 
 
+class TestInBatchNegativesArm(unittest.TestCase):
+    """El brazo muestreado de #T-fullspace-objective, extremo a extremo.
+
+    Lo que un test de unidad de `training.python.inbatch` no puede fijar:
+    que la bandera llegue a `train()`, que el batch extendido sobreviva a
+    `pack_options`/`batch_gold`/la penalización de prior, que la pérdida
+    salga finita y que el régimen quede DECLARADO en el manifiesto — que es
+    la regla R1 escrita en un fichero y no en una intención.
+    """
+
+    RUN = "test-train-inbatch"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.summary = td.train(max_samples=64, batch_size=16,
+                               rows_per_dataset=60, eval_samples=32,
+                               log_every=1, run_id=cls.RUN, device="cpu",
+                               write_gate=False, prior_penalty=1.0,
+                               in_batch_negatives=True,
+                               inbatch_calib_batches=4)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(os.path.join(td.RUNS_DIR, cls.RUN), ignore_errors=True)
+        shutil.rmtree(os.path.join(td.CKPT_DIR, cls.RUN), ignore_errors=True)
+
+    def _regime(self):
+        with open(os.path.join(td.RUNS_DIR, self.RUN, "run.json")) as fh:
+            return json.load(fh)["cardinality_regime"]
+
+    def test_the_run_finished_with_a_finite_objective(self):
+        """El NLL del re-score de entreno: si la pérdida hubiera dado NaN
+        (`-inf - inf` en una columna de relleno) esto no sería finito."""
+        train = self.summary["train"]
+        self.assertTrue(math.isfinite(train["nll"]))
+        self.assertGreater(train["n"], 0)
+
+    def test_the_denominator_actually_grew(self):
+        """`mean_k` por encima del K del sampler: las columnas ajenas están."""
+        self.assertGreater(self.summary["train"]["mean_k"], 8)
+
+    def test_the_regime_is_declared_in_run_json(self):
+        reg = self._regime()
+        self.assertIn("in_batch_negatives", reg)
+        ib = reg["in_batch_negatives"]
+        self.assertTrue(ib["correction"]["pi"].startswith("pi(c) = 1 -"))
+        self.assertIn("mixed batches", ib["loader"])
+        self.assertIn("set_attention=True", ib["architecture"])
+        self.assertEqual(reg["mode"], ib["mode"])
+
+    def test_the_calibration_is_recorded(self):
+        corr = self._regime()["in_batch_negatives"]["correction"]
+        self.assertGreater(corr["calibration_rows"], 0)
+        self.assertGreater(corr["calibrated_labels"], 0)
+
+    def test_the_default_path_declares_no_in_batch_block(self):
+        """Sin la bandera, el manifiesto es el de antes."""
+        reg = td.cardinality_regime(SamplerConfig(seed=1))
+        self.assertNotIn("in_batch_negatives", reg)
+        self.assertEqual(reg["mode"], "sampled options")
+
+
 if __name__ == "__main__":
     unittest.main()

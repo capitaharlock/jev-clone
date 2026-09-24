@@ -1,0 +1,59 @@
+{
+  "artifact": "loss-spec",
+  "collisions": {
+    "filtered": [
+      "the gold by normalised key",
+      "declared positives of the row",
+      "duplicate keys inside the pool"
+    ],
+    "q_renormalised": true,
+    "residual": "semantic false negatives across spaces are not detectable by text identity and remain a declared bias of the estimator",
+    "where": "on the POOL before sampling — removing a drawn duplicate under PROPOSAL breaks unbiasedness"
+  },
+  "equation": {
+    "conditioning": "z_c = head(state, question, text(c) | C) is conditioned on the SET C handed to the head: `model/decision_head.py:105-110` attends among options. Logits computed over different sets do not join into one softmax",
+    "correction": "z'_c = z_c - logQ_c, with logQ_y = 0 and logQ_unk = 0; then L_hat = cross_entropy(z', y)",
+    "objective": "L = -z_y + log( exp(z_unk) + sum_{c in S} exp(z_c) )",
+    "split": "L = -z_y + log( exp(z_y) + exp(z_unk) + R ), R = sum_{c in S \\ {y}} exp(z_c)"
+  },
+  "format": "jev.gate.v1",
+  "log_q_omission": {
+    "declared_uniform": "Q is uniform over a fixed pool under the PROPOSAL scheme, so the correction is one constant on every candidate column. It does NOT cancel (the gold column carries none), so dropping it changes the loss: it is a deliberate, declared omission or it is not made",
+    "in_set_ranking": "the measured task is the ranking INSIDE the offered set, not over the space; equation (1) is not the objective, so there is nothing to correct. This is the phase-1 regime (K in [3, 8]) and it is why its numbers are not a normaliser over the space",
+    "set_is_space": "the candidate set IS the row's whole space, so every inclusion probability is 1 and log Q = 0. Not an omission: the correct value"
+  },
+  "modes": {
+    "exact": {
+      "estimator": "R is summed over the whole space: no estimator, no correction, and equation (2) is `cross_entropy` over those columns",
+      "verified": "value AND gradient against a hand-written full softmax (test_exact_matches_full_softmax*)",
+      "when": "the space is enumerable and fits"
+    },
+    "inclusion": {
+      "estimator": "R_hat = sum_{c in N} exp(z_c) / pi(c) (Horvitz-Thompson); unbiased for R. For `m draws with replacement, then unique` — the in-batch case — pi(c) = 1 - (1 - Q(c))^m, which is NOT m * Q(c)",
+      "log_q": "log pi(c); for `m draws with replacement, then unique`, pi(c) = 1 - (1 - Q(c))^m",
+      "verified": "E[R_hat] = R by exact enumeration over subsets; and the PROPOSAL formula on the same deduplicated design is measured to be biased",
+      "when": "a deduplicated subset — the in-batch negatives case"
+    },
+    "proposal": {
+      "estimator": "R_hat = sum_j exp(z_j) / (m * Q(c_j)) over m i.i.d. draws WITH replacement; unbiased for R. Duplicates count — removing a drawn duplicate breaks it",
+      "log_q": "log(m * Q(c))",
+      "verified": "E[R_hat] = R by exact enumeration over all m-draw outcomes, not Monte Carlo",
+      "when": "m i.i.d. draws WITH replacement from a proposal Q"
+    }
+  },
+  "prior_penalty_is_not_log_q": {
+    "measured": "test_prior_penalty_is_not_a_log_q_correction",
+    "what_it_is": "train_decision.py:741-784 subtracts w * log(count of the label as a gold ANSWER in train)",
+    "why_not": [
+      "it depends on the label's frequency as a gold in the corpus, not on its probability of having been SAMPLED as a negative for this row",
+      "it carries a free weight w",
+      "it is applied to the gold column too",
+      "it makes no estimator of R unbiased"
+    ]
+  },
+  "task": "T-fullspace-objective",
+  "unbiasedness": {
+    "R_hat": "unbiased for R under both schemes",
+    "loss": "NOT unbiased, and it UNDERESTIMATES: the denominator sits inside a log, which is concave, so by Jensen E[L_hat] <= L, with equality only when the denominator estimate is deterministic (pi == 1, the exact mode). The sampled objective is optimistic; the gap closes as the sample grows (consistency). The test measures the sign rather than assuming it"
+  }
+}
