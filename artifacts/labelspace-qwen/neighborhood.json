@@ -1,0 +1,148 @@
+{
+  "mean_mean_nn": 0.448286,
+  "mean_min_nn": 0.399463,
+  "min_nn_hist": {
+    "0.3": 1,
+    "0.4": 3
+  },
+  "n_spaces": 4,
+  "spaces": [
+    {
+      "hardest_pair": [
+        "Crushed Protective Gear",
+        "Waterlogged Personal Effects",
+        0.438556
+      ],
+      "k": 4,
+      "per_label": {
+        "Crushed Protective Gear": {
+          "cos": 0.438556,
+          "nearest": "Waterlogged Personal Effects"
+        },
+        "Frozen Electronic Devices": {
+          "cos": 0.426594,
+          "nearest": "Waterlogged Personal Effects"
+        },
+        "Stained Transit Tickets": {
+          "cos": 0.418903,
+          "nearest": "Frozen Electronic Devices"
+        },
+        "Waterlogged Personal Effects": {
+          "cos": 0.438556,
+          "nearest": "Crushed Protective Gear"
+        }
+      },
+      "space_id": "lq-0000",
+      "space_mean_nn": 0.430652,
+      "space_min_nn": 0.418903
+    },
+    {
+      "hardest_pair": [
+        "Emergency Fuel Stop",
+        "Scheduled Fuel Appointment",
+        0.481329
+      ],
+      "k": 6,
+      "per_label": {
+        "Dock Availability Check": {
+          "cos": 0.413594,
+          "nearest": "Fuel Type Inquiry"
+        },
+        "Emergency Fuel Stop": {
+          "cos": 0.481329,
+          "nearest": "Scheduled Fuel Appointment"
+        },
+        "Fuel Type Inquiry": {
+          "cos": 0.413594,
+          "nearest": "Dock Availability Check"
+        },
+        "Immediate Dock Request": {
+          "cos": 0.329055,
+          "nearest": "Payment Method Confirmation"
+        },
+        "Payment Method Confirmation": {
+          "cos": 0.423635,
+          "nearest": "Scheduled Fuel Appointment"
+        },
+        "Scheduled Fuel Appointment": {
+          "cos": 0.481329,
+          "nearest": "Emergency Fuel Stop"
+        }
+      },
+      "space_id": "lq-0001",
+      "space_mean_nn": 0.423756,
+      "space_min_nn": 0.329055
+    },
+    {
+      "hardest_pair": [
+        "Client Notification Procedure",
+        "Equipment Compliance Verification",
+        0.532751
+      ],
+      "k": 5,
+      "per_label": {
+        "Client Notification Procedure": {
+          "cos": 0.532751,
+          "nearest": "Equipment Compliance Verification"
+        },
+        "Debris Removal Protocol": {
+          "cos": 0.50456,
+          "nearest": "Client Notification Procedure"
+        },
+        "Equipment Compliance Verification": {
+          "cos": 0.532751,
+          "nearest": "Client Notification Procedure"
+        },
+        "Immediate Safety Inspection": {
+          "cos": 0.44113,
+          "nearest": "Debris Removal Protocol"
+        },
+        "Post-Service Documentation": {
+          "cos": 0.516619,
+          "nearest": "Equipment Compliance Verification"
+        }
+      },
+      "space_id": "lq-0002",
+      "space_mean_nn": 0.505562,
+      "space_min_nn": 0.44113
+    },
+    {
+      "hardest_pair": [
+        "Quiet Corner Spot",
+        "Shared Ventilation Access",
+        0.448887
+      ],
+      "k": 6,
+      "per_label": {
+        "Bottom Bunk Accessibility": {
+          "cos": 0.436975,
+          "nearest": "Top Bunk View"
+        },
+        "Private Curtain Privacy": {
+          "cos": 0.408765,
+          "nearest": "Shared Ventilation Access"
+        },
+        "Quiet Corner Spot": {
+          "cos": 0.448887,
+          "nearest": "Shared Ventilation Access"
+        },
+        "Shared Ventilation Access": {
+          "cos": 0.448887,
+          "nearest": "Quiet Corner Spot"
+        },
+        "Social Central Location": {
+          "cos": 0.418559,
+          "nearest": "Shared Ventilation Access"
+        },
+        "Top Bunk View": {
+          "cos": 0.436975,
+          "nearest": "Bottom Bunk Accessibility"
+        }
+      },
+      "space_id": "lq-0003",
+      "space_mean_nn": 0.433175,
+      "space_min_nn": 0.408765
+    }
+  ],
+  "version": "labelgen-v1"
+}

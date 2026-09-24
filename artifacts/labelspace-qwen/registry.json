@@ -1,0 +1,96 @@
+{
+  "cards": [
+    {
+      "id": "labelspace-qwen/lq-0000",
+      "license": "CC0-1.0",
+      "mirror": "none — generated, no upstream",
+      "revision": "labelgen-v1@88d1acb09c62",
+      "sha256": "88d1acb09c6288722878b186c4538f07e05428f99d34691970a2a4798332748e",
+      "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+      "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+      "usage": "train"
+    },
+    {
+      "id": "labelspace-qwen/lq-0001",
+      "license": "CC0-1.0",
+      "mirror": "none — generated, no upstream",
+      "revision": "labelgen-v1@fdf6925d2614",
+      "sha256": "fdf6925d2614a30c90c2c840f492eef66d62799fca42bbbe995e81c317625223",
+      "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+      "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+      "usage": "train"
+    },
+    {
+      "id": "labelspace-qwen/lq-0002",
+      "license": "CC0-1.0",
+      "mirror": "none — generated, no upstream",
+      "revision": "labelgen-v1@b2a79f818615",
+      "sha256": "b2a79f8186156ac6da75f88f04b79c5fd78b4158182a32f9900bd1e074aecc01",
+      "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+      "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+      "usage": "train"
+    },
+    {
+      "id": "labelspace-qwen/lq-0003",
+      "license": "CC0-1.0",
+      "mirror": "none — generated, no upstream",
+      "revision": "labelgen-v1@8d1c47be1bb5",
+      "sha256": "8d1c47be1bb558133b65eae13a952d2a8c16fc7a8e4551b80261d02adf097c5e",
+      "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+      "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+      "usage": "train"
+    }
+  ],
+  "firewall": {
+    "clean": true,
+    "screened_texts": 430
+  },
+  "manifest": {
+    "datasets": [
+      {
+        "id": "labelspace-qwen/lq-0000",
+        "license": "CC0-1.0",
+        "mirror": "none — generated, no upstream",
+        "revision": "labelgen-v1@88d1acb09c62",
+        "sha256": "88d1acb09c6288722878b186c4538f07e05428f99d34691970a2a4798332748e",
+        "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+        "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+        "usage": "train"
+      },
+      {
+        "id": "labelspace-qwen/lq-0001",
+        "license": "CC0-1.0",
+        "mirror": "none — generated, no upstream",
+        "revision": "labelgen-v1@fdf6925d2614",
+        "sha256": "fdf6925d2614a30c90c2c840f492eef66d62799fca42bbbe995e81c317625223",
+        "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+        "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+        "usage": "train"
+      },
+      {
+        "id": "labelspace-qwen/lq-0002",
+        "license": "CC0-1.0",
+        "mirror": "none — generated, no upstream",
+        "revision": "labelgen-v1@b2a79f818615",
+        "sha256": "b2a79f8186156ac6da75f88f04b79c5fd78b4158182a32f9900bd1e074aecc01",
+        "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+        "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+        "usage": "train"
+      },
+      {
+        "id": "labelspace-qwen/lq-0003",
+        "license": "CC0-1.0",
+        "mirror": "none — generated, no upstream",
+        "revision": "labelgen-v1@8d1c47be1bb5",
+        "sha256": "8d1c47be1bb558133b65eae13a952d2a8c16fc7a8e4551b80261d02adf097c5e",
+        "source_original": "local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+        "transform": "labelgen-v1: qwen space spec + deterministic template rows x12",
+        "usage": "train"
+      }
+    ],
+    "manifest_sha256": "c7a3334ff0c75265d2688430c7921c44bd4423f74cee12cdf2bbe156a32c49db"
+  },
+  "n_spaces": 4,
+  "task": "T-labelspace-factory",
+  "version": "labelgen-v1"
+}

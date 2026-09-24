@@ -263,6 +263,17 @@ SOURCES = {
              "scale, which is the §48 Score supply HelpSteer2 was fenced "
              "out of — the scale IS the option set, so it is exempt from "
              "the global-label-space check"),
+    "labelspace-qwen": Source(
+        "labelspace-qwen", "labelspace", "synthetic", "en", True,
+        PRODUCT_WEIGHT["dynamic_small"], layer="episodic",
+        shards=tuple(f"artifacts/labelspace-qwen/shards/"
+                     f"labelspace-qwen-{i:03d}.jsonl" for i in range(8)),
+        experimental=True,
+        note="#T-labelspace-factory: Qwen-designed taxonomies (domain + "
+             "sibling labels + confusions, one LLM call per space), "
+             "template-populated rows, whole space as denominator. "
+             "EXPERIMENTAL: never in a default scan, only via explicit "
+             "selection (the factory mix names it out loud)"),
 }
 
 #: every id the mixture may draw from, in registry order

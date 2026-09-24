@@ -1,0 +1,502 @@
+{
+  "built_utc": "2026-09-24T14:17:50Z",
+  "by_origin": {
+    "human": 12700,
+    "programmatic": 2540,
+    "synthetic": 2588
+  },
+  "composition_pass": true,
+  "diversity_vs_baseline": {
+    "baseline_artifact": "artifacts/gates/T-labelspace-div/inventory.json",
+    "clean_1m_shared_share": 0.830976,
+    "clean_1m_shared_spaces": 9,
+    "clean_1m_verdict": "pobre",
+    "factory_quota_rows": 48,
+    "factory_spaces": 4,
+    "why": "each factory space is used WHOLE as the denominator, so factory spaces add 1:1 to the sampler-visible space count once space_scoped; the baseline's 9 shared taxonomies cover 83.1 % of its rows"
+  },
+  "elapsed_s": 51.8,
+  "human_share": 0.712363,
+  "manifest": {
+    "built_utc": "2026-09-24T14:17:50Z",
+    "checks": {
+      "checks": {
+        "dynamic_options_are_the_majority": {
+          "floor": 0.5,
+          "pass": true,
+          "share": 1.0,
+          "why": "the product property is choosing among options that vary per row; fixed-label binaries must not be most of what the head sees"
+        },
+        "guardrails_hold": {
+          "breaches": [],
+          "enforced_by": "data.mix.verify_mix (raises MixGuardrailError)",
+          "pass": true
+        },
+        "no_dataset_over_cap": {
+          "cap": 0.15,
+          "pass": true,
+          "shares": {
+            "banking77": 0.142473,
+            "dbpedia14": 0.142473,
+            "episodic-div": 0.142473,
+            "goemotions": 0.142473,
+            "huffpost": 0.142473,
+            "labelspace-qwen": 0.002692,
+            "massive": 0.142473,
+            "swag": 0.142473
+          }
+        },
+        "no_family_over_cap": {
+          "cap": 0.3,
+          "pass": true,
+          "shares": {
+            "commonsense": 0.142473,
+            "emotion": 0.142473,
+            "episodic": 0.142473,
+            "intent": 0.284945,
+            "labelspace": 0.002692,
+            "topic": 0.284945
+          }
+        },
+        "synthetic_is_a_minority": {
+          "cap": 0.5,
+          "pass": true,
+          "share": 0.145165
+        }
+      },
+      "guardrails": {
+        "breaches": [],
+        "by_family": {
+          "commonsense": 2540,
+          "emotion": 2540,
+          "episodic": 2540,
+          "intent": 5080,
+          "labelspace": 48,
+          "topic": 5080
+        },
+        "checks": {
+          "dataset:banking77": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:dbpedia14": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:episodic-div": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:goemotions": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:huffpost": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:labelspace-qwen": {
+            "cap": 0.15,
+            "n": 48,
+            "ok": true,
+            "share": 0.002692
+          },
+          "dataset:massive": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "dataset:swag": {
+            "cap": 0.15,
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "family:commonsense": {
+            "cap": 0.3,
+            "datasets": [
+              "swag"
+            ],
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "family:emotion": {
+            "cap": 0.3,
+            "datasets": [
+              "goemotions"
+            ],
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "family:episodic": {
+            "cap": 0.3,
+            "datasets": [
+              "episodic-div"
+            ],
+            "n": 2540,
+            "ok": true,
+            "share": 0.142473
+          },
+          "family:intent": {
+            "cap": 0.3,
+            "datasets": [
+              "banking77",
+              "massive"
+            ],
+            "n": 5080,
+            "ok": true,
+            "share": 0.284945
+          },
+          "family:labelspace": {
+            "cap": 0.3,
+            "datasets": [
+              "labelspace-qwen"
+            ],
+            "n": 48,
+            "ok": true,
+            "share": 0.002692
+          },
+          "family:topic": {
+            "cap": 0.3,
+            "datasets": [
+              "dbpedia14",
+              "huffpost"
+            ],
+            "n": 5080,
+            "ok": true,
+            "share": 0.284945
+          }
+        },
+        "total": 17828
+      },
+      "pass": true
+    },
+    "composition": {
+      "by_dataset": {
+        "banking77": 2540,
+        "dbpedia14": 2540,
+        "episodic-div": 2540,
+        "goemotions": 2540,
+        "huffpost": 2540,
+        "labelspace-qwen": 48,
+        "massive": 2540,
+        "swag": 2540
+      },
+      "by_family": {
+        "commonsense": 2540,
+        "emotion": 2540,
+        "episodic": 2540,
+        "intent": 5080,
+        "labelspace": 48,
+        "topic": 5080
+      },
+      "by_k": {
+        "10": 277,
+        "11": 265,
+        "12": 1575,
+        "13": 303,
+        "2": 402,
+        "3": 366,
+        "4": 12905,
+        "5": 387,
+        "6": 355,
+        "7": 368,
+        "8": 356,
+        "9": 269
+      },
+      "by_lang": {
+        "en": 15288,
+        "en-US": 525,
+        "es-ES": 471,
+        "fr-FR": 543,
+        "it-IT": 492,
+        "pt-PT": 509
+      },
+      "by_layer": {
+        "adversarial": 2540,
+        "episodic": 2588,
+        "human-expert": 5080,
+        "intent-multi": 7620
+      },
+      "by_origin": {
+        "human": 12700,
+        "programmatic": 2540,
+        "synthetic": 2588
+      },
+      "by_qtype": {
+        "choice": 17426,
+        "noul": 402
+      },
+      "dynamic_option_rows": 17828,
+      "dynamic_option_share": 1.0,
+      "hard_rows": 5229,
+      "hard_share": 0.293303,
+      "rows": 17828,
+      "top_dataset_share": 0.142473
+    },
+    "corpus": "decision-mix-labelfactory-62k",
+    "diversity": {
+      "shares": {
+        "dataset": {
+          "banking77": 0.142473,
+          "dbpedia14": 0.142473,
+          "episodic-div": 0.142473,
+          "goemotions": 0.142473,
+          "huffpost": 0.142473,
+          "labelspace-qwen": 0.002692,
+          "massive": 0.142473,
+          "swag": 0.142473
+        },
+        "family": {
+          "commonsense": 0.142473,
+          "emotion": 0.142473,
+          "episodic": 0.142473,
+          "intent": 0.284945,
+          "labelspace": 0.002692,
+          "topic": 0.284945
+        },
+        "k_bucket": {
+          "2-4": 0.76694,
+          "5-8": 0.08223,
+          "9-16": 0.15083
+        },
+        "lang": {
+          "en": 0.857527,
+          "en-US": 0.029448,
+          "es-ES": 0.026419,
+          "fr-FR": 0.030458,
+          "it-IT": 0.027597,
+          "pt-PT": 0.028551
+        },
+        "layer": {
+          "adversarial": 0.142473,
+          "episodic": 0.145165,
+          "human-expert": 0.284945,
+          "intent-multi": 0.427418
+        },
+        "origin": {
+          "human": 0.712363,
+          "programmatic": 0.142473,
+          "synthetic": 0.145165
+        },
+        "qtype": {
+          "choice": 0.977451,
+          "noul": 0.022549
+        }
+      },
+      "simpson": {
+        "dataset": 0.8579,
+        "family": 0.7767,
+        "k_bucket": 0.3823,
+        "lang": 0.2606,
+        "layer": 0.6947,
+        "origin": 0.4512,
+        "qtype": 0.0441
+      }
+    },
+    "elapsed_s": 51.8,
+    "excluded": {
+      "logiqa": "reasoning benchmark, eval-only (finding G)",
+      "reclor": "reasoning benchmark, eval-only (finding G)",
+      "synth-loop": "quarantined (finding C): 190 skeletons, split by i % 10"
+    },
+    "fence_conflicts": [
+      {
+        "dataset": "banking77",
+        "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+        "in_product_mix": true,
+        "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+      },
+      {
+        "dataset": "helpsteer2",
+        "fenced_by": "tools/mix_1m/fence.py FENCED_DATASETS",
+        "in_product_mix": true,
+        "reason": "Jevals benchmark overlap (\u00a7\u00a718, 77)"
+      }
+    ],
+    "format": 2,
+    "guardrails": {
+      "cap_safety_margin": 0.0075,
+      "cap_units": 1.2,
+      "enforcement": "hard error: data.mix.verify_mix raises MixGuardrailError and mix construction aborts",
+      "max_dataset_fraction": 0.15,
+      "max_family_fraction": 0.3,
+      "max_synthetic_fraction": 0.5,
+      "min_dynamic_fraction": 0.5
+    },
+    "members_sha256": "206e3e79b46f4a78f4e506e117612a358708f7c604f6afb48095e7e932e7e470",
+    "seed": 20260924,
+    "seen_labels": {},
+    "selection": {
+      "function": "data.mix.keep_row",
+      "keep_fractions": {
+        "banking77": 0.2920124,
+        "dbpedia14": 0.00521607,
+        "episodic-div": 0.00280865,
+        "goemotions": 0.03354541,
+        "huffpost": 0.01792739,
+        "labelspace-qwen": 1.0,
+        "massive": 0.04228186,
+        "swag": 0.03971664
+      },
+      "key": "sha256(seed \\0 dataset \\0 row_index \\0 question_id)",
+      "note": "stateless: seed + keep fractions + the shard sha256 below rebuild this mixture without a member list"
+    },
+    "sources": {
+      "banking77": {
+        "dynamic_options": true,
+        "family": "intent",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "intent-multi",
+        "note": "77 sibling intents \u2014 the hardest dynamic pool in the corpus",
+        "origin": "human",
+        "pool_size": 77,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 10003,
+        "weight": 1.0
+      },
+      "dbpedia14": {
+        "dynamic_options": true,
+        "family": "topic",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "human-expert",
+        "note": "560 k DBpedia ontology abstracts over 14 curated classes; the SECOND source in the `topic` family, and the wide-K half of it carries measured nearest-label distractors",
+        "origin": "human",
+        "pool_size": 14,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 560000,
+        "weight": 1.0
+      },
+      "episodic-div": {
+        "dynamic_options": true,
+        "family": "episodic",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "episodic",
+        "note": "#T-labelspace-div: 20 000 miniature taxonomies (~52 rows each) at 1 M total volume \u2014 the many-small-spaces alternative to decision-mix-clean-1m's 9 shared taxonomies. EXPERIMENTAL: never in a default scan, only via --only-dataset",
+        "origin": "synthetic",
+        "pool_size": 99544,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 1040000,
+        "weight": 0.7
+      },
+      "goemotions": {
+        "dynamic_options": true,
+        "family": "emotion",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "human-expert",
+        "note": "28 emotions over 211 k rater judgements; the K=12 question of each row is the measured nearest neighbourhood of its gold, which is where the \u00a768 hard slice comes from",
+        "origin": "human",
+        "pool_size": 28,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 87076,
+        "weight": 1.0
+      },
+      "huffpost": {
+        "dynamic_options": true,
+        "family": "topic",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "intent-multi",
+        "note": "41 categories; 11 of them are the unseen-label holdout",
+        "origin": "human",
+        "pool_size": 41,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 162935,
+        "weight": 1.0
+      },
+      "labelspace-qwen": {
+        "dynamic_options": true,
+        "family": "labelspace",
+        "kept": 48,
+        "lang_scope": "en",
+        "layer": "episodic",
+        "note": "#T-labelspace-factory: Qwen-designed taxonomies (domain + sibling labels + confusions, one LLM call per space), template-populated rows, whole space as denominator. EXPERIMENTAL: never in a default scan, only via explicit selection (the factory mix names it out loud)",
+        "origin": "synthetic",
+        "pool_size": 21,
+        "quota": 48,
+        "shards": [],
+        "share": 0.002692,
+        "supply": 48,
+        "weight": 0.7
+      },
+      "massive": {
+        "dynamic_options": true,
+        "family": "intent",
+        "kept": 2540,
+        "lang_scope": "multi",
+        "layer": "intent-multi",
+        "note": "60 intents across 4 locales; carries the multilingual axis",
+        "origin": "human",
+        "pool_size": 60,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 69084,
+        "weight": 1.0
+      },
+      "swag": {
+        "dynamic_options": true,
+        "family": "commonsense",
+        "kept": 2540,
+        "lang_scope": "en",
+        "layer": "adversarial",
+        "note": "73 k grounded situations with four continuations; the \u00a786 adversarial layer, which had no supply at all. Its three distractors survived adversarial filtering against a model ensemble (Zellers et al. 2018) \u2014 a property of the corpus, not a difficulty this registry asserted. Origin is programmatic and not human: the gold caption is human, the option SET is machine-constructed",
+        "origin": "programmatic",
+        "pool_size": 4,
+        "quota": 2540,
+        "shards": [],
+        "share": 0.142473,
+        "supply": 73546,
+        "weight": 0.7
+      }
+    },
+    "target": 17828,
+    "task": "T-labelspace-factory",
+    "version": "decision-mix-v3"
+  },
+  "quotas": {
+    "banking77": 2540,
+    "dbpedia14": 2540,
+    "episodic-div": 2540,
+    "goemotions": 2540,
+    "huffpost": 2540,
+    "labelspace-qwen": 48,
+    "massive": 2540,
+    "swag": 2540
+  },
+  "realised_rows": 17828,
+  "seed": 20260924,
+  "synthetic_share": 0.145165,
+  "target": 17828,
+  "target_capped_by_supply": true,
+  "target_requested": 62000,
+  "task": "T-labelspace-factory",
+  "verify_mix_breaches": []
+}
