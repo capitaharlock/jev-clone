@@ -1,13 +1,13 @@
 ---
 id: T-teacher-auth
 title: Desbloquear el profesor — endpoint identificado, key rechazada
-status: next
+status: backlog
 priority: medium
 owner: unassigned
 category: eval
 initiative: teacher-distill
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-25
 ---
 
 # Desbloquear el profesor — endpoint identificado, key rechazada

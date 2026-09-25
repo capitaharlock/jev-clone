@@ -1,15 +1,18 @@
 ---
+status: done
 id: T-eval-cardinality
 title: Ordenar el testing — la cardinalidad completa pasa a métrica primaria
-status: active
+status: done
 priority: high
 owner: unassigned
 category: eval
 initiative: honest-eval
 created: 2026-09-24
 updated: 2026-09-24
+completed_at: 2026-09-24T11:58:04.653Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Ordenar el testing — la cardinalidad completa pasa a métrica primaria
 
 Primer movimiento de la fase 2 (`.meshkore/docs/fase-2-espacio-completo.md`):
@@ -100,3 +103,42 @@ mide cuánto tarda, para que nadie la salte por lenta.
   manda en un desacuerdo.
 - Todo checkpoint nuevo publica el régimen de cardinalidad con el que se
   entrenó.
+
+## Resolution
+
+✓ #honest-eval #T-eval-cardinality **done** · commit `320e572` en HEAD · 19 ficheros · +74 tests (el `no-commit` del wake es falso, otra vez).
+
+Y trae el dato que ordena la fase 2: **solo 26 de las 77 etiquetas se predicen alguna vez**. La cifra a cardinalidad completa es 0,0090 con azar 0,0130 — el modelo no está fallando por poco, está colapsado sobre un tercio del espacio. Ya no hay tres cortes contradictorios (3008/5624/3080): un scoreboard, corte de desarrollo congelado y test reservado con registro de consultas.
+
+🚀 Etapa 2 lanzada · `developer-copy` (opus, pid **52356**, vivo verificado con `ps`) → #full-space-training #T-option-text
+· Mide si la distancia con el profesor (0,924) la explica **la entrada**, no el objetivo: tres brazos a K=77 sobre el checkpoint que ya existe — identificador crudo vs. descripción legible vs. descripción + ejemplos. No entrena nada.
+
+Un carril, y es lo correcto: #T-bigk-optsets cuelga de esta task en disco, y hay un job de MPS vivo (`labeldiv-curve-d512`).
+
+<details><summary>Por qué no aplico el veredicto `blocked` — y por qué `partial` sí era honesto</summary>
+
+- El wake dice `no-commit`; `git log` dice `320e572` en HEAD con los 19 ficheros del informe. Sexta vez esta sesión que el veredicto llega antes que el commit.
+- A034 marcó `outcome: partial` porque la suite global queda roja: 857 pasan / 7 fallan / 5 skip. Midió el baseline antes de tocar nada: **783/7/5, los mismos 7 nombres**. Los fallos son de `#T-release-gate` (criteria_sha + números del gate), `#T-repo-clean` (índice con `target/`), antiscale, gen_objective y OOD de data_eval — ninguno en código de esta task, y arreglarlos pisa ficheros de otras dos.
+- Los 7 Done-when están entregados y verificados con artefacto en disco: `artifacts/gates/T-eval-cardinality/scoreboard.json` + `test-queries.json`, manifests de ambos cortes, `beats_chance` arreglado y obligatorio en `eval/gate_rules.py`.
+- Marcarla `blocked` por fallos ajenos sería congelar la fase 2 entera sobre deuda de otra iniciativa.
+</details>
+
+<details><summary>Cola real de #full-space-training — cadena estricta, no paralelo</summary>
+
+```
+T-eval-cardinality  done ──> T-option-text  (LANZADA, A036)
+                                  └──> T-bigk-optsets
+                                          ├──> T-fullspace-objective
+                                          └──> T-encoder-finetune (+ fullspace-objective)
+                                  └──> T-jev-parity
+T-labelspace-factory  next, sin deps — único candidato a segundo carril
+```
+No lo abro: consume el Qwen local y competiría por MPS con `labeldiv-curve-d512`. Medido en este cluster, el segundo carril de cómputo compra +5 % de throughput a cambio de 4,6× de latencia por job.
+
+Sigue en pie la discrepancia que te señalé: tu etapa 2 pedía #T-bigk-optsets ∥ #T-fullspace-objective; en disco #T-fullspace-objective depende de #T-bigk-optsets, y #T-bigk-optsets depende de #T-option-text. Ejecuto el orden del disco; si quieres el tuyo, el que reordena el roadmap es el Architect, no yo.
+</details>
+
+— #T-eval-cardinality · cardinalidad completa es ya la métrica primaria, un solo scoreboard y test reservado
+— #T-option-text · lanzada a `developer-copy` (A036): tres brazos a K=77 para separar entrada de objetivo
+
+1.8M tokens

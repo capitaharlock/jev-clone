@@ -1,7 +1,7 @@
 ---
 id: T-jev-parity
 title: Paridad de protocolo con la receta publicada de Jev
-status: next
+status: done
 priority: high
 owner: unassigned
 category: eval

@@ -1,7 +1,8 @@
 ---
+superseded_by: honest-eval / T-battery-calib
 id: T-data-eval
 title: OOD, calibration split y reportes públicos
-status: blocked
+status: superseded
 priority: medium
 owner: unassigned
 category: data
@@ -9,13 +10,20 @@ initiative: honest-eval
 depends_on:
   - T-mix-5m
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-25
 failed_at: 2026-09-22T10:00:34.877Z
 resolved_by: A029
 resolved_by_conv: work-data-training-T-data-eval-1790030000
 commit_shas: ['c34024f4e54986178cc172830df494261fefd9ae']
 ---
 # OOD, calibration split y reportes públicos
+
+> **Retirada el 2026-09-25.** Estaba escrita contra la estrategia de
+> `#data-training` (§§54–55, 76–83, 138–140): clean room Jevals, calibration
+> split de 20–100 k etiquetas y OOD sobre la mezcla de 5 M. Esa mezcla ya no es
+> la base del entreno. Lo que sobrevive —calibración, curva risk–coverage,
+> abstención medida aparte del ranking y reportes reproducibles— se rehace sobre
+> la batería privada en `#T-battery-calib`.
 
 Cierra el work-stream con lo que lo hace creíble (§§76–83, 138–140):
 set OOD 100 k train + 10 k held-out sin overlap (correcta removida,

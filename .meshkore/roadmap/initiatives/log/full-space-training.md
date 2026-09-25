@@ -1,14 +1,28 @@
 ---
+closed_at: 2026-09-25
+superseded_by: cross-encoder-pilot
 id: full-space-training
 title: Entrenar la tarea que se mide — espacio de etiquetas completo
-status: active
+status: superseded
 owner: architect-master
 modules:
   - model
   - data
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-25
 ---
+
+> **Superada el 2026-09-25 por `#cross-encoder-pilot`.** Su tesis —que el fallo
+> venía del denominador (3–8 opciones muestreadas en vez del espacio entero)—
+> está falsificada por su propio gate: `#T-bigk-optsets` da 9/1000 en brazo y
+> en control, y `#T-fullspace-objective` cierra en 0/1000 con 87,7 % de
+> abstención (9/1000 forzando elección) contra un azar de 12,99/1000 a K=77.
+> El reanálisis del operador (`.meshkore/docs/plan-recuperacion-2026-09-24.md`,
+> §§2, 9) añade que (a) cambiar el denominador no obliga al modelo a usar
+> semántica y (b) la insesgadez Horvitz–Thompson que `fullspace_loss.py`
+> reclama no está justificada cuando los logits dependen del conjunto.
+> Lo que sobrevive: los gates como evidencia histórica y el protocolo de
+> cardinalidad completa, que pasa a `#honest-eval`.
 
 # Entrenar la tarea que se mide — espacio de etiquetas completo
 

@@ -1,16 +1,26 @@
 ---
+superseded_by: episodic-data / T-episode-gen
 id: T-labelspace-factory
 title: Fábrica de espacios de etiquetas con el Qwen local
-status: next
+status: superseded
 priority: high
 owner: unassigned
 category: data
 initiative: full-space-training
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-25
 ---
 
 # Fábrica de espacios de etiquetas con el Qwen local
+
+> **Retirada el 2026-09-25 (plan de recuperación §8).** Generar 2.000 espacios
+> de etiquetas con las plantillas deterministas de `data/labelgen.py:297` produce
+> diversidad de nombres, no diversidad de razonamiento, y el marcador de línea
+> (`Field report:` / `Cross-check against:`) regala un atajo. El trabajo pasa a
+> `#T-episode-gen`, que genera **episodios completos y verificables** con
+> contrafactuales. El job `labelspace-factory` queda muerto a propósito; las 294
+> entradas ya publicadas en `artifacts/labelspace-qwen/spaces.jsonl` se conservan
+> como evidencia.
 
 Un objetivo sobre el espacio entero (`#T-fullspace-objective`) sobre un corpus
 donde **9 taxonomías cubren el 83,1 % de las filas** aprende nueve espacios muy

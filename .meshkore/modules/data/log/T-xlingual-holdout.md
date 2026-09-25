@@ -1,7 +1,8 @@
 ---
+superseded_by: honest-eval / T-battery-dev
 id: T-xlingual-holdout
 title: El corte cross-lingual falla por construcción — retener it-IT/pt-PT en el entreno
-status: next
+status: superseded
 priority: high
 owner: unassigned
 category: data
@@ -9,10 +10,16 @@ initiative: generalization-fix
 depends_on:
   - T-labelspace-div
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-25
 ---
 
 # El corte cross-lingual falla por construcción
+
+> **Absorbida el 2026-09-25.** El corte cross-lingual deja de arreglarse
+> retocando el holdout del corpus actual: ES y EN son **ejes de primera clase de
+> la batería privada** (`#T-battery-dev`, `#T-battery-sealed`), con n publicado
+> por cruce familia × idioma × K, y el criterio de release prohíbe una media que
+> pase destruyendo un idioma.
 
 `eval.unseen gate` falla `cross_lingual_holdout` en **todos** los checkpoints
 medidos hasta hoy — los cuatro brazos del anti-escalado, los cinco del sweep de

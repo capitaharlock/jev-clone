@@ -1,7 +1,8 @@
 ---
+superseded_by: episodic-data / T-episode-gen
 id: T-teacher-labelspaces
 title: Espacios de etiquetas generados por el profesor — solo si el eje de datos es GO
-status: backlog
+status: superseded
 priority: medium
 owner: unassigned
 category: data
@@ -10,10 +11,15 @@ depends_on:
   - T-labelspace-div
   - T-teacher-probe
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-25
 ---
 
 # Espacios de etiquetas generados por el profesor
+
+> **Retirada el 2026-09-25.** Pedirle al profesor externo más espacios de
+> etiquetas es la misma apuesta de plantillas que `#T-labelspace-factory`, con el
+> añadido de depender de una credencial que devuelve 401. Los episodios los
+> genera **Qwen local** en `#T-episode-gen`, con verificador separado.
 
 Task **condicionada**: no se ejecuta hasta que `#T-labelspace-div` publique su
 curva. Si la mezcla de 20 000 mini-taxonomías aplana la pendiente unseen, el eje

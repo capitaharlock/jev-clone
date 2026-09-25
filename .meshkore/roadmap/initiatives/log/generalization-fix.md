@@ -1,14 +1,30 @@
 ---
+closed_at: 2026-09-25
+superseded_by: cross-encoder-pilot
 id: generalization-fix
 title: La generalización a etiquetas nuevas (fase 1 — régimen K≤8)
-status: active
+status: superseded
 owner: architect-master
 modules:
   - model
   - data
 created: 2026-09-22
-updated: 2026-09-24
+updated: 2026-09-25
 ---
+
+> **Cerrada el 2026-09-25: el diagnóstico de fase 1 está hecho y su conclusión
+> agota la iniciativa.** Las cuatro palancas que abría —objetivo
+> (`#T-gen-objective`), capacidad de la cabeza y descongelado
+> (`#T-unfreeze-backbone`, `#T-antiscale-diag`), apilado
+> (`#T-lever-stack`) y diversidad de espacios (`#T-labelspace-div`)— están
+> medidas y ninguna aplana la pendiente hasta algo distinguible del azar a
+> cardinalidad real. El inventario de `#T-labelspace-div` deja además el
+> hallazgo que decide el siguiente paso: 9 taxonomías cubren el 83,1 % del
+> millón de filas, así que el corpus no contiene un millón de lecciones.
+> La prueba de mecanismo del operador (§3 del plan de recuperación) descarta
+> la explicación posicional: las puntuaciones siguen al texto de la opción,
+> lo que falla es la sensibilidad al estado y a la pregunta.
+> Continúa en `#cross-encoder-pilot` y `#episodic-data`.
 
 # La generalización a etiquetas nuevas (fase 1 — régimen K≤8)
 

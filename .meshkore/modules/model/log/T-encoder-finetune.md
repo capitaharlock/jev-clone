@@ -1,7 +1,8 @@
 ---
+superseded_by: cross-encoder-pilot / T-ce-finetune
 id: T-encoder-finetune
 title: Reabrir el fine-tune del encoder bajo el objetivo nuevo
-status: next
+status: superseded
 priority: high
 owner: unassigned
 category: model
@@ -10,10 +11,19 @@ depends_on:
   - T-bigk-optsets
   - T-fullspace-objective
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-25
 ---
 
 # Reabrir el fine-tune del encoder bajo el objetivo nuevo
+
+> **Reformulada el 2026-09-25 (plan de recuperación §8).** Sus cuatro brazos de
+> descongelado estaban condicionados a «el objetivo ganador» de
+> `#full-space-training`, y ese objetivo cerró en NO-GO: no hay ganador de
+> calidad que transmitir al encoder. Entrenar otra cabeza aleatoria sobre
+> representaciones congeladas repite justo la limitación que hay que someter a
+> prueba. Se sustituye por `#T-ce-finetune`: ajustar un scorer semántico **ya
+> preentrenado para relacionar textos**, con su propia medición sin entrenar como
+> control previo.
 
 `#T-unfreeze-backbone` cerró en **NO-GO** el 2026-09-23: descongelar las 2
 últimas capas a lr 1e-5 dio 0,2422 unseen contra 0,2879 del brazo congelado.

@@ -1,7 +1,7 @@
 ---
 id: T-bigk-optsets
 title: Entrenar con el espacio de etiquetas entero, no con 3-8 opciones
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -10,8 +10,10 @@ depends_on:
   - T-option-text
 created: 2026-09-23
 updated: 2026-09-24
+completed_at: 2026-09-24T13:54:15.301Z
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Entrenar con el espacio de etiquetas entero
 
 `artifacts/gates/T-teacher-probe/fullspace.json` mide por primera vez el
@@ -93,3 +95,31 @@ ninguna fórmula nueva. Lo que sí necesita resolver:
 negativos in-batch y corrección log-Q— para los espacios que no son enumerables.
 Las dos son necesarias; la exacta se mide antes y acota lo que la otra tiene que
 demostrar.
+
+## Resolution
+
+✓ #full-space-training #T-jev-parity **done** · commit `f4298cc` en HEAD (el `no-commit` del wake es falso, otra vez) · 11 ficheros
+La cifra ajena ya es comparable: 38/3 080 = 0,012338, IC [0,009002, 0,016888], azar 0,012987 sobre las **3 080 filas oficiales** a K=77, reproducida en CPU bit a bit, con las 11 diferencias de protocolo enumeradas una a una (`matched: true/false/unverifiable`) en vez del «different rows» de antes. Contaminación medida: **0 de 77 etiquetas** filtradas.
+
+✓ #full-space-training #T-bigk-optsets **done** · job `bigk-fullspace` exit 0 · gate escrito 13:44 UTC
+**Y trae el resultado que cambia la fase: la cardinalidad del objetivo NO es la causa.** Entrenar con las 77 etiquetas presentes en cada fila da 0,0090 (IC [0,0047, 0,0170], azar 0,012987) — dentro del azar, y **por debajo** del control K≤8 entrenado sobre las mismas filas y la misma seed. Una hipótesis entera cerrada por 250k filas en vez de por un 1M. El siguiente sospechoso queda escrito en el propio veredicto: **la representación** — backbone congelado primero, capacidad después.
+
+⚠ El veredicto y el grafo de dependencias no coinciden: pide `#T-encoder-finetune` primero, pero esa task depende de `#T-fullspace-objective`. No lo toco — es del Architect. Ejecuto lo que está listo.
+
+🚀 Carril MPS · `developer-copy` (opus, pid **56852**, vivo) → #T-fullspace-objective
+· Degradada a propósito en el despacho: primero la especificación de la pérdida con tests (exacto contra softmax completo, valor **y** gradiente), la distribución real de etiquetas por batch y la decisión escrita sobre la cabeza; el brazo de 62k al final. Es lo que desbloquea `#T-encoder-finetune`.
+
+🚀 Carril CPU · `developer` (muse, pid **57479**, vivo) → #T-labelspace-factory
+· Ollama como job del daemon (hoy no escucha en :11434) y generación de **espacios de etiquetas**, no paráfrasis: ≥2 000 espacios con card, licencia y firewall. Paso 0: cerrar el único rojo de `eval/` — el job `bigk-fullspace` dejó obsoleto el veredicto publicado de `T-release-gate` (0,3133 vs 0,292141); se re-ejecuta el gate, no se toca el número a mano.
+
+<details><summary>Suite y estado de jobs — 338 passed / 1 failed, todos los entrenos parados</summary>
+
+- `PYTHONPATH=. pytest eval/ -q` → **338 passed, 77 subtests, 1 failed**. El único rojo es `test_release_gate.py:227`, artefacto desfasado, no código.
+- Ningún job de entreno vivo: `bigk-fullspace` exit 0, `labeldiv-curve-d512` cortado en el turno anterior, el resto `stopped`. Solo `training-monitor` (:8794) sigue arriba. MPS libre para A040.
+- Criterios de `#T-bigk-optsets` verificados uno a uno en `gate.json`: sampler configurable ✓, par arm/control sobre las mismas filas ✓, `eval.fullspace` re-ejecutado ✓, coste publicado a K=8/41/77 (×3,43 más lento a 77, 2,1 GB) ✓, abstención medida en ambos regímenes (0,0 en full-space) ✓, veredicto pre-registrado ✓.
+</details>
+
+— T-jev-parity · la cifra del profesor ya es comparable fila a fila sobre las 3 080 oficiales
+— T-bigk-optsets · entrenar con el espacio entero no mejora: cardinalidad descartada como causa
+
+7.3M tokens

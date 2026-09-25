@@ -105,6 +105,44 @@ fijan el orden de trabajo: protocolo → información en las opciones → vía e
 del objetivo → vía muestreada → encoder → diversidad. Incluye tres hallazgos de
 runtime (`#T-serve-engine`) que bloquean servir el modelo de fase 2.
 
+## Fase 3 (desde 2026-09-25): scorer semántico preentrenado y episodios verificados
+
+El reanálisis del operador del 2026-09-24
+(`.meshkore/docs/plan-recuperacion-2026-09-24.md`) cierra la vía del denominador y
+abre otra. **Lo que está medido:** `#T-fullspace-objective` da 0/1000 con 87,7 % de
+abstención y 9/1000 forzando elección; `#T-bigk-optsets` da 9/1000 en brazo y en
+control; el azar a K=77 es 12,99/1000 y el IC95 % del brazo forzado lo contiene.
+**Lo que el diagnóstico anterior decía mal:** el modelo *sí* usa el texto de la
+opción — permutar mueve las probabilidades realineadas menos de 5 × 10⁻⁷ e
+intercambiar textos conservando IDs intercambia las puntuaciones. El fallo real es
+la insensibilidad al cambio decisivo: elige «green» diga el estado verde o rojo, y
+el mismo producto para «cuál cuesta menos» y «cuál dura más» (69,709 % → 69,747 %).
+
+La apuesta de fase 3, escrita como hipótesis y no como promesa: un **cross-encoder
+preentrenado para relacionar textos** que lea estado + pregunta + opción juntos con
+un scorer compartido y CE por pregunta, ajustado con **episodios verificados y
+contrafactuales** generados por Qwen local, y medido en una **batería privada** de
+las decisiones reales del operador (400 dev + 600 sellados, cinco familias, ES/EN,
+K=2/3/8). El 70 % se mide ahí; BANKING77 queda como diagnóstico de transferencia
+difícil, no como definición de éxito.
+
+**Lo que fase 3 NO promete:** ni 20–40 ms ni la caché de estado compartida — el
+cross-encoder relee el estado por opción. La recuperación de latencia va a
+`#shared-state-distill`, y sólo tras una mejora confirmada. Tamaño del modelo: el
+punto de partida es un NLI multilingüe de 6 capas (**MiniLMv2-L6**, del orden de
+100 M params —la mayoría en el embedding multilingüe de 250 k piezas—, **todos
+ajustables**) frente a los 149 M congelados + 2,9 M entrenables de fase 1 y 2. La
+cifra exacta se registra al cargarlo en `#T-ce-scorer`; aquí va como orden de
+magnitud, no como medida.
+
+**Reglas que fase 3 añade a R1–R9:** el test final se abre una sola vez y luego es
+evidencia histórica · ranking y abstención se evalúan por separado · ninguna
+variante de un mismo caso se reparte entre cortes · antes de gastar GPU se valida la
+mecánica sobreajustando 32–64 casos · si ni Qwen responde bien a la batería, el
+problema es la tarea o el formato, no el modelo · un gate cuya lectura contradiga
+sus propios números falla.
+
+
 ## Sources
 
 - `tmp/jev_like_system_one_plan_2026-09-19.md` (plan maestro, 180 §)

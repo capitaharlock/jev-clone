@@ -1,7 +1,8 @@
 ---
+completed_at: 2026-09-25T00:00:00.000Z
 id: T-fullspace-objective
 title: La pérdida sobre el espacio entero — extensión muestreada con log-Q
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -9,10 +10,20 @@ initiative: full-space-training
 depends_on:
   - T-bigk-optsets
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-25
 ---
 
 # La pérdida sobre el espacio entero — la vía muestreada
+
+> **Cerrada en NO-GO el 2026-09-25.** El gate final (15:39:27 UTC del 24) da
+> 0/1000 aciertos con 87,7 % de abstención y 9/1000 forzando elección; el control
+> da 10/1000 sin abstención. A K=77 el azar es 12,99/1000 y el IC95 % del brazo
+> forzado, [4,74, 17,02]/1000, lo contiene: **no acredita mejora**. Dos
+> correcciones quedan registradas y no se atribuyen al encoder: (a) la lectura
+> automática de `verdict.reading` es errónea y se corrige en `#T-battery-metrics`;
+> (b) la insesgadez Horvitz–Thompson que reclama `training/python/fullspace_loss.py`
+> no está justificada con logits dependientes del conjunto (plan §9) — se corrige
+> en `#T-ce-scorer`. El work-stream continúa en `#cross-encoder-pilot`.
 
 Hoy `training/python/train_decision.py` hace `cross_entropy(logits, gold)` sobre
 los K∈[3,8] candidatos que `data/optset.py` muestreó para esa fila. El modelo

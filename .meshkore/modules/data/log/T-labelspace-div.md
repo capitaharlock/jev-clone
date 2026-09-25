@@ -1,7 +1,8 @@
 ---
+superseded_by: episodic-data / T-episode-gen
 id: T-labelspace-div
 title: Diversidad de espacios de etiquetas — medirla y, si falta, generarla
-status: active
+status: superseded
 priority: high
 owner: developer
 category: data
@@ -9,13 +10,22 @@ initiative: generalization-fix
 depends_on:
   - T-antiscale-diag
 created: 2026-09-22
-updated: 2026-09-23
+updated: 2026-09-25
 failed_at: 2026-09-22T11:30:25.903Z
 resolved_by: A033
 resolved_by_conv: work-generalization-fix-T-labelspace-div-1790074806
 commit_shas: ['1e660e067cde2efa14856ae1b62b110a5f904768', '9b27bfa8d915e813699872d58609c070ab82c2fe', '3b144f1c9705c066814a34a0611058c64037d365']
 ---
 # Diversidad de espacios de etiquetas — medirla y, si falta, generarla
+
+> **Cerrada por hallazgo el 2026-09-25.** Su mitad 1 ya entregó lo decisivo:
+> 9 taxonomías cubren el 83,1 % del millón de filas y sólo 135 espacios son
+> reutilizables (`artifacts/gates/T-labelspace-div/inventory.json`). La curva
+> 62k/250k/1M sobre la mezcla `decision-mix-labeldiv-1m` deja de ser la siguiente
+> apuesta: es más volumen de la misma plantilla, y el plan de recuperación (§4)
+> retira ese camino. El job `labeldiv-curve` queda parado a propósito. El
+> problema real —muchos ejemplos donde el mismo estado cambia de respuesta al
+> cambiar la pregunta— lo ataca `#episodic-data`.
 
 La hipótesis de arquitectura (`#T-antiscale-diag`, `#T-unfreeze-backbone`) tiene
 una gemela por el lado de los datos: `decision-mix-clean-1m` está construido

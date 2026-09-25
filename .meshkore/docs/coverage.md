@@ -1,6 +1,6 @@
 ---
 title: Coverage matrix
-updated: 2026-09-24
+updated: 2026-09-25
 owner: architect-master
 ---
 
@@ -342,3 +342,82 @@ primero y el brazo de entreno último.
 | Decisión escrita sobre la cabeza: se conserva o se cambia, y si se cambia el brazo se etiqueta CAMBIO DE ARQUITECTURA | `artifacts/gates/T-fullspace-objective/head-decision.md` |
 | El brazo: batches mixtos + negativos in-batch entre espacios con `log π` (inclusión, no `m·Q`), cabeza intacta, régimen declarado en `run.json` | `training/python/inbatch.py`, `training/python/train_decision.py --in-batch-negatives` |
 | Veredicto **pre-registrado** antes del run, con la regla 6 que impide publicar como veredicto un brazo corrido sobre batches de un solo dataset | `artifacts/gates/T-fullspace-objective/verdict.md` |
+
+## 2026-09-25 — Reorientación: el plan de recuperación sustituye la vía del denominador
+
+Fuente: `.meshkore/docs/plan-recuperacion-2026-09-24.md` (reanálisis del operador,
+con prueba de mecanismo reproducible en `.meshkore/docs/evidence/probe-mechanism-2026-09-24.json`).
+
+**Hecho medido que cierra la vía anterior:** `#T-fullspace-objective` 0/1000 con
+87,7 % de abstención y 9/1000 forzando elección; `#T-bigk-optsets` 9/1000 en brazo
+y control; azar a K=77 = 12,99/1000. El IC95 % del brazo forzado contiene el azar.
+
+**Hecho medido que corrige el diagnóstico:** las puntuaciones **siguen al texto**
+de la opción (permutar mueve <5 × 10⁻⁷; intercambiar textos intercambia
+puntuaciones). El fallo es la insensibilidad al cambio decisivo del estado y de la
+pregunta, no la posición.
+
+### Retirado del alcance activo
+
+| Elemento | Estado | Por qué |
+|---|---|---|
+| `#full-space-training` | `superseded` → `initiatives/log/` | Su tesis (denominador) está falsificada por su propio gate; plan §§2, 9 |
+| `#generalization-fix` | `superseded` → `initiatives/log/` | Las cuatro palancas de fase 1 están medidas y ninguna aplana la pendiente |
+| `#T-labelspace-factory` | `cancelled` → `modules/data/log/` | 2.000 espacios con plantilla determinista = diversidad de nombres, no de razonamiento (§4.2) |
+| `#T-labelspace-div` | `cancelled` → `modules/data/log/` | Su inventario ya dio el hallazgo (9 taxonomías = 83,1 %); la curva es más volumen de la misma plantilla |
+| `#T-xlingual-holdout` | `cancelled` → `modules/data/log/` | ES/EN pasan a ser ejes de primera clase de la batería, no un parche del holdout |
+| `#T-teacher-labelspaces` | `cancelled` → `modules/data/log/` | Misma apuesta de plantillas, con dependencia de una credencial que da 401 |
+| `#T-data-eval` | `cancelled` → `modules/data/log/` | Escrita contra la mezcla de 5 M y el clean room de Jevals; se rehace en `#T-battery-calib` |
+| `#T-encoder-finetune` | `cancelled` → `modules/model/log/` | Sus brazos exigían «el objetivo ganador» de fase 2, que cerró en NO-GO |
+| `#teacher-distill` | `active` → `backlog` | §8: no bloquear la recuperación por la credencial de TypeSafe; Qwen local asume el papel de referencia |
+| `#T-fullspace-objective` | `done` con NO-GO registrado | El gate existe y es concluyente; las dos correcciones de narrativa y de matemática se reasignan |
+
+### Cobertura del plan de recuperación
+
+| § del plan | Requisito | Task que lo entrega |
+|---|---|---|
+| §5, §7.3 | Scorer compartido `z_i = f(estado, pregunta, opción_i)`, CE por pregunta | `#T-ce-scorer` |
+| §5 | Contrato de contexto comparativo (puntuar sin ver las demás pierde «mejor») | `#T-episode-contract` + `#T-ce-scorer` |
+| §5 | Punto de partida NLI multilingüe; ModernBERT-zeroshot con la advertencia BANKING77 | `#T-ce-scorer`, `#T-preflight-refs` |
+| §9 | Retirar la afirmación de insesgadez Horvitz–Thompson de `fullspace_loss.py` | `#T-ce-scorer` |
+| §6 | Episodio completo con evidencia, familia, idioma y grupo de variantes | `#T-episode-contract` |
+| §6 | Cinco familias, atributos en el estado, gold por regla en lo numérico | `#T-episode-gen` |
+| §6 | Contrafactuales: hecho / pregunta / descripción cambian el gold; paráfrasis no | `#T-counterfactuals` |
+| §6 | Verificador separado, muestra humana estratificada, embudo medido | `#T-episode-verify` |
+| §6 | Splits por familia/entidad/espacio/grupo + corte privado | `#T-episode-splits` |
+| §7.1 | 400 dev + 600 sellados, cinco familias, ES/EN, K=2/3/8 | `#T-battery-dev`, `#T-battery-sealed` |
+| §7.1 | Diagnóstico separado a K=20/77 | `#T-battery-sealed` |
+| §7.2 | Referencias antes de entrenar: Qwen local, NLI sin ajustar, checkpoint actual | `#T-preflight-refs` |
+| §7.3 | Mecánica validada por sobreajuste de 32–64 casos (>95 %) | `#T-ce-mechanics` |
+| §7.4 | 5.000 → 20.000 decisiones verificadas, encoder ajustable, evaluación intermedia | `#T-ce-finetune` |
+| §7.5 | Segunda semilla, apertura única del test sellado, ≥70 % macro con IC inferior ≥70 % | `#T-ce-confirm`, `#T-release-gate` |
+| §7 métricas | Suite mínima; ranking y abstención por separado; azar por K; n por cruce | `#T-battery-metrics` |
+| §7 métricas | Calibración en dev verificada en test, risk–coverage, ECE/NLL/Brier por familia | `#T-battery-calib` |
+| §2, §8 | Corregir las lecturas de gate que sus propios números contradicen | `#T-battery-metrics` |
+| §7.6 | 100 k dirigidos a errores, destilación a estado compartido, cuantización, paridad Rust | `#T-ce-distill`, `#T-ce-cascade` (backlog) |
+| §8 | Jev como comparación externa cuando exista acceso válido, sin bloquear | `#teacher-distill` (backlog) |
+| §10 | Motor en el servidor, encoder afinado, clave de caché V1 — sobre el checkpoint elegido | `#T-ce-cascade` (backlog) |
+
+### Orden de ejecución del piloto
+
+Tres iniciativas activas, cada una con una entrada **sin dependencias** para que
+seleccionarlas por separado en Run All no deje una cola muerta; el DAG completo se
+resuelve seleccionando las tres.
+
+| Order | Initiative | Task | Gate purpose |
+|---:|---|---|---|
+| 01 | episodic-data | T-episode-contract | Contrato de episodio + validador (entrada) |
+| 01 | honest-eval | T-battery-metrics | Suite de métricas + corrección de narrativas (entrada) |
+| 01 | cross-encoder-pilot | T-ce-scorer | Scorer compartido y medición sin entrenar (entrada) |
+| 02 | honest-eval | T-battery-dev | 400 casos de desarrollo |
+| 03 | episodic-data | T-episode-gen | Episodios de las cinco familias |
+| 04 | honest-eval | T-preflight-refs | Puerta: Qwen / NLI / control pointer |
+| 05 | episodic-data | T-counterfactuals | Variantes que cambian el gold |
+| 06 | episodic-data | T-episode-verify | Verificador separado y embudo |
+| 07 | honest-eval | T-battery-sealed | Test sellado + diagnóstico K=20/77 |
+| 08 | cross-encoder-pilot | T-ce-mechanics | Sobreajuste 32–64 (>95 %) |
+| 09 | episodic-data | T-episode-splits | Splits sin fuga de variantes |
+| 10 | cross-encoder-pilot | T-ce-finetune | 5.000 → 20.000 verificadas |
+| 11 | honest-eval | T-battery-calib | Calibración y abstención aparte |
+| 12 | cross-encoder-pilot | T-ce-confirm | Segunda semilla + apertura única |
+| 13 | honest-eval | T-release-gate | Criterio v2 firmado y GO/NO-GO |

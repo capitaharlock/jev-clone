@@ -1,7 +1,7 @@
 ---
 id: T-serve-engine
 title: Conectar el servidor al motor neuronal, cargar el encoder afinado y arreglar la clave de caché V1
-status: next
+status: backlog
 priority: high
 owner: unassigned
 category: runtime
