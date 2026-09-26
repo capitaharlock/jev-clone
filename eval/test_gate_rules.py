@@ -549,12 +549,41 @@ class TestPilotCensusOnDisk(unittest.TestCase):
         self.assertEqual(census["offenders"], [])
         self.assertTrue(census["pass"])
 
-    def test_the_only_pilot_gate_on_disk_publishes_no_figure_yet(self):
+    def expected_on_disk(self):
+        """The pilot gates with a directory on disk — task set from the
+        module (`PILOT_TASKS`), presence from the filesystem, no literal
+        list of gates to go stale on the next C7-clean delivery."""
+        return sorted(t for t in G.PILOT_TASKS
+                      if (G.GATES_DIR / t).is_dir()
+                      and any((G.GATES_DIR / t).glob("*.json")))
+
+    def test_the_pilot_gates_on_disk_publish_no_figure_yet(self):
         census = G.pilot_census(coherence=COHERENCE)
         self.assertEqual([g["gate"] for g in census["on_disk"]],
-                         ["T-battery-dev"])
-        self.assertEqual(census["publishing_no_figure"], ["T-battery-dev"])
-        self.assertIn("T-battery-sealed", census["absent"])
+                         self.expected_on_disk())
+        self.assertEqual(census["publishing_no_figure"],
+                         self.expected_on_disk())
+        self.assertTrue(all(not g["publishes_a_figure"]
+                            for g in census["on_disk"]))
+        self.assertEqual(census["offenders"], [])
+        self.assertTrue(census["pass"])
+
+    def test_a_pilot_gate_publishing_a_hand_computed_figure_fails_census(self):
+        """The derived list must not swallow a real C7 offender: a pilot
+        gate that computes its own accuracy still fails `pilot_census`."""
+        with tempfile.TemporaryDirectory() as tmp:
+            gates = Path(tmp) / "gates"
+            gates.mkdir()
+            gate_dir(str(gates), "T-battery-dev", gate={
+                "pass": True, "model_version": "ckpt-42",
+                "split_sha256": SEALED,
+                "measured": {"accuracy": 0.71, **R2}})
+            census = G.pilot_census(gates_dir=gates, coherence=COHERENCE,
+                                    root=Path(tmp))
+            self.assertFalse(census["pass"])
+            self.assertEqual(census["offenders"], ["T-battery-dev"])
+            self.assertNotIn("T-battery-dev",
+                             census["publishing_no_figure"])
 
 
 class TestCorrectedReadingsOnDisk(unittest.TestCase):
