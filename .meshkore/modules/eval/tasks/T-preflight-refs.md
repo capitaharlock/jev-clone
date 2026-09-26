@@ -1,7 +1,7 @@
 ---
 id: T-preflight-refs
 title: Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
-status: blocked
+status: done
 priority: high
 owner: unassigned
 category: eval
@@ -11,9 +11,8 @@ depends_on:
   - T-battery-metrics
   - T-ce-scorer
 created: 2026-09-25
-updated: 2026-09-26
+updated: 2026-09-27
 resolved_by: A003
-failed_at: 2026-09-26T18:46:49.944Z
 resolved_by_conv: roadmap-architect-uwgjq
 ---
 # Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
@@ -80,10 +79,71 @@ de que exista una sola medición, que es el único momento en que escribirlas
 significa algo. Lo firma el job parado `preflight-refs`
 (`.venv-train/bin/python -m eval.preflight_refs refs`).
 
+## Estado 2026-09-27 — las cuatro casillas medidas, veredicto GO
+
+Cómputo autorizado y gastado. Las cuatro columnas están medidas sobre las
+MISMAS 400 filas del corte de desarrollo (`rows_sha256`
+`8e8ccea5…8535c3fb`, idéntico en las cuatro) y el gate está firmado con
+cifras reales: `verdict: PASS`, `resolved: true`, ninguna casilla en
+`null`. El corte sellado sigue sin abrirse.
+
+**La puerta de Qwen ABRE.** Elección forzada 0,965 (386/400), IC95 %
+[0,942 · 0,979] contra un azar de 0,3375 a K medio 4,1; macro por familia
+0,965; y las cinco familias despejan su propio azar por separado —la peor,
+`description_classification`, en 0,9375 con IC [0,862 · 0,973]. La
+condición que se escribió para que un cero de familia no se esconda tras
+una media global no tuvo que dispararse. **El enunciado, los datos y el
+formato no están rotos: entrenar sobre esta batería no es gastar la GPU en
+una tarea imposible.**
+
+**El control pointer REPRODUCE el fallo, en los dos checkpoints.**
+`fullspace-62528` e `leverstack-1m` se quedan en 0,330 y 0,3275 de
+elección forzada, con el azar en 0,3375 — es decir, en el azar, con el
+intervalo cubriéndolo. La invariancia documentada el 2026-09-24 sale
+también aquí: 0,964 y 0,929 de los 140 grupos contrafactuales reciben el
+MISMO slot en las dos mitades, y el acierto conjunto es 2/140 y 1/140
+(0,0143 y 0,0071) contra un azar conjunto de 0,0826, con los dos
+intervalos enteros por debajo. La batería es representativa del fallo con
+el que se la comparó, así que no hay que revisarla.
+
+**El punto de partida del ajuste es `nli-nograd`** (minilmv2-l6-mnli-xnli
+`@0a71e92a`), el único candidato elegible: 0,6225 de elección forzada, IC
+[0,574 · 0,669] sobre un azar de 0,3375, y acierto conjunto contrafactual
+0,343 (48/140) muy por encima del conjunto de 0,0826 — sigue el hecho
+decisivo en vez de fijarse en el texto de la opción. Los dos checkpoints
+pointer quedan fuera por la regla escrita antes de medir: quien reproduce
+la invariancia documentada es el control, no un punto de partida. El
+checkpoint contaminado con BANKING77 es `modernbert-zeroshot-v2`, que NO
+es el elegido: el que sale no arrastra ese caveat.
+
+**Lo que acota la cifra de Qwen.** Su control de permutación
+`#T-option-text` FALLA: en la muestra de 24 filas fijada por sha antes de
+medir, 3 elecciones cambian al ofrecer los candidatos en orden inverso
+(flip_rate 0,125). El chooser muestrea a temperatura 0,7, así que ese 12,5
+% acota junto sensibilidad al orden y ruido de muestreo sin separarlos —es
+la cota superior de estabilidad de orden, no su descomposición. La cifra
+se publica AL LADO del veredicto (`the_qwen_gate.
+order_stability_beside_the_verdict`) y en la tabla, con
+`enters_the_rule: false`: `QWEN_GATE_RULE` se escribió antes de que
+existiera una medición y añadirle una condición después de ver este fallo
+sería elegir la regla por el resultado.
+
+Lo firma el job `evalgate` (`.venv-train/bin/python -m
+eval.preflight_refs refs`); la tabla y el gate se rehacen sin modelo con
+`eval.preflight_refs table`, porque cada columna medida queda en
+`artifacts/gates/T-preflight-refs/columns/` sellada con las filas sobre
+las que se midió.
+
 ## Resolution
 
-**Failed — exit 1.**
+**GO — el piloto sigue.** Las tres referencias están medidas sobre las
+mismas 400 filas y el gate (`artifacts/gates/T-preflight-refs/gate.json`)
+está firmado `PASS` con las diez casillas resueltas. Qwen responde la
+batería (0,965 contra 0,3375, las cinco familias despejando), el control
+pointer reproduce en ella el fallo de mecanismo documentado (azar en
+forzada, 2/140 y 1/140 en conjunto contrafactual contra 0,0826) y el
+punto de partida del ajuste queda decidido con cifras: `nli-nograd`.
+`#T-ce-finetune` puede arrancar desde ahí.
 
-You've hit your session limit · resets 11:40pm (Europe/Madrid)
-
-22.9M tokens
+Queda dicho y no tapado: el control de orden de la columna Qwen falla al
+12,5 % en 24 filas, y esa cota viaja con el 0,965 a donde se cite.

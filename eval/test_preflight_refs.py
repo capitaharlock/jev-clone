@@ -412,17 +412,22 @@ class GateTest(unittest.TestCase):
                              name)
             self.assertTrue(check["needs_compute"], name)
             self.assertIn("signed_by", check, name)
-            self.assertEqual(check["job"], "preflight-refs", name)
+            self.assertEqual(check["job"], "evalgate", name)
 
     def test_the_measured_checks_say_how_they_were_measured(self):
+        """A signed check says how, and a check that needed a forward
+        pass says so too — `needs_compute` is what the check COSTS, not
+        whether it is still pending. What separates the two is `pass`:
+        `null` with `awaiting-operator-compute`, or a verdict."""
         _, doc = self.written()
         measured = {k: v for k, v in doc["checks"].items()
                     if v.get("pass") is not None}
         self.assertTrue(measured)
         for name, check in measured.items():
             self.assertIn("how_measured", check, name)
-            self.assertFalse(check["needs_compute"], name)
-            self.assertTrue(check["pass"], name)
+            self.assertIsNone(check.get("reason"), name)
+            if check["needs_compute"]:
+                self.assertTrue(check["measured"], name)
 
     def test_the_gate_claims_nothing_green(self):
         _, doc = self.written()
@@ -441,9 +446,256 @@ class GateTest(unittest.TestCase):
 
     def test_the_gate_records_the_job_the_operator_presses(self):
         _, doc = self.written()
-        self.assertEqual(doc["job"]["id"], "preflight-refs")
+        self.assertEqual(doc["job"]["id"], "evalgate")
         self.assertIn("eval.preflight_refs refs", doc["job"]["command"])
-        self.assertIn("STOPPED", doc["job"]["state"])
+        self.assertIn("single evaluation job", doc["job"]["state"])
+
+
+#: Un control de permutación entregado a mano: estos tests miden la
+#: DECISIÓN del gate, no la procedencia del control, y la suite exige uno
+#: medido en alguna parte o se niega a publicar la columna.
+HANDED_PERM = {
+    "measured": True, "max_abs_prob_delta": 0.0, "tolerance": 1e-5,
+    "n_perms": 2, "pass": True,
+    "source": "fixture — handed in, as the suite demands of a control",
+}
+
+
+def gold_scores(episodes):
+    """El contraste del scorer NLI: un `score(pairs)` que acierta.
+
+    Los pares llegan en el orden de `CE.flatten_pairs`, que es el mismo
+    orden de los episodios y de sus K candidatos, así que se construye la
+    lista completa de antemano. Es `state_reading_logits` en la interfaz
+    por pares: un predictor que sigue el hecho decisivo.
+    """
+    def score(pairs):
+        out = []
+        for ep in episodes:
+            gold = [c["id"] for c in ep["candidates"]].index(ep["answer"])
+            out += [6.0 if i == gold else 0.0
+                    for i in range(len(ep["candidates"]))]
+        assert len(out) == len(pairs), (len(out), len(pairs))
+        return out
+    return score
+
+
+def gold_choice(state, question, candidates):
+    """Un chooser PERFECTO: elige siempre el candidato correcto.
+
+    No existe fuera de estos tests: sirve para comprobar que la puerta de
+    Qwen se ABRE cuando la referencia de capacidad responde, igual que
+    `text_only_choice` comprueba que se cierra cuando no.
+    """
+    for cand in candidates:
+        if cand.get("gold"):
+            return {"choice": cand["id"], "evidence": "", "backend": "stub"}
+    return {"reject": "fixture has no gold marked", "backend": "stub"}
+
+
+class DecidedGateTest(unittest.TestCase):
+    """Las cuatro casillas que exigían una pasada real, ya firmadas.
+
+    Las columnas se INYECTAN —ni un peso, ni una descarga— pero se miden
+    sobre las 400 filas reales del corte de desarrollo, que es donde las
+    reglas escritas antes de medir tienen que decidir algo.
+    """
+
+    def setUp(self):
+        self.episodes = P.load_cut()
+
+    def decided(self, *, choose, pointer_logits, nli_scores=None,
+                qwen_perm=None):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        d = Path(tmp.name) / P.TASK
+        d.mkdir(parents=True)
+        old = P.GATE_DIR, P.GATE_PATH, P.COLUMN_DIR
+        P.GATE_DIR, P.GATE_PATH = d, d / "gate.json"
+        P.COLUMN_DIR = d / "columns"
+        try:
+            eps = self.episodes
+            marked = [dict(ep, candidates=[
+                dict(c, gold=(c["id"] == ep["answer"]))
+                for c in ep["candidates"]]) for ep in eps]
+            qrows, qtrace = P.qwen_column(marked, choose=choose, workers=1)
+            P.save_measured_column(P.REF_QWEN, eps, qrows, qtrace,
+                                   model_version="stub-chooser",
+                                   permutation=qwen_perm or HANDED_PERM)
+            nrows, ntrace = P.nli_column(
+                eps, score=nli_scores or text_only_scores)
+            P.save_measured_column(P.REF_NLI, eps, nrows, ntrace,
+                                   model_version="stub-nli",
+                                   permutation=HANDED_PERM)
+            for name, spec in P.POINTER_CHECKPOINTS.items():
+                rows, trace = P.pointer_column(eps, logits=pointer_logits)
+                P.save_measured_column(
+                    f"{P.REF_POINTER}:{name}", eps, rows, trace,
+                    model_version=spec["model_version"],
+                    permutation=P.permutation_from_evidence(
+                        spec["model_version"]))
+            measured = P.measure_columns(eps, (P.REF_QWEN, P.REF_NLI,
+                                               P.REF_POINTER),
+                                         device="", nli_weights="",
+                                         resume=True)
+            P.build_table(eps, measured, write=True)
+            doc = P.gate(write=True, episodes=eps)
+        finally:
+            P.GATE_DIR, P.GATE_PATH, P.COLUMN_DIR = old
+        return d, doc
+
+    def test_every_check_that_needed_a_forward_pass_is_signed(self):
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        for name in ("the_reference_table", "the_qwen_gate",
+                     "the_pointer_control_reproduces_on_the_battery",
+                     "the_starting_checkpoint_of_the_finetune"):
+            self.assertIsNotNone(doc["checks"][name]["pass"], name)
+            self.assertIsNone(doc["checks"][name].get("reason"), name)
+        self.assertTrue(doc["resolved"])
+        self.assertNotEqual(doc["verdict"], "AWAITING-COMPUTE")
+        self.assertIsNotNone(doc["pass"])
+
+    def test_the_table_carries_the_four_columns_over_one_cut(self):
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        table = doc["checks"]["the_reference_table"]
+        self.assertTrue(table["pass"])
+        self.assertEqual(table["measured"], sorted(P.column_keys(
+            (P.REF_QWEN, P.REF_NLI, P.REF_POINTER))))
+        self.assertEqual(table["missing"], [])
+        self.assertTrue(table["same_cut"])
+        self.assertEqual(table["n"], len(self.episodes))
+
+    def test_the_door_opens_for_a_reference_that_answers(self):
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        qwen = doc["checks"]["the_qwen_gate"]
+        self.assertTrue(qwen["pass"])
+        self.assertIn("OPEN", qwen["verdict"])
+        self.assertTrue(all(f["clears"] for f in
+                            qwen["decided_on"]["by_family"].values()))
+
+    def test_the_door_closes_for_a_reference_that_reads_only_the_option(self):
+        _, doc = self.decided(choose=text_only_choice,
+                              pointer_logits=text_only_logits)
+        qwen = doc["checks"]["the_qwen_gate"]
+        self.assertFalse(qwen["pass"])
+        self.assertIn("CLOSED", qwen["verdict"])
+        self.assertFalse(doc["pass"])
+        self.assertTrue(doc["resolved"])
+
+    def test_the_control_reproduces_and_is_therefore_not_a_starting_point(self):
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        repro = doc["checks"][
+            "the_pointer_control_reproduces_on_the_battery"]
+        self.assertTrue(repro["pass"])
+        self.assertTrue(all(v["reproduced"]
+                            for v in repro["per_checkpoint"].values()))
+        start = doc["checks"]["the_starting_checkpoint_of_the_finetune"]
+        for cand, node in start["candidates"].items():
+            if cand.startswith(P.REF_POINTER):
+                self.assertFalse(node["eligible"], cand)
+                self.assertIn("control", node["why_not"])
+
+    def test_no_candidate_qualifies_is_an_answer_and_it_is_written(self):
+        """Cuando las tres columnas candidatas reproducen la invariancia,
+        la casilla NO elige: dice que no hay punto de partida y por qué.
+        Un `chosen` inventado aquí sería una decisión sin cifra."""
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        start = doc["checks"]["the_starting_checkpoint_of_the_finetune"]
+        self.assertFalse(start["pass"])
+        self.assertIsNone(start["chosen"])
+        self.assertIn("no candidate qualifies", start["chosen_because"])
+
+    def test_the_candidate_that_follows_the_decisive_fact_is_chosen(self):
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits,
+                              nli_scores=gold_scores(P.load_cut()))
+        start = doc["checks"]["the_starting_checkpoint_of_the_finetune"]
+        self.assertTrue(start["pass"])
+        self.assertEqual(start["chosen"], P.REF_NLI)
+        self.assertTrue(start["candidates"][P.REF_NLI]["eligible"])
+        self.assertFalse(
+            start["candidates"][P.REF_NLI]["joint_at_or_below_chance"])
+
+    def test_a_control_that_reads_the_state_does_not_reproduce(self):
+        """El mismo gate con un pointer que SÍ sigue el hecho decisivo:
+        la casilla se firma en rojo y dice que lo que se revisa es la
+        batería, no el umbral."""
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=state_reading_logits)
+        repro = doc["checks"][
+            "the_pointer_control_reproduces_on_the_battery"]
+        self.assertFalse(repro["pass"])
+        self.assertIn("#T-battery-dev", repro["if_not_reproduced"])
+
+    def test_the_permutation_control_is_read_where_the_door_is_signed(self):
+        """El control `#T-option-text` de cada columna viaja a la tabla y
+        al lado del veredicto de la puerta. Un control que sólo vive en el
+        informe de su columna no está donde se firma."""
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits)
+        table = doc["checks"]["the_reference_table"]
+        for key, row in table["rows"].items():
+            self.assertTrue(row["permutation_control"], key)
+            self.assertTrue(row["permutation_control"]["measured"], key)
+        beside = doc["checks"]["the_qwen_gate"][
+            "order_stability_beside_the_verdict"]
+        self.assertTrue(beside["measured"])
+        self.assertFalse(beside["enters_the_rule"])
+
+    def test_a_failed_order_control_is_published_and_changes_no_verdict(self):
+        """Una columna cuya elección se mueve al reordenar las opciones
+        publica ese fallo AL LADO de la puerta, y la puerta sigue
+        decidiéndose por su regla escrita antes de medir. Añadirle una
+        condición después de ver el fallo sería elegir la regla por el
+        resultado."""
+        flipped = dict(HANDED_PERM, **{
+            "pass": False, "flipped": 3, "flip_rate": 0.125,
+            "n_rows": 24, "n_perms": 24, "max_abs_prob_delta": 1.0})
+        _, doc = self.decided(choose=gold_choice,
+                              pointer_logits=text_only_logits,
+                              qwen_perm=flipped)
+        qwen = doc["checks"]["the_qwen_gate"]
+        beside = qwen["order_stability_beside_the_verdict"]
+        self.assertFalse(beside["pass"])
+        self.assertEqual(beside["flip_rate"], 0.125)
+        self.assertFalse(beside["enters_the_rule"])
+        self.assertTrue(qwen["pass"])
+        self.assertIn("OPEN", qwen["verdict"])
+        self.assertEqual(qwen["rule"], P.QWEN_GATE_RULE)
+
+    def test_the_signed_gate_directory_still_passes_c1_to_c7(self):
+        d, _ = self.decided(choose=gold_choice,
+                            pointer_logits=text_only_logits)
+        got = GR.check_gate_dir(d)
+        self.assertEqual(got["errors"], [], json.dumps(got["errors"],
+                                                       indent=1))
+        self.assertTrue(got["pass"])
+        self.assertTrue(got["metrics_suite"]["reports"])
+        self.assertEqual(got["metrics_suite"]["hand_computed"], 0)
+
+    def test_a_measured_column_is_reused_only_for_the_rows_it_measured(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        old = P.GATE_DIR, P.COLUMN_DIR
+        P.GATE_DIR = Path(tmp.name) / P.TASK
+        P.COLUMN_DIR = P.GATE_DIR / "columns"
+        try:
+            eps = self.episodes
+            rows, trace = P.pointer_column(eps, logits=text_only_logits)
+            P.save_measured_column("pointer-control:leverstack-1m", eps,
+                                   rows, trace, model_version="m",
+                                   permutation=HANDED_PERM)
+            self.assertIsNotNone(P.load_measured_column(
+                "pointer-control:leverstack-1m", eps))
+            self.assertIsNone(P.load_measured_column(
+                "pointer-control:leverstack-1m", eps[:-1]))
+        finally:
+            P.GATE_DIR, P.COLUMN_DIR = old
 
 
 class ProtocolTest(unittest.TestCase):

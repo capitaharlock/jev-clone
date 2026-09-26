@@ -294,6 +294,50 @@ class TestC4AccuracyNeedsItsChance(unittest.TestCase):
                                 "caveat": "public benchmark"}]})
             self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
 
+    def test_a_mean_that_is_not_a_proportion_declares_why_it_has_no_ci(self):
+        """The suite's macro over families has no Wilson bound to publish —
+        it is a mean of proportions, not one — and says so in a FIELD. That
+        lifts the interval and nothing else: the chance and the cardinality
+        are still demanded."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-macro", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED,
+                "macro": {"accuracy": 0.3325, "chance": 0.3375,
+                          "cardinality": 3.1, "accuracy_ci95": None,
+                          "ci95_why_absent": "a macro mean over families is "
+                                             "not a binomial proportion: "
+                                             "its interval is each "
+                                             "family's own"}})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE, Path(tmp))["pass"])
+
+    def test_prose_does_not_lift_the_interval_the_field_does(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-prose", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED,
+                "macro": {"accuracy": 0.3325, "chance": 0.3375,
+                          "cardinality": 3.1,
+                          "why": "a macro mean has no Wilson bound"}})
+            r = G.check_gate_dir(d, COHERENCE, Path(tmp))
+            self.assertIn("C4", rules_of(r))
+            err = next(e for e in r["errors"] if e["rule"] == "C4")
+            self.assertEqual(err["offending"][0]["missing"],
+                             ["accuracy_ci95"])
+
+    def test_the_declaration_lifts_only_the_interval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-macro-bare", gate={
+                "pass": True, "model_version": "m-1",
+                "split_sha256": SEALED,
+                "macro": {"accuracy": 0.3325,
+                          "ci95_why_absent": "not a binomial proportion"}})
+            r = G.check_gate_dir(d, COHERENCE, Path(tmp))
+            self.assertIn("C4", rules_of(r))
+            err = next(e for e in r["errors"] if e["rule"] == "C4")
+            self.assertEqual(err["offending"][0]["missing"],
+                             ["chance", "cardinality"])
+
     def test_a_scalar_is_not_an_interval(self):
         with tempfile.TemporaryDirectory() as tmp:
             d = gate_dir(tmp, "T-scalar", gate={
@@ -557,14 +601,20 @@ class TestPilotCensusOnDisk(unittest.TestCase):
                       if (G.GATES_DIR / t).is_dir()
                       and any((G.GATES_DIR / t).glob("*.json")))
 
-    def test_the_pilot_gates_on_disk_publish_no_figure_yet(self):
+    def test_every_pilot_figure_on_disk_came_out_of_the_suite(self):
+        """C7 as it reads once the pilot starts measuring: a gate may
+        publish no figure at all (it audits data), but a gate that DOES
+        publish one holds the `jev.metrics.v1` report it came out of, in
+        its own directory. Neither list is written down here — both are
+        read off the filesystem, so the next task to measure does not
+        turn this test red for having done its job."""
         census = G.pilot_census(coherence=COHERENCE)
         self.assertEqual([g["gate"] for g in census["on_disk"]],
                          self.expected_on_disk())
-        self.assertEqual(census["publishing_no_figure"],
-                         self.expected_on_disk())
-        self.assertTrue(all(not g["publishes_a_figure"]
-                            for g in census["on_disk"]))
+        for gate in census["on_disk"]:
+            if gate["publishes_a_figure"]:
+                self.assertTrue(gate["suite_reports"], gate["gate"])
+            self.assertEqual(gate["c7"], "clean", gate["gate"])
         self.assertEqual(census["offenders"], [])
         self.assertTrue(census["pass"])
 

@@ -2,9 +2,15 @@
   "artifact": "artifacts/gates/T-preflight-refs/gate.json",
   "checks": {
     "c7_over_this_gate_directory": {
-      "how_measured": "PYTHONPATH=. python3 -m eval.gate_rules check artifacts/gates/T-preflight-refs — this directory publishes no quality metric, so the pilot rule has nothing to flag; when the job writes the reports, every figure in them carries the `jev.metrics.v1` stamp",
+      "how_measured": "PYTHONPATH=. python3 -m eval.gate_rules check artifacts/gates/T-preflight-refs — every figure this directory publishes comes from a `jev.metrics.v1` report that sits in it, which is what C7 asks; the cells in this file are copies of those reports and no arithmetic of this module's own",
       "needs_compute": false,
-      "pass": true
+      "pass": true,
+      "suite_reports": [
+        "nli-nograd",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m",
+        "qwen-local"
+      ]
     },
     "no_reference_reads_the_sealed_cut": {
       "how_measured": "eval/test_preflight_refs.py::SealedCutTest — every path opened during a full fixture run is recorded and matched against the sealed markers; `assert_not_sealed` is shown to raise on each sealed path and `load_cut` to refuse a cut whose groups are not `dev-`",
@@ -72,44 +78,797 @@
           "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360"
         }
       },
-      "job": "preflight-refs",
+      "how_measured": "reproduces() per checkpoint: the invariance rate of the 2026-09-24 evidence, the invariance rate of the battery's own counterfactual groups, and the joint counterfactual interval read from eval.metrics_suite.report",
+      "if_not_reproduced": "revise the battery (#T-battery-dev), not the rule: the threshold was written before the measurement",
+      "job": "evalgate",
+      "measured": true,
       "needs_compute": true,
-      "pass": null,
-      "reason": "awaiting-operator-compute",
+      "pass": true,
+      "per_checkpoint": {
+        "pointer-control:fullspace-62528": {
+          "checks": {
+            "battery_invariance": {
+              "min": 0.5,
+              "n_groups": 140,
+              "pass": true,
+              "value": 0.964286
+            },
+            "documented_invariance": {
+              "min": 0.5,
+              "n_pairs": 2,
+              "pass": true,
+              "value": 1.0
+            },
+            "joint_at_or_below_chance": {
+              "joint_chance": 0.082569,
+              "joint_ci95": [
+                0.003926,
+                0.050588
+              ],
+              "pass": true,
+              "read_from": "eval.metrics_suite.report /counterfactual — this module reads the figure, it does not compute it"
+            }
+          },
+          "if_not_reproduced": "revise the battery (#T-battery-dev), not the rule: the threshold was written before the measurement",
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+          "reading": "the control reproduces on this battery the invariance the 2026-09-24 probe documented: the forced pick stays put while the decisive fact moves, so a counterfactual group is never won whole",
+          "reproduced": true,
+          "rule": {
+            "battery_invariance_min": 0.5,
+            "documented_invariance_min": 0.5,
+            "joint_at_or_below_chance": true,
+            "why": "the documented failure is an INVARIANCE: the forced pick does not move when the decisive fact moves. It reproduces on the battery when (a) the evidence file itself shows that invariance in at least half of its paired probes, (b) at least half of the battery's counterfactual groups get the same slot picked in both halves, and (c) the joint counterfactual interval published by the suite sits at or below the joint chance rate — one half of a pair is what a fixed preference for a text already gets for free"
+          }
+        },
+        "pointer-control:leverstack-1m": {
+          "checks": {
+            "battery_invariance": {
+              "min": 0.5,
+              "n_groups": 140,
+              "pass": true,
+              "value": 0.928571
+            },
+            "documented_invariance": {
+              "min": 0.5,
+              "n_pairs": 2,
+              "pass": true,
+              "value": 1.0
+            },
+            "joint_at_or_below_chance": {
+              "joint_chance": 0.082569,
+              "joint_ci95": [
+                0.001262,
+                0.039348
+              ],
+              "pass": true,
+              "read_from": "eval.metrics_suite.report /counterfactual — this module reads the figure, it does not compute it"
+            }
+          },
+          "if_not_reproduced": "revise the battery (#T-battery-dev), not the rule: the threshold was written before the measurement",
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+          "reading": "the control reproduces on this battery the invariance the 2026-09-24 probe documented: the forced pick stays put while the decisive fact moves, so a counterfactual group is never won whole",
+          "reproduced": true,
+          "rule": {
+            "battery_invariance_min": 0.5,
+            "documented_invariance_min": 0.5,
+            "joint_at_or_below_chance": true,
+            "why": "the documented failure is an INVARIANCE: the forced pick does not move when the decisive fact moves. It reproduces on the battery when (a) the evidence file itself shows that invariance in at least half of its paired probes, (b) at least half of the battery's counterfactual groups get the same slot picked in both halves, and (c) the joint counterfactual interval published by the suite sits at or below the joint chance rate — one half of a pair is what a fixed preference for a text already gets for free"
+          }
+        }
+      },
       "rule": {
         "battery_invariance_min": 0.5,
         "documented_invariance_min": 0.5,
         "joint_at_or_below_chance": true,
         "why": "the documented failure is an INVARIANCE: the forced pick does not move when the decisive fact moves. It reproduces on the battery when (a) the evidence file itself shows that invariance in at least half of its paired probes, (b) at least half of the battery's counterfactual groups get the same slot picked in both halves, and (c) the joint counterfactual interval published by the suite sits at or below the joint chance rate — one half of a pair is what a fixed preference for a text already gets for free"
       },
-      "signed_by": "operator"
+      "signed_by": "operator (job `evalgate`)"
     },
     "the_qwen_gate": {
-      "job": "preflight-refs",
+      "decided_on": {
+        "by_family": {
+          "attribute_comparison": {
+            "accuracy": 0.9875,
+            "accuracy_ci95": [
+              0.932537,
+              0.99779
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "clears": true,
+            "hits": 79,
+            "n": 80
+          },
+          "description_classification": {
+            "accuracy": 0.9375,
+            "accuracy_ci95": [
+              0.861899,
+              0.973011
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "clears": true,
+            "hits": 75,
+            "n": 80
+          },
+          "extraction_paraphrase": {
+            "accuracy": 0.975,
+            "accuracy_ci95": [
+              0.913356,
+              0.993117
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "clears": true,
+            "hits": 78,
+            "n": 80
+          },
+          "priority_decision": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.878377,
+              0.980386
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "clears": true,
+            "hits": 76,
+            "n": 80
+          },
+          "textual_inference_negation": {
+            "accuracy": 0.975,
+            "accuracy_ci95": [
+              0.913356,
+              0.993117
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "clears": true,
+            "hits": 78,
+            "n": 80
+          }
+        },
+        "macro_by_family": {
+          "accuracy_ranking": 0.965,
+          "chance_ranking": 0.3375,
+          "clears": true,
+          "no_ci95": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here",
+          "read_as": "the macro mean is not a binomial proportion and publishes no Wilson bound, so `the same way` is carried by the per-family condition below: every family's own interval, against its own rate"
+        },
+        "whole_cut_ranking": {
+          "accuracy": 0.965,
+          "accuracy_ci95": [
+            0.942115,
+            0.979039
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "clears": true,
+          "hits": 386,
+          "n": 400
+        },
+        "worst_family": "description_classification"
+      },
+      "how_measured": "eval.metrics_suite.report over the qwen-local column of this cut; the three conditions are read off that report and nothing is recomputed here",
+      "job": "evalgate",
+      "measured": true,
+      "model_version": "qwen-local:qwen3.6:27b-mlx",
       "needs_compute": true,
-      "pass": null,
-      "reason": "awaiting-operator-compute",
+      "order_stability_beside_the_verdict": {
+        "caveat": "the chooser samples at temperature 0.7, so a flip is order sensitivity OR sampling noise and this control cannot separate the two: it is the upper bound on order stability, not a decomposition of it",
+        "enters_the_rule": false,
+        "flip_rate": 0.125,
+        "flipped": 3,
+        "max_abs_prob_delta": 1.0,
+        "measured": true,
+        "n_perms": 24,
+        "n_rows": 24,
+        "pass": false,
+        "read_as": "the `#T-option-text` control of this column, copied from its report so it is read where the door is signed. It is NOT one of the three conditions of QWEN_GATE_RULE: that rule was written before any measurement existed, and adding a condition after seeing this control fail would be choosing the rule from the result. What it does say is how far the forced-choice figure above can be trusted per row — a column whose pick moves when the options are merely reordered has that much of its accuracy resting on order",
+        "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+        "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+        "tolerance": 1e-05
+      },
+      "pass": true,
       "rule": {
         "closes_if": "any of the three fails — then the task, the data or the format is what gets revised, and the GPU is not spent",
         "decided_on": "the ranking (forced choice) figure of `eval.metrics_suite.report`, plus the per-family breakdown",
         "opens_if": "ranking accuracy_ci95[0] > chance on the whole cut AND the macro-by-family figure clears its chance the same way AND no family's interval sits at or below its own chance rate",
         "why_not_a_single_number": "a global mean passes with one family at zero, which is the failure the battery was written to make visible"
       },
-      "signed_by": "operator"
+      "signed_by": "operator (job `evalgate`)",
+      "verdict": "OPEN — the pilot goes on"
     },
     "the_reference_table": {
       "all_of_it_from": "eval.metrics_suite.report",
       "columns": [
         "nli-nograd",
-        "pointer-control",
+        "qwen-local",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m"
+      ],
+      "how_measured": "every cell is copied from the per-column report this row points at; nothing in this table was computed here",
+      "job": "evalgate",
+      "measured": [
+        "nli-nograd",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m",
         "qwen-local"
       ],
-      "job": "preflight-refs",
+      "missing": [],
+      "n": 400,
       "needs_compute": true,
-      "pass": null,
-      "reason": "awaiting-operator-compute",
-      "signed_by": "operator",
-      "what_it_will_publish": [
+      "pass": true,
+      "reason": null,
+      "rows": {
+        "nli-nograd": {
+          "abstention": {
+            "accuracy": 0.6225,
+            "accuracy_ci95": [
+              0.574041,
+              0.668628
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 249,
+            "n": 400
+          },
+          "by_family_ranking": {
+            "attribute_comparison": {
+              "accuracy": 0.4125,
+              "accuracy_ci95": [
+                0.311059,
+                0.52196
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 33,
+              "n": 80
+            },
+            "description_classification": {
+              "accuracy": 0.5875,
+              "accuracy_ci95": [
+                0.47804,
+                0.688941
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 47,
+              "n": 80
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.9375,
+              "accuracy_ci95": [
+                0.861899,
+                0.973011
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 75,
+              "n": 80
+            },
+            "priority_decision": {
+              "accuracy": 0.375,
+              "accuracy_ci95": [
+                0.276942,
+                0.484513
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 30,
+              "n": 80
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.8,
+              "accuracy_ci95": [
+                0.699538,
+                0.872972
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 64,
+              "n": 80
+            }
+          },
+          "chance_by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 160
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 120
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 120
+            }
+          },
+          "counterfactual": {
+            "accuracy": 0.342857,
+            "accuracy_ci95": [
+              0.269371,
+              0.424737
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 48,
+            "n": 140
+          },
+          "coverage": 1.0,
+          "macro_abstention": 0.6225,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.6225,
+          "mean_k": 4.1,
+          "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "n": 400,
+          "permutation_control": {
+            "max_abs_prob_delta": 0.0,
+            "measured": true,
+            "n_perms": 6,
+            "pass": true,
+            "source": "T-preflight-refs — model.ce_scorer.check_permutation_invariance on the contract case, same weights, same run",
+            "tolerance": 1e-05
+          },
+          "precision_among_answered": 0.6225,
+          "ranking": {
+            "accuracy": 0.6225,
+            "accuracy_ci95": [
+              0.574041,
+              0.668628
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 249,
+            "n": 400
+          },
+          "report": "artifacts/gates/T-preflight-refs/refs-nli-nograd.json",
+          "worst_family": "priority_decision"
+        },
+        "pointer-control:fullspace-62528": {
+          "abstention": {
+            "accuracy": 0.2225,
+            "accuracy_ci95": [
+              0.184488,
+              0.265791
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 89,
+            "n": 400
+          },
+          "by_family_ranking": {
+            "attribute_comparison": {
+              "accuracy": 0.3,
+              "accuracy_ci95": [
+                0.210646,
+                0.407682
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 24,
+              "n": 80
+            },
+            "description_classification": {
+              "accuracy": 0.3875,
+              "accuracy_ci95": [
+                0.288246,
+                0.497063
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 31,
+              "n": 80
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.2875,
+              "accuracy_ci95": [
+                0.199869,
+                0.394603
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 23,
+              "n": 80
+            },
+            "priority_decision": {
+              "accuracy": 0.3375,
+              "accuracy_ci95": [
+                0.243456,
+                0.446435
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 27,
+              "n": 80
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.3375,
+              "accuracy_ci95": [
+                0.243456,
+                0.446435
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 27,
+              "n": 80
+            }
+          },
+          "chance_by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 160
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 120
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 120
+            }
+          },
+          "counterfactual": {
+            "accuracy": 0.014286,
+            "accuracy_ci95": [
+              0.003926,
+              0.050588
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 2,
+            "n": 140
+          },
+          "coverage": 0.7575,
+          "macro_abstention": 0.2225,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.33,
+          "mean_k": 4.1,
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+          "n": 400,
+          "permutation_control": {
+            "max_abs_prob_delta": 1.1920928955078125e-07,
+            "measured": true,
+            "n_rows": 5,
+            "pass": true,
+            "source": ".meshkore/docs/evidence/probe-mechanism-2026-09-24.json (jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6, 2026-09-24)",
+            "tolerance": 1e-05
+          },
+          "precision_among_answered": 0.293729,
+          "ranking": {
+            "accuracy": 0.33,
+            "accuracy_ci95": [
+              0.285728,
+              0.377506
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 132,
+            "n": 400
+          },
+          "report": "artifacts/gates/T-preflight-refs/refs-pointer-control-fullspace-62528.json",
+          "worst_family": "priority_decision"
+        },
+        "pointer-control:leverstack-1m": {
+          "abstention": {
+            "accuracy": 0.3275,
+            "accuracy_ci95": [
+              0.28334,
+              0.374942
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 131,
+            "n": 400
+          },
+          "by_family_ranking": {
+            "attribute_comparison": {
+              "accuracy": 0.275,
+              "accuracy_ci95": [
+                0.189178,
+                0.381441
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 22,
+              "n": 80
+            },
+            "description_classification": {
+              "accuracy": 0.3375,
+              "accuracy_ci95": [
+                0.243456,
+                0.446435
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 27,
+              "n": 80
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.275,
+              "accuracy_ci95": [
+                0.189178,
+                0.381441
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 22,
+              "n": 80
+            },
+            "priority_decision": {
+              "accuracy": 0.375,
+              "accuracy_ci95": [
+                0.276942,
+                0.484513
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 30,
+              "n": 80
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.375,
+              "accuracy_ci95": [
+                0.276942,
+                0.484513
+              ],
+              "beats_chance": false,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 30,
+              "n": 80
+            }
+          },
+          "chance_by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 160
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 120
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 120
+            }
+          },
+          "counterfactual": {
+            "accuracy": 0.007143,
+            "accuracy_ci95": [
+              0.001262,
+              0.039348
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 1,
+            "n": 140
+          },
+          "coverage": 1.0,
+          "macro_abstention": 0.3275,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.3275,
+          "mean_k": 4.1,
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+          "n": 400,
+          "permutation_control": {
+            "max_abs_prob_delta": 4.76837158203125e-07,
+            "measured": true,
+            "n_rows": 5,
+            "pass": true,
+            "source": ".meshkore/docs/evidence/probe-mechanism-2026-09-24.json (jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360, 2026-09-24)",
+            "tolerance": 1e-05
+          },
+          "precision_among_answered": 0.3275,
+          "ranking": {
+            "accuracy": 0.3275,
+            "accuracy_ci95": [
+              0.28334,
+              0.374942
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 131,
+            "n": 400
+          },
+          "report": "artifacts/gates/T-preflight-refs/refs-pointer-control-leverstack-1m.json",
+          "worst_family": "attribute_comparison"
+        },
+        "qwen-local": {
+          "abstention": {
+            "accuracy": 0.945,
+            "accuracy_ci95": [
+              0.918133,
+              0.963402
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 378,
+            "n": 400
+          },
+          "by_family_ranking": {
+            "attribute_comparison": {
+              "accuracy": 0.9875,
+              "accuracy_ci95": [
+                0.932537,
+                0.99779
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 79,
+              "n": 80
+            },
+            "description_classification": {
+              "accuracy": 0.9375,
+              "accuracy_ci95": [
+                0.861899,
+                0.973011
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 75,
+              "n": 80
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.975,
+              "accuracy_ci95": [
+                0.913356,
+                0.993117
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 78,
+              "n": 80
+            },
+            "priority_decision": {
+              "accuracy": 0.95,
+              "accuracy_ci95": [
+                0.878377,
+                0.980386
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 76,
+              "n": 80
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.975,
+              "accuracy_ci95": [
+                0.913356,
+                0.993117
+              ],
+              "beats_chance": true,
+              "cardinality": 4.1,
+              "chance": 0.3375,
+              "hits": 78,
+              "n": 80
+            }
+          },
+          "chance_by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 160
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 120
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 120
+            }
+          },
+          "counterfactual": {
+            "accuracy": 0.878571,
+            "accuracy_ci95": [
+              0.814135,
+              0.922787
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 123,
+            "n": 140
+          },
+          "coverage": 0.9675,
+          "macro_abstention": 0.945,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.965,
+          "mean_k": 4.1,
+          "model_version": "qwen-local:qwen3.6:27b-mlx",
+          "n": 400,
+          "permutation_control": {
+            "caveat": "the chooser samples at temperature 0.7, so a flip is order sensitivity OR sampling noise and this control cannot separate the two: it is the upper bound on order stability, not a decomposition of it",
+            "flip_rate": 0.125,
+            "flipped": 3,
+            "max_abs_prob_delta": 1.0,
+            "measured": true,
+            "n_perms": 24,
+            "n_rows": 24,
+            "pass": false,
+            "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+            "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+            "tolerance": 1e-05
+          },
+          "precision_among_answered": 0.976744,
+          "ranking": {
+            "accuracy": 0.965,
+            "accuracy_ci95": [
+              0.942115,
+              0.979039
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 386,
+            "n": 400
+          },
+          "report": "artifacts/gates/T-preflight-refs/refs-qwen-local.json",
+          "worst_family": "description_classification"
+        }
+      },
+      "same_cut": true,
+      "signed_by": "operator (job `evalgate`)",
+      "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
+      "what_it_publishes": [
         "forced (ranking) accuracy with its chance, K, n and 95 % interval",
         "accuracy including abstention, with coverage and precision among the answered",
         "macro by family and the per-family breakdown",
@@ -129,10 +888,127 @@
       "pass": true
     },
     "the_starting_checkpoint_of_the_finetune": {
-      "job": "preflight-refs",
+      "candidates": {
+        "nli-nograd": {
+          "battery_same_slot_rate": 0.585714,
+          "battery_tracking_rate": 0.414286,
+          "counterfactual": {
+            "accuracy": 0.342857,
+            "accuracy_ci95": [
+              0.269371,
+              0.424737
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 48,
+            "n": 140
+          },
+          "eligible": true,
+          "invariance_checked_against": "nothing: the documented failure is a measurement of the two pointer checkpoints and there is none of this candidate to reproduce. What is published for it is its own rate on this battery, beside this line",
+          "joint_at_or_below_chance": false,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.6225,
+          "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "ranking": {
+            "accuracy": 0.6225,
+            "accuracy_ci95": [
+              0.574041,
+              0.668628
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 249,
+            "n": 400
+          },
+          "ranking_clears_chance": true,
+          "reproduces_documented_invariance": false,
+          "why_not": null
+        },
+        "pointer-control:fullspace-62528": {
+          "battery_same_slot_rate": 0.964286,
+          "battery_tracking_rate": 0.035714,
+          "counterfactual": {
+            "accuracy": 0.014286,
+            "accuracy_ci95": [
+              0.003926,
+              0.050588
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 2,
+            "n": 140
+          },
+          "eligible": false,
+          "invariance_checked_against": "the 2026-09-24 probe of this same checkpoint",
+          "joint_at_or_below_chance": true,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.33,
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+          "ranking": {
+            "accuracy": 0.33,
+            "accuracy_ci95": [
+              0.285728,
+              0.377506
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 132,
+            "n": 400
+          },
+          "ranking_clears_chance": false,
+          "reproduces_documented_invariance": true,
+          "why_not": "it reproduces the documented invariance: that makes it the control, not a starting point"
+        },
+        "pointer-control:leverstack-1m": {
+          "battery_same_slot_rate": 0.928571,
+          "battery_tracking_rate": 0.071429,
+          "counterfactual": {
+            "accuracy": 0.007143,
+            "accuracy_ci95": [
+              0.001262,
+              0.039348
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 1,
+            "n": 140
+          },
+          "eligible": false,
+          "invariance_checked_against": "the 2026-09-24 probe of this same checkpoint",
+          "joint_at_or_below_chance": true,
+          "macro_chance_ranking": 0.3375,
+          "macro_ranking": 0.3275,
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+          "ranking": {
+            "accuracy": 0.3275,
+            "accuracy_ci95": [
+              0.28334,
+              0.374942
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 131,
+            "n": 400
+          },
+          "ranking_clears_chance": false,
+          "reproduces_documented_invariance": true,
+          "why_not": "it reproduces the documented invariance: that makes it the control, not a starting point"
+        }
+      },
+      "chosen": "nli-nograd",
+      "chosen_because": "nli-nograd: highest lower bound of the forced-choice interval among the candidates that neither reproduce the documented invariance nor sit at or below the joint rate",
+      "contamination": "modernbert-zeroshot-v2 published mix includes BANKING77 (model.weights.SCORERS); that caveat travels with any figure of that checkpoint",
+      "how_measured": "the ranking and counterfactual figures of eval.metrics_suite.report for each candidate on this cut, with the reproduction verdict beside them",
+      "job": "evalgate",
+      "measured": true,
       "needs_compute": true,
-      "pass": null,
-      "reason": "awaiting-operator-compute",
+      "pass": true,
       "rule": {
         "candidates": [
           "nli-nograd",
@@ -143,7 +1019,7 @@
         "decided_on": "the ranking figure and the macro-by-family figure of each candidate on this cut, with the joint counterfactual figure beside them",
         "rule": "the starting point is the candidate whose ranking interval sits highest AND whose joint counterfactual figure is not at or below chance; a candidate that reproduces the documented invariance is not a starting point, it is the control"
       },
-      "signed_by": "operator"
+      "signed_by": "operator (job `evalgate`)"
     }
   },
   "cut": {
@@ -161,19 +1037,21 @@
     "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
     "task": "T-battery-dev"
   },
-  "generated_utc": "2026-09-26T13:57:53Z",
+  "generated_utc": "2026-09-26T22:31:01Z",
   "honesty": [
-    "this gate is HALF WRITTEN on purpose: the operator forbade loading Qwen, the pointer checkpoints or any inference loop over the 400 rows in this session, so every check that needs a forward pass carries `pass: null` and `reason: awaiting-operator-compute` instead of a number",
-    "no figure in this file was computed by hand and none was estimated: what was not measured was not written",
-    "the thresholds of the reproduction rule, the Qwen gate and the starting-point rule are written here BEFORE any measurement exists, which is the only moment at which writing them means anything",
-    "the suite's calibration section needs a temperature fitted on one cut and verified on another; the product's is #T-battery-calib (it depends on #T-ce-finetune and does not exist yet), so the runner fits one inside the development cut, by group halves, and says so in the report"
+    "no figure in this file was computed by hand and none was estimated: what was not measured was not written, and every number quoted here is copied from a `jev.metrics.v1` report this gate points at",
+    "the thresholds of the reproduction rule, the Qwen gate and the starting-point rule were written BEFORE any measurement existed (commit 9227cfb, 2026-09-26) and were not touched to sign this gate: what changed afterwards is the code that READS them",
+    "the suite's calibration section needs a temperature fitted on one cut and verified on another; the product's is #T-battery-calib (it depends on #T-ce-finetune and does not exist yet), so the runner fits one inside the development cut, by group halves, and says so in the report",
+    "the Qwen column is a structured choice at the chooser's own temperature 0.7, so its permutation control bounds order stability and sampling noise together and does not separate them"
   ],
   "job": {
-    "command": ".venv-train/bin/python -m eval.preflight_refs refs",
-    "id": "preflight-refs",
-    "state": "registered STOPPED — the operator presses play; nothing in this task started a model"
+    "columns": "artifacts/gates/T-preflight-refs/columns",
+    "command": "env PYTHONPATH=. .venv-train/bin/python -m eval.preflight_refs refs",
+    "id": "evalgate",
+    "resumable": "a column already measured over these rows is reused by its `rows_sha256`, and the Qwen column also keeps a per-row log, so a job that dies at row 390 does not buy those 390 rows again",
+    "state": "the cluster's single evaluation job; its command is edited per run, never duplicated"
   },
-  "pass": null,
+  "pass": true,
   "protocol": {
     "comparative_context_by_family": {
       "attribute_comparison": true,
@@ -202,7 +1080,7 @@
     "truncation": "only_first",
     "what": "one input format per model, written before any measurement on this cut and derived from the episode-v1 comparative contract — never chosen after looking at a result"
   },
-  "publishes_no_figure_of_its_own": "every figure of this task is produced by `eval.metrics_suite.report` and lives in the per-reference reports this gate points at; this file publishes none, because nothing has been measured against a model yet",
+  "publishes_no_figure_of_its_own": "every figure of this task is produced by `eval.metrics_suite.report` and lives in the per-reference reports this gate points at; the cells this file shows are copied from them, never recomputed here",
   "question": "do the three references answer this battery at all, and does the pointer control reproduce here the failure already documented?",
   "references": {
     "nli-nograd": {
@@ -211,7 +1089,7 @@
       "needs_compute": true,
       "protocol": "entailment with the explicit hypotheses of `model.ce_scorer` (HYPOTHESIS), one pair per candidate, reduced to a scalar by `entail_logit`",
       "role": "untuned starting point — kept for #T-ce-finetune if it answers reasonably; a NLI head is not assumed to solve arithmetic or complex preferences without adaptation",
-      "signed_by": "operator (job `preflight-refs`)",
+      "signed_by": "operator (job `evalgate`)",
       "weights": "softmax over the K candidate scores — relative to the offered candidates, as the suite stamps"
     },
     "pointer-control": {
@@ -224,7 +1102,7 @@
       "needs_compute": true,
       "protocol": "the trained pointer head over `[K + 1]`: the state encoded once, the question and the K option texts embedded, `unknown` as the extra column",
       "role": "CONTROL — the documented mechanism failure has to reproduce on this battery, or the battery is not representative",
-      "signed_by": "operator (job `preflight-refs`)",
+      "signed_by": "operator (job `evalgate`)",
       "weights": "softmax over [K + 1] logits, `unknown` included"
     },
     "qwen-local": {
@@ -233,10 +1111,11 @@
       "needs_compute": true,
       "protocol": "structured choice among the valid candidate ids (one JSON object, `choice` + `evidence` copied from the state); free text is never parsed for an answer",
       "role": "capacity reference — the practical ceiling available here",
-      "signed_by": "operator (job `preflight-refs`)",
+      "signed_by": "operator (job `evalgate`)",
       "weights": "INDICATOR, not a distribution: a structured choice yields a chosen id and nothing else, so the row's weights are 1 on the pick and 0 elsewhere. NLL, Brier and ECE of this column read that indicator and are published only because the suite is whole-or-nothing"
     }
   },
+  "resolved": true,
   "rules_written_before_measuring": {
     "qwen_gate": {
       "closes_if": "any of the three fails — then the task, the data or the format is what gets revised, and the GPU is not spent",
@@ -268,24 +1147,7 @@
     "present": false,
     "why": "#teacher-distill is in backlog and its reference role is covered by Qwen; the 2026-09-23 key answers 401 against https://api.typesafe.ai. It is added as a fourth column when there is valid access AND a comparable protocol, never as a number quoted from another protocol"
   },
-  "tests": {
-    "classes": [
-      "SameRowsTest",
-      "ColumnShapeTest",
-      "MechanismReproductionTest",
-      "SealedCutTest",
-      "SuiteIsTheOnlyArithmeticTest",
-      "GateTest",
-      "ProtocolTest",
-      "NoModelTest"
-    ],
-    "file": "eval/test_preflight_refs.py",
-    "how_run": "PYTHONPATH=. python3 -m unittest eval.test_preflight_refs",
-    "loads_no_model": "every column receives its predictor by injection; the suite asserts `torch` and `transformers` are absent from sys.modules when it ends",
-    "n_tests": 37,
-    "result": "green",
-    "seconds": 0.67
-  },
   "trains_nothing": true,
-  "verdict": "AWAITING-COMPUTE"
+  "verdict": "PASS",
+  "what_this_answers": "this task's job is to ANSWER a question before the GPU is spent, and `pass` is that answer, not a mark on the work: `false` here means the preflight says do not start the finetune yet and names which of its four conditions said so. The question is resolved either way, which is what `resolved` reports"
 }

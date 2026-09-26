@@ -26,6 +26,11 @@ never here:
   A quoted third-party number is exempt when it says so (`citation: true`, or
   `who` + `source`): a citation is somebody else's measurement, and R3 already
   forces it to carry its own protocol.
+  A mean that is not a binomial proportion is exempt from the INTERVAL —
+  and only from the interval — when it says so in a structured field
+  (`ci95_why_absent`) instead of in prose: the suite's macro over families
+  is the case this was written for, and its interval is each family's own,
+  published beside it. Prose does not lift this: the field does.
 * **C5** — a `jev.metrics.v1` report (`eval/metrics_suite.py`) missing any of
   the metrics the suite publishes together, or the chance of its K, or the n
   of its cut. The suite is published whole or not at all, which is the point
@@ -109,6 +114,11 @@ ACCURACY_KEY = "accuracy"
 CHANCE_KEYS = frozenset({"chance"})
 CARDINALITY_KEYS = frozenset({"cardinality", "mean_k", "k"})
 CI95_KEYS = frozenset({"accuracy_ci95", "ci95"})
+#: The one way to publish an accuracy with no interval: DECLARE why there is
+#: none, in a field. `eval.metrics_suite` stamps it on the macro mean over
+#: families, which is not a binomial proportion and has no Wilson bound to
+#: publish; the per-family intervals it is a mean of are published beside it.
+CI95_ABSENT_KEYS = frozenset({"ci95_why_absent"})
 
 #: The gates of the PILOT: the tasks that measure over the private battery
 #: and therefore publish their figures through `eval.metrics_suite.report`.
@@ -280,8 +290,10 @@ def accuracy_claims(doc) -> list[dict]:
                 if not any(_number(o.get(k)) for o in chain
                            for k in CARDINALITY_KEYS):
                     missing.append("cardinality")
-                if not any(_interval(o.get(k)) for o in chain
-                           for k in CI95_KEYS):
+                if not (any(_interval(o.get(k)) for o in chain
+                            for k in CI95_KEYS)
+                        or any(isinstance(o.get(k), str) and o.get(k).strip()
+                               for o in chain for k in CI95_ABSENT_KEYS)):
                     missing.append("accuracy_ci95")
                 out.append({"at": path or "/", "accuracy": node[ACCURACY_KEY],
                             "missing": missing,
