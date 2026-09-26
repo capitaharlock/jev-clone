@@ -478,6 +478,85 @@ class TestReadingCoherence(unittest.TestCase):
             self.assertEqual(r["metrics_suite"]["incomplete"], 1)
 
 
+class TestSuiteIsTheOnlyArithmetic(unittest.TestCase):
+    """C7 — a PILOT gate that computes its own figure FAILS (#T-battery-
+    metrics). C5 only reaches a document already stamped `jev.metrics.v1`;
+    this is the rule for the run that stamps nothing and does the arithmetic
+    itself."""
+
+    HAND = {"pass": True, "model_version": "ckpt-42",
+            "split_sha256": SEALED,
+            "measured": {"accuracy": 0.71, **R2}}
+
+    def suite_report(self):
+        from . import metrics_suite as M
+        rows = [{"row_id": "a", "family": "f1", "variant_group": "g1",
+                 "k": 4, "gold_index": 0, "pred": 0,
+                 "probs": [0.7, 0.1, 0.1, 0.1, 0.05]},
+                {"row_id": "b", "family": "f1", "variant_group": "g1",
+                 "k": 4, "gold_index": 1, "pred": 1,
+                 "probs": [0.1, 0.7, 0.1, 0.1, 0.05]}]
+        return M.report(rows, cut={"name": "battery-dev", "seal": SEALED},
+                        model_version="ckpt-42", task="T-battery-sealed",
+                        calibration={"temperature": 1.0, "fitted_on": "dev",
+                                     "verified_on": "test"},
+                        permutation={"pass": True}, tracking={"pass": False})
+
+    def test_a_pilot_gate_computing_its_own_accuracy_fails_the_runner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-battery-sealed", gate=dict(self.HAND))
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertFalse(r["pass"])
+            self.assertIn("C7", rules_of(r))
+            self.assertEqual(r["metrics_suite"]["hand_computed"], 1)
+            err = next(e for e in r["errors"] if e["rule"] == "C7")
+            self.assertEqual(err["severity"], "error")
+            self.assertEqual(err["offending"][0]["at"], "/measured/accuracy")
+
+    def test_the_same_figure_published_through_the_suite_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-battery-sealed", metrics=self.suite_report())
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertNotIn("C7", rules_of(r), r["errors"])
+            self.assertEqual(r["metrics_suite"]["reports"], ["metrics.json"])
+            self.assertEqual(r["metrics_suite"]["hand_computed"], 0)
+
+    def test_a_gate_outside_the_pilot_is_not_retro_flagged(self):
+        """The historical gates are what the suite replaces, not offenders."""
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-some-2026-05-gate", gate=dict(self.HAND))
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertNotIn("C7", rules_of(r))
+            self.assertFalse(r["metrics_suite"]["pilot"])
+
+    def test_a_quoted_third_party_number_is_exempt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-preflight-refs", gate={
+                "pass": False,
+                "reference": {"who": "ModernBERT-base-zeroshot-v2.0",
+                              "source": "model card",
+                              "accuracy": 0.63, **R2}})
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertNotIn("C7", rules_of(r), r["errors"])
+            self.assertEqual(r["metrics_suite"]["hand_computed"], 0)
+
+
+class TestPilotCensusOnDisk(unittest.TestCase):
+    """What the pilot publishes TODAY, measured rather than asserted."""
+
+    def test_no_pilot_gate_on_disk_computes_its_own_figure(self):
+        census = G.pilot_census(coherence=COHERENCE)
+        self.assertEqual(census["offenders"], [])
+        self.assertTrue(census["pass"])
+
+    def test_the_only_pilot_gate_on_disk_publishes_no_figure_yet(self):
+        census = G.pilot_census(coherence=COHERENCE)
+        self.assertEqual([g["gate"] for g in census["on_disk"]],
+                         ["T-battery-dev"])
+        self.assertEqual(census["publishing_no_figure"], ["T-battery-dev"])
+        self.assertIn("T-battery-sealed", census["absent"])
+
+
 class TestCorrectedReadingsOnDisk(unittest.TestCase):
     """The three readings #T-battery-metrics corrected, as published."""
 

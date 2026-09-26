@@ -40,6 +40,17 @@ never here:
   in an artifact whose own R9 field says it establishes none
   (`#T-bigk-optsets`). Like C4 it does not wait for a green claim: the
   sentence is what a human reads.
+* **C7** — a gate OF THE PILOT (`PILOT_TASKS`) that publishes a quality
+  metric with no `jev.metrics.v1` report anywhere in its directory: the
+  figure was computed by hand, outside the one reporting function
+  (#T-battery-metrics, `## Done when`: «no hay métricas calculadas a mano
+  por run»). C5 only reaches a document that already stamps itself
+  `jev.metrics.v1`; a run that does its own arithmetic and stamps nothing
+  walks past it, which is the hole this closes. Scope is the pilot and
+  nothing else — the historical gates measured before the suite existed are
+  not retro-flagged, they are what the suite was written to replace. Like
+  C4 and C6 it does not wait for a green claim, and a cited third-party
+  number is exempt on the same terms.
 
 The companions may sit on the accuracy's own object or on any object that
 ENCLOSES it: a per-dataset breakdown under a cut that publishes `chance`,
@@ -59,6 +70,7 @@ CLI (stdlib only, any python3, run from the repo root):
     python3 -m eval.gate_rules scan            # audit, exit 1 if any error
     python3 -m eval.gate_rules scan --mark     # + write coherence-invalid.json
     python3 -m eval.gate_rules check <dir>     # one gate directory
+    python3 -m eval.gate_rules pilot           # C7 census of the pilot gates
 """
 from __future__ import annotations
 
@@ -97,6 +109,17 @@ ACCURACY_KEY = "accuracy"
 CHANCE_KEYS = frozenset({"chance"})
 CARDINALITY_KEYS = frozenset({"cardinality", "mean_k", "k"})
 CI95_KEYS = frozenset({"accuracy_ci95", "ci95"})
+
+#: The gates of the PILOT: the tasks that measure over the private battery
+#: and therefore publish their figures through `eval.metrics_suite.report`.
+#: Read off `#honest-eval` + the `depends_on` of each task: the two battery
+#: cuts, the calibration measured on them, the three references of step 2 and
+#: the two decisions that score them. `#T-ce-scorer` is OUT on purpose:
+#: its own task body says its cut «no es la batería».
+PILOT_TASKS = frozenset({
+    "T-battery-dev", "T-battery-sealed", "T-battery-calib",
+    "T-preflight-refs", "T-ce-finetune", "T-ce-confirm",
+})
 
 #: A seal is a content digest, not an intention.
 SEAL_KEYS = frozenset({"split_sha256", "manifest_sha256", "splits_sha256"})
@@ -273,6 +296,33 @@ def accuracy_claims(doc) -> list[dict]:
     return out
 
 
+# ------------------------------------- C7: the suite is the only arithmetic
+
+def quality_figures(doc) -> list[dict]:
+    """Every published quality metric, and whether it is a quoted number.
+
+    Citation travels DOWN: a `{"who", "source"}` block quoting somebody
+    else's table exempts the numbers inside it, not only its own level.
+    """
+    out: list[dict] = []
+
+    def visit(node, path: str, cited: bool) -> None:
+        if isinstance(node, dict):
+            cited = cited or is_citation(node)
+            for key, value in node.items():
+                here = f"{path}/{key}"
+                if key in QUALITY_METRIC_KEYS and _number(value):
+                    out.append({"at": here, "metric": key, "value": value,
+                                "citation": cited})
+                visit(value, here, cited)
+        elif isinstance(node, list):
+            for i, value in enumerate(node):
+                visit(value, f"{path}[{i}]", cited)
+
+    visit(doc, "", False)
+    return out
+
+
 # ------------------------------------------------------------------- rules
 
 def setting(coherence: dict, name: str, default):
@@ -297,12 +347,15 @@ def check_document(doc, name: str, coherence: dict,
             "model_version": has_mv, "kappa": kappas, "seal": seal,
             "accuracy_claims": accuracy_claims(doc),
             "suite_errors": [e for e in suite if e["rule"] == "C5"],
+            "is_suite_report": isinstance(doc, dict)
+            and doc.get("format") == MS.FORMAT,
+            "quality_figures": quality_figures(doc),
             "reading_errors": MS.reading_errors(doc)}
 
 
 def check_gate_dir(path: Path, coherence: dict | None = None,
                    root: Path | None = None) -> dict:
-    """Apply C1-C6 to one `artifacts/gates/<task>/` directory."""
+    """Apply C1-C7 to one `artifacts/gates/<task>/` directory."""
     coherence = coherence or FALLBACK_COHERENCE
     root = root or ROOT
     floor = setting(coherence, "cohen_kappa_floor", 0.10)
@@ -350,6 +403,25 @@ def check_gate_dir(path: Path, coherence: dict | None = None,
                    "chance of its K or the n of its cut: the suite is "
                    "published whole or not at all",
             "n_offending": len(incomplete), "offending": incomplete[:8]})
+    suite_reports = sorted(n for n, f in facts.items() if f["is_suite_report"])
+    pilot = path.name in PILOT_TASKS
+    hand = []
+    if pilot and not suite_reports:
+        hand = [{"file": n, **c} for n, f in facts.items()
+                for c in f["quality_figures"] if not c["citation"]]
+    if hand:
+        errors.append({
+            "rule": "C7", "severity": "error",
+            "why": "a pilot gate publishes a quality metric with no "
+                   f"{MS.FORMAT} report in its directory: the figure was "
+                   "computed by hand instead of by "
+                   f"`{MS.__name__}.report`, and the suite is the only "
+                   "place a pilot figure is computed",
+            "pilot_task": path.name,
+            "n_offending": len(hand), "offending": hand[:8],
+            "exempt": "a cited third-party number (`citation: true`, or "
+                      "`who` + `source`), which is somebody else's "
+                      "arithmetic and carries its own protocol"})
     if bare and setting(coherence, "require_chance_next_to_accuracy", True):
         errors.append({
             "rule": "C4", "severity": "error",
@@ -415,7 +487,9 @@ def check_gate_dir(path: Path, coherence: dict | None = None,
                                              for f in facts.values()),
                             "without_companions": len(bare)},
         "readings": {"incoherent": len(incoherent)},
-        "metrics_suite": {"incomplete": len(incomplete)},
+        "metrics_suite": {"incomplete": len(incomplete),
+                          "pilot": pilot, "reports": suite_reports,
+                          "hand_computed": len(hand)},
         "errors": errors,
         "pass": not errors,
     }
@@ -431,7 +505,7 @@ def invalid_marker(result: dict, criteria_sha: str | None) -> dict:
         "gate": result["gate"],
         "rules": ".meshkore/docs/release-criteria.md §5 (C1/C2/C3) + "
                  "R2 (C4), .meshkore/docs/fase-2-espacio-completo.md §7 + "
-                 "C5/C6 (#T-battery-metrics, eval/metrics_suite.py)",
+                 "C5/C6/C7 (#T-battery-metrics, eval/metrics_suite.py)",
         "criteria_sha": criteria_sha,
         "verdict": "INVALID — published against a coherence rule",
         "kept": "this artifact is MARKED, not deleted: a bad published "
@@ -468,7 +542,8 @@ def scan(gates_dir: Path | None = None, coherence: dict | None = None,
                  "C3 unsealed split · C4 accuracy without chance, "
                  "cardinality and CI 95 % (R2) · C5 metrics-suite report "
                  "missing a mandatory metric · C6 reading contradicting its "
-                 "own numbers — all ERRORS, never warnings",
+                 "own numbers · C7 pilot figure computed outside the suite "
+                 "— all ERRORS, never warnings",
         "criteria_sha": criteria_sha,
         "n_gates": len(results),
         "n_invalid": len(failed),
@@ -476,6 +551,53 @@ def scan(gates_dir: Path | None = None, coherence: dict | None = None,
         "marked": marked,
         "results": results,
         "pass": not failed,
+    }
+
+
+def pilot_census(gates_dir: Path | None = None, coherence: dict | None = None,
+                 root: Path | None = None) -> dict:
+    """C7 over the pilot: who publishes figures, and through what.
+
+    The answer to «does every pilot gate call `report()`» is a census, not an
+    opinion: which of `PILOT_TASKS` are on disk, which of those hold a
+    `jev.metrics.v1` report, which publish a quality metric without one, and
+    which do not publish a figure at all — the last being the honest state of
+    a gate that audits data instead of scoring a model.
+    """
+    gates_dir = gates_dir or GATES_DIR
+    root = root or ROOT
+    coherence = coherence or FALLBACK_COHERENCE
+    on_disk, absent = [], []
+    for task in sorted(PILOT_TASKS):
+        d = gates_dir / task
+        if not d.is_dir() or not any(d.glob("*.json")):
+            absent.append(task)
+            continue
+        r = check_gate_dir(d, coherence, root)
+        ms = r["metrics_suite"]
+        on_disk.append({
+            "gate": task, "files": r["files"],
+            "suite_reports": ms["reports"],
+            "quality_metrics_published": r["publishes"]["quality_metrics"],
+            "hand_computed": ms["hand_computed"],
+            "publishes_a_figure": bool(r["publishes"]["quality_metrics"]),
+            "c7": "error" if ms["hand_computed"] else "clean",
+        })
+    offenders = [g["gate"] for g in on_disk if g["hand_computed"]]
+    return {
+        "format": 1,
+        "generated_utc": utcnow(),
+        "rule": "C7 — a pilot figure is computed by "
+                f"{MS.__name__}.report or it is not published",
+        "pilot_tasks": sorted(PILOT_TASKS),
+        "on_disk": on_disk,
+        "absent": absent,
+        "with_a_suite_report": sorted(g["gate"] for g in on_disk
+                                      if g["suite_reports"]),
+        "publishing_no_figure": sorted(g["gate"] for g in on_disk
+                                       if not g["publishes_a_figure"]),
+        "offenders": offenders,
+        "pass": not offenders,
     }
 
 
@@ -496,16 +618,23 @@ def main(argv: list) -> int:
     ap = argparse.ArgumentParser(prog="eval.gate_rules")
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("scan",
-                       help="apply C1-C6 to every published gate")
+                       help="apply C1-C7 to every published gate")
     s.add_argument("--mark", action="store_true",
                    help=f"write {MARKER_NAME} next to each offending gate")
     s.add_argument("--out", default="")
     c = sub.add_parser("check",
-                       help="apply C1-C6 to one gate directory")
+                       help="apply C1-C7 to one gate directory")
     c.add_argument("dir")
+    sub.add_parser("pilot",
+                   help="C7 census: which pilot gates publish figures, and "
+                        "through what")
     args = ap.parse_args(argv)
 
     coherence, criteria_sha, source = _coherence_from_criteria()
+    if args.cmd == "pilot":
+        r = pilot_census(coherence=coherence)
+        print(json.dumps(r, indent=2))
+        return 0 if r["pass"] else 1
     if args.cmd == "check":
         r = check_gate_dir(Path(args.dir).resolve(), coherence)
         print(json.dumps(r, indent=2))

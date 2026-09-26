@@ -50,30 +50,79 @@
         "C3": 12,
         "C4": 11
       },
-      "n_gates": 52,
+      "errors_by_rule_c5_c6_c7": 0,
+      "n_gates": 53,
+      "n_gates_was": {
+        "value": 52,
+        "why": "artifacts/gates/T-battery-dev/ was published between the two runs (commit 3fb2eea)"
+      },
       "n_invalid": 21,
       "pass": false,
-      "reading": "21 of 52 gate directories are invalid, every one of them on the pre-existing C1-C4 and none on C5 or C6. The count is unchanged by this task: the two artifacts it corrected were not invalid under C1-C4 and are not invalid now",
+      "reading": "21 of 53 gate directories are invalid and NOT ONE of them is this task's: every error is on the PRE-EXISTING C1-C4 (C1 2, C2 14, C3 12, C4 11) and zero on C5, C6 or C7. This check is red because the repo published 21 incoherent gates before this task existed; closing them is their owners' work, not #T-battery-metrics'. The count is unchanged by this task and by the C7 added here: the rules it adds fire on nothing in the tree",
+      "remeasured_utc": "2026-09-26T13:35:31Z",
       "unmarked_invalid": [
         "T-ce-scorer"
       ],
       "unmarked_why": "published after the last `scan --mark` by work in flight in another session; left for its owner rather than marked from here"
     },
     "suite_is_the_only_arithmetic": {
-      "depends_on": [
-        "T-battery-dev",
-        "T-battery-sealed"
+      "absent_from_disk": [
+        "T-battery-calib",
+        "T-battery-sealed",
+        "T-ce-confirm",
+        "T-ce-finetune",
+        "T-preflight-refs"
       ],
+      "enforced_by": {
+        "rule": "C7",
+        "tests": [
+          "eval/test_gate_rules.py::TestSuiteIsTheOnlyArithmetic",
+          "eval/test_gate_rules.py::TestPilotCensusOnDisk"
+        ],
+        "where": "eval/gate_rules.py check_gate_dir (PILOT_TASKS)",
+        "why_c5_was_not_enough": "C5 only reaches a document already stamped jev.metrics.v1; a pilot run that does its own arithmetic and stamps nothing walked past it"
+      },
+      "gates_calling_report": [],
+      "gates_computing_their_own_figures": [],
+      "how_measured": "PYTHONPATH=. python3 -m eval.gate_rules pilot",
       "needs_compute": false,
-      "pass": null,
-      "status": "awaiting-pilot-gates",
-      "why": "the pilot gates that must call `report()` are #T-battery-dev and #T-battery-sealed, written in parallel and out of this task's scope. The function and its rule exist; that every pilot gate invokes it is verifiable only once a pilot gate exists, and claiming it now would be a number nobody measured"
+      "on_disk": [
+        {
+          "c7": "clean",
+          "files": [
+            "gate.json",
+            "gold_slots.json"
+          ],
+          "gate": "T-battery-dev",
+          "hand_computed": 0,
+          "publishes_a_figure": false,
+          "quality_metrics_published": 0,
+          "suite_reports": []
+        }
+      ],
+      "pass": true,
+      "pass_is_vacuous": true,
+      "pilot_tasks": [
+        "T-battery-calib",
+        "T-battery-dev",
+        "T-battery-sealed",
+        "T-ce-confirm",
+        "T-ce-finetune",
+        "T-preflight-refs"
+      ],
+      "pilot_tasks_read_from": "#honest-eval + the `depends_on` of each task; `#T-ce-scorer` is out because its own body says its cut «no es la batería»",
+      "reading": "ONE pilot gate exists on disk today, #T-battery-dev, and it publishes NO figure of the suite's kind: 0 quality metrics, 0 accuracy claims, 0 jev.metrics.v1 reports — it audits the 400 cases (n, duplicate ids, gold-rule violations) and none of those is a number report() produces. So no pilot figure is published outside the suite, and none is published through it either: the count of gates calling report() is ZERO and this check passes VACUOUSLY. What is verified here is not that somebody called the function, it is that a run which computes its own figure now FAILS: rule C7",
+      "trains_nothing": true,
+      "what_is_missing_and_who_closes_it": {
+        "T-battery-calib, T-preflight-refs, T-ce-finetune, T-ce-confirm": "not started; they are the gates that will actually publish figures, and the first of them is what turns this vacuous pass into a positive one",
+        "T-battery-sealed": "not on disk when this was signed (no artifacts/gates/T-battery-sealed/): written in parallel in another session. Its owner closes it; nothing here claims anything about it, and C7 fires on it automatically if it publishes a figure it computed itself"
+      }
     }
   },
   "format": "jev.gate.v1",
-  "generated_utc": "2026-09-26T13:21:40Z",
+  "generated_utc": "2026-09-26T13:35:31Z",
   "measures_no_model": "this gate measures the REPORTING, not a checkpoint. No accuracy of ours is published here: the suite's figures are produced by the gates that call it",
-  "parent_commit": "3fb2eea86e356154447ac922b477cbd684963e0c",
+  "parent_commit": "08086f25bff53bd0c790e274b98545558b4b1d64",
   "question": "does every published figure of the pilot come out of ONE reporting function, carrying its n, its K, its chance and its 95 % interval — and does a reading that contradicts those numbers FAIL instead of warning?",
   "readings_corrected": {
     "items": [
@@ -116,6 +165,14 @@
       "severity": "error",
       "waits_for_a_green_claim": false,
       "what": "a reading that contradicts its own numbers — an interval claim the figures do not support, or a hypothesis eliminated AS A CAUSE in an artifact whose own R9 field says it establishes none",
+      "wired_into": "eval/gate_rules.py check_gate_dir"
+    },
+    "C7": {
+      "exempt": "a cited third-party number (citation: true, or who + source)",
+      "scope": "the pilot only: the historical gates measured before the suite existed are what it replaces, and are not retro-flagged",
+      "severity": "error",
+      "waits_for_a_green_claim": false,
+      "what": "a gate of the pilot (PILOT_TASKS) that publishes a quality metric with no jev.metrics.v1 report in its directory — a figure computed by hand instead of by eval.metrics_suite.report",
       "wired_into": "eval/gate_rules.py check_gate_dir"
     }
   },
@@ -165,7 +222,7 @@
       "failure": "eval/test_release_gate.py::TestPublishedVerdict::test_the_numbers_are_the_ones_t_unseen_labels_published",
       "failure_is_ours": false,
       "failure_why": "artifacts/gates/T-unseen-labels/gate.json is modified in the worktree by work in flight (accuracy_unseen 0.242176 at HEAD, 0.304943 in the worktree) while T-release records 0.292141. Neither file is touched by this task",
-      "passed": 391,
+      "passed": 397,
       "subtests_passed": 77
     },
     "model": {
@@ -174,8 +231,12 @@
       "subtests_passed": 8
     },
     "new_here": {
-      "eval/test_gate_rules.py (added)": 6,
+      "eval/test_gate_rules.py (added)": 12,
       "eval/test_metrics_suite.py": 38
+    },
+    "only_dir_run_this_turn": {
+      "dir": "eval/",
+      "why": "the two modules this task touches live there; data/, model/ and tools/ were not re-run this turn and their figures above are the ones measured when they were"
     },
     "runner": ".venv-train/bin/python -m pytest <dir> -q -p no:randomly, one directory at a time (this repo's collection breaks when several are passed at once)",
     "tools": {
@@ -199,7 +260,7 @@
   },
   "trains_nothing": true,
   "verdict": {
-    "decided_by": "the suite exists as one function with its rule; the three named readings are corrected on disk with the wrong sentences kept; C6 fires on all three when they are put back and on nothing else in the tree",
+    "decided_by": "the suite exists as one function with its rules; the three named readings are corrected on disk with the wrong sentences kept; C6 fires on all three when they are put back and on nothing else in the tree; and C7 now makes a pilot figure computed outside the suite an ERROR, with the pilot's census on disk measured rather than assumed",
     "go": true,
     "r4": "this verdict is about the reporting code and the artifacts on disk on 2026-09-26; it transfers to no model regime",
     "reading": "the reporting is fixed, not the model. Nothing here measures a checkpoint and no accuracy of ours is published in this artifact: what it records is that a figure now travels with its n, its K, its chance and its interval, that ranking and abstention are reported apart, and that a sentence contradicting those numbers is an ERROR. Whether the pilot's numbers improve is a different measurement and this gate makes no claim about it"
