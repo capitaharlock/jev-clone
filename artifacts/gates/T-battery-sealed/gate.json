@@ -1,0 +1,68 @@
+{
+ "task": "T-battery-sealed",
+ "verdict": "GO",
+ "battery_sha256": "316800044c755a593737eced2a27c2e80fc52fe57006a7b114f0b307a222c9f7",
+ "manifest_version": "battery-sealed-v1",
+ "manifest_date": "2026-09-26",
+ "schema_version": "episode-v1",
+ "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+ "consumed": false,
+ "checks": {
+  "n": true,
+  "validity": true,
+  "gold": true,
+  "shape": true,
+  "distribution": true,
+  "namespace": true,
+  "dev_disjoint": true,
+  "entity_overlap": true,
+  "candidate_overlap": true,
+  "k_distribution": true,
+  "diag_valid": true,
+  "diag_gold": true,
+  "diag_ks": true,
+  "diag_namespace": true
+ },
+ "measured": {
+  "n": 600,
+  "n_valid": 600,
+  "n_invalid": 0,
+  "duplicate_ids": [],
+  "gold_rule_violations": 0,
+  "counterfactual_shape_violations": 0,
+  "distribution_violations": 0,
+  "namespace_violations": 0,
+  "dev_shared_groups": 0,
+  "entity_overlap": 0.1631,
+  "entity_threshold": 0.35,
+  "entity_n_sealed": 1429,
+  "entity_n_shared": 233,
+  "candidate_overlap": 0.0,
+  "candidate_n_shared": 0,
+  "k_counts": {
+   "2": 240,
+   "3": 180,
+   "8": 180
+  },
+  "diag_n": 9,
+  "diag_n_valid": 9,
+  "diag_gold_violations": 0,
+  "diag_ks": [
+   20,
+   77
+  ],
+  "diag_namespace_violations": 0,
+  "diag_manifest_version": "battery-diag-v1"
+ },
+ "problems": {
+  "invalid": [],
+  "gold": [],
+  "shape": [],
+  "distribution": [],
+  "namespace": [],
+  "dev_disjoint": [],
+  "diag_invalid": [],
+  "diag_gold": [],
+  "diag_namespace": []
+ }
+}
