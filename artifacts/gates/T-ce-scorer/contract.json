@@ -1,0 +1,73 @@
+{
+  "checks": {
+    "comparative_context": {
+      "foreign_id": "c3",
+      "off": {
+        "abs_delta": 0.0,
+        "z_after": 2.154000479954207,
+        "z_before": 2.154000479954207
+      },
+      "on": {
+        "abs_delta": 0.43840283248079537,
+        "z_after": 2.1958463540322857,
+        "z_before": 2.634249186513081
+      },
+      "pass": true,
+      "target_id": "c1",
+      "tolerance": 1e-05
+    },
+    "permutation_invariance": {
+      "max_abs_prob_delta": 0.0,
+      "n_perms": 6,
+      "pass": true,
+      "tolerance": 1e-05
+    },
+    "text_follows_id": {
+      "base_separation": 3.2147260683384,
+      "max_abs_z_delta": 0.0,
+      "pass": true,
+      "swapped_ids": [
+        "c1",
+        "c2"
+      ],
+      "tolerance": 1e-05
+    }
+  },
+  "comparative_context_by_family": {
+    "attribute_comparison": true,
+    "description_classification": false,
+    "extraction_paraphrase": false,
+    "priority_decision": true,
+    "textual_inference_negation": false
+  },
+  "generated_utc": "2026-09-26T11:27:39Z",
+  "hypothesis_format": {
+    "en": "The answer to this question is: {option}.",
+    "es": "La respuesta a esta pregunta es: {option}."
+  },
+  "pair_scorer": {
+    "id": "hash-toy",
+    "kind": "deterministic toy, no weights",
+    "scale": 4.0,
+    "warning": "measures nothing; contract tests only"
+  },
+  "pass": true,
+  "premise_format": {
+    "en": "State: {state}\nQuestion: {question}",
+    "es": "Estado: {state}\nPregunta: {question}"
+  },
+  "scalar_output": {
+    "audited_params": 0,
+    "label_free": true,
+    "offenders": [],
+    "scalar_output": true,
+    "scorer": {
+      "id": "hash-toy",
+      "kind": "deterministic toy, no weights",
+      "scale": 4.0,
+      "warning": "measures nothing; contract tests only"
+    }
+  },
+  "scope": "the CONTRACT only — rendering, permutation, text following and comparative context. Measures no quality: the untrained figure is eval/ce_nograd.py",
+  "task": "T-ce-scorer"
+}

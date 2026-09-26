@@ -14,6 +14,10 @@ returns a logged ``stub`` status instead of failing or, worse, inventing
 a hash. No business logic is stubbed: verification always runs against
 real bytes.
 
+Two registries, one store: `BACKBONES` are the encoders a pointer head
+sits on, `SCORERS` the cross-encoder NLI checkpoints of #T-ce-scorer.
+`fetch`/`verify` treat them alike; only the walkers differ.
+
 CLI:
     .venv-train/bin/python -m model.weights fetch
     .venv-train/bin/python -m model.weights verify
@@ -53,7 +57,48 @@ BACKBONES = {
     },
 }
 
+# Cross-encoder scorer checkpoints (#T-ce-scorer). A SEPARATE registry on
+# purpose: these are sequence-classification NLI heads, not encoders that
+# `model.encoder.load_backbone` puts a pointer head on. `tools/smoke_torch`
+# and the `model.bakeoff` Pareto walk BACKBONES and must not pick them up.
+SCORERS = {
+    "minilmv2-l6-mnli-xnli": {
+        "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+        "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+        "license": "MIT",
+        "params_m": 107,
+        "gated": False,
+        "files": ("config.json", "tokenizer.json", "tokenizer_config.json",
+                  "special_tokens_map.json", "sentencepiece.bpe.model",
+                  "model.safetensors"),
+    },
+    "modernbert-zeroshot-v2": {
+        "repo": "MoritzLaurer/ModernBERT-base-zeroshot-v2.0",
+        "revision": "d421c4545a438fd006fb43f8b981c5d908faa1e1",
+        "license": "Apache-2.0",
+        "params_m": 150,
+        "gated": False,
+        # Its published training mix INCLUDES BANKING77: this checkpoint
+        # may NOT be presented as clean transfer to that benchmark
+        # (plan-recuperacion-2026-09-24 §5).
+        "contaminated_benchmarks": ("banking77",),
+        "files": ("config.json", "tokenizer.json", "tokenizer_config.json",
+                  "special_tokens_map.json", "model.safetensors"),
+    },
+}
+
 MANIFEST = "manifest.json"
+
+
+def spec_for(weight_id: str) -> dict:
+    """The pinned spec of a backbone OR a scorer — the registries are one
+    store on disk (`artifacts/weights/<id>/`) and one fetch/verify path."""
+    if weight_id in BACKBONES:
+        return BACKBONES[weight_id]
+    if weight_id in SCORERS:
+        return SCORERS[weight_id]
+    raise KeyError(f"unknown weight id {weight_id!r}; known: "
+                   f"{sorted(list(BACKBONES) + list(SCORERS))}")
 
 
 def weights_dir(backbone_id: str) -> str:
@@ -90,7 +135,7 @@ def _log(msg: str) -> None:
 
 
 def _present(backbone_id: str) -> bool:
-    spec = BACKBONES[backbone_id]
+    spec = spec_for(backbone_id)
     d = weights_dir(backbone_id)
     return all(os.path.exists(os.path.join(d, f)) for f in spec["files"])
 
@@ -101,7 +146,7 @@ def fetch(backbone_id: str) -> dict:
     Returns a status dict: ``ok`` (bytes on disk, manifest written) or
     ``stub`` (gate closed and nothing cached — logged, never faked).
     """
-    spec = BACKBONES[backbone_id]
+    spec = spec_for(backbone_id)
     dest = weights_dir(backbone_id)
     os.makedirs(dest, exist_ok=True)
 
@@ -169,7 +214,7 @@ def verify(backbone_id: str) -> dict:
     ``ok`` is False on ANY missing file or hash mismatch — callers must
     refuse to load the backbone in that case.
     """
-    spec = BACKBONES[backbone_id]
+    spec = spec_for(backbone_id)
     manifest = load_manifest(backbone_id)
     if manifest is None:
         return {"id": backbone_id, "ok": False, "reason": "no manifest",
@@ -210,7 +255,7 @@ def require_verified(backbone_id: str) -> str:
 
 def main(argv: list[str]) -> int:
     cmd = argv[1] if len(argv) > 1 else "fetch"
-    ids = argv[2:] or list(BACKBONES)
+    ids = argv[2:] or list(BACKBONES) + list(SCORERS)
     if cmd == "fetch":
         results = [fetch(i) for i in ids]
         stubs = [r for r in results if r["status"] == "stub"]

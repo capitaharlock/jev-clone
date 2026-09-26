@@ -421,3 +421,21 @@ resuelve seleccionando las tres.
 | 11 | honest-eval | T-battery-calib | Calibración y abstención aparte |
 | 12 | cross-encoder-pilot | T-ce-confirm | Segunda semilla + apertura única |
 | 13 | honest-eval | T-release-gate | Criterio v2 firmado y GO/NO-GO |
+
+## Entregado 2026-09-26 — `#T-ce-scorer` (entrada del piloto, `#cross-encoder-pilot`)
+
+| Requisito de la task | Dónde está |
+|---|---|
+| Scorer compartido `z_i = f(ESTADO, PREGUNTA, RESPUESTA_i)`, softmax sobre los K, una salida escalar y ninguna neurona por etiqueta (auditado, no afirmado) | `model/ce_scorer.py` (`CrossEncoderScorer`, `scalar_output_report`), `artifacts/gates/T-ce-scorer/contract.json` |
+| Formato de hipótesis **fijado** y documentado, ES y EN | `model.ce_scorer.HYPOTHESIS` / `PREMISE`; viaja en los dos artefactos |
+| Los dos checkpoints cablearon y puntúan **sin entrenar**: `minilmv2-l6-mnli-xnli` 17/28 (IC95 % 0,424–0,764) y `modernbert-zeroshot-v2` 18/28 (0,458–0,793), azar 0,333 | `eval/ce_nograd.py`, `artifacts/gates/T-ce-scorer/nograd.json` |
+| Advertencia BANKING77 de ModernBERT-zeroshot en el registro de pesos, no sólo en prosa | `model.weights.SCORERS[...]["contaminated_benchmarks"]` |
+| Contrato de contexto comparativo por familia, probado en las **dos** direcciones | `model.ce_scorer.COMPARATIVE_CONTEXT`, `check_comparative_context`, `model/test_ce_scorer.py` |
+| Permutación (<1e-5 sobre probabilidades realineadas) e intercambio de textos conservando ids, sobre el juguete determinista **y** sobre los pesos reales | `check_permutation_invariance`, `check_text_follows_id`, `nograd.json.contract_checks` |
+| §9: `fullspace_loss.py` deja de reclamar insesgadez sin su condición; la precondición violada por `CrossBlock` está escrita y testeada | `training/python/fullspace_loss.py`, `test_the_spec_states_the_precondition_the_published_head_violates` |
+
+**Lo que la cifra NO es:** 28 sondas escritas a mano, no la batería de 400 de
+`#T-battery-dev`. El desglose sí es información accionable para `#T-ce-finetune`:
+extracción 8/8 y descripciones 3/4 con ModernBERT, pero comparación de atributos
+1/6 y prioridades 2/4 — un checkpoint NLI sin ajustar no resuelve aritmética ni
+reglas de desempate, que es lo que el plan §5 avisaba de no dar por hecho.

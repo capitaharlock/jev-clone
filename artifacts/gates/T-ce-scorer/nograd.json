@@ -1,0 +1,2485 @@
+{
+  "batch_size": 16,
+  "checkpoints": {
+    "minilmv2-l6-mnli-xnli": {
+      "checkpoint": {
+        "batch_size": 16,
+        "contaminated_benchmarks": [],
+        "device": "cpu",
+        "entail_index": 0,
+        "id": "minilmv2-l6-mnli-xnli",
+        "license": "MIT",
+        "max_length": 512,
+        "mode": "entail_logit",
+        "n_classes": 3,
+        "params": 106995075,
+        "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+        "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca"
+      },
+      "contract_checks": {
+        "comparative_context": {
+          "foreign_id": "c3",
+          "off": {
+            "abs_delta": 0.0,
+            "z_after": -2.9484333992004395,
+            "z_before": -2.9484333992004395
+          },
+          "on": {
+            "abs_delta": 0.13876807689666748,
+            "z_after": 1.534257173538208,
+            "z_before": 1.3954890966415405
+          },
+          "pass": true,
+          "target_id": "c1",
+          "tolerance": 1e-05
+        },
+        "permutation_invariance": {
+          "max_abs_prob_delta": 1.6047837814170407e-07,
+          "n_perms": 6,
+          "pass": true,
+          "tolerance": 1e-05
+        },
+        "text_follows_id": {
+          "base_separation": 0.6842665076255798,
+          "max_abs_z_delta": 0.0,
+          "pass": true,
+          "swapped_ids": [
+            "c1",
+            "c2"
+          ],
+          "tolerance": 1e-05
+        }
+      },
+      "contract_pass": true,
+      "forward_seconds": 1.38,
+      "manifest": {
+        "fetched_utc": "2026-09-26T11:00:09Z",
+        "files": {
+          "config.json": {
+            "bytes": 1032,
+            "sha256": "79862295be1538a947e0f56d495ef8d658c3eaebcfb42c7ad96229d195ca745d"
+          },
+          "model.safetensors": {
+            "bytes": 427997022,
+            "sha256": "91b323ccf247ec1e3b5925d566230bae7c52de8147e6062b42e250089a3fc80b"
+          },
+          "sentencepiece.bpe.model": {
+            "bytes": 5069051,
+            "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+          },
+          "special_tokens_map.json": {
+            "bytes": 280,
+            "sha256": "06e405a36dfe4b9604f484f6a1e619af1a7f7d09e34a8555eb0b77b66318067f"
+          },
+          "tokenizer.json": {
+            "bytes": 17082758,
+            "sha256": "098c131bb4423163db239755e309facaa6850059f850f9f3d88a78344a4b631c"
+          },
+          "tokenizer_config.json": {
+            "bytes": 565,
+            "sha256": "86139ce1f39e814bcdb99a6fe30c0c4983911508aad07417e616d994fb74eb25"
+          }
+        },
+        "id": "minilmv2-l6-mnli-xnli",
+        "license": "MIT",
+        "params_m": 107,
+        "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+        "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca"
+      },
+      "modes": {
+        "entail_logit": {
+          "accuracy": 0.6071428571428571,
+          "by_family": {
+            "attribute_comparison": {
+              "accuracy": 0.5,
+              "chance": 0.3333333333333333,
+              "correct": 3,
+              "n": 6
+            },
+            "description_classification": {
+              "accuracy": 1.0,
+              "chance": 0.3333333333333333,
+              "correct": 4,
+              "n": 4
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.75,
+              "chance": 0.3333333333333333,
+              "correct": 6,
+              "n": 8
+            },
+            "priority_decision": {
+              "accuracy": 0.0,
+              "chance": 0.3333333333333333,
+              "correct": 0,
+              "n": 4
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.6666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 4,
+              "n": 6
+            }
+          },
+          "by_k": {
+            "3": {
+              "accuracy": 0.6071428571428571,
+              "chance": 0.3333333333333333,
+              "correct": 17,
+              "n": 28
+            }
+          },
+          "by_lang": {
+            "en": {
+              "accuracy": 0.6,
+              "chance": 0.3333333333333333,
+              "correct": 9,
+              "n": 15
+            },
+            "es": {
+              "accuracy": 0.6153846153846154,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 13
+            }
+          },
+          "chance": 0.3333333333333333,
+          "ci95": [
+            0.42409044159980325,
+            0.7643431355917387
+          ],
+          "correct": 17,
+          "counterfactual_pairs": {
+            "ci95": [
+              0.23206067674961361,
+              0.7085620444143711
+            ],
+            "joint_correct": 6,
+            "joint_rate": 0.46153846153846156,
+            "n_groups": 13,
+            "note": "a counterfactual group counts only when EVERY variant is right; one right out of two is what a fixed preference for a text already achieves",
+            "per_group": {
+              "city-en": false,
+              "city-es": false,
+              "color-en": true,
+              "color-es": true,
+              "lamp-en": false,
+              "lamp-en-cf": false,
+              "lamp-es": false,
+              "neg-en": true,
+              "neg-es": true,
+              "prio-en": false,
+              "prio-es": false,
+              "ticket-en": true,
+              "ticket-es": true
+            }
+          },
+          "macro_family": 0.5833333333333333,
+          "mean_nll": 0.9273368283599556,
+          "n": 28,
+          "rows": [
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-en",
+              "id": "color-en-green",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9521924975470701,
+              "z": [
+                -1.902966,
+                -1.698346,
+                1.889301
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-en",
+              "id": "color-en-red",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9416272534890479,
+              "z": [
+                1.856394,
+                -1.767705,
+                -1.486963
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-es",
+              "id": "color-es-verde",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9824326674106033,
+              "z": [
+                -1.324105,
+                -1.414132,
+                3.349032
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-es",
+              "id": "color-es-rojo",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9737528163201937,
+              "z": [
+                3.336969,
+                -1.157925,
+                -0.811485
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-en",
+              "id": "city-en-lives",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.4853831850707746,
+              "z": [
+                1.419313,
+                1.499634,
+                -0.485168
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": false,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-en",
+              "id": "city-en-born",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.45329057177644044,
+              "z": [
+                1.565854,
+                1.593073,
+                -0.157328
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-es",
+              "id": "city-es-vive",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.457164169921685,
+              "z": [
+                3.307858,
+                3.147342,
+                -1.174025
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-es",
+              "id": "city-es-nacio",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.563163547649279,
+              "z": [
+                3.236606,
+                2.965487,
+                -1.094161
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en",
+              "id": "lamp-en-cheap",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.46048972820547723,
+              "z": [
+                1.640174,
+                0.851628,
+                1.307629
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-en",
+              "id": "lamp-en-long",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.2092532543492698,
+              "z": [
+                1.815443,
+                1.024516,
+                1.477793
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c3",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-cheap-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.3480644505838072,
+              "z": [
+                1.579539,
+                0.900357,
+                1.362123
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-long-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.4450022649998085,
+              "z": [
+                1.804947,
+                1.052438,
+                1.55134
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-es",
+              "id": "lamp-es-barata",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.42354150208352465,
+              "z": [
+                2.102153,
+                1.23849,
+                2.039669
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-es",
+              "id": "lamp-es-dura",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.2153291337909633,
+              "z": [
+                2.141937,
+                1.607286,
+                2.26853
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-en",
+              "id": "ticket-en-refund",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.7862639862468852,
+              "z": [
+                0.090496,
+                -1.632259,
+                -2.281826
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-en",
+              "id": "ticket-en-access",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.637000106089625,
+              "z": [
+                -1.835843,
+                -1.616835,
+                -0.464841
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-es",
+              "id": "ticket-es-reembolso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9482632767806465,
+              "z": [
+                2.474118,
+                -0.627859,
+                -2.171951
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-es",
+              "id": "ticket-es-acceso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.7570986889911628,
+              "z": [
+                -1.936468,
+                -0.376942,
+                0.950712
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-en",
+              "id": "neg-en-no",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.4653165589541687,
+              "z": [
+                -0.838829,
+                0.06556,
+                -0.229771
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-en",
+              "id": "neg-en-yes",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.8271457494516841,
+              "z": [
+                0.543479,
+                -1.558035,
+                -1.901758
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-en-unstated",
+              "id": "neg-en-unstated",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.0966470085702706,
+              "z": [
+                0.006871,
+                -1.986901,
+                -2.100505
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-es",
+              "id": "neg-es-no",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.6653591131101577,
+              "z": [
+                1.437494,
+                3.047478,
+                1.853644
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-es",
+              "id": "neg-es-si",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9840071320415991,
+              "z": [
+                2.899467,
+                -1.637282,
+                -2.295457
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-es-nodice",
+              "id": "neg-es-nodice",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.005033967225129496,
+              "z": [
+                2.975891,
+                -1.011702,
+                -2.292234
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-en",
+              "id": "prio-en-duration",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.21980853778337933,
+              "z": [
+                1.716707,
+                0.771148,
+                0.745997
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-en",
+              "id": "prio-en-tiebreak",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.1971913940354292,
+              "z": [
+                1.797238,
+                0.796855,
+                0.706455
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-es",
+              "id": "prio-es-duracion",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.19973152647980946,
+              "z": [
+                2.406219,
+                1.365752,
+                1.528025
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-es",
+              "id": "prio-es-desempate",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.2095405598645576,
+              "z": [
+                2.545262,
+                1.589259,
+                1.542851
+              ]
+            }
+          ]
+        },
+        "entail_logprob": {
+          "accuracy": 0.5714285714285714,
+          "by_family": {
+            "attribute_comparison": {
+              "accuracy": 0.5,
+              "chance": 0.3333333333333333,
+              "correct": 3,
+              "n": 6
+            },
+            "description_classification": {
+              "accuracy": 1.0,
+              "chance": 0.3333333333333333,
+              "correct": 4,
+              "n": 4
+            },
+            "extraction_paraphrase": {
+              "accuracy": 0.75,
+              "chance": 0.3333333333333333,
+              "correct": 6,
+              "n": 8
+            },
+            "priority_decision": {
+              "accuracy": 0.0,
+              "chance": 0.3333333333333333,
+              "correct": 0,
+              "n": 4
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.5,
+              "chance": 0.3333333333333333,
+              "correct": 3,
+              "n": 6
+            }
+          },
+          "by_k": {
+            "3": {
+              "accuracy": 0.5714285714285714,
+              "chance": 0.3333333333333333,
+              "correct": 16,
+              "n": 28
+            }
+          },
+          "by_lang": {
+            "en": {
+              "accuracy": 0.5333333333333333,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 15
+            },
+            "es": {
+              "accuracy": 0.6153846153846154,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 13
+            }
+          },
+          "chance": 0.3333333333333333,
+          "ci95": [
+            0.39070785495839777,
+            0.7349145298359636
+          ],
+          "correct": 16,
+          "counterfactual_pairs": {
+            "ci95": [
+              0.17709707685632237,
+              0.6447710866356315
+            ],
+            "joint_correct": 5,
+            "joint_rate": 0.38461538461538464,
+            "n_groups": 13,
+            "note": "a counterfactual group counts only when EVERY variant is right; one right out of two is what a fixed preference for a text already achieves",
+            "per_group": {
+              "city-en": false,
+              "city-es": false,
+              "color-en": true,
+              "color-es": true,
+              "lamp-en": false,
+              "lamp-en-cf": false,
+              "lamp-es": false,
+              "neg-en": false,
+              "neg-es": true,
+              "prio-en": false,
+              "prio-es": false,
+              "ticket-en": true,
+              "ticket-es": true
+            }
+          },
+          "macro_family": 0.55,
+          "mean_nll": 0.8973974964293409,
+          "n": 28,
+          "rows": [
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-en",
+              "id": "color-en-green",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.979082279500356,
+              "z": [
+                -4.609548,
+                -4.712507,
+                -0.120537
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-en",
+              "id": "color-en-red",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9794789617659247,
+              "z": [
+                -0.125212,
+                -4.936893,
+                -4.482211
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-es",
+              "id": "color-es-verde",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9846111481834452,
+              "z": [
+                -4.84608,
+                -4.883611,
+                -0.012919
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-es",
+              "id": "color-es-rojo",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9692522285243866,
+              "z": [
+                -0.013218,
+                -4.435299,
+                -3.939646
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-en",
+              "id": "city-en-lives",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.4653865653692569,
+              "z": [
+                -0.216951,
+                -0.191015,
+                -1.937679
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": false,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-en",
+              "id": "city-en-born",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.44195783934081373,
+              "z": [
+                -0.184595,
+                -0.168048,
+                -1.587121
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-es",
+              "id": "city-es-vive",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.49630366101537454,
+              "z": [
+                -0.016084,
+                -0.019073,
+                -4.45008
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-es",
+              "id": "city-es-nacio",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.49866345436078785,
+              "z": [
+                -0.018374,
+                -0.026439,
+                -4.331412
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en",
+              "id": "lamp-en-cheap",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.385572655807146,
+              "z": [
+                -0.169996,
+                -0.531022,
+                -0.27916
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-en",
+              "id": "lamp-en-long",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.27698699615741085,
+              "z": [
+                -0.135003,
+                -0.445445,
+                -0.225307
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c3",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-cheap-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.34991531989012226,
+              "z": [
+                -0.185394,
+                -0.499628,
+                -0.256483
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-long-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.37301521109973407,
+              "z": [
+                -0.132435,
+                -0.426582,
+                -0.198906
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-es",
+              "id": "lamp-es-barata",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3654820497830522,
+              "z": [
+                -0.087604,
+                -0.368354,
+                -0.106894
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-es",
+              "id": "lamp-es-dura",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3038480611792716,
+              "z": [
+                -0.092457,
+                -0.219406,
+                -0.074648
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-en",
+              "id": "ticket-en-refund",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.8806620777228117,
+              "z": [
+                -1.074893,
+                -3.351081,
+                -4.491172
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-en",
+              "id": "ticket-en-access",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.7485346858164257,
+              "z": [
+                -3.54762,
+                -3.294344,
+                -1.629025
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-es",
+              "id": "ticket-es-reembolso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9505086976496706,
+              "z": [
+                -0.049934,
+                -3.150391,
+                -5.006132
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-es",
+              "id": "ticket-es-acceso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.7303516231039746,
+              "z": [
+                -3.863169,
+                -1.559229,
+                -0.467635
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-en",
+              "id": "neg-en-no",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.45204743377795564,
+              "z": [
+                -2.969853,
+                -1.374349,
+                -1.365042
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-en",
+              "id": "neg-en-yes",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9387765708335412,
+              "z": [
+                -0.679987,
+                -4.385316,
+                -3.883382
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-en-unstated",
+              "id": "neg-en-unstated",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.03834172116961966,
+              "z": [
+                -1.1279,
+                -5.13308,
+                -4.331964
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-es",
+              "id": "neg-es-no",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3988268583220553,
+              "z": [
+                -0.550779,
+                -0.028446,
+                -0.118131
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-es",
+              "id": "neg-es-si",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9895846770388764,
+              "z": [
+                -0.03014,
+                -5.416905,
+                -5.154809
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-es-nodice",
+              "id": "neg-es-nodice",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.007704340121102786,
+              "z": [
+                -0.028153,
+                -4.484689,
+                -4.874855
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-en",
+              "id": "prio-en-duration",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.2866917541690732,
+              "z": [
+                -0.141236,
+                -0.552186,
+                -0.572576
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-en",
+              "id": "prio-en-tiebreak",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.2702320796339385,
+              "z": [
+                -0.128307,
+                -0.526889,
+                -0.608168
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-es",
+              "id": "prio-es-duracion",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3070008240513227,
+              "z": [
+                -0.054008,
+                -0.242602,
+                -0.194032
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-es",
+              "id": "prio-es-desempate",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3149135296564938,
+              "z": [
+                -0.046664,
+                -0.174648,
+                -0.19271
+              ]
+            }
+          ]
+        }
+      },
+      "ms_per_pair": 16.426,
+      "pairs": 84,
+      "trained_here": false
+    },
+    "modernbert-zeroshot-v2": {
+      "checkpoint": {
+        "batch_size": 16,
+        "contaminated_benchmarks": [
+          "banking77"
+        ],
+        "device": "cpu",
+        "entail_index": 0,
+        "id": "modernbert-zeroshot-v2",
+        "license": "Apache-2.0",
+        "max_length": 512,
+        "mode": "entail_logit",
+        "n_classes": 2,
+        "params": 149606402,
+        "repo": "MoritzLaurer/ModernBERT-base-zeroshot-v2.0",
+        "revision": "d421c4545a438fd006fb43f8b981c5d908faa1e1"
+      },
+      "contract_checks": {
+        "comparative_context": {
+          "foreign_id": "c3",
+          "off": {
+            "abs_delta": 0.0,
+            "z_after": -2.5045909881591797,
+            "z_before": -2.5045909881591797
+          },
+          "on": {
+            "abs_delta": 0.07960855960845947,
+            "z_after": -0.848168134689331,
+            "z_before": -0.9277766942977905
+          },
+          "pass": true,
+          "target_id": "c1",
+          "tolerance": 1e-05
+        },
+        "permutation_invariance": {
+          "max_abs_prob_delta": 0.0,
+          "n_perms": 6,
+          "pass": true,
+          "tolerance": 1e-05
+        },
+        "text_follows_id": {
+          "base_separation": 0.442409873008728,
+          "max_abs_z_delta": 0.0,
+          "pass": true,
+          "swapped_ids": [
+            "c1",
+            "c2"
+          ],
+          "tolerance": 1e-05
+        }
+      },
+      "contract_pass": true,
+      "forward_seconds": 4.648,
+      "manifest": {
+        "fetched_utc": "2026-09-26T11:00:22Z",
+        "files": {
+          "config.json": {
+            "bytes": 1469,
+            "sha256": "d5c53ad1e5a23066144e958db475b1f8df7e8e45bf0ef6aba8a842c7f6450be1"
+          },
+          "model.safetensors": {
+            "bytes": 299227092,
+            "sha256": "5af4dac82bf3da16575d0c71c8c96ee7eb6621ae5f4f4726943d0a3583b44b46"
+          },
+          "special_tokens_map.json": {
+            "bytes": 694,
+            "sha256": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049"
+          },
+          "tokenizer.json": {
+            "bytes": 3583228,
+            "sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30"
+          },
+          "tokenizer_config.json": {
+            "bytes": 20839,
+            "sha256": "c5a7dfd44d93c5d7ed9b2ddcd7a6018e935ec7d53f1de45910ea9868e0ff1c17"
+          }
+        },
+        "id": "modernbert-zeroshot-v2",
+        "license": "Apache-2.0",
+        "params_m": 150,
+        "repo": "MoritzLaurer/ModernBERT-base-zeroshot-v2.0",
+        "revision": "d421c4545a438fd006fb43f8b981c5d908faa1e1"
+      },
+      "modes": {
+        "entail_logit": {
+          "accuracy": 0.6428571428571429,
+          "by_family": {
+            "attribute_comparison": {
+              "accuracy": 0.16666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 1,
+              "n": 6
+            },
+            "description_classification": {
+              "accuracy": 0.75,
+              "chance": 0.3333333333333333,
+              "correct": 3,
+              "n": 4
+            },
+            "extraction_paraphrase": {
+              "accuracy": 1.0,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 8
+            },
+            "priority_decision": {
+              "accuracy": 0.5,
+              "chance": 0.3333333333333333,
+              "correct": 2,
+              "n": 4
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.6666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 4,
+              "n": 6
+            }
+          },
+          "by_k": {
+            "3": {
+              "accuracy": 0.6428571428571429,
+              "chance": 0.3333333333333333,
+              "correct": 18,
+              "n": 28
+            }
+          },
+          "by_lang": {
+            "en": {
+              "accuracy": 0.6666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 10,
+              "n": 15
+            },
+            "es": {
+              "accuracy": 0.6153846153846154,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 13
+            }
+          },
+          "chance": 0.3333333333333333,
+          "ci95": [
+            0.45830306373230584,
+            0.792941705856417
+          ],
+          "correct": 18,
+          "counterfactual_pairs": {
+            "ci95": [
+              0.29143795558562896,
+              0.7679393232503864
+            ],
+            "joint_correct": 7,
+            "joint_rate": 0.5384615384615384,
+            "n_groups": 13,
+            "note": "a counterfactual group counts only when EVERY variant is right; one right out of two is what a fixed preference for a text already achieves",
+            "per_group": {
+              "city-en": true,
+              "city-es": true,
+              "color-en": true,
+              "color-es": true,
+              "lamp-en": false,
+              "lamp-en-cf": false,
+              "lamp-es": false,
+              "neg-en": true,
+              "neg-es": true,
+              "prio-en": false,
+              "prio-es": false,
+              "ticket-en": true,
+              "ticket-es": false
+            }
+          },
+          "macro_family": 0.6166666666666667,
+          "mean_nll": 0.7385239844386107,
+          "n": 28,
+          "rows": [
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-en",
+              "id": "color-en-green",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9683972427996994,
+              "z": [
+                -3.134609,
+                -2.824845,
+                1.147765
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-en",
+              "id": "color-en-red",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9557240852120013,
+              "z": [
+                0.942416,
+                -2.784953,
+                -2.862051
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-es",
+              "id": "color-es-verde",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9642948577201198,
+              "z": [
+                -1.842569,
+                -2.279428,
+                1.951919
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-es",
+              "id": "color-es-rojo",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9665971128616934,
+              "z": [
+                1.901353,
+                -2.492055,
+                -1.90637
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-en",
+              "id": "city-en-lives",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9845053675374213,
+              "z": [
+                -2.449636,
+                1.897589,
+                -3.982043
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-en",
+              "id": "city-en-born",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9835909481636848,
+              "z": [
+                1.950738,
+                -2.425804,
+                -3.542608
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-es",
+              "id": "city-es-vive",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9209902011121185,
+              "z": [
+                -1.210104,
+                1.534182,
+                -2.305813
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-es",
+              "id": "city-es-nacio",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.582455969727114,
+              "z": [
+                0.467784,
+                0.082657,
+                -2.842573
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en",
+              "id": "lamp-en-cheap",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.22225483074151287,
+              "z": [
+                -0.288249,
+                -1.031116,
+                0.818196
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-en",
+              "id": "lamp-en-long",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.11771645594407344,
+              "z": [
+                -0.894297,
+                -0.847004,
+                1.031114
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c3",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-cheap-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.6455598397940736,
+              "z": [
+                -0.077052,
+                -1.040613,
+                0.845719
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-long-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.2972750628575507,
+              "z": [
+                0.272766,
+                -0.493515,
+                0.914172
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-es",
+              "id": "lamp-es-barata",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.1956314846327742,
+              "z": [
+                0.861322,
+                1.44134,
+                1.705291
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-es",
+              "id": "lamp-es-dura",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.30616582727751174,
+              "z": [
+                0.849906,
+                1.239836,
+                1.703004
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-en",
+              "id": "ticket-en-refund",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.7247704952170998,
+              "z": [
+                -0.166172,
+                -1.564205,
+                -2.186104
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-en",
+              "id": "ticket-en-access",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.8189291605746123,
+              "z": [
+                -2.630655,
+                -1.523889,
+                0.27087
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": false,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-es",
+              "id": "ticket-es-reembolso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3433602320366033,
+              "z": [
+                -1.844809,
+                -1.793352,
+                -1.996111
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-es",
+              "id": "ticket-es-acceso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.432666508288653,
+              "z": [
+                -1.505565,
+                -0.976904,
+                -0.784531
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-en",
+              "id": "neg-en-no",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.6046677652777388,
+              "z": [
+                -1.711647,
+                0.326479,
+                -0.320686
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-en",
+              "id": "neg-en-yes",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.871075678485447,
+              "z": [
+                0.729932,
+                -1.514145,
+                -2.440618
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-en-unstated",
+              "id": "neg-en-unstated",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.12756684955807837,
+              "z": [
+                -0.343652,
+                -0.355673,
+                -1.579143
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-es",
+              "id": "neg-es-no",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.7550594468377063,
+              "z": [
+                -1.793159,
+                1.253473,
+                -0.030696
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-es",
+              "id": "neg-es-si",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9114162592725974,
+              "z": [
+                0.555807,
+                -2.706698,
+                -2.276088
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-es-nodice",
+              "id": "neg-es-nodice",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.09495131290628685,
+              "z": [
+                -0.071217,
+                -0.846312,
+                -1.946953
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": true,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-en",
+              "id": "prio-en-duration",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.45968451560012663,
+              "z": [
+                -0.88425,
+                0.529879,
+                0.459743
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-en",
+              "id": "prio-en-tiebreak",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.34424621112661224,
+              "z": [
+                -1.37508,
+                0.075993,
+                -0.357916
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": true,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-es",
+              "id": "prio-es-duracion",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.5410324331428799,
+              "z": [
+                1.229833,
+                2.339592,
+                1.683123
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-es",
+              "id": "prio-es-desempate",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.2340907117014333,
+              "z": [
+                0.966594,
+                2.419668,
+                1.444453
+              ]
+            }
+          ]
+        },
+        "entail_logprob": {
+          "accuracy": 0.6428571428571429,
+          "by_family": {
+            "attribute_comparison": {
+              "accuracy": 0.16666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 1,
+              "n": 6
+            },
+            "description_classification": {
+              "accuracy": 0.75,
+              "chance": 0.3333333333333333,
+              "correct": 3,
+              "n": 4
+            },
+            "extraction_paraphrase": {
+              "accuracy": 1.0,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 8
+            },
+            "priority_decision": {
+              "accuracy": 0.5,
+              "chance": 0.3333333333333333,
+              "correct": 2,
+              "n": 4
+            },
+            "textual_inference_negation": {
+              "accuracy": 0.6666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 4,
+              "n": 6
+            }
+          },
+          "by_k": {
+            "3": {
+              "accuracy": 0.6428571428571429,
+              "chance": 0.3333333333333333,
+              "correct": 18,
+              "n": 28
+            }
+          },
+          "by_lang": {
+            "en": {
+              "accuracy": 0.6666666666666666,
+              "chance": 0.3333333333333333,
+              "correct": 10,
+              "n": 15
+            },
+            "es": {
+              "accuracy": 0.6153846153846154,
+              "chance": 0.3333333333333333,
+              "correct": 8,
+              "n": 13
+            }
+          },
+          "chance": 0.3333333333333333,
+          "ci95": [
+            0.45830306373230584,
+            0.792941705856417
+          ],
+          "correct": 18,
+          "counterfactual_pairs": {
+            "ci95": [
+              0.29143795558562896,
+              0.7679393232503864
+            ],
+            "joint_correct": 7,
+            "joint_rate": 0.5384615384615384,
+            "n_groups": 13,
+            "note": "a counterfactual group counts only when EVERY variant is right; one right out of two is what a fixed preference for a text already achieves",
+            "per_group": {
+              "city-en": true,
+              "city-es": true,
+              "color-en": true,
+              "color-es": true,
+              "lamp-en": false,
+              "lamp-en-cf": false,
+              "lamp-es": false,
+              "neg-en": true,
+              "neg-es": true,
+              "prio-en": false,
+              "prio-es": false,
+              "ticket-en": true,
+              "ticket-es": false
+            }
+          },
+          "macro_family": 0.6166666666666667,
+          "mean_nll": 0.7502663176513432,
+          "n": 28,
+          "rows": [
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-en",
+              "id": "color-en-green",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9957820705152208,
+              "z": [
+                -6.724194,
+                -5.982142,
+                -0.12853
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-en",
+              "id": "color-en-red",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.994081993242786,
+              "z": [
+                -0.186145,
+                -5.84865,
+                -6.185871
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c3",
+              "group": "color-es",
+              "id": "color-es-verde",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9725507294553917,
+              "z": [
+                -3.91723,
+                -4.887065,
+                -0.028183
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "color-es",
+              "id": "color-es-rojo",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9807928753827075,
+              "z": [
+                -0.030417,
+                -5.40836,
+                -4.232395
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-en",
+              "id": "city-en-lives",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9945823416806142,
+              "z": [
+                -5.274128,
+                -0.032059,
+                -8.785786
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-en",
+              "id": "city-en-born",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9933728558342582,
+              "z": [
+                -0.032945,
+                -5.105955,
+                -7.837634
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c2",
+              "group": "city-es",
+              "id": "city-es-vive",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9247637801761875,
+              "z": [
+                -2.661034,
+                -0.062706,
+                -5.030381
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "extraction_paraphrase",
+              "gold": "c1",
+              "group": "city-es",
+              "id": "city-es-nacio",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.5624834268797201,
+              "z": [
+                -0.436654,
+                -0.691779,
+                -6.242292
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en",
+              "id": "lamp-en-cheap",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.27067146152949767,
+              "z": [
+                -1.108327,
+                -2.37976,
+                -0.227006
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-en",
+              "id": "lamp-en-long",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.11813241494918097,
+              "z": [
+                -2.096965,
+                -2.041712,
+                -0.167017
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": true,
+              "family": "attribute_comparison",
+              "gold": "c3",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-cheap-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.6089413100928809,
+              "z": [
+                -0.853958,
+                -2.400842,
+                -0.218071
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-en-cf",
+              "id": "lamp-en-long-cf",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.35932892557735296,
+              "z": [
+                -0.521862,
+                -1.428418,
+                -0.200465
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c1",
+              "group": "lamp-es",
+              "id": "lamp-es-barata",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.29635158643986836,
+              "z": [
+                -0.226423,
+                -0.067598,
+                -0.042239
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": true,
+              "correct": false,
+              "family": "attribute_comparison",
+              "gold": "c2",
+              "group": "lamp-es",
+              "id": "lamp-es-dura",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3431602551029502,
+              "z": [
+                -0.242578,
+                -0.094043,
+                -0.043236
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-en",
+              "id": "ticket-en-refund",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.8805699019487444,
+              "z": [
+                -0.945642,
+                -3.173069,
+                -4.527543
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-en",
+              "id": "ticket-en-access",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9206266730360536,
+              "z": [
+                -5.532502,
+                -3.074366,
+                -0.541346
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": false,
+              "family": "description_classification",
+              "gold": "c1",
+              "group": "ticket-es",
+              "id": "ticket-es-reembolso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.3723858113234453,
+              "z": [
+                -3.928639,
+                -3.904359,
+                -4.342929
+              ]
+            },
+            {
+              "argmax_id": "c3",
+              "comparative_context": false,
+              "correct": true,
+              "family": "description_classification",
+              "gold": "c3",
+              "group": "ticket-es",
+              "id": "ticket-es-acceso",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.5213187251134331,
+              "z": [
+                -3.251578,
+                -2.319559,
+                -1.902229
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-en",
+              "id": "neg-en-no",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.6187229894855926,
+              "z": [
+                -3.673266,
+                -0.4799,
+                -1.03294
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-en",
+              "id": "neg-en-yes",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.9445183223461014,
+              "z": [
+                -0.253237,
+                -3.269741,
+                -4.881824
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-en-unstated",
+              "id": "neg-en-unstated",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.06884625389030054,
+              "z": [
+                -1.085007,
+                -1.136691,
+                -3.021917
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c2",
+              "group": "neg-es",
+              "id": "neg-es-no",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.6604677383983621,
+              "z": [
+                -3.646515,
+                -0.110824,
+                -0.834555
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": true,
+              "family": "textual_inference_negation",
+              "gold": "c1",
+              "group": "neg-es",
+              "id": "neg-es-si",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.9826224351057977,
+              "z": [
+                -0.356386,
+                -5.701982,
+                -4.705692
+              ]
+            },
+            {
+              "argmax_id": "c1",
+              "comparative_context": false,
+              "correct": false,
+              "family": "textual_inference_negation",
+              "gold": "c3",
+              "group": "neg-es-nodice",
+              "id": "neg-es-nodice",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.02707667964207327,
+              "z": [
+                -0.802255,
+                -1.998687,
+                -4.119778
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": true,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-en",
+              "id": "prio-en-duration",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.47181837916616504,
+              "z": [
+                -2.07313,
+                -0.336627,
+                -0.394972
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-en",
+              "id": "prio-en-tiebreak",
+              "k": 3,
+              "lang": "en",
+              "p_gold": 0.35272032810131293,
+              "z": [
+                -3.038979,
+                -0.667601,
+                -1.185456
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": true,
+              "family": "priority_decision",
+              "gold": "c2",
+              "group": "prio-es",
+              "id": "prio-es-duracion",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.34665807508652363,
+              "z": [
+                -0.106385,
+                -0.013467,
+                -0.040408
+              ]
+            },
+            {
+              "argmax_id": "c2",
+              "comparative_context": true,
+              "correct": false,
+              "family": "priority_decision",
+              "gold": "c3",
+              "group": "prio-es",
+              "id": "prio-es-desempate",
+              "k": 3,
+              "lang": "es",
+              "p_gold": 0.33958866487759526,
+              "z": [
+                -0.175802,
+                -0.01218,
+                -0.062629
+              ]
+            }
+          ]
+        }
+      },
+      "ms_per_pair": 55.329,
+      "pairs": 84,
+      "trained_here": false
+    }
+  },
+  "comparative_context_by_family": {
+    "attribute_comparison": true,
+    "description_classification": false,
+    "extraction_paraphrase": false,
+    "priority_decision": true,
+    "textual_inference_negation": false
+  },
+  "default_score_mode": "entail_logit",
+  "device": "cpu",
+  "generated_utc": "2026-09-26T11:09:18Z",
+  "hypothesis_format": {
+    "en": "The answer to this question is: {option}.",
+    "es": "La respuesta a esta pregunta es: {option}."
+  },
+  "premise_format": {
+    "en": "State: {state}\nQuestion: {question}",
+    "es": "Estado: {state}\nPregunta: {question}"
+  },
+  "scope": "28 hand-written probe cases, five families, ES+EN, K=3. NOT the development battery (#T-battery-dev, 400 reviewed cases, does not exist yet) and NOT a product accuracy: read the Wilson interval, not the point. No training happened here (#T-ce-finetune).",
+  "score_mode_note": "entail_logit is the published zero-shot recipe of these checkpoints; entail_logprob is published alongside because the two heads have 3 and 2 classes and their raw logits are not on the same scale",
+  "task": "T-ce-scorer",
+  "warnings": [
+    "modernbert-zeroshot-v2: training mix includes ['banking77'] — not a clean transfer claim for those benchmarks"
+  ]
+}

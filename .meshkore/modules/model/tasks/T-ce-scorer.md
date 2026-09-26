@@ -76,3 +76,33 @@ El piloto no la necesita.
 - El contrato de contexto comparativo está implementado y probado en las dos
   direcciones.
 - La pérdida muestreada de fase 2 deja de afirmar una garantía que no tiene.
+
+## Resultado (2026-09-26)
+
+La pieza es `model/ce_scorer.py`; la medición sin entrenar, `eval/ce_nograd.py`.
+Artefactos: `artifacts/gates/T-ce-scorer/contract.json` (las tres comprobaciones
+del gate, sin pesos) y `.../nograd.json` (los dos checkpoints, con sus tres
+comprobaciones repetidas sobre los pesos reales).
+
+Cifra sin entrenar, 28 sondas escritas a mano, cinco familias, ES+EN, K=3,
+azar 0,333, CPU:
+
+| Checkpoint | Forzado | IC95 % | Pares contrafactuales | ms/par |
+|---|---|---|---|---|
+| `minilmv2-l6-mnli-xnli` | 17/28 = 0,607 | 0,424–0,764 | 6/13 | 16,4 |
+| `modernbert-zeroshot-v2` | 18/28 = 0,643 | 0,458–0,793 | 7/13 | 55,3 |
+
+**No es la batería** de `#T-battery-dev` (400 casos revisados, aún no existe) y
+no sostiene ninguna comparación con el 70 %: con n=28 el intervalo es el dato.
+Lo accionable para `#T-ce-finetune` es el desglose, no el punto: extracción
+8/8 y descripciones 3/4 con ModernBERT frente a comparación de atributos 1/6 y
+prioridades 2/4. Un checkpoint NLI sin ajustar reconoce el hecho explícito del
+estado y no resuelve aritmética ni reglas de desempate — exactamente lo que el
+plan §5 pedía no dar por hecho. Ninguno de los dos se evaluó sobre BANKING77;
+la contaminación de `modernbert-zeroshot-v2` viaja en el registro de pesos.
+
+La corrección de `training/python/fullspace_loss.py` es la opción «otro objetivo
+sin esa garantía»: la precondición de valores fijos respecto al muestreo está
+escrita, la cabeza publicada la viola (ya lo medía
+`test_logits_depend_on_the_candidate_set`), y dos tests nuevos impiden que la
+afirmación desnuda vuelva a la spec o al docstring.

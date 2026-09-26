@@ -31,8 +31,9 @@ mano. No hay estimador y no hay corrección: `log Q ≡ 0`.
 
 **Modo muestreado** (`S` no enumerable, o no cabe): se sustituye `R` por
 un estimador `R̂` construido sobre un subconjunto de candidatos, y la
-corrección `log Q` es lo que lo hace insesgado. La corrección se aplica
-como un desplazamiento por columna sobre los logits,
+corrección `log Q` es lo que endereza ese estimador **bajo la condición
+que la sección «Qué se demuestra y sobre qué» escribe entera**. La
+corrección se aplica como un desplazamiento por columna sobre los logits,
 
     z'_c = z_c - logQ_c ,   logQ_y = 0 ,   logQ_unk = 0                 (3)
 
@@ -52,36 +53,77 @@ el diseño muestral del otro.
 
       R̂ = Σ_{j=1..m} e^{z_{c_j}} / (m · Q(c_j))   ⇒   logQ_c = log(m·Q(c))
 
-  y `E[R̂] = R` exactamente. Los duplicados extraídos **cuentan**: quitarlos
-  rompe el insesgamiento (por eso el filtrado de colisiones se hace sobre
-  el POOL antes de muestrear, nunca sobre la muestra).
+  y `E[R̂] = R` para valores `e^{z_c}` fijos respecto al muestreo. Los
+  duplicados extraídos **cuentan**: quitarlos rompe esa identidad (por eso
+  el filtrado de colisiones se hace sobre el POOL antes de muestrear,
+  nunca sobre la muestra).
 
 * `INCLUSION` — un subconjunto `N` donde cada candidato entra con
   probabilidad de inclusión `π(c)` (Horvitz-Thompson). Entonces
 
       R̂ = Σ_{c ∈ N} e^{z_c} / π(c)               ⇒   logQ_c = log π(c)
 
-  y `E[R̂] = R` exactamente. Éste es el caso de los **negativos in-batch**:
+  y `E[R̂] = R`, otra vez para valores fijos respecto al muestreo. Éste es
+  el caso de los **negativos in-batch**:
   el conjunto de etiquetas únicas de un batch es una muestra
   DEDUPLICADA, y para el diseño «`m` extracciones con reemplazo, luego
   únicas» la inclusión es `π(c) = 1 - (1 - Q(c))^m`, que **no** es
   `m · Q(c)`. Usar `m·Q` sobre un conjunto deduplicado da un estimador
   sesgado; `test_fullspace_loss` mide ese sesgo en vez de afirmarlo.
 
-Qué es insesgado y qué no
--------------------------
+Qué se demuestra y sobre qué
+----------------------------
 
-`R̂` es insesgado para `R`. La PÉRDIDA no lo es, y **subestima**: el
-denominador entra dentro de un `log`, que es cóncavo, así que por Jensen
+**La condición, primero, porque es la que este head NO cumple.** Las dos
+identidades de arriba —y la de Horvitz–Thompson en particular— exigen que
+los valores sumados sean FIJOS respecto al muestreo: `e^{z_c}` tiene que
+ser el mismo número entre en el conjunto quien entre. Aquí no lo es. La
+ecuación (1) ya lo dice: `z_c = head(s, q, texto(c) | C)` está
+condicionado al conjunto, porque `model/decision_head.py:105-110` hace
+atención entre opciones. Cambiar `C` cambia todos los logits, el del oro y
+el de `unknown` incluidos, y `test_logits_depend_on_the_candidate_set` lo
+mide sobre la cabeza real en vez de suponerlo.
+
+De ahí sale lo que este módulo puede y no puede afirmar:
+
+* `E[R̂] = R` está demostrado para logits **independientes del conjunto**.
+  Los tests de `test_fullspace_loss` enumeran el diseño muestral con
+  logits FIJOS: verifican el álgebra del estimador y la distinción entre
+  los dos esquemas, que es para lo que existen. **No dicen nada** sobre
+  los logits que produce `PointerDecisionHead`, y citarlos como si lo
+  dijeran es exactamente el error que esta sección existe para impedir.
+* Con `set_attention=True` —la cabeza publicada— `R̂` NO es un estimador
+  insesgado de la masa negativa calculada sobre el espacio completo, y
+  este módulo no lo afirma. Lo que queda es **otro objetivo**: una
+  pérdida sobre logits condicionados al conjunto muestreado, sin garantía
+  de insesgamiento heredada del diseño muestral. Es utilizable y es
+  medible; no es una solución matemáticamente acreditada del problema del
+  denominador, y no puede presentarse como tal.
+* La ablación `set_attention=False` (logits independientes del conjunto,
+  `CrossBlock` sin atención entre opciones) SÍ cumple la condición. Es un
+  cambio de arquitectura, no la misma cabeza con otro denominador: quien
+  quiera el argumento de insesgamiento tiene que pagar ese precio y
+  medirlo.
+
+**La PÉRDIDA no es insesgada en ningún caso, y subestima**: el denominador
+entra dentro de un `log`, que es cóncavo, así que por Jensen
 
     E[L̂] = -z_y + E[log D̂] ≤ -z_y + log E[D̂] = L                      (4)
 
 con igualdad sólo cuando `D̂` es determinista (el caso `π ≡ 1`, que es el
 modo exacto). Es decir: el objetivo muestreado es **optimista** — reporta
 menos pérdida de la que la fila tiene sobre el espacio entero, y la brecha
-se cierra al crecer la muestra (consistencia). Prometer insesgamiento de la
-pérdida sería falso, y decir que la sobreestima también: el test mide el
-signo, no lo asume.
+se cierra al crecer la muestra (consistencia). El argumento de Jensen
+tampoco se hereda gratis: presupone `E[D̂] = D`, que es la misma condición
+de arriba. Prometer insesgamiento de la pérdida sería falso, y decir que
+la sobreestima también: el test mide el signo, no lo asume.
+
+Y el aviso de alcance: el piloto de recuperación (`#cross-encoder-pilot`)
+NO necesita esta pérdida. Su objetivo es CE sobre los candidatos
+ofrecidos, donde el denominador es el conjunto y no hay nada que
+estimar. Este módulo es la especificación de la vía muestreada de
+`#T-fullspace-objective`, que cerró en NO-GO; no está en el camino del
+piloto y nada de lo de aquí debe entrar allí por inercia.
 
 Cuándo se omite `log Q`, y por qué
 ----------------------------------
@@ -246,12 +288,13 @@ ESTIMATORS = {
     EXACT: ("R is summed over the whole space: no estimator, no correction, "
             "and equation (2) is `cross_entropy` over those columns"),
     PROPOSAL: ("R_hat = sum_j exp(z_j) / (m * Q(c_j)) over m i.i.d. draws "
-               "WITH replacement; unbiased for R. Duplicates count — "
-               "removing a drawn duplicate breaks it"),
+               "WITH replacement; E[R_hat] = R FOR VALUES FIXED WITH "
+               "RESPECT TO THE SAMPLING (see `unbiasedness.precondition`). "
+               "Duplicates count — removing a drawn duplicate breaks it"),
     INCLUSION: ("R_hat = sum_{c in N} exp(z_c) / pi(c) (Horvitz-Thompson); "
-                "unbiased for R. For `m draws with replacement, then unique` "
-                "— the in-batch case — pi(c) = 1 - (1 - Q(c))^m, which is "
-                "NOT m * Q(c)"),
+                "E[R_hat] = R under the same precondition. For `m draws "
+                "with replacement, then unique` — the in-batch case — "
+                "pi(c) = 1 - (1 - Q(c))^m, which is NOT m * Q(c)"),
 }
 
 
@@ -416,11 +459,15 @@ def sampled_loss_batch(logits: torch.Tensor, shift: torch.Tensor,
 
 def negative_mass_estimate(logits: torch.Tensor,
                            cands: CandidateSet) -> torch.Tensor:
-    """`R̂` sola — la cantidad sobre la que se demuestra el insesgamiento.
+    """`R̂` sola — la cantidad sobre la que se enuncia `E[R̂] = R`.
 
     Es la pérdida menos el oro y el `unknown`: aislarla es lo que permite
     testear `E[R̂] = R` exactamente por enumeración, en vez de por Monte
-    Carlo con una tolerancia inventada.
+    Carlo con una tolerancia inventada. Esa enumeración se hace con
+    logits FIJOS y demuestra el álgebra del estimador, no una propiedad
+    de los logits que devuelve `PointerDecisionHead`: con atención entre
+    opciones no son fijos respecto al muestreo (docstring del módulo,
+    «Qué se demuestra y sobre qué»).
     """
     shift = cands.shift(device=logits.device, dtype=logits.dtype)
     z = (logits - shift)[:cands.k]
@@ -463,27 +510,46 @@ def spec() -> dict:
                 "log_q": "log(m * Q(c))",
                 "estimator": ESTIMATORS[PROPOSAL],
                 "verified": "E[R_hat] = R by exact enumeration over all "
-                            "m-draw outcomes, not Monte Carlo",
+                            "m-draw outcomes, not Monte Carlo — with FIXED "
+                            "logits (see unbiasedness.precondition)",
             },
             INCLUSION: {
                 "when": "a deduplicated subset — the in-batch negatives case",
                 "log_q": "log pi(c); for `m draws with replacement, then "
                          "unique`, pi(c) = 1 - (1 - Q(c))^m",
                 "estimator": ESTIMATORS[INCLUSION],
-                "verified": "E[R_hat] = R by exact enumeration over subsets; "
-                            "and the PROPOSAL formula on the same deduplicated "
-                            "design is measured to be biased",
+                "verified": "E[R_hat] = R by exact enumeration over subsets "
+                            "with FIXED logits (see "
+                            "unbiasedness.precondition); and the PROPOSAL "
+                            "formula on the same deduplicated design is "
+                            "measured to be biased",
             },
         },
         "unbiasedness": {
-            "R_hat": "unbiased for R under both schemes",
+            "precondition": (
+                "E[R_hat] = R holds for values exp(z_c) FIXED with respect "
+                "to the sampling. The published head violates it: "
+                "z_c = head(s, q, text(c) | C) is conditioned on the set "
+                "because CrossBlock attends among options, so changing C "
+                "changes every logit (measured by "
+                "test_logits_depend_on_the_candidate_set). The "
+                "set_attention=False ablation satisfies it, at the price of "
+                "being another architecture"),
+            "R_hat": ("E[R_hat] = R under both schemes ONLY under that "
+                      "precondition; the enumeration tests use FIXED logits "
+                      "and prove the estimator algebra, not a property of "
+                      "the real head's logits. With set attention on, this "
+                      "is another objective, without an inherited "
+                      "unbiasedness guarantee"),
             "loss": ("NOT unbiased, and it UNDERESTIMATES: the denominator "
                      "sits inside a log, which is concave, so by Jensen "
                      "E[L_hat] <= L, with equality only when the denominator "
                      "estimate is deterministic (pi == 1, the exact mode). "
                      "The sampled objective is optimistic; the gap closes as "
-                     "the sample grows (consistency). The test measures the "
-                     "sign rather than assuming it"),
+                     "the sample grows (consistency). Jensen is not free "
+                     "either: it assumes E[D_hat] = D, the same "
+                     "precondition. The test measures the sign rather than "
+                     "assuming it"),
         },
         "collisions": {
             "filtered": ["the gold by normalised key",

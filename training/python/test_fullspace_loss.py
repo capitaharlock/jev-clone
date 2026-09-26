@@ -398,3 +398,27 @@ def test_spec_names_both_modes_and_the_omission_rules():
                                         "declared_uniform"}
     assert "UNDERESTIMATES" in s["unbiasedness"]["loss"]
     assert UNKNOWN_ID == "unknown"
+
+
+def test_the_spec_states_the_precondition_the_published_head_violates():
+    """#T-ce-scorer: Horvitz-Thompson exige valores fijos y aquí no los hay.
+
+    `test_logits_depend_on_the_candidate_set` (arriba) mide que la cabeza
+    publicada cambia sus logits al cambiar el conjunto. Este test exige
+    que la spec lo DIGA, en vez de dejar `unbiased for R` suelto donde
+    otra task lo leerá como una garantía sobre los logits reales.
+    """
+    pre = spec()["unbiasedness"]["precondition"]
+    assert "FIXED" in pre and "CrossBlock" in pre
+    assert "set_attention=False" in pre
+    assert "precondition" in spec()["unbiasedness"]["R_hat"]
+
+
+def test_the_module_docstring_does_not_claim_bare_unbiasedness():
+    import training.python.fullspace_loss as module
+
+    doc = module.__doc__
+    assert "Qué se demuestra y sobre qué" in doc
+    assert "`R̂` es insesgado para `R`." not in doc, (
+        "that sentence is the claim the reanalysis of 2026-09-24 §9 "
+        "refuted: it needs the fixed-values condition or it is false here")
