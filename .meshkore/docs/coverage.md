@@ -501,3 +501,38 @@ sobreescribe el artefacto con `status: "measured"`. Y cuando exista, esa cifra
 **no** mide generalización: se entrena y se mide sobre los mismos 48 casos, a
 propósito — la primera con significado externo es `#T-ce-finetune` contra
 `#T-battery-dev`.
+
+## Parcial 2026-09-26 — `#T-preflight-refs` (runner verde, tabla SIN medir)
+
+| Requisito de la task | Dónde está | Estado |
+|---|---|---|
+| Runner de las tres referencias, ejecutable: Qwen local por elección estructurada entre ids válidos, el scorer NLI sin ajustar por entailment y los dos checkpoints pointer como control | `eval/preflight_refs.py` (`qwen_column`, `nli_column`, `pointer_column`, `run`) | hecho |
+| Mismo corte, mismas filas, mismo protocolo; el runner **falla** si los n no coinciden | `same_rows()` → `ProtocolMismatch`; compara identidad (id, familia, grupo, K, slot del gold), no tamaño | hecho |
+| Protocolo de información equivalente de `#T-battery-dev`: un formato por modelo, fijado antes de medir | `protocol()`, huella `b215e3003cc60c0f` de `model.ce_scorer`, contrato comparativo por familia | hecho |
+| Toda cifra por `eval.metrics_suite.report()`, cero aritmética a mano; C7 pasa sobre el gate | `report_for()` + `MS.require()`; `python3 -m eval.gate_rules check artifacts/gates/T-preflight-refs` → `pass: true`, 0 errores | hecho |
+| El control pointer reproduce el fallo de `probe-mechanism-2026-09-24.json`, con el comprobador que separa el caso contrario | `documented_signature()`, `tracking_control()`, `reproduces()`; `MechanismReproductionTest` sobre fixtures y mocks deterministas | hecho (comprobador) |
+| Ninguna referencia consulta el test sellado | `assert_not_sealed()`, `load_cut()` exige prefijo `dev-`, `SOURCES` declarado; `SealedCutTest` registra cada `open()` de una pasada completa | hecho |
+| Tests en segundos, sin torch en el camino caliente, sin descargar ni cargar un modelo | `eval/test_preflight_refs.py`, 37 tests en 0,7 s; `NoModelTest` lo comprueba en un intérprete limpio | hecho |
+| Tabla de referencias (accuracy forzada, con abstención, macro por familia, azar por K, IC95 %, n) | la publica el job `preflight-refs` en `artifacts/gates/T-preflight-refs/refs-*.json` | **SIN MEDIR** |
+| Puerta de Qwen resuelta | regla escrita en `QWEN_GATE_RULE` **antes** de medir; el veredicto lo firma el job | **SIN MEDIR** |
+| Checkpoint de partida del ajuste, decidido con cifras | regla escrita en `STARTING_POINT_RULE`; decide con las columnas 2 y 3 del mismo corte | **SIN MEDIR** |
+
+**El gate NO está firmado.** El operador prohibió cargar Qwen, los checkpoints
+pointer y cualquier bucle de inferencia sobre las 400 filas en esta tanda, así
+que `artifacts/gates/T-preflight-refs/gate.json` lleva `pass: null`,
+`verdict: "AWAITING-COMPUTE"` y los cuatro checks que exigen una pasada real con
+`pass: null` + `reason: "awaiting-operator-compute"`, cada uno diciendo quién lo
+firma (operador) y con qué job (`preflight-refs`, registrado **parado** en el
+daemon). Los seis checks que sí se podían medir sin GPU están medidos de verdad
+sobre las 400 filas reales: coincidencia de filas (`rows_sha256`), fallo del
+runner cuando los n no cuadran, cero lecturas del sellado —que ya existe en
+disco, `data/battery_sealed.jsonl`, y sigue sin abrirse—, la firma documentada
+leída de la evidencia (2/2 pares invariantes en los dos checkpoints), que el
+comprobador de reproducción separa los dos casos, y C7 limpio.
+
+Una nota que el runner hace explícita: la sección de calibración de la suite
+exige una temperatura ajustada en un corte y **verificada** en otro, y la del
+producto es `#T-battery-calib` (depende de `#T-ce-finetune`, no existe). El
+runner ajusta una dentro del corte de desarrollo por mitades de `variant_group`
+—ninguna pareja contrafactual se reparte— y lo dice en el propio informe: no es
+la calibración del producto.

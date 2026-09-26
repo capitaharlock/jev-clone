@@ -1,0 +1,291 @@
+{
+  "artifact": "artifacts/gates/T-preflight-refs/gate.json",
+  "checks": {
+    "c7_over_this_gate_directory": {
+      "how_measured": "PYTHONPATH=. python3 -m eval.gate_rules check artifacts/gates/T-preflight-refs — this directory publishes no quality metric, so the pilot rule has nothing to flag; when the job writes the reports, every figure in them carries the `jev.metrics.v1` stamp",
+      "needs_compute": false,
+      "pass": true
+    },
+    "no_reference_reads_the_sealed_cut": {
+      "how_measured": "eval/test_preflight_refs.py::SealedCutTest — every path opened during a full fixture run is recorded and matched against the sealed markers; `assert_not_sealed` is shown to raise on each sealed path and `load_cut` to refuse a cut whose groups are not `dev-`",
+      "needs_compute": false,
+      "pass": true,
+      "sealed_files_present": [
+        "data/battery_sealed.jsonl"
+      ],
+      "sources_read": [
+        "data/battery_dev.jsonl",
+        "data/battery_dev_manifest.json",
+        ".meshkore/docs/evidence/probe-mechanism-2026-09-24.json"
+      ]
+    },
+    "same_rows_over_the_three_columns": {
+      "how_measured": "three deterministic columns over the real 400 rows through `same_rows()`; no model, no weights, milliseconds",
+      "n": 400,
+      "needs_compute": false,
+      "pass": true,
+      "reading": "the three columns are built from one row list and compared by identity, and the runner raises ProtocolMismatch when an n or a row identity differs",
+      "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb"
+    },
+    "the_documented_failure_is_read_not_remembered": {
+      "citation": true,
+      "how_measured": "documented_signature() over the evidence JSON: the paired probes whose gold moved and whose forced pick did not",
+      "needs_compute": false,
+      "pass": true,
+      "reading": "both checkpoints kept the same forced pick in every paired probe of the evidence file — the invariance the battery has to show too",
+      "runs": {
+        "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360": {
+          "invariant": 2,
+          "n_pairs": 2,
+          "rate": 1.0,
+          "shapes": [
+            "question_moved",
+            "state_moved"
+          ]
+        },
+        "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6": {
+          "invariant": 2,
+          "n_pairs": 2,
+          "rate": 1.0,
+          "shapes": [
+            "question_moved",
+            "state_moved"
+          ]
+        }
+      },
+      "source": ".meshkore/docs/evidence/probe-mechanism-2026-09-24.json",
+      "source_sha256": "382e4172d8811072ea8ae4291611a25aaaa86190bf9c6bef0855f7fac4a510b7",
+      "who": "T-ce-mechanics probe 2026-09-24"
+    },
+    "the_pointer_control_reproduces_on_the_battery": {
+      "already_true_of_the_evidence": {
+        "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360": 1.0,
+        "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6": 1.0
+      },
+      "checkpoints": {
+        "fullspace-62528": {
+          "dir": "artifacts/checkpoints/decision/fullspace-sampled-d512-prior-ettin-68m-s20260922/stage-000062500",
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6"
+        },
+        "leverstack-1m": {
+          "dir": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+          "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360"
+        }
+      },
+      "job": "preflight-refs",
+      "needs_compute": true,
+      "pass": null,
+      "reason": "awaiting-operator-compute",
+      "rule": {
+        "battery_invariance_min": 0.5,
+        "documented_invariance_min": 0.5,
+        "joint_at_or_below_chance": true,
+        "why": "the documented failure is an INVARIANCE: the forced pick does not move when the decisive fact moves. It reproduces on the battery when (a) the evidence file itself shows that invariance in at least half of its paired probes, (b) at least half of the battery's counterfactual groups get the same slot picked in both halves, and (c) the joint counterfactual interval published by the suite sits at or below the joint chance rate — one half of a pair is what a fixed preference for a text already gets for free"
+      },
+      "signed_by": "operator"
+    },
+    "the_qwen_gate": {
+      "job": "preflight-refs",
+      "needs_compute": true,
+      "pass": null,
+      "reason": "awaiting-operator-compute",
+      "rule": {
+        "closes_if": "any of the three fails — then the task, the data or the format is what gets revised, and the GPU is not spent",
+        "decided_on": "the ranking (forced choice) figure of `eval.metrics_suite.report`, plus the per-family breakdown",
+        "opens_if": "ranking accuracy_ci95[0] > chance on the whole cut AND the macro-by-family figure clears its chance the same way AND no family's interval sits at or below its own chance rate",
+        "why_not_a_single_number": "a global mean passes with one family at zero, which is the failure the battery was written to make visible"
+      },
+      "signed_by": "operator"
+    },
+    "the_reference_table": {
+      "all_of_it_from": "eval.metrics_suite.report",
+      "columns": [
+        "nli-nograd",
+        "pointer-control",
+        "qwen-local"
+      ],
+      "job": "preflight-refs",
+      "needs_compute": true,
+      "pass": null,
+      "reason": "awaiting-operator-compute",
+      "signed_by": "operator",
+      "what_it_will_publish": [
+        "forced (ranking) accuracy with its chance, K, n and 95 % interval",
+        "accuracy including abstention, with coverage and precision among the answered",
+        "macro by family and the per-family breakdown",
+        "chance by K and the cut's own mean K",
+        "joint success by counterfactual group"
+      ]
+    },
+    "the_reproduction_check_discriminates": {
+      "how_measured": "eval/test_preflight_refs.py::MechanismReproductionTest — a deterministic scorer that reads only the option text reproduces the invariance and `reproduces()` says so; a scorer that reads the state does not, and `reproduces()` says that instead. Hand fixtures, no weights",
+      "needs_compute": false,
+      "pass": true,
+      "reading": "the checker is shown to separate the two cases, so a green reproduction later is not a check that always says yes"
+    },
+    "the_runner_fails_when_the_n_differ": {
+      "how_measured": "eval/test_preflight_refs.py::SameRowsTest — a column short by one row, a column with a renamed row and a column with a moved gold slot each raise ProtocolMismatch",
+      "needs_compute": false,
+      "pass": true
+    },
+    "the_starting_checkpoint_of_the_finetune": {
+      "job": "preflight-refs",
+      "needs_compute": true,
+      "pass": null,
+      "reason": "awaiting-operator-compute",
+      "rule": {
+        "candidates": [
+          "nli-nograd",
+          "pointer-control:fullspace-62528",
+          "pointer-control:leverstack-1m"
+        ],
+        "contamination": "modernbert-zeroshot-v2 published mix includes BANKING77 (model.weights.SCORERS); that caveat travels with any figure of that checkpoint",
+        "decided_on": "the ranking figure and the macro-by-family figure of each candidate on this cut, with the joint counterfactual figure beside them",
+        "rule": "the starting point is the candidate whose ranking interval sits highest AND whose joint counterfactual figure is not at or below chance; a candidate that reproduces the documented invariance is not a starting point, it is the control"
+      },
+      "signed_by": "operator"
+    }
+  },
+  "cut": {
+    "file": "data/battery_dev.jsonl",
+    "manifest": "data/battery_dev_manifest.json",
+    "manifest_sha256": "567729de1661693047c5ea45a21750edb8e4baaf410ddca218cd05a96054c9d1",
+    "name": "battery-dev",
+    "reserved": false,
+    "rule": "the development cut, read as often as needed. The sealed cut is opened once by #T-battery-sealed with the arm already chosen, and nothing here reads it",
+    "sealed_cut_read": false,
+    "sealed_files_present": [
+      "data/battery_sealed.jsonl"
+    ],
+    "split": "development",
+    "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
+    "task": "T-battery-dev"
+  },
+  "generated_utc": "2026-09-26T13:57:53Z",
+  "honesty": [
+    "this gate is HALF WRITTEN on purpose: the operator forbade loading Qwen, the pointer checkpoints or any inference loop over the 400 rows in this session, so every check that needs a forward pass carries `pass: null` and `reason: awaiting-operator-compute` instead of a number",
+    "no figure in this file was computed by hand and none was estimated: what was not measured was not written",
+    "the thresholds of the reproduction rule, the Qwen gate and the starting-point rule are written here BEFORE any measurement exists, which is the only moment at which writing them means anything",
+    "the suite's calibration section needs a temperature fitted on one cut and verified on another; the product's is #T-battery-calib (it depends on #T-ce-finetune and does not exist yet), so the runner fits one inside the development cut, by group halves, and says so in the report"
+  ],
+  "job": {
+    "command": ".venv-train/bin/python -m eval.preflight_refs refs",
+    "id": "preflight-refs",
+    "state": "registered STOPPED — the operator presses play; nothing in this task started a model"
+  },
+  "pass": null,
+  "protocol": {
+    "comparative_context_by_family": {
+      "attribute_comparison": true,
+      "description_classification": false,
+      "extraction_paraphrase": false,
+      "priority_decision": true,
+      "textual_inference_negation": false
+    },
+    "difference_is_documented": "the three interfaces are not the same strings and cannot be: a chat model needs the options enumerated, a NLI head needs one hypothesis at a time, and the pointer head reads embeddings. What is held fixed is the INFORMATION: the same state, the same question, the same K candidate texts, the same rows, and one format per model fixed in advance",
+    "hypothesis": {
+      "en": "The answer to this question is: {option}.",
+      "es": "La respuesta a esta pregunta es: {option}."
+    },
+    "hypothesis_format_fingerprint": "b215e3003cc60c0f",
+    "hypothesis_format_id": "b215e3003cc60c0f",
+    "per_model": {
+      "nli-nograd": "premise + hypothesis per candidate, comparative context by family as the contract says",
+      "pointer-control": "the head's own interface: state encoded once, question and K option texts embedded, `unknown` as the extra column",
+      "qwen-local": "the same state, question and candidate block, as a structured-choice prompt over the valid ids; the candidate block is present for every family because a chat model is shown the options it must choose between"
+    },
+    "premise": {
+      "en": "State: {state}\nQuestion: {question}",
+      "es": "Estado: {state}\nPregunta: {question}"
+    },
+    "score_mode": "entail_logit",
+    "truncation": "only_first",
+    "what": "one input format per model, written before any measurement on this cut and derived from the episode-v1 comparative contract — never chosen after looking at a result"
+  },
+  "publishes_no_figure_of_its_own": "every figure of this task is produced by `eval.metrics_suite.report` and lives in the per-reference reports this gate points at; this file publishes none, because nothing has been measured against a model yet",
+  "question": "do the three references answer this battery at all, and does the pointer control reproduce here the failure already documented?",
+  "references": {
+    "nli-nograd": {
+      "abstains": "no — the untuned scorer carries no threshold, so its K weights have no `unknown` column and its abstention figure equals its forced figure by construction",
+      "id": "nli-nograd",
+      "needs_compute": true,
+      "protocol": "entailment with the explicit hypotheses of `model.ce_scorer` (HYPOTHESIS), one pair per candidate, reduced to a scalar by `entail_logit`",
+      "role": "untuned starting point — kept for #T-ce-finetune if it answers reasonably; a NLI head is not assumed to solve arithmetic or complex preferences without adaptation",
+      "signed_by": "operator (job `preflight-refs`)",
+      "weights": "softmax over the K candidate scores — relative to the offered candidates, as the suite stamps"
+    },
+    "pointer-control": {
+      "abstains": "yes — `unknown` is a column of the head itself",
+      "checkpoints": [
+        "fullspace-62528",
+        "leverstack-1m"
+      ],
+      "id": "pointer-control",
+      "needs_compute": true,
+      "protocol": "the trained pointer head over `[K + 1]`: the state encoded once, the question and the K option texts embedded, `unknown` as the extra column",
+      "role": "CONTROL — the documented mechanism failure has to reproduce on this battery, or the battery is not representative",
+      "signed_by": "operator (job `preflight-refs`)",
+      "weights": "softmax over [K + 1] logits, `unknown` included"
+    },
+    "qwen-local": {
+      "abstains": "yes — a reply that is not one of the offered ids, or whose evidence is not a span of the state, is recorded as `unknown`, never as a guess",
+      "id": "qwen-local",
+      "needs_compute": true,
+      "protocol": "structured choice among the valid candidate ids (one JSON object, `choice` + `evidence` copied from the state); free text is never parsed for an answer",
+      "role": "capacity reference — the practical ceiling available here",
+      "signed_by": "operator (job `preflight-refs`)",
+      "weights": "INDICATOR, not a distribution: a structured choice yields a chosen id and nothing else, so the row's weights are 1 on the pick and 0 elsewhere. NLL, Brier and ECE of this column read that indicator and are published only because the suite is whole-or-nothing"
+    }
+  },
+  "rules_written_before_measuring": {
+    "qwen_gate": {
+      "closes_if": "any of the three fails — then the task, the data or the format is what gets revised, and the GPU is not spent",
+      "decided_on": "the ranking (forced choice) figure of `eval.metrics_suite.report`, plus the per-family breakdown",
+      "opens_if": "ranking accuracy_ci95[0] > chance on the whole cut AND the macro-by-family figure clears its chance the same way AND no family's interval sits at or below its own chance rate",
+      "why_not_a_single_number": "a global mean passes with one family at zero, which is the failure the battery was written to make visible"
+    },
+    "reproduction": {
+      "battery_invariance_min": 0.5,
+      "documented_invariance_min": 0.5,
+      "joint_at_or_below_chance": true,
+      "why": "the documented failure is an INVARIANCE: the forced pick does not move when the decisive fact moves. It reproduces on the battery when (a) the evidence file itself shows that invariance in at least half of its paired probes, (b) at least half of the battery's counterfactual groups get the same slot picked in both halves, and (c) the joint counterfactual interval published by the suite sits at or below the joint chance rate — one half of a pair is what a fixed preference for a text already gets for free"
+    },
+    "starting_point": {
+      "candidates": [
+        "nli-nograd",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m"
+      ],
+      "contamination": "modernbert-zeroshot-v2 published mix includes BANKING77 (model.weights.SCORERS); that caveat travels with any figure of that checkpoint",
+      "decided_on": "the ranking figure and the macro-by-family figure of each candidate on this cut, with the joint counterfactual figure beside them",
+      "rule": "the starting point is the candidate whose ranking interval sits highest AND whose joint counterfactual figure is not at or below chance; a candidate that reproduces the documented invariance is not a starting point, it is the control"
+    }
+  },
+  "runner": "eval/preflight_refs.py",
+  "task": "T-preflight-refs",
+  "teacher_column": {
+    "id": "typesafe-teacher",
+    "present": false,
+    "why": "#teacher-distill is in backlog and its reference role is covered by Qwen; the 2026-09-23 key answers 401 against https://api.typesafe.ai. It is added as a fourth column when there is valid access AND a comparable protocol, never as a number quoted from another protocol"
+  },
+  "tests": {
+    "classes": [
+      "SameRowsTest",
+      "ColumnShapeTest",
+      "MechanismReproductionTest",
+      "SealedCutTest",
+      "SuiteIsTheOnlyArithmeticTest",
+      "GateTest",
+      "ProtocolTest",
+      "NoModelTest"
+    ],
+    "file": "eval/test_preflight_refs.py",
+    "how_run": "PYTHONPATH=. python3 -m unittest eval.test_preflight_refs",
+    "loads_no_model": "every column receives its predictor by injection; the suite asserts `torch` and `transformers` are absent from sys.modules when it ends",
+    "n_tests": 37,
+    "result": "green",
+    "seconds": 0.67
+  },
+  "trains_nothing": true,
+  "verdict": "AWAITING-COMPUTE"
+}

@@ -1,7 +1,7 @@
 ---
 id: T-preflight-refs
 title: Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
-status: next
+status: active
 priority: high
 owner: unassigned
 category: eval
@@ -11,7 +11,7 @@ depends_on:
   - T-battery-metrics
   - T-ce-scorer
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-26
 ---
 
 # Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
@@ -56,3 +56,24 @@ protocolo comparable, se añade como cuarta columna.
   revisa tarea/datos/formato antes de entrenar.
 - Queda decidido y justificado con cifras cuál de los checkpoints preentrenados
   es el punto de partida del ajuste.
+
+## Estado 2026-09-26 — runner entregado, tabla sin medir
+
+El runner está completo y ejecutable en `eval/preflight_refs.py`, con sus 37
+tests verdes en 0,7 s y **sin cargar un solo peso** (cada columna recibe su
+predictor por inyección; `NoModelTest` lo comprueba en un intérprete limpio).
+Medido de verdad, sin GPU: las tres columnas comparten las 400 filas por
+identidad y el runner levanta `ProtocolMismatch` si no; ninguna referencia abre
+el corte sellado —que ya existe en disco y sigue sin abrirse—; la firma del
+fallo se lee de `probe-mechanism-2026-09-24.json` (2/2 pares invariantes en los
+dos checkpoints) y el comprobador de reproducción separa un predictor que sólo
+lee el texto de la opción de uno que lee el estado.
+
+Lo que falta es **cómputo del operador**, no código: la tabla de referencias, la
+puerta de Qwen, la reproducción del control sobre la batería y la elección del
+checkpoint de partida están en el gate con `pass: null` y
+`reason: awaiting-operator-compute`. Las reglas con las que se decidirán
+(`REPRO_RULE`, `QWEN_GATE_RULE`, `STARTING_POINT_RULE`) están escritas **antes**
+de que exista una sola medición, que es el único momento en que escribirlas
+significa algo. Lo firma el job parado `preflight-refs`
+(`.venv-train/bin/python -m eval.preflight_refs refs`).
