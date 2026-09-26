@@ -1,0 +1,842 @@
+{
+ "dev-cmp-en-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-en-2k-p02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-en-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-en-2k-t02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-en-2k-t03": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-en-2k-t04": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-en-3k-t01": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-cmp-en-3k-t02": {
+  "K": 3,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-en-3k-t03": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-cmp-en-3k-t04": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-cmp-en-8k-t01": {
+  "K": 8,
+  "control": 2,
+  "decisive": 6,
+  "orig": 2
+ },
+ "dev-cmp-en-8k-t02": {
+  "K": 8,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-en-8k-t03": {
+  "K": 8,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-cmp-en-8k-t04": {
+  "K": 8,
+  "control": 6,
+  "decisive": 3,
+  "orig": 6
+ },
+ "dev-cmp-es-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-es-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-es-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-es-2k-t02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-es-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-es-2k-t04": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-es-3k-t01": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-cmp-es-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-cmp-es-3k-t03": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-cmp-es-3k-t04": {
+  "K": 3,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-cmp-es-8k-t01": {
+  "K": 8,
+  "control": 6,
+  "decisive": 4,
+  "orig": 6
+ },
+ "dev-cmp-es-8k-t02": {
+  "K": 8,
+  "control": 4,
+  "decisive": 3,
+  "orig": 4
+ },
+ "dev-cmp-es-8k-t03": {
+  "K": 8,
+  "control": 4,
+  "decisive": 2,
+  "orig": 4
+ },
+ "dev-cmp-es-8k-t04": {
+  "K": 8,
+  "control": 2,
+  "decisive": 8,
+  "orig": 2
+ },
+ "dev-dsc-en-2k-p01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-en-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-en-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-en-2k-t02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-en-2k-t03": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-en-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-en-3k-t01": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-en-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-dsc-en-3k-t03": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-dsc-en-3k-t04": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-dsc-en-8k-t01": {
+  "K": 8,
+  "control": 8,
+  "decisive": 3,
+  "orig": 8
+ },
+ "dev-dsc-en-8k-t02": {
+  "K": 8,
+  "control": 8,
+  "decisive": 1,
+  "orig": 8
+ },
+ "dev-dsc-en-8k-t03": {
+  "K": 8,
+  "control": 3,
+  "decisive": 4,
+  "orig": 3
+ },
+ "dev-dsc-en-8k-t04": {
+  "K": 8,
+  "control": 4,
+  "decisive": 8,
+  "orig": 4
+ },
+ "dev-dsc-es-2k-p01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-es-2k-p02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-es-2k-t01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-es-2k-t02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-es-2k-t03": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-dsc-es-2k-t04": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-es-3k-t01": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-dsc-es-3k-t02": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-dsc-es-3k-t03": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-dsc-es-3k-t04": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-dsc-es-8k-t01": {
+  "K": 8,
+  "control": 8,
+  "decisive": 7,
+  "orig": 8
+ },
+ "dev-dsc-es-8k-t02": {
+  "K": 8,
+  "control": 5,
+  "decisive": 1,
+  "orig": 5
+ },
+ "dev-dsc-es-8k-t03": {
+  "K": 8,
+  "control": 6,
+  "decisive": 4,
+  "orig": 6
+ },
+ "dev-dsc-es-8k-t04": {
+  "K": 8,
+  "control": 1,
+  "decisive": 8,
+  "orig": 1
+ },
+ "dev-ext-en-2k-p01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-ext-en-2k-t02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-2k-t03": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-3k-t01": {
+  "K": 3,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-en-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-ext-en-3k-t03": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-ext-en-3k-t04": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-ext-en-8k-t01": {
+  "K": 8,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-ext-en-8k-t02": {
+  "K": 8,
+  "control": 7,
+  "decisive": 5,
+  "orig": 7
+ },
+ "dev-ext-en-8k-t03": {
+  "K": 8,
+  "control": 3,
+  "decisive": 6,
+  "orig": 3
+ },
+ "dev-ext-en-8k-t04": {
+  "K": 8,
+  "control": 4,
+  "decisive": 7,
+  "orig": 4
+ },
+ "dev-ext-es-2k-p01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-es-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-es-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-ext-es-2k-t02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-es-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-ext-es-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-ext-es-3k-t01": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-ext-es-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-ext-es-3k-t03": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-ext-es-3k-t04": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-ext-es-8k-t01": {
+  "K": 8,
+  "control": 2,
+  "decisive": 7,
+  "orig": 2
+ },
+ "dev-ext-es-8k-t02": {
+  "K": 8,
+  "control": 4,
+  "decisive": 2,
+  "orig": 4
+ },
+ "dev-ext-es-8k-t03": {
+  "K": 8,
+  "control": 8,
+  "decisive": 4,
+  "orig": 8
+ },
+ "dev-ext-es-8k-t04": {
+  "K": 8,
+  "control": 7,
+  "decisive": 6,
+  "orig": 7
+ },
+ "dev-inf-en-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-en-2k-p02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-en-2k-t01": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-inf-en-2k-t02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-en-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-en-2k-t04": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-en-3k-t01": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-inf-en-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-inf-en-3k-t03": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-inf-en-3k-t04": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-inf-en-8k-t01": {
+  "K": 8,
+  "control": 4,
+  "decisive": 8,
+  "orig": 4
+ },
+ "dev-inf-en-8k-t02": {
+  "K": 8,
+  "control": 8,
+  "decisive": 5,
+  "orig": 8
+ },
+ "dev-inf-en-8k-t03": {
+  "K": 8,
+  "control": 6,
+  "decisive": 8,
+  "orig": 6
+ },
+ "dev-inf-en-8k-t04": {
+  "K": 8,
+  "control": 4,
+  "decisive": 5,
+  "orig": 4
+ },
+ "dev-inf-es-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-es-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-inf-es-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-es-2k-t02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-es-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-es-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-inf-es-3k-t01": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-inf-es-3k-t02": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-inf-es-3k-t03": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-inf-es-3k-t04": {
+  "K": 3,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-inf-es-8k-t01": {
+  "K": 8,
+  "control": 8,
+  "decisive": 5,
+  "orig": 8
+ },
+ "dev-inf-es-8k-t02": {
+  "K": 8,
+  "control": 6,
+  "decisive": 3,
+  "orig": 6
+ },
+ "dev-inf-es-8k-t03": {
+  "K": 8,
+  "control": 6,
+  "decisive": 2,
+  "orig": 6
+ },
+ "dev-inf-es-8k-t04": {
+  "K": 8,
+  "control": 3,
+  "decisive": 4,
+  "orig": 3
+ },
+ "dev-pri-en-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-2k-p02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-2k-t02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-pri-en-3k-t01": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-pri-en-3k-t02": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-pri-en-3k-t03": {
+  "K": 3,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-en-3k-t04": {
+  "K": 3,
+  "control": 3,
+  "decisive": 1,
+  "orig": 3
+ },
+ "dev-pri-en-8k-t01": {
+  "K": 8,
+  "control": 6,
+  "decisive": 8,
+  "orig": 6
+ },
+ "dev-pri-en-8k-t02": {
+  "K": 8,
+  "control": 8,
+  "decisive": 7,
+  "orig": 8
+ },
+ "dev-pri-en-8k-t03": {
+  "K": 8,
+  "control": 6,
+  "decisive": 3,
+  "orig": 6
+ },
+ "dev-pri-en-8k-t04": {
+  "K": 8,
+  "control": 4,
+  "decisive": 5,
+  "orig": 4
+ },
+ "dev-pri-es-2k-p01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-es-2k-p02": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-pri-es-2k-t01": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-es-2k-t02": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-es-2k-t03": {
+  "K": 2,
+  "control": 1,
+  "decisive": 2,
+  "orig": 1
+ },
+ "dev-pri-es-2k-t04": {
+  "K": 2,
+  "control": 2,
+  "decisive": 1,
+  "orig": 2
+ },
+ "dev-pri-es-3k-t01": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-pri-es-3k-t02": {
+  "K": 3,
+  "control": 3,
+  "decisive": 2,
+  "orig": 3
+ },
+ "dev-pri-es-3k-t03": {
+  "K": 3,
+  "control": 2,
+  "decisive": 3,
+  "orig": 2
+ },
+ "dev-pri-es-3k-t04": {
+  "K": 3,
+  "control": 1,
+  "decisive": 3,
+  "orig": 1
+ },
+ "dev-pri-es-8k-t01": {
+  "K": 8,
+  "control": 7,
+  "decisive": 5,
+  "orig": 7
+ },
+ "dev-pri-es-8k-t02": {
+  "K": 8,
+  "control": 6,
+  "decisive": 3,
+  "orig": 6
+ },
+ "dev-pri-es-8k-t03": {
+  "K": 8,
+  "control": 8,
+  "decisive": 6,
+  "orig": 8
+ },
+ "dev-pri-es-8k-t04": {
+  "K": 8,
+  "control": 8,
+  "decisive": 3,
+  "orig": 8
+ }
+}

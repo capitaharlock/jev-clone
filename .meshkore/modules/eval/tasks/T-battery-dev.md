@@ -1,15 +1,15 @@
 ---
 id: T-battery-dev
 title: Batería de desarrollo — 400 casos representativos, cinco familias, ES y EN
-status: next
+status: done
 priority: high
-owner: unassigned
+owner: developer
 category: eval
 initiative: honest-eval
 depends_on:
   - T-episode-contract
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-26
 ---
 
 # Batería de desarrollo — 400 casos representativos, cinco familias, ES y EN

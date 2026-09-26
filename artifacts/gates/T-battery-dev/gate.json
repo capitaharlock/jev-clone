@@ -1,0 +1,29 @@
+{
+ "task": "T-battery-dev",
+ "verdict": "GO",
+ "battery_sha256": "4d77217d7bb67cbf97decb06a4d31a5a353378191967f00565757c1cf37c15b2",
+ "manifest_version": "battery-dev-v1",
+ "manifest_date": "2026-09-26",
+ "schema_version": "episode-v1",
+ "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+ "measured": {
+  "n": 400,
+  "n_valid": 400,
+  "n_invalid": 0,
+  "duplicate_ids": [],
+  "gold_rule_violations": 0,
+  "counterfactual_shape_violations": 0,
+  "distribution_violations": 0,
+  "namespace_violations": 0,
+  "sealed_state": "absent",
+  "sealed_shared_groups": 0
+ },
+ "problems": {
+  "invalid": [],
+  "gold": [],
+  "shape": [],
+  "distribution": [],
+  "namespace": [],
+  "sealed": []
+ }
+}
