@@ -1,0 +1,114 @@
+{
+  "baseline_untrained": null,
+  "checkpoint": {
+    "entail_index": null,
+    "id": "minilmv2-l6-mnli-xnli",
+    "n_classes": null,
+    "params": null
+  },
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_overfit overfit --device cpu --seed 20260926 --epochs 60 --lr 2e-05 --decisions-per-batch 8 --eval-every 5 --weights minilmv2-l6-mnli-xnli",
+  "daemon_job": "ce-overfit-mechanics",
+  "fitted": null,
+  "gate": {
+    "margin": {
+      "min": 0.35,
+      "pass": null,
+      "value": null
+    },
+    "overfit_above_target": {
+      "pass": null,
+      "target": 0.95,
+      "value": null
+    },
+    "pass": null,
+    "pipeline_checks": {
+      "failed": null,
+      "pass": null
+    },
+    "set_is_valid_evidence": {
+      "max_allowed": 0.6,
+      "note": "if the bare checkpoint already solved these cases the set would prove nothing about the pipeline: the gate fails and asks for a harder set",
+      "pass": null,
+      "untrained_accuracy": null
+    }
+  },
+  "generated_utc": "2026-09-26T00:00:00Z",
+  "history": null,
+  "hyperparams": {
+    "decisions_per_batch": 8,
+    "device": "cpu",
+    "epochs_requested": 60,
+    "eval_every": 5,
+    "grad_clip": 1.0,
+    "loss": "listwise cross-entropy over the row's K masked candidate scores",
+    "lr": 2e-05,
+    "max_length": 512,
+    "optimizer": "AdamW",
+    "score_mode": "entail_logit",
+    "seed": 20260926,
+    "trainable": "all parameters of the checkpoint",
+    "weight_decay": 0.01
+  },
+  "hypothesis_format": {
+    "comparative_context_by_family": {
+      "attribute_comparison": true,
+      "description_classification": false,
+      "extraction_paraphrase": false,
+      "priority_decision": true,
+      "textual_inference_negation": false
+    },
+    "computed": "b215e3003cc60c0f",
+    "context_header": {
+      "en": "Options under comparison:",
+      "es": "Opciones en comparación:"
+    },
+    "frozen_for": "the rest of the pilot: #T-ce-finetune and #T-ce-confirm publish this same id or they are not comparable with this gate",
+    "frozen_id": "b215e3003cc60c0f",
+    "how_it_is_enforced": "model.ce_scorer is the only module in the tree that holds a hypothesis template (test_no_second_hypothesis_template_lives_in_the_tree); both the trainer and eval/ce_nograd.py render through ce_scorer.flatten_pairs and tokenise through ce_scorer.encode_pairs, and format_fingerprint() must equal HYPOTHESIS_FORMAT_ID",
+    "hypothesis": {
+      "en": "The answer to this question is: {option}.",
+      "es": "La respuesta a esta pregunta es: {option}."
+    },
+    "premise": {
+      "en": "State: {state}\nQuestion: {question}",
+      "es": "Estado: {state}\nPregunta: {question}"
+    },
+    "score_mode": "entail_logit",
+    "truncation": "only_first"
+  },
+  "not_generalization": "TRAINED AND MEASURED ON THE SAME 48 CASES, on purpose. This figure is a pipeline check: gradients arrive, the gold is where the trainer thinks it is, the state is not truncated, the candidate mask does not mix rows of different K, and the hypothesis format is identical in training and evaluation. It is NOT a measure of generalization, it does not estimate any product accuracy, and it may not be compared with the operator's 70% or with any external figure. The first figure with external meaning is #T-ce-finetune against the same untrained checkpoint on the #T-battery-dev development battery.",
+  "pipeline_checks": null,
+  "pipeline_checks_note": "the four checks the task names (gold alignment, state truncation, candidate mask, train/eval format) are covered by unit tests with a toy model in training/python/test_ce_overfit.py; the run repeats them against the real checkpoint and fills this slot",
+  "seed": 20260926,
+  "set": {
+    "chance": 0.3194444444444444,
+    "families": [
+      "attribute_comparison",
+      "priority_decision",
+      "textual_inference_negation"
+    ],
+    "fingerprint": "aadbb6a235c2361e",
+    "golds_hand_written": 12,
+    "golds_recomputed_from_text": 36,
+    "ks": [
+      3,
+      4
+    ],
+    "langs": [
+      "en",
+      "es"
+    ],
+    "n": 48,
+    "unambiguous": "the gold of every derived case is recomputed by its family rule from the numbers in the rendered candidate text; a typed id cannot enter"
+  },
+  "status": "awaiting-operator-compute",
+  "status_note": "NOT MEASURED. The code, the set and its checks are committed and green under unit test, but the fit itself has not been run: the operator is working on this machine and training is forbidden until they say otherwise. Nothing here is a figure — every slot a run would fill is null on purpose. To sign this gate, start the stopped daemon job `ce-overfit-mechanics` (or run `command` by hand); the run overwrites this file with status `measured`.",
+  "task": "T-ce-mechanics",
+  "thresholds": {
+    "min_margin": 0.35,
+    "overfit_target": 0.95,
+    "set_validity_max": 0.6,
+    "written": "before the first measurement, in training/python/ce_overfit.py"
+  },
+  "train_seconds": null
+}

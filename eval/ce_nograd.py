@@ -344,12 +344,10 @@ def measure_one(weight_id: str, device: str = "cpu",
 
     scorer = CE.NliPairScorer(weight_id, device=device, batch_size=batch_size)
     decs = decisions()
-    flat: list[tuple[str, str]] = []
-    spans = []
-    for dec in decs:
-        pairs = CE.render_pairs(dec)
-        spans.append((len(flat), len(flat) + len(pairs)))
-        flat.extend(pairs)
+    #: el MISMO aplanado que usa el entreno (`CE.flatten_pairs`): dos
+    #: copias de este bucle son la vía por la que entreno y evaluación
+    #: acaban leyendo strings distintos (#T-ce-mechanics).
+    flat, spans = CE.flatten_pairs(decs)
     t0 = time.perf_counter()
     class_logits = scorer.class_logits(flat)   # UNA pasada, dos lecturas
     wall = time.perf_counter() - t0
@@ -429,6 +427,7 @@ def measure(device: str = "cpu", batch_size: int = CE.DEFAULT_BATCH_SIZE,
         "device": device,
         "batch_size": batch_size,
         "hypothesis_format": CE.HYPOTHESIS,
+        "hypothesis_format_id": CE.HYPOTHESIS_FORMAT_ID,
         "premise_format": CE.PREMISE,
         "comparative_context_by_family": CE.COMPARATIVE_CONTEXT,
         "default_score_mode": CE.DEFAULT_SCORE_MODE,

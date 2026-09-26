@@ -146,6 +146,45 @@ PERMUTATION_TOL = 1e-5
 DEFAULT_BATCH_SIZE = 16
 DEFAULT_MAX_LENGTH = 512
 
+#: Cómo se recorta un par que no cabe. `only_first` recorta SÓLO la
+#: premisa: la hipótesis —el texto de la opción que se está juzgando— no
+#: se toca nunca. La estrategia por defecto de HF es `longest_first`, que
+#: con premisas largas recorta el ESTADO en silencio; ese es exactamente
+#: el fallo de tubería que `#T-ce-mechanics` tenía que descartar, y por
+#: eso aquí es explícita y además va vigilada (`length_report`). Cambiarla
+#: no altera ninguna cifra ya publicada: el par más largo de
+#: `eval/ce_nograd.py` mide 104 tokens contra una ventana de 512.
+TRUNCATION_STRATEGY = "only_first"
+
+
+def format_fingerprint() -> str:
+    """La huella del FORMATO, para congelarlo por igualdad y no por prosa.
+
+    Cubre todo lo que decide qué texto ve el modelo: las dos plantillas,
+    la cabecera del bloque comparativo, el contrato por familia y la
+    reducción por defecto a escalar. Cualquier cambio mueve la huella, y
+    `HYPOTHESIS_FORMAT_ID` deja de cuadrar: el test falla y la cifra
+    publicada con la huella vieja queda marcada como no comparable.
+    """
+    payload = json.dumps({
+        "hypothesis": HYPOTHESIS,
+        "premise": PREMISE,
+        "context_header": CONTEXT_HEADER,
+        "comparative_context": COMPARATIVE_CONTEXT,
+        "default_score_mode": DEFAULT_SCORE_MODE,
+    }, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+#: El formato CONGELADO para el resto del piloto (`#T-ce-mechanics`, punto
+#: 4 del gate). No es un comentario: es el valor que `format_fingerprint()`
+#: tiene que devolver, comprobado por `test_hypothesis_format_is_frozen`.
+#: Para cambiar el formato hay que (a) cambiarlo, (b) actualizar esta
+#: constante y (c) republicar toda cifra medida con la anterior —
+#: `artifacts/gates/T-ce-scorer/` y `artifacts/gates/T-ce-mechanics/`
+#: llevan la huella dentro para que se sepa cuál es cuál.
+HYPOTHESIS_FORMAT_ID = "b215e3003cc60c0f"
+
 
 class ScorerContractError(ValueError):
     """El contrato de contexto comparativo o el formato no cuadran."""
@@ -238,6 +277,79 @@ def render_pairs(decision: Decision) -> list[tuple[str, str]]:
     return [render_pair(decision, c) for c in decision.candidates]
 
 
+def flatten_pairs(decisions: list[Decision] | tuple[Decision, ...]
+                  ) -> tuple[list[tuple[str, str]], list[tuple[int, int]]]:
+    """Los pares de VARIAS decisiones y el tramo `[lo, hi)` de cada una.
+
+    La ÚNICA función que aplana en el árbol: la usan el scorer de
+    evaluación (`CrossEncoderScorer.score_many`, `eval/ce_nograd.py`) y el
+    entreno (`training/python/ce_overfit.py`). Dos aplanados distintos son
+    la forma más fácil de que entreno y evaluación acaben viendo strings
+    distintos sin que nada falle, y es el fallo que `#T-ce-mechanics`
+    tenía que descartar: aquí no hay dos.
+    """
+    pairs: list[tuple[str, str]] = []
+    spans: list[tuple[int, int]] = []
+    for decision in decisions:
+        rendered = render_pairs(decision)
+        spans.append((len(pairs), len(pairs) + len(rendered)))
+        pairs.extend(rendered)
+    return pairs, spans
+
+
+def length_report(tokenizer, pairs: list[tuple[str, str]],
+                  max_length: int = DEFAULT_MAX_LENGTH) -> dict:
+    """¿Cabe el ESTADO en la ventana, o se está recortando en silencio?
+
+    El truncado silencioso es un fallo de tubería que no da error y no se
+    ve en la pérdida: el modelo simplemente deja de leer el final del
+    estado, que es donde suele estar el hecho decisivo. Esto lo cuenta
+    ANTES de tokenizar de verdad, para que un run pueda negarse a
+    empezar (`strict_length`) en vez de publicar una cifra medida sobre
+    estados a medias.
+    """
+    lengths = [len(ids) for ids in
+               tokenizer([p for p, _ in pairs], [h for _, h in pairs],
+                         truncation=False)["input_ids"]] if pairs else []
+    over = [i for i, n in enumerate(lengths) if n > max_length]
+    return {"n_pairs": len(pairs), "max_tokens": max(lengths, default=0),
+            "max_length": int(max_length), "truncation": TRUNCATION_STRATEGY,
+            "n_truncated": len(over), "truncated_indices": over[:16],
+            "pass": not over}
+
+
+def encode_pairs(tokenizer, pairs: list[tuple[str, str]], device=None,
+                 max_length: int = DEFAULT_MAX_LENGTH, strict: bool = True):
+    """Tokeniza los pares con la estrategia FIJADA, o se niega a hacerlo.
+
+    El otro sitio donde entreno y evaluación pueden divergir sin que salte
+    nada: mismas plantillas pero `truncation=True` en un lado y
+    `only_first` en el otro, o ventanas distintas, y el modelo lee textos
+    distintos. Esta función es la única que llama al tokenizador para
+    puntuar pares, así que la divergencia no cabe: `NliPairScorer` (eval) y
+    `training.python.ce_overfit` (entreno) pasan por aquí.
+
+    Devuelve `(enc, report)`; con `strict` un par que no cabe es un error,
+    no un aviso — un estado recortado en silencio invalida la cifra.
+    """
+    report = length_report(tokenizer, pairs, max_length)
+    if report["n_truncated"] and strict:
+        raise ScorerContractError(
+            f"{report['n_truncated']}/{report['n_pairs']} pairs need "
+            f"{report['max_tokens']} tokens and the window holds "
+            f"{report['max_length']}: the STATE would be cut in silence. "
+            f"Shorten the state or pass strict=False and publish the "
+            f"truncation count next to the figure.")
+    enc = tokenizer([p for p, _ in pairs], [h for _, h in pairs],
+                    return_tensors="pt", padding=True,
+                    truncation=TRUNCATION_STRATEGY, max_length=max_length)
+    if device is not None:
+        enc = {k: v.to(device) for k, v in enc.items()}
+    else:
+        enc = dict(enc)
+    return enc, report
+
+
 def softmax(values: list[float]) -> list[float]:
     hi = max(values)
     exps = [math.exp(v - hi) for v in values]
@@ -320,7 +432,8 @@ class NliPairScorer(PairScorer):
     def __init__(self, weight_id: str, device: str = "cpu",
                  mode: str = DEFAULT_SCORE_MODE,
                  batch_size: int = DEFAULT_BATCH_SIZE,
-                 max_length: int = DEFAULT_MAX_LENGTH):
+                 max_length: int = DEFAULT_MAX_LENGTH,
+                 strict_length: bool = True):
         import torch
         from transformers import (AutoModelForSequenceClassification,
                                   AutoTokenizer)
@@ -334,6 +447,7 @@ class NliPairScorer(PairScorer):
         self.mode = mode
         self.batch_size = int(batch_size)
         self.max_length = int(max_length)
+        self.strict_length = bool(strict_length)
         path = require_verified(weight_id)
         self.device = torch.device(device)
         self.tokenizer = AutoTokenizer.from_pretrained(path)
@@ -345,6 +459,7 @@ class NliPairScorer(PairScorer):
         self.params = sum(p.numel() for p in self.model.parameters())
         self.pairs_scored = 0
         self.seconds = 0.0
+        self.truncated_pairs = 0
 
     def class_logits(self, pairs: list[tuple[str, str]]):
         """`[N, C]` sobre CPU, por lotes de `batch_size` (medio gas)."""
@@ -354,12 +469,10 @@ class NliPairScorer(PairScorer):
         with torch.inference_mode():
             for start in range(0, len(pairs), self.batch_size):
                 batch = pairs[start:start + self.batch_size]
-                enc = self.tokenizer([p for p, _ in batch],
-                                     [h for _, h in batch],
-                                     return_tensors="pt", padding=True,
-                                     truncation=True,
-                                     max_length=self.max_length)
-                enc = {k: v.to(self.device) for k, v in enc.items()}
+                enc, report = encode_pairs(
+                    self.tokenizer, batch, self.device, self.max_length,
+                    strict=self.strict_length)
+                self.truncated_pairs += report["n_truncated"]
                 chunks.append(self.model(**enc).logits.float().cpu())
         if self.device.type == "mps":
             torch.mps.synchronize()
@@ -384,6 +497,10 @@ class NliPairScorer(PairScorer):
             "device": str(self.device),
             "batch_size": self.batch_size,
             "max_length": self.max_length,
+            "truncation": TRUNCATION_STRATEGY,
+            "strict_length": self.strict_length,
+            "truncated_pairs": self.truncated_pairs,
+            "hypothesis_format_id": HYPOTHESIS_FORMAT_ID,
             "contaminated_benchmarks": list(
                 self.spec.get("contaminated_benchmarks", ())),
         }
@@ -415,12 +532,7 @@ class CrossEncoderScorer:
         de cada pregunta y las de todas las preguntas entran en el mismo
         lote, y el softmax se aplica después, por pregunta.
         """
-        flat: list[tuple[str, str]] = []
-        spans: list[tuple[int, int]] = []
-        for decision in decisions:
-            pairs = render_pairs(decision)
-            spans.append((len(flat), len(flat) + len(pairs)))
-            flat.extend(pairs)
+        flat, spans = flatten_pairs(decisions)
         scores = self.pair_scorer.score_pairs(flat)
         if len(scores) != len(flat):
             raise ScorerContractError(

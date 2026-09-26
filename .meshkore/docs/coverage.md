@@ -439,3 +439,25 @@ resuelve seleccionando las tres.
 extracción 8/8 y descripciones 3/4 con ModernBERT, pero comparación de atributos
 1/6 y prioridades 2/4 — un checkpoint NLI sin ajustar no resuelve aritmética ni
 reglas de desempate, que es lo que el plan §5 avisaba de no dar por hecho.
+
+## Parcial 2026-09-26 — `#T-ce-mechanics` (código verde, cifra SIN medir)
+
+| Requisito de la task | Dónde está | Estado |
+|---|---|---|
+| Conjunto de 32–64 casos inequívocos, semilla fija y comando reproducible | `training/python/ce_overfit.py` (48 casos, huella `aadbb6a235c2361e`, semilla 20260926) | hecho |
+| Gold donde el trainer cree: resuelto por id, y recalculado por la regla de la familia sobre los números del texto renderizado (36/48; los 12 de inferencia son a mano y el artefacto lo dice) | `validate_set`, `numbers_from_text`, `gold_indices`; tests de permutación **con teeth** | hecho |
+| El tokenizado no corta el estado: `truncation="only_first"`, ventana 512, y un par que no cabe **para** el run | `model.ce_scorer.encode_pairs`, `length_report`, `test_ce_overfit.py` | hecho |
+| Máscara de candidatos: relleno a probabilidad exactamente 0, K=3 igual sola que mezclada con K=4, sin gradiente a columnas que no existen | `stack_scores`, `test_a_k3_row_scores_the_same_alone_as_batched_with_k4` | hecho |
+| Formato de hipótesis **idéntico** en entreno y en evaluación, comparando los strings de los dos caminos de verdad | `test_train_and_eval_render_the_same_strings` (entreno vs `eval.ce_nograd.measure_one` con juguete) | hecho |
+| Formato **congelado** en un único sitio importable, y ningún segundo sitio en el árbol | `model.ce_scorer.flatten_pairs` / `encode_pairs` / `format_fingerprint()` = `b215e3003cc60c0f`; `test_no_second_hypothesis_template_lives_in_the_tree` | hecho |
+| >95 % de sobreajuste sobre los 48, y el mismo checkpoint sin ajustar claramente por debajo | `artifacts/gates/T-ce-mechanics/overfit.json` | **SIN MEDIR** |
+
+**El gate NO está firmado.** El operador prohibió arrancar entreno en esta
+máquina durante esta tanda, así que el artefacto lleva `pass: null`,
+`status: "awaiting-operator-compute"` y todas las casillas de cifra en `null`:
+no hay ningún número que nadie haya medido. El comando exacto está en el job
+parado del daemon `ce-overfit-mechanics` (`--device cpu`); al arrancarlo, el run
+sobreescribe el artefacto con `status: "measured"`. Y cuando exista, esa cifra
+**no** mide generalización: se entrena y se mide sobre los mismos 48 casos, a
+propósito — la primera con significado externo es `#T-ce-finetune` contra
+`#T-battery-dev`.
