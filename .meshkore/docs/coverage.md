@@ -440,6 +440,22 @@ extracción 8/8 y descripciones 3/4 con ModernBERT, pero comparación de atribut
 1/6 y prioridades 2/4 — un checkpoint NLI sin ajustar no resuelve aritmética ni
 reglas de desempate, que es lo que el plan §5 avisaba de no dar por hecho.
 
+## Entregado 2026-09-26 — `#T-episode-contract` (entrada del piloto, `#episodic-data`)
+
+| Requisito de la task | Dónde está |
+|---|---|
+| Esquema versionado (`episode-v1`) con `state`, `question`, `candidates[]` (id opaco + texto), `answer` / `acceptable_answers` / `preference`, `evidence`, `family`, `lang`, `origin`, `generator_seed`, `generator_version`, `variant_group`; sha en cada manifest (`manifest_record`) | `data/episode_contract.py`, `artifacts/gates/T-episode-contract/contract.json` |
+| Validador que rechaza CON MOTIVO los 4 casos: sin `evidence`, sin `variant_group`, IDs no opacos, ID de dataset por pregunta | `validate()`, `data/test_episode_contract.py::RejectionTest` |
+| Cinco familias como enumeración cerrada, idéntica a `model.ce_scorer.FAMILIES` (test que falla si divergen) | `FAMILIES`, `test_families_are_closed_and_match_ce_scorer` |
+| Contrato de contexto comparativo escrito POR FAMILIA y explícito (comparación y prioridad exigen bloque con todos los candidatos; el resto juzga de una en una) | `COMPARATIVE_CONTEXT` + `COMPARATIVE_WHY`, igual valor que `model.ce_scorer` |
+| `canonical_question()` / un id de dataset como `question` es INVÁLIDO, no degradado (misma cola `-\d+$` que el trainer + prefijos de dataset) | `is_dataset_id_question()` |
+| Fixture a mano de 24 episodios ES+EN (12 grupos × 2, cada caso con contrafactual) que pasa el validador entera | `data/episode_fixture.jsonl` |
+| Dos episodios del mismo `variant_group` nunca caen en cortes distintos (reparto por grupo + auditoría; inyección deliberada falla) | `assign_split()`, `split_by_group()`, `check_episodes_no_group_split()` |
+
+Cómputo: validador + repartidor stdlib-only sobre la fixture (milisegundos);
+sin entreno, sin inferencia, sin GPU. 10/10 checks medidos en
+`artifacts/gates/T-episode-contract/contract.json` (`status: measured`).
+
 ## Parcial 2026-09-26 — `#T-ce-mechanics` (código verde, cifra SIN medir)
 
 | Requisito de la task | Dónde está | Estado |

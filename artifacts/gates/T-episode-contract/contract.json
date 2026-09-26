@@ -1,0 +1,182 @@
+{
+  "task": "T-episode-contract",
+  "status": "measured",
+  "schema_version": "episode-v1",
+  "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+  "checks": [
+    {
+      "name": "fixture_passes_validator",
+      "pass": true,
+      "detail": {
+        "n": 24,
+        "n_valid": 24,
+        "duplicate_ids": []
+      }
+    },
+    {
+      "name": "fixture_shape",
+      "pass": true,
+      "detail": {
+        "n_episodes": 24,
+        "n_groups": 12,
+        "per_family": {
+          "extraction_paraphrase": 6,
+          "attribute_comparison": 6,
+          "description_classification": 4,
+          "textual_inference_negation": 4,
+          "priority_decision": 4
+        },
+        "per_lang": {
+          "es": 12,
+          "en": 12
+        },
+        "min_per_group": 2
+      }
+    },
+    {
+      "name": "validator_rejects_missing_evidence",
+      "pass": true,
+      "detail": {
+        "rejected": true,
+        "reasons": [
+          "missing required field: evidence"
+        ]
+      }
+    },
+    {
+      "name": "validator_rejects_missing_variant_group",
+      "pass": true,
+      "detail": {
+        "rejected": true,
+        "reasons": [
+          "missing required field: variant_group"
+        ]
+      }
+    },
+    {
+      "name": "validator_rejects_non_opaque_ids",
+      "pass": true,
+      "detail": {
+        "rejected": true,
+        "reasons": [
+          "candidates[0].id is not opaque: 'En la estantería 3'",
+          "candidates[1].id is not opaque: 'En la estantería 5'",
+          "candidates[2].id is not opaque: 'En el mostrador de préstamos'",
+          "answer 'c1' is not a candidate id"
+        ]
+      }
+    },
+    {
+      "name": "validator_rejects_dataset_id_question",
+      "pass": true,
+      "detail": {
+        "rejected": true,
+        "reasons": [
+          "question is a dataset id, not prose: 'banking77-intent-8412' (invalid, not degraded)"
+        ]
+      }
+    },
+    {
+      "name": "no_group_split_across_cuts",
+      "pass": true,
+      "detail": {
+        "cuts": [
+          [
+            [
+              "train",
+              0.7
+            ],
+            [
+              "dev",
+              0.15
+            ],
+            [
+              "sealed",
+              0.15
+            ]
+          ]
+        ],
+        "runs": [
+          {
+            "seed": 1,
+            "sizes": {
+              "train": 6,
+              "dev": 4,
+              "sealed": 14
+            },
+            "violations": []
+          },
+          {
+            "seed": 7,
+            "sizes": {
+              "train": 16,
+              "dev": 2,
+              "sealed": 6
+            },
+            "violations": []
+          },
+          {
+            "seed": 20260926,
+            "sizes": {
+              "train": 18,
+              "dev": 0,
+              "sealed": 6
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "families_closed_enum_matching_ce_scorer",
+      "pass": true,
+      "detail": {
+        "families": [
+          "extraction_paraphrase",
+          "attribute_comparison",
+          "description_classification",
+          "textual_inference_negation",
+          "priority_decision"
+        ],
+        "ce_scorer_families": [
+          "extraction_paraphrase",
+          "attribute_comparison",
+          "description_classification",
+          "textual_inference_negation",
+          "priority_decision"
+        ]
+      }
+    },
+    {
+      "name": "comparative_context_explicit_per_family",
+      "pass": true,
+      "detail": {
+        "comparative_context": {
+          "extraction_paraphrase": false,
+          "attribute_comparison": true,
+          "description_classification": false,
+          "textual_inference_negation": false,
+          "priority_decision": true
+        }
+      }
+    },
+    {
+      "name": "manifest_record_carries_schema_sha",
+      "pass": true,
+      "detail": {
+        "contract_task": "T-episode-contract",
+        "schema_version": "episode-v1",
+        "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+        "n_episodes": 24,
+        "seed": 20260926,
+        "generator_version": "hand-v1",
+        "splits": {
+          "train": 18,
+          "dev": 0,
+          "sealed": 6
+        }
+      }
+    }
+  ],
+  "compute": "stdlib-only validator + splitter on the hand-made fixture; no training, no inference, no GPU/CPU-heavy work"
+}
