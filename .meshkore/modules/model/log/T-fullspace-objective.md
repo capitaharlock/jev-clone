@@ -1,5 +1,5 @@
 ---
-completed_at: 2026-09-25T00:00:00.000Z
+completed_at: 2026-09-25T09:34:51.530Z
 id: T-fullspace-objective
 title: La pérdida sobre el espacio entero — extensión muestreada con log-Q
 status: done
@@ -11,8 +11,9 @@ depends_on:
   - T-bigk-optsets
 created: 2026-09-24
 updated: 2026-09-25
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # La pérdida sobre el espacio entero — la vía muestreada
 
 > **Cerrada en NO-GO el 2026-09-25.** El gate final (15:39:27 UTC del 24) da
@@ -126,3 +127,35 @@ en otra seed antes de cualquier veredicto causal.
   abstención en ambos regímenes.
 - Veredicto escrito: GO (la cifra a 77 vías bate el azar con margen, confirmada
   en otra seed, y se escala) o NO-GO (se nombra el siguiente sospechoso).
+
+## Resolution
+
+✗ #T-antiscale-diag ya está `done` en disco (commit `b69cb21` en HEAD) — el `no-commit` del wake es falso otra vez. Sin reescritura.
+
+**La cola está vacía y no apunta al plan nuevo.** `GET /roadmap/queue` devuelve `multi-cli-clients` y `deploy-pipeline-reconcile` — dos iniciativas que ni existen en `.meshkore/roadmap/initiatives/` y con 0 tareas. Las tres del plan de recuperación (#cross-encoder-pilot, #episodic-data, #honest-eval) **no están en la cola**, así que no puedo despacharlas sin que las pongas tú.
+
+Swap que propongo: sustituir esas dos por `cross-encoder-pilot` → `episodic-data` → `honest-eval`. Cada una tiene su entrada sin dependencias (#T-ce-scorer, #T-episode-contract, #T-battery-metrics). Dale a Run All con esas tres seleccionadas y arranco los dos carriles en el mismo turno.
+
+<details><summary>Aviso — las tres entradas están `active` sin nadie ejecutándolas</summary>
+
+- `/runs` = 0 agentes, `ps` sin procesos de entreno. La GPU está libre.
+- #T-ce-scorer, #T-episode-contract y #T-battery-metrics figuran `status: active` en disco porque A001 las marcó al reorientar el roadmap, no porque haya trabajo vivo (patrón ya conocido en este cluster).
+- No toco el campo: `active` fantasma es cosa del Architect, y flipearlo a `next` sería curación, que no me corresponde.
+</details>
+
+═══ Roadmap pass complete ═══
+
+shipped:    ninguno este turno (#T-antiscale-diag ya cerrada en HEAD)
+
+blocked:    nada — no hay tarea despachable en la cola
+
+queue-mismatch: la cola staged (2 iniciativas, 0 tareas, inexistentes en disco) no refleja el roadmap reorientado de `b69cb21`
+
+decisions:  veredicto `no-commit` de #T-antiscale-diag descartado por HEAD
+
+operator:   selecciona #cross-encoder-pilot, #episodic-data y #honest-eval en Run All y sigo
+═══
+
+— #T-antiscale-diag · verificada cerrada en HEAD, veredicto falso descartado
+
+9.4M tokens

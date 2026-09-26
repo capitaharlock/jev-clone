@@ -10,9 +10,10 @@ depends_on:
   - T-ce-scorer
 created: 2026-09-25
 updated: 2026-09-26
-resolved_by: A003
-resolved_by_conv: roadmap-architect-uwgjq
-completed_at: 2026-09-26T17:51:10.512Z
+resolved_by: A051
+resolved_by_conv: work-cross-encoder-pilot-T-ce-mechanics-commit-1790480000
+completed_at: 2026-09-26T17:53:03.770Z
+commit_shas: ['a8712f7b4fcf5796e6505ecf81eebdef0a5e2d5a']
 ---
 # Validar la mecánica antes de gastar presupuesto — sobreajustar 32–64 casos
 
@@ -83,14 +84,61 @@ la huella dentro para que se sepa cuál es cuál.
 
 ## Resolution
 
-**Veredicto: la tubería aprende. El código funciona.**
+✓ task T-ce-mechanics done. files: 4. commit: a8712f7. tests: `model` 104 verdes (25,7 s), `training/python` 175 verdes + 1 rojo preexistente y ajeno (332 s).
 
-Sobreajuste **46/48 = 95,8 %** (umbral >95 %) con pesos reales en MPS, 60 épocas en **117 s**. El mismo checkpoint sin ajustar: **25 %**, por debajo del azar (31,9 %) — margen 0,708. Los cuatro chequeos que podían invalidar meses de entreno dan PASS: gold alineado, máscara de candidatos, formato entreno/eval idéntico, sin truncar el estado. 714 tests verdes; 2 rojos preexistentes y ajenos.
+Registro cerrado sin medir nada: la cifra del artefacto (46/48 = 0,958 vs 12/48 = 0,250, distancia 0,708) se leyó de `overfit.json` (`status: measured`, `gate.pass: true`) y se trasladó a la task, a coverage y al test.
 
-No es generalización — es la prueba de que gastar cómputo tiene sentido. Siguiente paso real: `#T-ce-finetune`.
+<details><summary>.meshkore/modules/model/tasks/T-ce-mechanics.md — `## Resolution` reescrita + frontmatter</summary>
 
-↪ A051 (`developer-copy`) registrando el gate medido y cerrando la task.
+- `status: blocked` → `done`, `resolved_by: A043` → `A051`, `updated: 2026-09-26`, quitado `failed_at`, conv actualizada.
+- `## Resolution` ya no dice "cifra NO medida / awaiting-operator-compute": cuenta los tres umbrales superados, las 60 épocas en 117,33 s, semilla 20260926, huella `aadbb6a235c2361e`, checkpoint `minilmv2-l6-mnli-xnli`, y el comando exacto del campo `command` (`--device mps`).
+- Frase explícita conservada y reforzada: entrena y mide sobre los MISMOS 48 casos, **no mide generalización**, no se compara con el 70 % ni con nada externo; la primera cifra con significado externo es `#T-ce-finetune` contra `#T-battery-dev`.
+- Los cuatro chequeos de tubería documentados con sus números del run real (deltas 3e-08, 0 truncados de 152 pares, 24 pares byte a byte, relleno a `0.0`).
+</details>
 
-— T-ce-mechanics · la mecánica del entrenador queda validada con pesos reales (46/48, gate PASS) — pendiente solo el commit de A051
+<details><summary>training/python/test_ce_overfit.py — 1 test reescrito</summary>
 
-22.1M tokens
+`test_the_gate_artifact_carries_no_figure_nobody_measured` → `test_the_gate_artifact_on_disk_is_measured_and_passes_its_thresholds`.
+
+Antes tenía una rama `if status == "awaiting-operator-compute": assert gate["pass"] is None`. Ahora exige, sin rama:
+
+- `status == "measured"`, `gate["pass"] is True`, huella del conjunto recomputada;
+- los tres umbrales contra las constantes del módulo: `target == OVERFIT_TARGET` y `value > 0.95`; `max_allowed == SET_VALIDITY_MAX` y `untrained_accuracy <= 0.60`; `min == MIN_MARGIN` y `value >= 0.35`;
+- `n == 48` en los dos lados, y que la distancia publicada es la resta de las dos accuracies;
+- los cuatro `pipeline_checks` en `pass: True` y `failed == []`.
+
+Un artefacto que volviese a `pass: null` pone este test en rojo.
+</details>
+
+<details><summary>.meshkore/docs/coverage.md — sección de parcial → cerrada</summary>
+
+- Título `## Parcial … (código verde, cifra SIN medir)` → `## Cerrado 2026-09-26 — #T-ce-mechanics (gate FIRMADO, 0,958 de sobreajuste)`.
+- La última fila de la tabla pasa de `**SIN MEDIR**` a `**medido**` con las tres cifras.
+- El párrafo "**El gate NO está firmado**" sustituido por el que da las cifras, los umbrales, los cuatro checks en PASS y el comando reproducible; mantiene la nota de que no mide generalización.
+</details>
+
+<details><summary>Verificación — conteos reales</summary>
+
+```
+PYTHONPATH=. .venv-train/bin/python -m pytest model -q
+  → 104 passed, 8 subtests passed in 25.75s
+
+PYTHONPATH=. .venv-train/bin/python -m pytest training/python -q
+  → 1 failed, 175 passed, 4 subtests passed in 332.12s
+     FAILED training/python/test_cloud_api.py::TestCloudApi::test_docker_parity_image_coldstart
+```
+
+Ese rojo es el preexistente y ajeno que avisaste: falla en `docker build -t jevclone:gate .` (exit 1), no toca nada de este gate. El otro que mencionaste (`eval/test_release_gate.py::…t_unseen_labels_published`) vive en `eval/`, que no entra en los dos directorios pedidos — no se ejecutó ni se tocó.
+
+Corrido por directorio, con `.venv-train/bin/python`. Diario en `.meshkore/log/2026-09-26.md` (gitignored, no va al commit).
+</details>
+
+— T-ce-mechanics · el gate de mecánica del cross-encoder queda firmado con la cifra medida (0,958 de sobreajuste) y el test la exige
+
+**Commit** `a8712f7b4` · 4 files · 1.8M tokens
+
+**Files changed (4):**
+- `.meshkore/docs/coverage.md`
+- `.meshkore/modules/model/tasks/T-ce-mechanics.md`
+- `artifacts/gates/T-ce-mechanics/overfit.json`
+- `training/python/test_ce_overfit.py`

@@ -9,9 +9,10 @@ initiative: generalization-fix
 depends_on: []
 created: 2026-09-22
 updated: 2026-09-23
-resolved_by: mb-developer
-resolved_by_conv: mb-developer
-commit_shas: ['0f160cac75210eedd12b202c9dac1822eb01d6a6', 'f66a6b4f313384b705d94afdcf8499a9e2cbc095']
+resolved_by: A001
+resolved_by_conv: _onboarding_v1
+commit_shas: ['b69cb21794d459e4c02af34d9072d8c21de9dec8']
+completed_at: 2026-09-25T09:34:17.224Z
 ---
 # Por qué la accuracy unseen cae al escalar — ablación, no opinión
 
@@ -91,27 +92,99 @@ Queda abierto sólo el eje 3, a la espera del job `antiscale-wide`.
 
 ## Resolution
 
+Roadmap reorientado y commiteado (`b69cb21`). Verificado en `/state`: **3 iniciativas activas, 15 tasks vivas, 6 canceladas**. Nada entrenando — la GPU estaba libre, no hubo que cortar nada.
 
+Fuera: `#full-space-training` y `#generalization-fix` archivadas, `#teacher-distill` a backlog, 6 tasks canceladas, `#T-fullspace-objective` cerrada con su NO-GO.
+Dentro: `#cross-encoder-pilot` (el scorer), `#episodic-data` (los episodios), `#honest-eval` reorientada (la batería privada), `#shared-state-distill` en backlog (la latencia, después).
 
-**Commit** `0f160cac7` (+1) · 15 files
+Cada iniciativa activa tiene **una entrada sin dependencias** — `#T-ce-scorer`, `#T-episode-contract`, `#T-battery-metrics` — así que seleccionarlas por separado en Run All ya no deja colas muertas. Listo para lanzar cuando digas.
 
-**Files changed (15):**
+<details><summary>Retirado — qué y por qué</summary>
+
+| Elemento | Dónde queda | Por qué |
+|---|---|---|
+| `#full-space-training` | `initiatives/log/` superseded | Su tesis (el denominador) la falsifica su propio gate: 0/1000 con 87,7 % abstención, 9/1000 forzando, azar 12,99/1000 |
+| `#generalization-fix` | `initiatives/log/` superseded | Las 4 palancas de fase 1 están medidas; ninguna aplana la pendiente |
+| `#T-labelspace-factory` | cancelada | 2.000 espacios con plantilla determinista = diversidad de nombres, no de razonamiento |
+| `#T-labelspace-div` | cancelada | Su inventario ya dio el hallazgo (9 taxonomías = 83,1 %); la curva es más volumen de lo mismo |
+| `#T-xlingual-holdout` | cancelada | ES/EN pasan a ser ejes de la batería, no un parche del holdout |
+| `#T-teacher-labelspaces` | cancelada | Misma apuesta de plantillas + credencial que da 401 |
+| `#T-data-eval` | cancelada | Escrita contra la mezcla de 5 M y el clean room de Jevals; se rehace en `#T-battery-calib` |
+| `#T-encoder-finetune` | cancelada | Sus 4 brazos exigían «el objetivo ganador» de fase 2, que cerró en NO-GO |
+| `#teacher-distill` | backlog | §8: no bloquear la recuperación por TypeSafe; Qwen local asume la referencia |
+
+Los ficheros se **mueven**, no se borran (`initiatives/log/`, `modules/*/log/`); el daemon los muestra como `cancelled`.
+</details>
+
+<details><summary>El circuito nuevo — 15 tasks</summary>
+
+**`#cross-encoder-pilot`** (model) — el scorer compartido `z_i = f(estado, pregunta, opción_i)`, CE por pregunta, encoder ajustable.
+`#T-ce-scorer` (activa) → `#T-ce-mechanics` (sobreajuste 32–64, >95 %) → `#T-ce-finetune` (5.000 → 20.000) → `#T-ce-confirm` (2ª semilla + apertura única).
+
+**`#episodic-data`** (data) — episodios completos, no plantillas.
+`#T-episode-contract` (activa) → `#T-episode-gen` (5 familias, atributos en el estado, gold por regla) → `#T-counterfactuals` (hecho/pregunta/descripción cambian el gold; paráfrasis no) → `#T-episode-verify` (verificador separado + embudo medido) → `#T-episode-splits`.
+
+**`#honest-eval`** (eval) — la batería privada.
+`#T-battery-metrics` (activa) → `#T-battery-dev` (400) → `#T-battery-sealed` (600 + diagnóstico K=20/77) → `#T-preflight-refs` (Qwen / NLI sin ajustar / control pointer) → `#T-battery-calib` → `#T-release-gate` (criterio v2, bloqueada por tu firma).
+
+**`#shared-state-distill`** (backlog) — `#T-ce-distill`, `#T-ce-cascade`. Paso 6, sólo tras mejora confirmada.
+</details>
+
+<details><summary>Lo que el roadmap ahora dice explícitamente que NO promete</summary>
+
+- **Ni 20–40 ms ni caché de estado compartida** en el piloto: el cross-encoder relee el estado por opción. La latencia se recupera en `#shared-state-distill`, y sólo después de demostrar competencia.
+- **BANKING77 deja de ser la definición de éxito** — queda como diagnóstico de transferencia difícil. `ModernBERT-zeroshot` no vale ahí como transferencia limpia: su mezcla publicada lo incluye.
+- **El 70 % se mide en tu batería**, y para afirmarlo hace falta el límite inferior del IC95 % ≥70 %, no la media.
+- Dos correcciones quedan asignadas, no barridas: la lectura errónea de `verdict.reading` (→ `#T-battery-metrics`) y la insesgadez Horvitz–Thompson que `fullspace_loss.
+
+…(truncated)
+
+**Commit** `b69cb2179` · 43 files · 3.7M tokens
+
+**Files changed (43):**
+- `.meshkore/docs/context.md`
 - `.meshkore/docs/coverage.md`
-- `.meshkore/modules/data/tasks/T-labelspace-div.md`
-- `.meshkore/modules/model/tasks/T-antiscale-diag.md`
-- `.meshkore/modules/model/tasks/T-gen-objective.md`
-- `.meshkore/modules/model/tasks/T-unfreeze-backbone.md`
-- `.meshkore/roadmap/initiatives/generalization-fix.md`
-- `.meshkore/roadmap/initiatives/oss-release.md`
-- `artifacts/gates/T-antiscale-diag/REPORT.md`
-- `artifacts/gates/T-antiscale-diag/gate.json`
-- `artifacts/gates/T-antiscale-diag/inputs/unseen-250k-ettin-68m-s20260922.json`
-- `artifacts/gates/T-antiscale-diag/inputs/unseen-250k-modernbert-base-s20260922.json`
-- `tools/diagnose/__init__.py`
-- `tools/diagnose/antiscale.py`
-- `tools/diagnose/test_antiscale.py`
-- `training/python/train_decision.py`
-
+- `.meshkore/docs/evidence/probe-mechanism-2026-09-24.json`
+- `.meshkore/docs/plan-recuperacion-2026-09-24.md`
+- `.meshkore/modules/data/log/T-data-eval.md`
+- `.meshkore/modules/data/log/T-labelspace-div.md`
+- `.meshkore/modules/data/log/T-labelspace-factory.md`
+- `.meshkore/modules/data/log/T-teacher-labelspaces.md`
+- `.meshkore/modules/data/log/T-xlingual-holdout.md`
+- `.meshkore/modules/data/tasks/T-bigk-optsets.md`
+- `.meshkore/modules/data/tasks/T-counterfactuals.md`
+- `.meshkore/modules/data/tasks/T-episode-contract.md`
+- `.meshkore/modules/data/tasks/T-episode-gen.md`
+- `.meshkore/modules/data/tasks/T-episode-splits.md`
+- `.meshkore/modules/data/tasks/T-episode-verify.md`
+- `.meshkore/modules/eval/tasks/T-battery-calib.md`
+- `.meshkore/modules/eval/tasks/T-battery-dev.md`
+- `.meshkore/modules/eval/tasks/T-battery-metrics.md`
+- `.meshkore/modules/eval/tasks/T-battery-sealed.md`
+- `.meshkore/modules/eval/tasks/T-eval-cardinality.md`
+- `.meshkore/modules/eval/tasks/T-jev-parity.md`
+- `.meshkore/modules/eval/tasks/T-option-text.md`
+- `.meshkore/modules/eval/tasks/T-preflight-refs.md`
+- `.meshkore/modules/eval/tasks/T-release-gate.md`
+- `.meshkore/modules/eval/tasks/T-teacher-auth.md`
+- `.meshkore/modules/eval/tasks/T-teacher-kappa.md`
+- `.meshkore/modules/eval/tasks/T-teacher-probe.md`
+- `.meshkore/modules/model/log/T-encoder-finetune.md`
+- `.meshkore/modules/model/tasks/T-ce-confirm.md`
+- `.meshkore/modules/model/tasks/T-ce-distill.md`
+- `.meshkore/modules/model/tasks/T-ce-finetune.md`
+- `.meshkore/modules/model/tasks/T-ce-mechanics.md`
+- `.meshkore/modules/model/tasks/T-ce-scorer.md`
+- `.meshkore/modules/model/tasks/T-fullspace-objective.md`
+- `.meshkore/modules/runtime/tasks/T-ce-cascade.md`
+- `.meshkore/modules/runtime/tasks/T-serve-engine.md`
+- `.meshkore/roadmap/initiatives/cross-encoder-pilot.md`
+- `.meshkore/roadmap/initiatives/episodic-data.md`
+- `.meshkore/roadmap/initiatives/honest-eval.md`
+- `.meshkore/roadmap/initiatives/log/full-space-training.md`
+- `.meshkore/roadmap/initiatives/log/generalization-fix.md`
+- `.meshkore/roadmap/initiatives/shared-state-distill.md`
+- `.meshkore/roadmap/initiatives/teacher-distill.md`
 ## Eje 3 — regla pre-registrada (escrita antes de leer el d512)
 
 Decision del operador 2026-09-22: **el d1024 se corta en las dos ramas**, asi

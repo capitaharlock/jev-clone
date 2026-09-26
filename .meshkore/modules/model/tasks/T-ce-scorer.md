@@ -1,7 +1,7 @@
 ---
 id: T-ce-scorer
 title: El scorer compartido — un solo modelo lee estado, pregunta y opción
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model

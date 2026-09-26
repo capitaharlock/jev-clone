@@ -1,7 +1,7 @@
 ---
 id: T-preflight-refs
 title: Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
-status: active
+status: blocked
 priority: high
 owner: unassigned
 category: eval
@@ -12,8 +12,10 @@ depends_on:
   - T-ce-scorer
 created: 2026-09-25
 updated: 2026-09-26
+resolved_by: A003
+failed_at: 2026-09-26T18:46:49.944Z
+resolved_by_conv: roadmap-architect-uwgjq
 ---
-
 # Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
 
 Paso 2 del piloto, y una puerta: **si ni Qwen responde bien a la batería, el
@@ -77,3 +79,11 @@ checkpoint de partida están en el gate con `pass: null` y
 de que exista una sola medición, que es el único momento en que escribirlas
 significa algo. Lo firma el job parado `preflight-refs`
 (`.venv-train/bin/python -m eval.preflight_refs refs`).
+
+## Resolution
+
+**Failed — exit 1.**
+
+You've hit your session limit · resets 11:40pm (Europe/Madrid)
+
+22.9M tokens

@@ -1,13 +1,13 @@
 ---
 id: T-episode-contract
 title: Contrato de episodio — el formato que hace auditable cada decisión
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
 initiative: episodic-data
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-26
 ---
 
 # Contrato de episodio — el formato que hace auditable cada decisión

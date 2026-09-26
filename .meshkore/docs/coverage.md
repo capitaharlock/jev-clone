@@ -540,3 +540,14 @@ producto es `#T-battery-calib` (depende de `#T-ce-finetune`, no existe). El
 runner ajusta una dentro del corte de desarrollo por mitades de `variant_group`
 —ninguna pareja contrafactual se reparte— y lo dice en el propio informe: no es
 la calibración del producto.
+
+## #laya-teardown — la referencia externa (2026-09-27)
+
+| Requisito | Quién lo entrega | Estado |
+|---|---|---|
+| Tabla de diferencias arquitectónicas Laya vs pointer head, y cuál se prueba primero | `#T-laya-archdiff` | **SIN MEDIR** |
+| Laya sin ajustar sobre la batería privada + contrafactuales, con IC95 % | `#T-laya-baseline` | **SIN MEDIR** |
+| BANKING77 a K=77 de Laya reproducido en nuestro arnés (`eval/fullspace.py`) | `#T-laya-baseline` | **SIN MEDIR** |
+| Declaración por dataset de si estaba en la mezcla publicada de Laya | `#T-laya-baseline` | **SIN MEDIR** |
+| Temperatura por (tipo, K) contra nuestra global, en ECE y acc@50 % cobertura | `#T-laya-objective` | **SIN MEDIR** |
+| `proper_reward` (log + esférica + RPS) comparada con nuestro CE listwise | `#T-laya-objective` | **SIN MEDIR** |

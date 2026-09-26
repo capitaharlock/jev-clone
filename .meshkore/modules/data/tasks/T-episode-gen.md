@@ -1,7 +1,7 @@
 ---
 id: T-episode-gen
 title: Qwen genera episodios completos por familia, no plantillas rellenadas
-status: next
+status: blocked
 priority: high
 owner: unassigned
 category: data
@@ -9,7 +9,7 @@ initiative: episodic-data
 depends_on:
   - T-episode-contract
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-26
 ---
 
 # Qwen genera episodios completos por familia, no plantillas rellenadas
