@@ -480,7 +480,7 @@ Cómputo: validador + repartidor stdlib-only sobre la fixture (milisegundos);
 sin entreno, sin inferencia, sin GPU. 10/10 checks medidos en
 `artifacts/gates/T-episode-contract/contract.json` (`status: measured`).
 
-## Parcial 2026-09-26 — `#T-ce-mechanics` (código verde, cifra SIN medir)
+## Cerrado 2026-09-26 — `#T-ce-mechanics` (gate FIRMADO, 0,958 de sobreajuste)
 
 | Requisito de la task | Dónde está | Estado |
 |---|---|---|
@@ -490,17 +490,21 @@ sin entreno, sin inferencia, sin GPU. 10/10 checks medidos en
 | Máscara de candidatos: relleno a probabilidad exactamente 0, K=3 igual sola que mezclada con K=4, sin gradiente a columnas que no existen | `stack_scores`, `test_a_k3_row_scores_the_same_alone_as_batched_with_k4` | hecho |
 | Formato de hipótesis **idéntico** en entreno y en evaluación, comparando los strings de los dos caminos de verdad | `test_train_and_eval_render_the_same_strings` (entreno vs `eval.ce_nograd.measure_one` con juguete) | hecho |
 | Formato **congelado** en un único sitio importable, y ningún segundo sitio en el árbol | `model.ce_scorer.flatten_pairs` / `encode_pairs` / `format_fingerprint()` = `b215e3003cc60c0f`; `test_no_second_hypothesis_template_lives_in_the_tree` | hecho |
-| >95 % de sobreajuste sobre los 48, y el mismo checkpoint sin ajustar claramente por debajo | `artifacts/gates/T-ce-mechanics/overfit.json` | **SIN MEDIR** |
+| >95 % de sobreajuste sobre los 48, y el mismo checkpoint sin ajustar claramente por debajo | `artifacts/gates/T-ce-mechanics/overfit.json` (`status: measured`, `gate.pass: true`): 46/48 = **0,958** vs 12/48 = **0,250**, distancia **0,708** | **medido** |
 
-**El gate NO está firmado.** El operador prohibió arrancar entreno en esta
-máquina durante esta tanda, así que el artefacto lleva `pass: null`,
-`status: "awaiting-operator-compute"` y todas las casillas de cifra en `null`:
-no hay ningún número que nadie haya medido. El comando exacto está en el job
-parado del daemon `ce-overfit-mechanics` (`--device cpu`); al arrancarlo, el run
-sobreescribe el artefacto con `status: "measured"`. Y cuando exista, esa cifra
-**no** mide generalización: se entrena y se mide sobre los mismos 48 casos, a
-propósito — la primera con significado externo es `#T-ce-finetune` contra
-`#T-battery-dev`.
+**El gate está FIRMADO** con pesos reales en MPS: 46/48 = 0,958 de sobreajuste
+(umbral `>0,95`), el mismo checkpoint sin ajustar 12/48 = 0,250 (umbral
+`<=0,60`), distancia 0,708 (umbral `>=0,35`), y los cuatro chequeos de tubería
+(gold, máscara, formato entreno/eval, truncado) en PASS sobre el run real. 60
+épocas en 117,33 s, semilla 20260926, checkpoint `minilmv2-l6-mnli-xnli`, huella
+del conjunto `aadbb6a235c2361e`. Reproducible con el campo `command` del
+artefacto:
+
+    PYTHONPATH=. .venv-train/bin/python -m training.python.ce_overfit overfit --device mps --seed 20260926 --epochs 60 --lr 2e-05 --decisions-per-batch 8 --eval-every 5 --weights minilmv2-l6-mnli-xnli
+
+Esa cifra **no** mide generalización: se entrena y se mide sobre los mismos 48
+casos, a propósito — la primera con significado externo es `#T-ce-finetune`
+contra `#T-battery-dev`.
 
 ## Parcial 2026-09-26 — `#T-preflight-refs` (runner verde, tabla SIN medir)
 

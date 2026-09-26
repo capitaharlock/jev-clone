@@ -1,44 +1,1613 @@
 {
-  "baseline_untrained": null,
-  "checkpoint": {
-    "entail_index": null,
-    "id": "minilmv2-l6-mnli-xnli",
-    "n_classes": null,
-    "params": null
+  "baseline_untrained": {
+    "accuracy": 0.25,
+    "by_family": {
+      "attribute_comparison": {
+        "accuracy": 0.25,
+        "chance": 0.3194444444444444,
+        "correct": 6,
+        "n": 24
+      },
+      "priority_decision": {
+        "accuracy": 0.25,
+        "chance": 0.3055555555555555,
+        "correct": 3,
+        "n": 12
+      },
+      "textual_inference_negation": {
+        "accuracy": 0.25,
+        "chance": 0.3333333333333333,
+        "correct": 3,
+        "n": 12
+      }
+    },
+    "by_k": {
+      "3": {
+        "accuracy": 0.25,
+        "chance": 0.3333333333333333,
+        "correct": 10,
+        "n": 40
+      },
+      "4": {
+        "accuracy": 0.25,
+        "chance": 0.25,
+        "correct": 2,
+        "n": 8
+      }
+    },
+    "by_lang": {
+      "en": {
+        "accuracy": 0.25,
+        "chance": 0.3194444444444444,
+        "correct": 6,
+        "n": 24
+      },
+      "es": {
+        "accuracy": 0.25,
+        "chance": 0.3194444444444444,
+        "correct": 6,
+        "n": 24
+      }
+    },
+    "chance": 0.3194444444444444,
+    "ci95": [
+      0.1492063361161345,
+      0.38784372925810573
+    ],
+    "correct": 12,
+    "max_pad_leak": 0.0,
+    "mean_nll": 1.3736252274097358,
+    "n": 48,
+    "rows": [
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "routers",
+        "id": "routers-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.223511,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "routers",
+        "id": "routers-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.48227,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "kettles",
+        "id": "kettles-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.216324,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "kettles",
+        "id": "kettles-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.228205,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "chairs",
+        "id": "chairs-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.502826,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "chairs",
+        "id": "chairs-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.313896,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "drills",
+        "id": "drills-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.513503,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "drills",
+        "id": "drills-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.494906,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "awnings",
+        "id": "awnings-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.216444,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "awnings",
+        "id": "awnings-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.247905,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c4",
+        "group": "printers",
+        "id": "printers-cheap",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.203798,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "printers",
+        "id": "printers-long",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.247551,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "routers-es",
+        "id": "routers-es-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.299694,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "routers-es",
+        "id": "routers-es-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.493555,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "hervidores",
+        "id": "hervidores-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.236766,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "hervidores",
+        "id": "hervidores-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.246269,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "sillas",
+        "id": "sillas-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.485831,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "sillas",
+        "id": "sillas-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.193692,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "taladros",
+        "id": "taladros-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.211353,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "taladros",
+        "id": "taladros-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.2164,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "toldos",
+        "id": "toldos-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.1856,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "toldos",
+        "id": "toldos-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.333615,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c4",
+        "group": "impresoras",
+        "id": "impresoras-cheap",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.207118,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "impresoras",
+        "id": "impresoras-long",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.208987,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "batteries-tie",
+        "id": "batteries-tie-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.199649,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "hoses-tie",
+        "id": "hoses-tie-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.254555,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "pumps-tie",
+        "id": "pumps-tie-buy",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.170985,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "pilas-tie",
+        "id": "pilas-tie-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.200134,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "mangueras-tie",
+        "id": "mangueras-tie-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.292944,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "bombas-tie",
+        "id": "bombas-tie-buy",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.607493,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "lamps-plain",
+        "id": "lamps-plain-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.525643,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "fans-plain",
+        "id": "fans-plain-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.238249,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c4",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "scanners-plain",
+        "id": "scanners-plain-buy",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.124662,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "lamparas-plain",
+        "id": "lamparas-plain-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.147916,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "ventiladores-plain",
+        "id": "ventiladores-plain-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.274226,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "escaneres-plain",
+        "id": "escaneres-plain-buy",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.46297,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "backup-en",
+        "id": "backup-en-yes",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.283876,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "backup-en",
+        "id": "backup-en-no",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.135876,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "backup-en",
+        "id": "backup-en-unstated",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.305085,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "appt-en",
+        "id": "appt-en-yes",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.599884,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "appt-en",
+        "id": "appt-en-no",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.243998,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "appt-en",
+        "id": "appt-en-unstated",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.382121,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "acta-es",
+        "id": "acta-es-si",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.76708,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "acta-es",
+        "id": "acta-es-no",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.01833,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "acta-es",
+        "id": "acta-es-nodice",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.124375,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "importe-es",
+        "id": "importe-es-si",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.940809,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "importe-es",
+        "id": "importe-es-no",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.139996,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": false,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "importe-es",
+        "id": "importe-es-nodice",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.029321,
+        "p_pad_leak": 0.0
+      }
+    ],
+    "wrong": [
+      "routers-cheap",
+      "kettles-cheap",
+      "kettles-long",
+      "chairs-long",
+      "awnings-cheap",
+      "awnings-long",
+      "printers-cheap",
+      "printers-long",
+      "routers-es-cheap",
+      "hervidores-cheap",
+      "hervidores-long",
+      "sillas-long",
+      "taladros-cheap",
+      "taladros-long",
+      "toldos-cheap",
+      "toldos-long",
+      "impresoras-cheap",
+      "impresoras-long",
+      "batteries-tie-buy",
+      "hoses-tie-buy",
+      "pumps-tie-buy",
+      "pilas-tie-buy",
+      "mangueras-tie-buy",
+      "fans-plain-buy",
+      "scanners-plain-buy",
+      "lamparas-plain-buy",
+      "ventiladores-plain-buy",
+      "backup-en-yes",
+      "backup-en-no",
+      "backup-en-unstated",
+      "appt-en-no",
+      "appt-en-unstated",
+      "acta-es-no",
+      "acta-es-nodice",
+      "importe-es-no",
+      "importe-es-nodice"
+    ]
   },
-  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_overfit overfit --device cpu --seed 20260926 --epochs 60 --lr 2e-05 --decisions-per-batch 8 --eval-every 5 --weights minilmv2-l6-mnli-xnli",
-  "daemon_job": "ce-overfit-mechanics",
-  "fitted": null,
+  "checkpoint": {
+    "entail_index": 0,
+    "id": "minilmv2-l6-mnli-xnli",
+    "n_classes": 3,
+    "params": 106995075,
+    "trainable": "all parameters"
+  },
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_overfit overfit --device mps --seed 20260926 --epochs 60 --lr 2e-05 --decisions-per-batch 8 --eval-every 5 --weights minilmv2-l6-mnli-xnli",
+  "fitted": {
+    "accuracy": 0.9583333333333334,
+    "by_family": {
+      "attribute_comparison": {
+        "accuracy": 0.9166666666666666,
+        "chance": 0.3194444444444444,
+        "correct": 22,
+        "n": 24
+      },
+      "priority_decision": {
+        "accuracy": 1.0,
+        "chance": 0.3055555555555555,
+        "correct": 12,
+        "n": 12
+      },
+      "textual_inference_negation": {
+        "accuracy": 1.0,
+        "chance": 0.3333333333333333,
+        "correct": 12,
+        "n": 12
+      }
+    },
+    "by_k": {
+      "3": {
+        "accuracy": 0.95,
+        "chance": 0.3333333333333333,
+        "correct": 38,
+        "n": 40
+      },
+      "4": {
+        "accuracy": 1.0,
+        "chance": 0.25,
+        "correct": 8,
+        "n": 8
+      }
+    },
+    "by_lang": {
+      "en": {
+        "accuracy": 0.9166666666666666,
+        "chance": 0.3194444444444444,
+        "correct": 22,
+        "n": 24
+      },
+      "es": {
+        "accuracy": 1.0,
+        "chance": 0.3194444444444444,
+        "correct": 24,
+        "n": 24
+      }
+    },
+    "chance": 0.3194444444444444,
+    "ci95": [
+      0.8602434401996508,
+      0.9884981066142424
+    ],
+    "correct": 46,
+    "max_pad_leak": 0.0,
+    "mean_nll": 0.07225196904722597,
+    "n": 48,
+    "rows": [
+      {
+        "argmax_id": "c2",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "routers",
+        "id": "routers-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.442218,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "routers",
+        "id": "routers-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.880824,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "kettles",
+        "id": "kettles-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999541,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "kettles",
+        "id": "kettles-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.998793,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "chairs",
+        "id": "chairs-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.974897,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": false,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "chairs",
+        "id": "chairs-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.494769,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "drills",
+        "id": "drills-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999389,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "drills",
+        "id": "drills-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.994861,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "awnings",
+        "id": "awnings-cheap",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.900939,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "awnings",
+        "id": "awnings-long",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.502352,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c4",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c4",
+        "group": "printers",
+        "id": "printers-cheap",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.508598,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "printers",
+        "id": "printers-long",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.949713,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "routers-es",
+        "id": "routers-es-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.990505,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "routers-es",
+        "id": "routers-es-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.989976,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "hervidores",
+        "id": "hervidores-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999697,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "hervidores",
+        "id": "hervidores-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999533,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "sillas",
+        "id": "sillas-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.998415,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "sillas",
+        "id": "sillas-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.882587,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "taladros",
+        "id": "taladros-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999731,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "taladros",
+        "id": "taladros-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.9995,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c3",
+        "group": "toldos",
+        "id": "toldos-cheap",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.99916,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c1",
+        "group": "toldos",
+        "id": "toldos-long",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.936587,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c4",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c4",
+        "group": "impresoras",
+        "id": "impresoras-cheap",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.991895,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "attribute_comparison",
+        "gold": "c2",
+        "group": "impresoras",
+        "id": "impresoras-long",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.969871,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "batteries-tie",
+        "id": "batteries-tie-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999678,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "hoses-tie",
+        "id": "hoses-tie-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999204,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "pumps-tie",
+        "id": "pumps-tie-buy",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.999275,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "pilas-tie",
+        "id": "pilas-tie-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999778,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "mangueras-tie",
+        "id": "mangueras-tie-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999693,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c3",
+        "group": "bombas-tie",
+        "id": "bombas-tie-buy",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.999736,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "lamps-plain",
+        "id": "lamps-plain-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.99797,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "fans-plain",
+        "id": "fans-plain-buy",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999606,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "scanners-plain",
+        "id": "scanners-plain-buy",
+        "k": 4,
+        "lang": "en",
+        "p_gold": 0.999722,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "lamparas-plain",
+        "id": "lamparas-plain-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999786,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "ventiladores-plain",
+        "id": "ventiladores-plain-buy",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999788,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "priority_decision",
+        "gold": "c2",
+        "group": "escaneres-plain",
+        "id": "escaneres-plain-buy",
+        "k": 4,
+        "lang": "es",
+        "p_gold": 0.999697,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "backup-en",
+        "id": "backup-en-yes",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999606,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "backup-en",
+        "id": "backup-en-no",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999548,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "backup-en",
+        "id": "backup-en-unstated",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999303,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "appt-en",
+        "id": "appt-en-yes",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999517,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "appt-en",
+        "id": "appt-en-no",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.997169,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "appt-en",
+        "id": "appt-en-unstated",
+        "k": 3,
+        "lang": "en",
+        "p_gold": 0.999192,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "acta-es",
+        "id": "acta-es-si",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.99936,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "acta-es",
+        "id": "acta-es-no",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999024,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "acta-es",
+        "id": "acta-es-nodice",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999508,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c1",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c1",
+        "group": "importe-es",
+        "id": "importe-es-si",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999515,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c2",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c2",
+        "group": "importe-es",
+        "id": "importe-es-no",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.999137,
+        "p_pad_leak": 0.0
+      },
+      {
+        "argmax_id": "c3",
+        "correct": true,
+        "family": "textual_inference_negation",
+        "gold": "c3",
+        "group": "importe-es",
+        "id": "importe-es-nodice",
+        "k": 3,
+        "lang": "es",
+        "p_gold": 0.99966,
+        "p_pad_leak": 0.0
+      }
+    ],
+    "wrong": [
+      "routers-cheap",
+      "chairs-long"
+    ]
+  },
   "gate": {
     "margin": {
       "min": 0.35,
-      "pass": null,
-      "value": null
+      "pass": true,
+      "value": 0.7083333333333334
     },
     "overfit_above_target": {
-      "pass": null,
+      "pass": true,
       "target": 0.95,
-      "value": null
+      "value": 0.9583333333333334
     },
-    "pass": null,
+    "pass": true,
     "pipeline_checks": {
-      "failed": null,
-      "pass": null
+      "failed": [],
+      "pass": true
     },
     "set_is_valid_evidence": {
       "max_allowed": 0.6,
       "note": "if the bare checkpoint already solved these cases the set would prove nothing about the pipeline: the gate fails and asks for a harder set",
-      "pass": null,
-      "untrained_accuracy": null
+      "pass": true,
+      "untrained_accuracy": 0.25
     }
   },
-  "generated_utc": "2026-09-26T00:00:00Z",
-  "history": null,
+  "generated_utc": "2026-09-26T17:40:08Z",
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 1.4048388004302979
+    },
+    {
+      "epoch": 2,
+      "loss": 1.1307093302408855
+    },
+    {
+      "epoch": 3,
+      "loss": 1.0842301348845165
+    },
+    {
+      "epoch": 4,
+      "loss": 1.0443887412548065
+    },
+    {
+      "accuracy": 0.625,
+      "epoch": 5,
+      "loss": 1.0154391626516979
+    },
+    {
+      "epoch": 6,
+      "loss": 0.9913364748160044
+    },
+    {
+      "epoch": 7,
+      "loss": 0.9487718542416891
+    },
+    {
+      "epoch": 8,
+      "loss": 0.8729090889294943
+    },
+    {
+      "epoch": 9,
+      "loss": 0.8675229748090109
+    },
+    {
+      "accuracy": 0.8541666666666666,
+      "epoch": 10,
+      "loss": 0.6713412404060364
+    },
+    {
+      "epoch": 11,
+      "loss": 0.732980748017629
+    },
+    {
+      "epoch": 12,
+      "loss": 0.6655006408691406
+    },
+    {
+      "epoch": 13,
+      "loss": 0.6013481318950653
+    },
+    {
+      "epoch": 14,
+      "loss": 0.652510829269886
+    },
+    {
+      "accuracy": 0.8333333333333334,
+      "epoch": 15,
+      "loss": 0.6014686773220698
+    },
+    {
+      "epoch": 16,
+      "loss": 0.6047687530517578
+    },
+    {
+      "epoch": 17,
+      "loss": 0.6595036933819453
+    },
+    {
+      "epoch": 18,
+      "loss": 0.5317148963610331
+    },
+    {
+      "epoch": 19,
+      "loss": 0.4989976038535436
+    },
+    {
+      "accuracy": 0.8125,
+      "epoch": 20,
+      "loss": 0.4941951259970665
+    },
+    {
+      "epoch": 21,
+      "loss": 0.5770552555720011
+    },
+    {
+      "epoch": 22,
+      "loss": 0.579856276512146
+    },
+    {
+      "epoch": 23,
+      "loss": 0.5424603720506033
+    },
+    {
+      "epoch": 24,
+      "loss": 0.4200267940759659
+    },
+    {
+      "accuracy": 0.8541666666666666,
+      "epoch": 25,
+      "loss": 0.5467454691727957
+    },
+    {
+      "epoch": 26,
+      "loss": 0.3678228904803594
+    },
+    {
+      "epoch": 27,
+      "loss": 0.5000997334718704
+    },
+    {
+      "epoch": 28,
+      "loss": 0.45060454308986664
+    },
+    {
+      "epoch": 29,
+      "loss": 0.4049481948216756
+    },
+    {
+      "accuracy": 0.875,
+      "epoch": 30,
+      "loss": 0.31000244865814847
+    },
+    {
+      "epoch": 31,
+      "loss": 0.3834392099330823
+    },
+    {
+      "epoch": 32,
+      "loss": 0.368692214290301
+    },
+    {
+      "epoch": 33,
+      "loss": 0.32963523268699646
+    },
+    {
+      "epoch": 34,
+      "loss": 0.37331900745630264
+    },
+    {
+      "accuracy": 0.875,
+      "epoch": 35,
+      "loss": 0.34455490857362747
+    },
+    {
+      "epoch": 36,
+      "loss": 0.2891503634552161
+    },
+    {
+      "epoch": 37,
+      "loss": 0.3375970746080081
+    },
+    {
+      "epoch": 38,
+      "loss": 0.406101090212663
+    },
+    {
+      "epoch": 39,
+      "loss": 0.231881616016229
+    },
+    {
+      "accuracy": 0.9375,
+      "epoch": 40,
+      "loss": 0.34240515033404034
+    },
+    {
+      "epoch": 41,
+      "loss": 0.3531981259584427
+    },
+    {
+      "epoch": 42,
+      "loss": 0.41124433434257907
+    },
+    {
+      "epoch": 43,
+      "loss": 0.24714269613226256
+    },
+    {
+      "epoch": 44,
+      "loss": 0.31155306100845337
+    },
+    {
+      "accuracy": 0.9166666666666666,
+      "epoch": 45,
+      "loss": 0.274649266153574
+    },
+    {
+      "epoch": 46,
+      "loss": 0.2384627734621366
+    },
+    {
+      "epoch": 47,
+      "loss": 0.26329057787855464
+    },
+    {
+      "epoch": 48,
+      "loss": 0.278734652325511
+    },
+    {
+      "epoch": 49,
+      "loss": 0.2500214787820975
+    },
+    {
+      "accuracy": 0.9166666666666666,
+      "epoch": 50,
+      "loss": 0.4044172291954358
+    },
+    {
+      "epoch": 51,
+      "loss": 0.2176875794927279
+    },
+    {
+      "epoch": 52,
+      "loss": 0.11930164756874244
+    },
+    {
+      "epoch": 53,
+      "loss": 0.32993896553913754
+    },
+    {
+      "epoch": 54,
+      "loss": 0.3220276980428025
+    },
+    {
+      "accuracy": 0.9375,
+      "epoch": 55,
+      "loss": 0.23197586345486343
+    },
+    {
+      "epoch": 56,
+      "loss": 0.24505735374987125
+    },
+    {
+      "epoch": 57,
+      "loss": 0.24182878558834395
+    },
+    {
+      "epoch": 58,
+      "loss": 0.27962119427199167
+    },
+    {
+      "epoch": 59,
+      "loss": 0.3134941567356388
+    },
+    {
+      "accuracy": 0.9583333333333334,
+      "epoch": 60,
+      "loss": 0.12465027393773198
+    }
+  ],
   "hyperparams": {
     "decisions_per_batch": 8,
-    "device": "cpu",
+    "device": "mps",
     "epochs_requested": 60,
-    "eval_every": 5,
+    "epochs_used": 60,
     "grad_clip": 1.0,
     "loss": "listwise cross-entropy over the row's K masked candidate scores",
     "lr": 2e-05,
@@ -46,7 +1615,6 @@
     "optimizer": "AdamW",
     "score_mode": "entail_logit",
     "seed": 20260926,
-    "trainable": "all parameters of the checkpoint",
     "weight_decay": 0.01
   },
   "hypothesis_format": {
@@ -64,7 +1632,7 @@
     },
     "frozen_for": "the rest of the pilot: #T-ce-finetune and #T-ce-confirm publish this same id or they are not comparable with this gate",
     "frozen_id": "b215e3003cc60c0f",
-    "how_it_is_enforced": "model.ce_scorer is the only module in the tree that holds a hypothesis template (test_no_second_hypothesis_template_lives_in_the_tree); both the trainer and eval/ce_nograd.py render through ce_scorer.flatten_pairs and tokenise through ce_scorer.encode_pairs, and format_fingerprint() must equal HYPOTHESIS_FORMAT_ID",
+    "how_it_is_enforced": "model.ce_scorer.format_fingerprint() must equal HYPOTHESIS_FORMAT_ID; model/test_ce_scorer.py fails otherwise, and both the trainer and the evaluator render through model.ce_scorer.render_pairs — there is no second template in the tree",
     "hypothesis": {
       "en": "The answer to this question is: {option}.",
       "es": "La respuesta a esta pregunta es: {option}."
@@ -76,9 +1644,53 @@
     "score_mode": "entail_logit",
     "truncation": "only_first"
   },
-  "not_generalization": "TRAINED AND MEASURED ON THE SAME 48 CASES, on purpose. This figure is a pipeline check: gradients arrive, the gold is where the trainer thinks it is, the state is not truncated, the candidate mask does not mix rows of different K, and the hypothesis format is identical in training and evaluation. It is NOT a measure of generalization, it does not estimate any product accuracy, and it may not be compared with the operator's 70% or with any external figure. The first figure with external meaning is #T-ce-finetune against the same untrained checkpoint on the #T-battery-dev development battery.",
-  "pipeline_checks": null,
-  "pipeline_checks_note": "the four checks the task names (gold alignment, state truncation, candidate mask, train/eval format) are covered by unit tests with a toy model in training/python/test_ce_overfit.py; the run repeats them against the real checkpoint and fills this slot",
+  "not_generalization": "TRAINED AND MEASURED ON THE SAME 48 CASES, on purpose. This figure is a pipeline check: gradients arrive, the gold is where the trainer thinks it is, the state is not truncated, the candidate mask does not mix rows of different K, and the hypothesis format is identical in training and evaluation. It is NOT a measure of generalization, it does not estimate any product accuracy, and it may not be compared with the 70% or with any external figure. The first figure with external meaning is #T-ce-finetune against the same untrained checkpoint on the #T-battery-dev development battery.",
+  "pipeline_checks": {
+    "candidate_mask": {
+      "k3": 4,
+      "k4": 2,
+      "max_abs_prob_delta": 2.9802322387695312e-08,
+      "pad_probability": 0.0,
+      "pass": true,
+      "tolerance": 0.001
+    },
+    "gold_alignment": {
+      "max_abs_p_gold_delta": 2.9802322387695312e-08,
+      "n_decisions": 8,
+      "note": "the gold is resolved by candidate id against the same tuple flatten() walked, so permuting cannot move it",
+      "pass": true,
+      "tolerance": 0.001
+    },
+    "state_truncation": {
+      "first_batch": {
+        "max_length": 512,
+        "max_tokens": 101,
+        "n_pairs": 24,
+        "n_truncated": 0,
+        "pass": true,
+        "truncated_indices": [],
+        "truncation": "only_first"
+      },
+      "max_length": 512,
+      "max_tokens": 120,
+      "n_pairs": 152,
+      "n_truncated": 0,
+      "pass": true,
+      "truncated_indices": [],
+      "truncation": "only_first"
+    },
+    "train_eval_format": {
+      "encode_path": "model.ce_scorer.encode_pairs",
+      "format_fingerprint": "b215e3003cc60c0f",
+      "hypothesis_format_id": "b215e3003cc60c0f",
+      "n_pairs_compared": 24,
+      "note": "the strings the trainer tokenises are compared with the ones eval/ce_nograd.py builds for the same decisions, and both go through the same two functions in model/ce_scorer.py — there is no second template",
+      "pass": true,
+      "render_path": "model.ce_scorer.flatten_pairs -> render_pair",
+      "same_rendered_pairs": true,
+      "single_render_path": true
+    }
+  },
   "seed": 20260926,
   "set": {
     "chance": 0.3194444444444444,
@@ -101,14 +1713,7 @@
     "n": 48,
     "unambiguous": "the gold of every derived case is recomputed by its family rule from the numbers in the rendered candidate text; a typed id cannot enter"
   },
-  "status": "awaiting-operator-compute",
-  "status_note": "NOT MEASURED. The code, the set and its checks are committed and green under unit test, but the fit itself has not been run: the operator is working on this machine and training is forbidden until they say otherwise. Nothing here is a figure — every slot a run would fill is null on purpose. To sign this gate, start the stopped daemon job `ce-overfit-mechanics` (or run `command` by hand); the run overwrites this file with status `measured`.",
+  "status": "measured",
   "task": "T-ce-mechanics",
-  "thresholds": {
-    "min_margin": 0.35,
-    "overfit_target": 0.95,
-    "set_validity_max": 0.6,
-    "written": "before the first measurement, in training/python/ce_overfit.py"
-  },
-  "train_seconds": null
+  "train_seconds": 117.33
 }

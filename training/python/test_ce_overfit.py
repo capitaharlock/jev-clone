@@ -22,8 +22,8 @@ se prueba es el cableado, no el checkpoint:
   decisiones, medidos desde los dos caminos de verdad, no por inspección.
 
 Y dos más que el gate pide: que el formato de hipótesis esté congelado en
-un solo sitio importable, y que el artefacto del árbol no lleve cifras
-que nadie ha medido.
+un solo sitio importable, y que el artefacto del árbol lleve la cifra MEDIDA
+con pesos reales, con sus tres umbrales superados y sin ningún hueco a null.
 """
 from __future__ import annotations
 
@@ -543,8 +543,14 @@ def test_the_command_records_everything_that_moves_the_figure():
         assert chunk in line
 
 
-def test_the_gate_artifact_carries_no_figure_nobody_measured():
-    """Sin cómputo no hay número: el hueco se declara, no se rellena."""
+def test_the_gate_artifact_on_disk_is_measured_and_passes_its_thresholds():
+    """El artefacto del árbol está FIRMADO: cifra medida y umbrales reales.
+
+    Ya no se admite el hueco declarado: el run con pesos reales existe, así
+    que el árbol tiene que llevar `status: measured`, los tres umbrales
+    superados de verdad y los cuatro chequeos de tubería en PASS. Un
+    artefacto que volviese a `pass: null` pone este test en rojo.
+    """
     import json
 
     path = ROOT / "artifacts" / "gates" / OF.TASK / "overfit.json"
@@ -552,14 +558,32 @@ def test_the_gate_artifact_carries_no_figure_nobody_measured():
     assert doc["task"] == OF.TASK
     assert "not_generalization" in doc
     assert doc["hypothesis_format"]["frozen_id"] == CE.HYPOTHESIS_FORMAT_ID
-    if doc["status"] == "awaiting-operator-compute":
-        assert doc["gate"]["pass"] is None
-        assert doc["fitted"] is None
-        assert doc["baseline_untrained"] is None
-        assert doc["set"]["fingerprint"] == OF.set_fingerprint(
-            OF.overfit_decisions())
-        assert doc["command"]
-    else:
-        assert doc["status"] == "measured"
-        assert isinstance(doc["fitted"]["accuracy"], float)
-        assert isinstance(doc["gate"]["pass"], bool)
+
+    assert doc["status"] == "measured"
+    assert doc["command"]
+    assert doc["set"]["fingerprint"] == OF.set_fingerprint(
+        OF.overfit_decisions())
+
+    gate = doc["gate"]
+    assert gate["pass"] is True
+    assert gate["overfit_above_target"]["target"] == OF.OVERFIT_TARGET
+    assert gate["overfit_above_target"]["value"] > OF.OVERFIT_TARGET
+    assert gate["set_is_valid_evidence"]["max_allowed"] == OF.SET_VALIDITY_MAX
+    assert (gate["set_is_valid_evidence"]["untrained_accuracy"]
+            <= OF.SET_VALIDITY_MAX)
+    assert gate["margin"]["min"] == OF.MIN_MARGIN
+    assert gate["margin"]["value"] >= OF.MIN_MARGIN
+    assert gate["pipeline_checks"]["failed"] == []
+
+    # la cifra medida, con sus dos lados, sobre el mismo conjunto de 48
+    n = len(OF.overfit_decisions())
+    assert doc["fitted"]["n"] == n and doc["baseline_untrained"]["n"] == n
+    assert doc["fitted"]["accuracy"] > OF.OVERFIT_TARGET
+    assert doc["baseline_untrained"]["accuracy"] <= OF.SET_VALIDITY_MAX
+    assert (doc["fitted"]["accuracy"] - doc["baseline_untrained"]["accuracy"]
+            == pytest.approx(gate["margin"]["value"]))
+
+    # los cuatro chequeos de tubería, medidos sobre el run real
+    for check in ("gold_alignment", "candidate_mask", "train_eval_format",
+                  "state_truncation"):
+        assert doc["pipeline_checks"][check]["pass"] is True, check

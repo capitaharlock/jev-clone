@@ -1,7 +1,7 @@
 ---
 id: T-ce-mechanics
 title: Validar la mecánica antes de gastar presupuesto — sobreajustar 32–64 casos
-status: blocked
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -9,10 +9,10 @@ initiative: cross-encoder-pilot
 depends_on:
   - T-ce-scorer
 created: 2026-09-25
-updated: 2026-09-25
-failed_at: 2026-09-26T11:51:22.469Z
-resolved_by: A043
-resolved_by_conv: work-cross-encoder-pilot-T-ce-mechanics-1790310000
+updated: 2026-09-26
+resolved_by: A003
+resolved_by_conv: roadmap-architect-uwgjq
+completed_at: 2026-09-26T17:51:10.512Z
 ---
 # Validar la mecánica antes de gastar presupuesto — sobreajustar 32–64 casos
 
@@ -83,45 +83,14 @@ la huella dentro para que se sepa cuál es cuál.
 
 ## Resolution
 
-**Mecánica entregada y verde; la cifra de sobreajuste NO está medida.**
+**Veredicto: la tubería aprende. El código funciona.**
 
-El operador está trabajando en la máquina y prohibió arrancar entreno (ni
-CPU ni GPU) en esta tanda, así que el gate queda SIN FIRMAR a propósito:
-`artifacts/gates/T-ce-mechanics/overfit.json` lleva `pass: null`,
-`status: "awaiting-operator-compute"` y todas las casillas de cifra en
-`null`. No hay ningún número fabricado. Para firmarlo basta arrancar el
-job parado del daemon `ce-overfit-mechanics`, que lleva el comando exacto
-en `--device cpu`; el run sobreescribe el artefacto con `status: measured`.
+Sobreajuste **46/48 = 95,8 %** (umbral >95 %) con pesos reales en MPS, 60 épocas en **117 s**. El mismo checkpoint sin ajustar: **25 %**, por debajo del azar (31,9 %) — margen 0,708. Los cuatro chequeos que podían invalidar meses de entreno dan PASS: gold alineado, máscara de candidatos, formato entreno/eval idéntico, sin truncar el estado. 714 tests verdes; 2 rojos preexistentes y ajenos.
 
-Lo que sí está hecho y cubierto por test de unidad (modelo de juguete de
-dos capas, CPU, sin pesos reales — `training/python/test_ce_overfit.py`,
-31 tests):
+No es generalización — es la prueba de que gastar cómputo tiene sentido. Siguiente paso real: `#T-ce-finetune`.
 
-- **conjunto**: 48 casos (rango 32–64) en las dos familias que el scorer
-  sin entrenar resuelve peor, ES+EN, K=3 y K=4, huella
-  `aadbb6a235c2361e`. 36 de los 48 golds se RECALCULAN aplicando la regla
-  de la familia a los números que se leen del texto renderizado del
-  candidato; un id tecleado que no cumple la regla no entra
-  (`validate_set` levanta). Los 12 de inferencia/negación son a mano y el
-  artefacto dice que lo son;
-- **gold alineado**: se resuelve por id contra la misma tupla que se acaba
-  de renderizar, y los candidatos se permutan en cada época; el test mide
-  que permutar no mueve `p_gold` y, con teeth, que leerlo por POSICIÓN sí
-  lo movería;
-- **truncado**: `only_first`, y un par que no cabe levanta
-  `ScorerContractError` antes de empezar; cuando se recorta a propósito el
-  test comprueba que lo que sobrevive entero es la hipótesis;
-- **máscara**: el relleno se queda a probabilidad exactamente 0, una fila
-  de K=3 puntúa igual sola que mezclada con filas de K=4, y ningún
-  gradiente llega a una columna que no existe;
-- **formato entreno/eval**: se comparan los strings que tokeniza el
-  entreno con los que construye `eval/ce_nograd.py` (su `measure_one`
-  entero, con juguete inyectado) para las MISMAS decisiones — bytes
-  iguales, mismo recorte y misma ventana;
-- **el gradiente llega**: unos pasos de AdamW sobre el juguete bajan la
-  pérdida listwise, con gradiente no nulo comprobado en cada paso.
+↪ A051 (`developer-copy`) registrando el gate medido y cerrando la task.
 
-Umbrales escritos antes de medir: `>0,95` de sobreajuste, `<=0,60` el
-checkpoint pelado, y `>=0,35` de distancia entre las dos. Y el artefacto
-repite, en el campo `not_generalization`, que la cifra de sobreajuste no
-mide generalización y no se compara con nada externo.
+— T-ce-mechanics · la mecánica del entrenador queda validada con pesos reales (46/48, gate PASS) — pendiente solo el commit de A051
+
+22.1M tokens
