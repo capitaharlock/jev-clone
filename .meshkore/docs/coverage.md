@@ -440,6 +440,30 @@ extracción 8/8 y descripciones 3/4 con ModernBERT, pero comparación de atribut
 1/6 y prioridades 2/4 — un checkpoint NLI sin ajustar no resuelve aritmética ni
 reglas de desempate, que es lo que el plan §5 avisaba de no dar por hecho.
 
+## Entregado 2026-09-26 — `#T-battery-metrics` (entrada del piloto, `#honest-eval`)
+
+| Requisito de la task | Dónde está |
+|---|---|
+| UNA función de reporte que todo gate del piloto invoca; nadie calcula métricas a mano por run | `eval/metrics_suite.py::report`, sello `jev.metrics.v1` |
+| Accuracy forzada Y accuracy con abstención, nunca una sola; ranking y abstención se evalúan aparte | secciones `ranking` y `abstention`, publicadas lado a lado |
+| Cobertura y precisión entre las respondidas | `abstention.coverage`, `abstention.precision_among_answered` |
+| Macro por familia (la media global pasa con una familia a cero) | `by_family`, `macro` (+ `worst_family`); test `test_macro_sees_the_family_a_global_mean_hides` |
+| Azar por K, escrito al lado de cada cifra | `chance.by_k` + `chance` de cada figura; `FIGURE_KEYS` obligatorio |
+| Éxito conjunto por `variant_group`: 0 cuando sólo se acierta una mitad | `counterfactual_section()`, `test_one_half_of_a_pair_right_scores_zero` |
+| Invariancia a permutaciones (control de `#T-option-text`) distinguida del seguimiento del estado y la pregunta | `permutation_invariance` / `tracking`, con `distinct_from` cruzado y `controls_are_distinct` |
+| NLL, Brier y calibración, con temperatura ajustada en dev y **verificada** en test | `calibration_section()`; ajustar y verificar en el mismo corte es error C5 |
+| Los pesos softmax son relativos a los candidatos ofrecidos, nunca probabilidad absoluta de verdad | `SOFTMAX_SEMANTICS`, `FORBIDDEN_KEYS` |
+| Un veredicto al que le falte cualquier métrica obligatoria, el azar de su K o el n de su corte hace FALLAR al runner | regla **C5** en `check()` + `eval/gate_rules.py`; `MandatoryMetricTest` |
+| Un `reading` que contradiga sus propios números FALLA, no avisa | regla **C6** en `reading_errors()` + `eval/gate_rules.py`; `ReadingCoherenceTest` |
+| Las tres lecturas erróneas corregidas en disco, con la frase equivocada conservada | `artifacts/gates/T-fullspace-objective/gate.json` (`/verdict`, `/upstream_verdict`), `artifacts/gates/T-bigk-optsets/gate.json` (`/verdict`), campo `reading_corrected.was` |
+| Los gates históricos que incumplen quedan marcados, no borrados | `coherence-invalid.json` (`scan --mark`), inalterado: C5 y C6 no marcan ninguno más |
+
+Cómputo: stdlib puro, sin torch, sin GPU, sin checkpoint — este gate mide el
+REPORTE, no un modelo, y no publica ninguna accuracy nuestra. C6 dispara sobre
+los 3 `reading` que la task nombra cuando se restauran las frases originales (4
+defectos) y sobre **nada más** en las 52 carpetas de `artifacts/gates/`.
+44 tests nuevos (38 en `eval/test_metrics_suite.py`, 6 en `eval/test_gate_rules.py`).
+
 ## Entregado 2026-09-26 — `#T-episode-contract` (entrada del piloto, `#episodic-data`)
 
 | Requisito de la task | Dónde está |

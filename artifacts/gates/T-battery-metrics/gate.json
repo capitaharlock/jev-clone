@@ -1,0 +1,207 @@
+{
+  "artifact": "artifacts/gates/T-battery-metrics/gate.json",
+  "checks": {
+    "c6_over_the_published_tree": {
+      "errors_now": 0,
+      "errors_with_the_original_sentences_restored": 4,
+      "json_files_scanned": 91,
+      "offending_now": [],
+      "offending_then": [
+        {
+          "accuracy_ci95": null,
+          "at": "/upstream_verdict/reading",
+          "chance": null,
+          "claim": "cause_discarded",
+          "file": "artifacts/gates/T-fullspace-objective/gate.json"
+        },
+        {
+          "accuracy_ci95": [
+            0.0,
+            0.003827
+          ],
+          "at": "/verdict/reading",
+          "chance": 0.012987,
+          "claim": "contains_chance",
+          "file": "artifacts/gates/T-fullspace-objective/gate.json"
+        },
+        {
+          "accuracy_ci95": null,
+          "at": "/verdict/reading",
+          "chance": null,
+          "claim": "cause_discarded",
+          "file": "artifacts/gates/T-fullspace-objective/gate.json"
+        },
+        {
+          "accuracy_ci95": null,
+          "at": "/verdict/reading",
+          "chance": null,
+          "claim": "cause_discarded",
+          "file": "artifacts/gates/T-bigk-optsets/gate.json"
+        }
+      ],
+      "pass": true,
+      "reading": "the rule fires on exactly the artifacts the task named and on nothing else in the tree"
+    },
+    "gate_rules_scan": {
+      "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
+      "errors_by_rule": {
+        "C1": 2,
+        "C2": 14,
+        "C3": 12,
+        "C4": 11
+      },
+      "n_gates": 52,
+      "n_invalid": 21,
+      "pass": false,
+      "reading": "21 of 52 gate directories are invalid, every one of them on the pre-existing C1-C4 and none on C5 or C6. The count is unchanged by this task: the two artifacts it corrected were not invalid under C1-C4 and are not invalid now",
+      "unmarked_invalid": [
+        "T-ce-scorer"
+      ],
+      "unmarked_why": "published after the last `scan --mark` by work in flight in another session; left for its owner rather than marked from here"
+    },
+    "suite_is_the_only_arithmetic": {
+      "depends_on": [
+        "T-battery-dev",
+        "T-battery-sealed"
+      ],
+      "needs_compute": false,
+      "pass": null,
+      "status": "awaiting-pilot-gates",
+      "why": "the pilot gates that must call `report()` are #T-battery-dev and #T-battery-sealed, written in parallel and out of this task's scope. The function and its rule exist; that every pilot gate invokes it is verifiable only once a pilot gate exists, and claiming it now would be a number nobody measured"
+    }
+  },
+  "format": "jev.gate.v1",
+  "generated_utc": "2026-09-26T13:21:40Z",
+  "measures_no_model": "this gate measures the REPORTING, not a checkpoint. No accuracy of ours is published here: the suite's figures are produced by the gates that call it",
+  "parent_commit": "3fb2eea86e356154447ac922b477cbd684963e0c",
+  "question": "does every published figure of the pilot come out of ONE reporting function, carrying its n, its K, its chance and its 95 % interval — and does a reading that contradicts those numbers FAIL instead of warning?",
+  "readings_corrected": {
+    "items": [
+      {
+        "artifact": "artifacts/gates/T-fullspace-objective/gate.json",
+        "at": "/verdict/reading",
+        "defects": [
+          "contains_chance",
+          "cause_discarded"
+        ],
+        "why": "claimed the primary interval CONTAINS chance while [0.0, 0.003827] excludes 0.012987 from below; the interval that contains chance is the forced one, [0.004742, 0.017016]"
+      },
+      {
+        "artifact": "artifacts/gates/T-fullspace-objective/gate.json",
+        "at": "/upstream_verdict/reading",
+        "defects": [
+          "cause_discarded"
+        ],
+        "why": "restated #T-bigk-optsets as a cause discarded"
+      },
+      {
+        "artifact": "artifacts/gates/T-bigk-optsets/gate.json",
+        "at": "/verdict/reading",
+        "defects": [
+          "cause_discarded"
+        ],
+        "why": "eliminated the cardinality of the objective AS A CAUSE beside its own r9 field saying it establishes none"
+      }
+    ],
+    "n": 3,
+    "policy": "MARKED and corrected in place with the wrong sentence kept in `reading_corrected.was`; no artifact deleted and no number touched"
+  },
+  "rules": {
+    "C5": {
+      "severity": "error",
+      "what": "a jev.metrics.v1 report missing any mandatory metric, the chance of its K or the n of its cut",
+      "wired_into": "eval/gate_rules.py check_gate_dir"
+    },
+    "C6": {
+      "severity": "error",
+      "waits_for_a_green_claim": false,
+      "what": "a reading that contradicts its own numbers — an interval claim the figures do not support, or a hypothesis eliminated AS A CAUSE in an artifact whose own R9 field says it establishes none",
+      "wired_into": "eval/gate_rules.py check_gate_dir"
+    }
+  },
+  "suite": {
+    "companions_on_every_figure": [
+      "n",
+      "cardinality",
+      "chance",
+      "accuracy",
+      "accuracy_ci95"
+    ],
+    "controls": {
+      "carried_not_invented": "both are measured elsewhere and handed to report(); a report without one is incomplete and check() fails it",
+      "distinct": "these are TWO properties and the 2026-09-24 measurement separates them: the scores follow the option text under permutation and the model still misses the decisive change. A green permutation check is not evidence of tracking and never stands in for one",
+      "permutation_invariance": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+      "tracking": "changing the decisive fact in the state, or the question asked of it, changes the answer"
+    },
+    "counterfactual": "joint success by variant_group — a group with exactly one half right scores 0",
+    "entry_point": "eval.metrics_suite.report",
+    "format_stamp": "jev.metrics.v1",
+    "module": "eval/metrics_suite.py",
+    "ranking_and_abstention": "published apart and side by side: `ranking` is the forced choice with `unknown` out of the race, `abstention` the decision over [K + 1] with coverage and precision among the answered. Neither is a headline alone",
+    "sections_published_together": [
+      "cut",
+      "chance",
+      "ranking",
+      "abstention",
+      "by_family",
+      "macro",
+      "counterfactual",
+      "permutation_invariance",
+      "tracking",
+      "calibration",
+      "softmax_semantics"
+    ],
+    "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight"
+  },
+  "task": "T-battery-metrics",
+  "tests": {
+    "data": {
+      "failed": 0,
+      "passed": 411,
+      "skipped": 6
+    },
+    "eval": {
+      "failed": 1,
+      "failure": "eval/test_release_gate.py::TestPublishedVerdict::test_the_numbers_are_the_ones_t_unseen_labels_published",
+      "failure_is_ours": false,
+      "failure_why": "artifacts/gates/T-unseen-labels/gate.json is modified in the worktree by work in flight (accuracy_unseen 0.242176 at HEAD, 0.304943 in the worktree) while T-release records 0.292141. Neither file is touched by this task",
+      "passed": 391,
+      "subtests_passed": 77
+    },
+    "model": {
+      "failed": 0,
+      "passed": 104,
+      "subtests_passed": 8
+    },
+    "new_here": {
+      "eval/test_gate_rules.py (added)": 6,
+      "eval/test_metrics_suite.py": 38
+    },
+    "runner": ".venv-train/bin/python -m pytest <dir> -q -p no:randomly, one directory at a time (this repo's collection breaks when several are passed at once)",
+    "tools": {
+      "failed": 4,
+      "failures": [
+        "tools/diagnose/test_antiscale.py::Rerun::test_same_seed_reproduces_the_committed_gate",
+        "tools/gen_objective/test_arms.py::TestGateHonesty::test_a_fabricated_measured_arm_is_rejected",
+        "tools/gen_objective/test_arms.py::TestPublishedGate::test_the_published_gate_passes_its_audit",
+        "tools/test_repo_size_check.py::ThisRepoTest::test_index_is_clean"
+      ],
+      "failures_are_ours": false,
+      "failures_why": "missing checkpoint stage records on disk and a dirty git index; none of these modules imports eval.gate_rules or eval.metrics_suite",
+      "passed": 91,
+      "subtests_passed": 33
+    },
+    "training_python": {
+      "passed": null,
+      "status": "not-run",
+      "why": "the directory's suite runs past the turn's 3-minute compute budget and nothing under it imports the two modules this task changed"
+    }
+  },
+  "trains_nothing": true,
+  "verdict": {
+    "decided_by": "the suite exists as one function with its rule; the three named readings are corrected on disk with the wrong sentences kept; C6 fires on all three when they are put back and on nothing else in the tree",
+    "go": true,
+    "r4": "this verdict is about the reporting code and the artifacts on disk on 2026-09-26; it transfers to no model regime",
+    "reading": "the reporting is fixed, not the model. Nothing here measures a checkpoint and no accuracy of ours is published in this artifact: what it records is that a figure now travels with its n, its K, its chance and its interval, that ranking and abstention are reported apart, and that a sentence contradicting those numbers is an ERROR. Whether the pilot's numbers improve is a different measurement and this gate makes no claim about it"
+  }
+}

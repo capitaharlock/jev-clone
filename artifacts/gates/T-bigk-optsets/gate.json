@@ -1,0 +1,634 @@
+{
+  "arm": {
+    "abstention": {
+      "full_space": {
+        "abstain_rate": 0.0,
+        "k": 77
+      },
+      "note": "same rows, same checkpoint, two cardinalities: this is the head's abstention, not the sampler's supervision rate",
+      "small_k": {
+        "abstain_rate": 0.001,
+        "k": 8
+      }
+    },
+    "cardinality_regime": {
+      "hard_fraction": 0.5,
+      "k_max": 0,
+      "k_min": 0,
+      "loss_normalised_over": "the [K + 1] columns handed to `cross_entropy` — in this regime those columns ARE the row's whole label space plus `unknown`",
+      "mode": "full label space",
+      "options_per_row": "every label of the row's own label space (|space| - 1 when the gold is withheld for an `unknown` row), plus the `unknown` logit",
+      "resampled_each_epoch": false,
+      "rule": "R4 — a verdict measured in this regime does not transfer to another one; it is marked non-transferable instead of inherited",
+      "sampler_regime": {
+        "distractor_sampling": "none — every other label of the row's own space is offered, so the hard and easy buckets are both exhausted",
+        "hard_fraction_applies": false,
+        "k_max": 0,
+        "k_min": 0,
+        "k_per_row": "|space| for an answerable row; |space| - 1 for an `unknown` row, which is the space with the gold withheld",
+        "loss_denominator": "the [K + 1] columns handed to `cross_entropy` ARE the row's whole space plus `unknown`",
+        "mode": "full space",
+        "unknown_fraction": 0.12
+      },
+      "stage_eval": {
+        "k_max": 8,
+        "k_min": 3,
+        "mode": "sampled options",
+        "rule": "R1 — a divergence between the training regime and the eval regime is declared in the gate, not discovered",
+        "same_as_training": false,
+        "why": "the stage eval is pinned to the phase-1 diagnostic regime so this run is comparable with the arms that came before it; the primary metric at full cardinality is `eval.fullspace`, not this one"
+      },
+      "unknown_fraction": 0.12
+    },
+    "checkpoint": "artifacts/checkpoints/decision/bigk-fullspace-d512-prior-ettin-68m-s20260922/stage-000250000",
+    "k_curve": {
+      "20": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.049,
+        "accuracy_ci95": [
+          0.037261,
+          0.064191
+        ],
+        "accuracy_options_only": 0.049,
+        "accuracy_options_only_ci95": [
+          0.037261,
+          0.064191
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 20,
+        "chance": 0.05,
+        "hits": 49,
+        "hits_options_only": 49,
+        "lift_over_chance": 0.98,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "41": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.02,
+        "accuracy_ci95": [
+          0.012984,
+          0.03069
+        ],
+        "accuracy_options_only": 0.02,
+        "accuracy_options_only_ci95": [
+          0.012984,
+          0.03069
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 41,
+        "chance": 0.02439,
+        "hits": 20,
+        "hits_options_only": 20,
+        "lift_over_chance": 0.82,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "5": {
+        "abstain_rate": 0.004,
+        "accuracy": 0.188,
+        "accuracy_ci95": [
+          0.164995,
+          0.213393
+        ],
+        "accuracy_options_only": 0.189,
+        "accuracy_options_only_ci95": [
+          0.165942,
+          0.214438
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 5,
+        "chance": 0.2,
+        "hits": 188,
+        "hits_options_only": 189,
+        "lift_over_chance": 0.94,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "77": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.009,
+        "accuracy_ci95": [
+          0.004742,
+          0.017016
+        ],
+        "accuracy_options_only": 0.009,
+        "accuracy_options_only_ci95": [
+          0.004742,
+          0.017016
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 77,
+        "chance": 0.012987,
+        "hits": 9,
+        "hits_options_only": 9,
+        "lift_over_chance": 0.693,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "8": {
+        "abstain_rate": 0.001,
+        "accuracy": 0.109,
+        "accuracy_ci95": [
+          0.09116,
+          0.129832
+        ],
+        "accuracy_options_only": 0.109,
+        "accuracy_options_only_ci95": [
+          0.09116,
+          0.129832
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 8,
+        "chance": 0.125,
+        "hits": 109,
+        "hits_options_only": 109,
+        "lift_over_chance": 0.872,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      }
+    },
+    "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n250048-2f35c0e404c5",
+    "primary_dev": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.009,
+      "accuracy_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "accuracy_options_only": 0.009,
+      "accuracy_options_only_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 77,
+      "chance": 0.012987,
+      "hits": 9,
+      "hits_options_only": 9,
+      "n": 1000,
+      "ranking_beats_chance": false,
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+    },
+    "run_id": "bigk-fullspace-d512-prior-ettin-68m-s20260922",
+    "samples_seen": 250048,
+    "stage_eval_k_le_8": {
+      "seen": {
+        "abstain_rate": 0.099402,
+        "accuracy": 0.531582,
+        "accuracy_ci95": [
+          0.513721,
+          0.549363
+        ],
+        "accuracy_options_only": 0.554854,
+        "beats_chance": true,
+        "chance": 0.206669,
+        "chance_options_only": 0.270306,
+        "ece": 0.180859,
+        "mean_k": 4.3684,
+        "n": 3008
+      },
+      "unseen": {
+        "abstain_rate": 0.068816,
+        "accuracy": 0.337766,
+        "accuracy_ci95": [
+          0.321081,
+          0.354865
+        ],
+        "accuracy_options_only": 0.365027,
+        "beats_chance": true,
+        "chance": 0.165236,
+        "chance_options_only": 0.201924,
+        "ece": 0.259303,
+        "mean_k": 5.5229,
+        "n": 3008
+      }
+    }
+  },
+  "artifact": "gate",
+  "control": {
+    "abstention": {
+      "full_space": {
+        "abstain_rate": 0.0,
+        "k": 77
+      },
+      "note": "same rows, same checkpoint, two cardinalities: this is the head's abstention, not the sampler's supervision rate",
+      "small_k": {
+        "abstain_rate": 0.0,
+        "k": 8
+      }
+    },
+    "cardinality_regime": {
+      "mode": "sampled options",
+      "recorded": false,
+      "why": "this checkpoint predates the `cardinality_regime` block, so the regime is not in its manifest. It is stated here from two facts on disk and not from memory: the sampler defaults at its commit (k_min=3, k_max=8) and the `mean_k` its own stage eval recorded, 5.5229"
+    },
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-000250000",
+    "k_curve": {
+      "20": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.055,
+        "accuracy_ci95": [
+          0.042497,
+          0.070908
+        ],
+        "accuracy_options_only": 0.055,
+        "accuracy_options_only_ci95": [
+          0.042497,
+          0.070908
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 20,
+        "chance": 0.05,
+        "hits": 55,
+        "hits_options_only": 55,
+        "lift_over_chance": 1.1,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "41": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.019,
+        "accuracy_ci95": [
+          0.012197,
+          0.029484
+        ],
+        "accuracy_options_only": 0.019,
+        "accuracy_options_only_ci95": [
+          0.012197,
+          0.029484
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 41,
+        "chance": 0.02439,
+        "hits": 19,
+        "hits_options_only": 19,
+        "lift_over_chance": 0.779,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "5": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.21,
+        "accuracy_ci95": [
+          0.185889,
+          0.236331
+        ],
+        "accuracy_options_only": 0.21,
+        "accuracy_options_only_ci95": [
+          0.185889,
+          0.236331
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 5,
+        "chance": 0.2,
+        "hits": 210,
+        "hits_options_only": 210,
+        "lift_over_chance": 1.05,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "77": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.009,
+        "accuracy_ci95": [
+          0.004742,
+          0.017016
+        ],
+        "accuracy_options_only": 0.009,
+        "accuracy_options_only_ci95": [
+          0.004742,
+          0.017016
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 77,
+        "chance": 0.012987,
+        "hits": 9,
+        "hits_options_only": 9,
+        "lift_over_chance": 0.693,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "8": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.129,
+        "accuracy_ci95": [
+          0.109635,
+          0.151204
+        ],
+        "accuracy_options_only": 0.129,
+        "accuracy_options_only_ci95": [
+          0.109635,
+          0.151204
+        ],
+        "beats_chance": false,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 8,
+        "chance": 0.125,
+        "hits": 129,
+        "hits_options_only": 129,
+        "lift_over_chance": 1.032,
+        "n": 1000,
+        "ranking_beats_chance": false,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      }
+    },
+    "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n250048-c6cdb1b9fb5b",
+    "primary_dev": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.009,
+      "accuracy_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "accuracy_options_only": 0.009,
+      "accuracy_options_only_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 77,
+      "chance": 0.012987,
+      "hits": 9,
+      "hits_options_only": 9,
+      "n": 1000,
+      "ranking_beats_chance": false,
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+    },
+    "run_id": "leverstack-d512-prior-ettin-68m-s20260922",
+    "samples_seen": 250048,
+    "stage_eval_k_le_8": {
+      "seen": {
+        "abstain_rate": 0.075465,
+        "accuracy": 0.573803,
+        "accuracy_ci95": [
+          0.556048,
+          0.59137
+        ],
+        "accuracy_options_only": 0.629987,
+        "beats_chance": true,
+        "chance": 0.206669,
+        "chance_options_only": 0.270306,
+        "ece": 0.200444,
+        "mean_k": 4.3684,
+        "n": 3008
+      },
+      "unseen": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.351396,
+        "accuracy_ci95": [
+          0.334535,
+          0.368637
+        ],
+        "accuracy_options_only": 0.351396,
+        "beats_chance": true,
+        "chance": 0.165236,
+        "chance_options_only": 0.201924,
+        "ece": 0.325813,
+        "mean_k": 5.5229,
+        "n": 3008
+      }
+    }
+  },
+  "cost": {
+    "artifact": "artifacts/gates/T-bigk-optsets/cost.json",
+    "device": "mps",
+    "head_slowdown_vs_k8": {
+      "41": 2.15,
+      "77": 3.43,
+      "8": 1.0
+    },
+    "per_k": {
+      "41": {
+        "batch_size": 64,
+        "head_share_of_step": 0.2914,
+        "k": 41,
+        "minutes_per_1m_rows": 57.4,
+        "minutes_per_62500_rows": 3.59,
+        "ms_per_step": 220.6,
+        "ms_per_step_head_only": 64.3,
+        "peak_mem_gb": 1.107,
+        "rows_per_s": 290.14,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "77": {
+        "batch_size": 64,
+        "head_share_of_step": 0.393,
+        "k": 77,
+        "minutes_per_1m_rows": 68.1,
+        "minutes_per_62500_rows": 4.26,
+        "ms_per_step": 261.4,
+        "ms_per_step_head_only": 102.7,
+        "peak_mem_gb": 2.113,
+        "rows_per_s": 244.8,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      },
+      "8": {
+        "batch_size": 64,
+        "head_share_of_step": 0.1971,
+        "k": 8,
+        "minutes_per_1m_rows": 39.6,
+        "minutes_per_62500_rows": 2.47,
+        "ms_per_step": 151.9,
+        "ms_per_step_head_only": 29.9,
+        "peak_mem_gb": 1.102,
+        "rows_per_s": 421.24,
+        "steps_timed": 8,
+        "warmup_steps": 2
+      }
+    },
+    "slowdown_vs_k8": {
+      "41": 1.45,
+      "77": 1.72,
+      "8": 1.0
+    }
+  },
+  "cut": {
+    "cardinality": 77,
+    "chance": 0.012987,
+    "dataset": "banking77",
+    "name": "banking77-dev",
+    "reserved": false,
+    "rows": 1000,
+    "rule": "R7 — arms are chosen on the development cut; the reserved cut is read separately and logged",
+    "split": "train"
+  },
+  "format": "jev.gate.v1",
+  "generated_utc": "2026-09-24T13:44:12Z",
+  "pair": {
+    "arm": "artifacts/checkpoints/decision/bigk-fullspace-d512-prior-ettin-68m-s20260922/stage-000250000",
+    "control": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-000250000",
+    "only_variable": "the cardinality of the training objective",
+    "same_rows": true,
+    "same_rows_why": "same mixture seed and same round-robin order, so the compared stages consumed the same rows in the same sequence",
+    "shared": "corpus (decision-mix-clean-1m, --fence-clean), seed 20260922, mix-seed 20260922, prior penalty 1.0, ettin-68m frozen, d_model 512, 2 layers, 8 heads, batch 64, max_length 256"
+  },
+  "previously_published": {
+    "accuracy": 0.012338,
+    "accuracy_ci95": [
+      0.009018,
+      0.016882
+    ],
+    "beats_chance": false,
+    "cardinality": 77,
+    "chance": 0.012987,
+    "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+    "cut": "banking77 official test (RESERVED), 3 080 rows",
+    "hits": 38,
+    "n": 3080,
+    "reading": "indistinguishable from chance — the interval contains it",
+    "source": "artifacts/gates/T-teacher-probe/fullspace.json (2026-09-23)"
+  },
+  "primary": {
+    "arm": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.009,
+      "accuracy_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "accuracy_options_only": 0.009,
+      "accuracy_options_only_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 77,
+      "chance": 0.012987,
+      "hits": 9,
+      "hits_options_only": 9,
+      "n": 1000,
+      "ranking_beats_chance": false,
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+    },
+    "control": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.009,
+      "accuracy_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "accuracy_options_only": 0.009,
+      "accuracy_options_only_ci95": [
+        0.004742,
+        0.017016
+      ],
+      "beats_chance": false,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 77,
+      "chance": 0.012987,
+      "hits": 9,
+      "hits_options_only": 9,
+      "n": 1000,
+      "ranking_beats_chance": false,
+      "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+    }
+  },
+  "question": "does training with the row's WHOLE label space, instead of 3-8 sampled candidates, move the number at full cardinality?",
+  "rules_honoured": [
+    "R1 — the training regime and the stage-eval regime are both declared in each checkpoint's `cardinality_regime`; the primary metric is measured at full cardinality",
+    "R2 — every accuracy here carries its K, its chance and its 95 % interval",
+    "R3 — the teacher's 0.924 is a citation, not a measurement made here; it is not restated in this file as a comparison",
+    "R4 — the verdict names the regime it is valid in",
+    "R5 — the slope is shown at a small budget before anything is scaled",
+    "R7 — this artifact is the development cut; reads of the reserved cut are logged in artifacts/gates/T-eval-cardinality/test-queries.json",
+    "R9 — a cheap NO-GO limits spend and does not establish cause"
+  ],
+  "task": "T-bigk-optsets",
+  "unknown_supervision": {
+    "full_space": {
+      "cross_space_violations": 0,
+      "fenced_label_hits": 0,
+      "gold_really_absent": true,
+      "mean_k": 34.2028,
+      "mean_k_of_unknown_rows": 33.4511,
+      "pct_k_is_full_space": 100.0,
+      "pct_unknown_rows": 13.0556,
+      "per_dataset_pool_size": {
+        "boolq": 2,
+        "huffpost": 41,
+        "massive": 60
+      },
+      "regime": {
+        "distractor_sampling": "none — every other label of the row's own space is offered, so the hard and easy buckets are both exhausted",
+        "hard_fraction_applies": false,
+        "k_max": 0,
+        "k_min": 0,
+        "k_per_row": "|space| for an answerable row; |space| - 1 for an `unknown` row, which is the space with the gold withheld",
+        "loss_denominator": "the [K + 1] columns handed to `cross_entropy` ARE the row's whole space plus `unknown`",
+        "mode": "full space",
+        "unknown_fraction": 0.12
+      },
+      "samples": 1800,
+      "target_unknown_pct": 12.0
+    },
+    "sampled_k3_8": {
+      "cross_space_violations": 0,
+      "fenced_label_hits": 0,
+      "gold_really_absent": true,
+      "mean_k": 4.2839,
+      "mean_k_of_unknown_rows": 4.1255,
+      "pct_k_is_full_space": 33.3333,
+      "pct_unknown_rows": 13.2778,
+      "per_dataset_pool_size": {
+        "boolq": 2,
+        "huffpost": 41,
+        "massive": 60
+      },
+      "regime": {
+        "distractor_sampling": "50 % of the distractors from the hard bucket (the top 25 % of the difficulty ranking, at least 4 labels), the rest from the easy bucket, both without replacement",
+        "hard_fraction_applies": true,
+        "k_max": 8,
+        "k_min": 3,
+        "k_per_row": "3-8 drawn uniformly, clamped by |space|",
+        "loss_denominator": "the [K + 1] columns handed to `cross_entropy` — a SUBSET of the space",
+        "mode": "sampled options",
+        "unknown_fraction": 0.12
+      },
+      "samples": 1800,
+      "target_unknown_pct": 12.0
+    }
+  },
+  "verdict": {
+    "above_control": false,
+    "abstention_collapse": false,
+    "beats_chance": false,
+    "decided_by": "accuracy_ci95[0] > chance on the development cut AND accuracy above the matched control AND the head is not abstaining on everything",
+    "diagnostic_fell_vs_control": true,
+    "go": false,
+    "pre_registered": "artifacts/gates/T-bigk-optsets/verdict.md",
+    "r4": "this verdict is valid inside the regime it was measured in; it does not transfer to another one",
+    "r9": "a NO-GO at this budget LIMITS SPEND AND DOES NOT ESTABLISH CAUSE. What is discarded is discarded at 250048 rows, one seed, frozen backbone; any causal claim needs the winning arm repeated on another seed and at a larger budget",
+    "reading": "the primary interval [0.004742, 0.017016] contains chance (0.012987) at K=77 on n=1000, and the arm does not sit above its matched control (0.009 against 0.009 on the same rows): the full-space objective bought nothing measurable here. What this NO-GO eliminates is the OBSERVED BENEFIT of that arm at 250048 rows, one seed and a frozen backbone — R9: it limits spend and it does NOT establish that the cardinality of the objective is innocent, which would take the arm repeated on another seed and at a larger budget. Work order, unchanged by that distinction: the REPRESENTATION is next — #T-encoder-finetune first (a frozen backbone received no pressure at K<=8; with the whole space it does), then backbone capacity (68 M -> 149 M+). The sampled extension (#T-fullspace-objective) stops being the continuation of this hypothesis and becomes what the non-enumerable spaces need",
+    "reading_corrected": {
+      "by": "T-battery-metrics",
+      "corrected_utc": "2026-09-26",
+      "rule": "C6 — eval/gate_rules.py + eval/metrics_suite.reading_errors",
+      "was": "the primary interval contains chance: the CARDINALITY OF THE OBJECTIVE is discarded as the cause of the transfer failure. Next suspect, in order: the REPRESENTATION — #T-encoder-finetune first (a frozen backbone received no pressure at K<=8; with the whole space it does), then backbone capacity (68 M -> 149 M+). The sampled extension (#T-fullspace-objective) stops being the continuation of this hypothesis and becomes what the non-enumerable spaces need",
+      "why": "the text eliminated the cardinality of the objective AS A CAUSE while the `r9` field two keys above it says this artifact establishes no cause. One seed and one budget discard that arm's observed benefit, not the cause. The numbers are unchanged: only the sentence read off them was wrong"
+    }
+  }
+}

@@ -432,5 +432,71 @@ class TestPublishedGates(unittest.TestCase):
                             for o in err["offending"]))
 
 
+class TestReadingCoherence(unittest.TestCase):
+    """C6 — a gate whose reading contradicts its numbers FAILS (#T-battery-
+    metrics). Synthetic dirs only; the real corrections are asserted below."""
+
+    FIG = {"accuracy": 0.0, "accuracy_ci95": [0.0, 0.003827],
+           "chance": 0.012987, "cardinality": 77, "n": 1000,
+           "accuracy_options_only": 0.009,
+           "accuracy_options_only_ci95": [0.004742, 0.017016]}
+
+    def test_a_reading_that_contradicts_its_interval_fails_the_runner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-synthetic", gate={
+                "pass": False, "primary": {"arm": dict(self.FIG)},
+                "verdict": {"reading": "the primary interval contains chance"}})
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertFalse(r["pass"])
+            self.assertIn("C6", rules_of(r))
+            self.assertEqual(r["readings"]["incoherent"], 1)
+
+    def test_the_corrected_sentence_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-synthetic", gate={
+                "pass": False, "primary": {"arm": dict(self.FIG)},
+                "verdict": {"reading":
+                            "the primary interval excludes chance from "
+                            "below; the interval that contains chance is "
+                            "the forced one, `unknown` out of the race"}})
+            self.assertTrue(G.check_gate_dir(d, COHERENCE)["pass"])
+
+    def test_a_metrics_suite_report_missing_a_metric_fails_the_runner(self):
+        from . import metrics_suite as M
+        rows = [{"row_id": "a", "family": "f1", "variant_group": "g1",
+                 "k": 4, "gold_index": 0, "pred": 0,
+                 "probs": [0.7, 0.1, 0.1, 0.1, 0.05]}]
+        rep = M.report(rows, cut={"name": "synthetic"},
+                       calibration={"temperature": 1.0, "fitted_on": "dev",
+                                    "verified_on": "test"},
+                       permutation={"pass": True}, tracking={"pass": False})
+        del rep["macro"]
+        with tempfile.TemporaryDirectory() as tmp:
+            d = gate_dir(tmp, "T-synthetic", suite=rep)
+            r = G.check_gate_dir(d, COHERENCE)
+            self.assertIn("C5", rules_of(r))
+            self.assertEqual(r["metrics_suite"]["incomplete"], 1)
+
+
+class TestCorrectedReadingsOnDisk(unittest.TestCase):
+    """The three readings #T-battery-metrics corrected, as published."""
+
+    def test_the_two_named_gates_now_pass_c6(self):
+        for task in ("T-fullspace-objective", "T-bigk-optsets"):
+            r = G.check_gate_dir(G.GATES_DIR / task, COHERENCE)
+            self.assertNotIn("C6", rules_of(r), f"{task}: {r['errors']}")
+            self.assertEqual(r["readings"]["incoherent"], 0, task)
+
+    def test_the_corrections_keep_the_wrong_sentence_on_the_record(self):
+        doc = json.loads((G.GATES_DIR / "T-fullspace-objective"
+                          / "gate.json").read_text())
+        self.assertIn("contains chance",
+                      doc["verdict"]["reading_corrected"]["was"])
+        # and the numbers it was read off are untouched
+        self.assertEqual(doc["primary"]["arm"]["accuracy_ci95"],
+                         [0.0, 0.003827])
+        self.assertEqual(doc["primary"]["arm"]["chance"], 0.012987)
+
+
 if __name__ == "__main__":
     unittest.main()
