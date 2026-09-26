@@ -148,12 +148,16 @@ def _fake_ollama(messages, num_predict, timeout):
     prompt = messages[0]["content"]
     if "Rewrite EACH numbered fact-set" in prompt:
         body = prompt.split("nothing else.\n", 1)[1]
-        return "\n".join(f"{ln.split('.', 1)[0]}. {ln.split('.', 1)[1].strip()}"
-                         f" (reescrito)" for ln in body.splitlines()
-                         if ln.strip())
+        out = []
+        for ln in body.splitlines():
+            if not ln.strip() or ln.lstrip().startswith("KEEP:"):
+                continue  # el tramo a conservar ya viaja dentro de los hechos
+            num, facts = ln.split(".", 1)
+            out.append(f"{num}. {facts.strip()} (reescrito)")
+        return "\n".join(out)
     if "Rewrite these facts" in prompt:
         facts = prompt.split("rewritten sentences.\n", 1)[1]
-        return f"{facts} (reescrito)"
+        return f"{facts.split(chr(10) + 'KEEP:')[0]} (reescrito)"
     if "For EACH of the" in prompt:
         out = []
         for i, block in enumerate(prompt.split("### Item ")[1:], 1):
@@ -278,3 +282,62 @@ class VolumeCheckTest(unittest.TestCase):
         self.assertEqual(check["n_published"], 20)
         self.assertEqual(len(check["manifest_sha"]), 64)
         self.assertEqual(check["seed"], SEED)
+
+
+class EvidenceSurvivesTheParaphraseTest(unittest.TestCase):
+    """El fallo que se comió el 46 % del primer tramo del piloto.
+
+    `episode-v1` exige que `evidence` sea un fragmento literal de
+    `state`. Cuando Qwen reescribía el estado, el tramo dejaba de estar
+    y el episodio se iba a rechazos — no por culpa del profesor ni del
+    gold, sino por prosa. Prosa que pierde el tramo es prosa que se
+    descarta; el episodio se publica con la que escribió la regla.
+    """
+
+    def test_prose_that_drops_the_span_falls_back_instead_of_rejecting(self):
+        def eats_the_span(messages, num_predict, timeout):
+            out = _fake_ollama(messages, num_predict, timeout)
+            if "Rewrite" not in messages[0]["content"]:
+                return out
+            return "\n".join(f"{ln.split('.', 1)[0]}. Reescrito del todo."
+                             for ln in out.splitlines() if ln.strip()) \
+                if "EACH" in messages[0]["content"] else "Reescrito del todo."
+
+        with unittest.mock.patch.object(EG, "_ollama_chat", eats_the_span):
+            out = EG.run(n=20, seed=SEED, prose="qwen", teacher="stub",
+                         out_dir="/tmp/episode-gen-test-span", batch=10)
+        self.assertEqual(out["n_episodes"], 20)
+        self.assertEqual(out["n_rejects"], 0)
+        self.assertEqual(out["prose_origins"], {"local-fallback": 20})
+
+    def test_the_span_is_asked_for_in_the_prompt(self):
+        seen = {}
+
+        def capture(messages, num_predict, timeout):
+            seen.setdefault("prompt", messages[0]["content"])
+            return _fake_ollama(messages, num_predict, timeout)
+
+        with unittest.mock.patch.object(EG, "_ollama_chat", capture):
+            EG.run(n=10, seed=SEED, prose="qwen", teacher="stub",
+                   out_dir="/tmp/episode-gen-test-keep", batch=10)
+        self.assertIn("KEEP:", seen["prompt"])
+        self.assertIn("word for word", seen["prompt"])
+
+    def test_accepted_prose_is_prose_the_validator_accepts(self):
+        with unittest.mock.patch.object(EG, "_ollama_chat", _fake_ollama):
+            out = EG.run(n=20, seed=SEED, prose="qwen", teacher="stub",
+                         out_dir="/tmp/episode-gen-test-ok", batch=10)
+        eps = EG.load_episodes(out["out"])
+        self.assertEqual(out["prose_origins"], {"qwen-local": 20})
+        for ep in eps:
+            self.assertTrue(
+                EC.evidence_is_fragment(ep["evidence"], ep["state"]), ep["id"])
+
+    def test_the_capitalised_first_word_does_not_kill_the_paraphrase(self):
+        # Los builders ponen en mayúscula la primera palabra de la prosa;
+        # comparando con mayúsculas exactas, extracción caía SIEMPRE a
+        # prosa local y Qwen no escribía esa familia nunca.
+        self.assertTrue(EG._kept("The archive key is at drawer 2.",
+                                 ["the archive key", "drawer 2"]))
+        self.assertFalse(EG._kept("The archive key is at drawer 9.",
+                                  ["the archive key", "drawer 2"]))

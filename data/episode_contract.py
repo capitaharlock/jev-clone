@@ -182,6 +182,17 @@ def is_opaque_id(candidate_id: Any, text: Any) -> bool:
     return True
 
 
+def evidence_is_fragment(evidence: str, state: str) -> bool:
+    """Is ``evidence`` a literal fragment of ``state``? The contract's rule.
+
+    Public on purpose: a generator that rewrites the state (Qwen prose)
+    has to be able to ask this BEFORE publishing, with exactly the
+    normalisation ``validate()`` uses — otherwise it discovers the answer
+    in its own rejects file.
+    """
+    return _norm(evidence) in _norm(state)
+
+
 def validate(ep: Any) -> list[str]:
     """Valida un episodio. Vacío = válido; si no, un motivo por fallo."""
     reasons: list[str] = []
@@ -216,7 +227,7 @@ def validate(ep: Any) -> list[str]:
     if not isinstance(evidence, str) or not evidence.strip():
         reasons.append("missing evidence: no justifying fragment given")
     elif isinstance(state, str) and state.strip():
-        if _norm(evidence) not in _norm(state):
+        if not evidence_is_fragment(evidence, state):
             reasons.append("evidence is not a fragment of the state")
     group = ep["variant_group"]
     if not isinstance(group, str) or not group.strip():

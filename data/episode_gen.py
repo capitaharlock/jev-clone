@@ -259,18 +259,32 @@ def probe_qwen(timeout: int = 100) -> dict:
             "sample": (out or "")[:80]}
 
 
-def qwen_paraphrase(facts: str, lang: str, timeout: int = 120) -> str | None:
+#: What a paraphrase must carry through untouched. The evidence span is
+#: part of it: `episode-v1` demands `evidence` be a literal fragment of
+#: `state`, so prose that rewrites the span away is prose that cannot be
+#: published (measured 2026-09-27: it was 46 % of the first pilot chunk).
+_KEEP_RULE = ("Keep EVERY number, name and place exactly as written, "
+              "and repeat the KEEP fragment word for word inside your "
+              "sentences. ")
+
+
+def _paraphrase_prompt(lang: str, body: str, tail: str) -> str:
+    return (f"Rewrite {body} as 2-3 natural sentences in "
+            f"{'Spanish' if lang == 'es' else 'English'}. {_KEEP_RULE}{tail}")
+
+
+def qwen_paraphrase(facts: str, lang: str, timeout: int = 120,
+                    keep: str = "") -> str | None:
     """Ask Qwen to redact prose from OUR facts. Returns state prose or None.
 
     The facts (numbers, names, winner) are fixed by the rule; Qwen only
-    rephrases. The caller verifies the rule-critical tokens survived.
+    rephrases. ``keep`` is the evidence span that must survive verbatim.
+    The caller verifies it did — the prompt asks, the check decides.
     """
-    prompt = (
-        f"Rewrite these facts as 2-3 natural sentences in "
-        f"{'Spanish' if lang == 'es' else 'English'}. "
-        f"Keep EVERY number, name and place exactly as written. "
+    prompt = _paraphrase_prompt(
+        lang, "these facts",
         f"Reply with ONLY the rewritten sentences.\n{facts}"
-    )
+        + (f"\nKEEP: {keep}" if keep else ""))
     return _ollama_chat([{"role": "user", "content": prompt}],
                         num_predict=220, timeout=timeout)
 
@@ -360,26 +374,27 @@ def _numbered_lines(out: str | None, n: int) -> list:
     return got
 
 
-def qwen_paraphrase_batch(facts: list, lang: str,
-                          timeout: int = 1800) -> list:
+def qwen_paraphrase_batch(facts: list, lang: str, timeout: int = 1800,
+                          keeps: list | None = None) -> list:
     """Paraphrase MANY fact-sets in one request. ``None`` per missing item.
 
-    Same contract as ``qwen_paraphrase``: Qwen only rephrases, and the
-    caller still checks that every rule-critical token survived.
+    Same contract as ``qwen_paraphrase``: Qwen only rephrases, ``keeps[i]``
+    is the evidence span item ``i`` must carry through verbatim, and the
+    caller still checks that it — and every rule-critical token — did.
     """
     if not facts:
         return []
+    keeps = keeps or [""] * len(facts)
     if len(facts) == 1:
-        return [qwen_paraphrase(facts[0], lang)]
-    listing = "\n".join(f"{i + 1}. {f}" for i, f in enumerate(facts))
-    prompt = (
-        f"Rewrite EACH numbered fact-set below as 2-3 natural sentences in "
-        f"{'Spanish' if lang == 'es' else 'English'}. "
-        f"Keep EVERY number, name and place exactly as written. "
+        return [qwen_paraphrase(facts[0], lang, keep=keeps[0])]
+    listing = "\n".join(
+        f"{i + 1}. {f}" + (f"\n   KEEP: {k}" if k else "")
+        for i, (f, k) in enumerate(zip(facts, keeps)))
+    prompt = _paraphrase_prompt(
+        lang, "EACH numbered fact-set below",
         f"Reply with ONLY one line per item, in the same order, each line "
         f"starting with its number and a period. "
-        f"{len(facts)} lines, nothing else.\n{listing}"
-    )
+        f"{len(facts)} lines, nothing else.\n{listing}")
     return _numbered_lines(
         _ollama_chat([{"role": "user", "content": prompt}],
                      num_predict=140 * len(facts), timeout=timeout),
@@ -717,6 +732,17 @@ def _build_episode(item: tuple, seed: int, prose: str,
                             flip, prose, sink)
 
 
+def _kept(text: str, tokens: list) -> bool:
+    """Did every rule-critical token survive the paraphrase?
+
+    Compared with the contract's own normalisation (lowercase, collapsed
+    spaces), because the builders capitalise the first word of the prose:
+    an exact-case check made the extraction family fall back to local
+    prose 100 % of the time and nobody noticed — Qwen never wrote it.
+    """
+    return all(EC.evidence_is_fragment(t, text) for t in tokens)
+
+
 def _tick(phase: str, done: int, total: int, t0: float, items: int) -> None:
     """One line per finished Qwen request — the run's only honest pulse."""
     el = time.time() - t0
@@ -728,8 +754,10 @@ def _tick(phase: str, done: int, total: int, t0: float, items: int) -> None:
 def _fill_prose(eps: list, sinks: list, batch: int, concurrency: int) -> None:
     """Resolve the deferred paraphrases in place, batched per language.
 
-    Qwen prose is kept only when every rule-critical token survived it;
-    otherwise the episode keeps the local prose. Which one each episode
+    Qwen prose is kept only when every rule-critical token AND the
+    evidence span survived it; otherwise the episode keeps the local
+    prose. Losing the span is not a rejected episode — it is an episode
+    published with the prose the rule wrote. Which one each episode
     ended up with is published per episode in ``origin`` and counted in
     the manifest's ``prose_origins``.
     """
@@ -744,7 +772,8 @@ def _fill_prose(eps: list, sinks: list, batch: int, concurrency: int) -> None:
     def one(job):
         lang, idxs = job
         return idxs, qwen_paraphrase_batch(
-            [sinks[i][0]["facts"] for i in idxs], lang)
+            [sinks[i][0]["facts"] for i in idxs], lang,
+            keeps=[eps[i]["evidence"] for i in idxs])
 
     t0, seen = time.time(), 0
     with cf.ThreadPoolExecutor(max(1, concurrency)) as ex:
@@ -753,7 +782,11 @@ def _fill_prose(eps: list, sinks: list, batch: int, concurrency: int) -> None:
             _tick("prose", k, len(jobs), t0, seen)
             for i, text in zip(idxs, got):
                 req = sinks[i][0]
-                ok = bool(text) and all(t in text for t in req["tokens"])
+                # The evidence span is checked with the CONTRACT's own
+                # normalisation, so prose this accepts is prose the
+                # validator accepts — no episode is lost to a stray space.
+                ok = bool(text) and _kept(text, req["tokens"]) \
+                    and EC.evidence_is_fragment(eps[i]["evidence"], text)
                 eps[i]["state"] = text if ok else req["local"]
                 eps[i]["origin"] = "qwen-local" if ok else "local-fallback"
 
