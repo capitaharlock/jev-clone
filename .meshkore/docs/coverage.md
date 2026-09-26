@@ -470,7 +470,8 @@ defectos) y sobre **nada más** en las 52 carpetas de `artifacts/gates/`.
 |---|---|
 | Cinco familias en ES y EN con el reparto DECLARADO antes de generar | `declared_split()`; el `manifest.json` se escribe con `status: planned` y `planned_split` ANTES de la primera petición a Qwen |
 | Gold numérico por regla determinista, reproducible por semilla | `comparison_gold()` / `priority_gold()`; `rule_gold_flips_on_perturb` 11/11 en el gate |
-| Piloto ≥2 000 publicado con manifest, semilla y versión de generador | job canónico `datagen`, salida `artifacts/episodes-qwen/pilot-2k` — **en vuelo**, ver abajo |
+| Piloto ≥2 000 publicado con manifest, semilla y versión de generador | job canónico `datagen`, salida `artifacts/episodes-qwen/pilot-2k` (2 100 = 2 000 + 5 % de holgura) — **en vuelo**, ver abajo |
+| La prosa de Qwen no puede romper el contrato que el episodio debe cumplir | el tramo de `evidence` viaja en la petición (`KEEP:`) y se verifica al volver con `EC.evidence_is_fragment()`; si no sobrevive, se publica la prosa local, no un rechazo |
 | El volumen se firma con la cifra MEDIDA, nunca con una prometida (C7) | `_volume_check()` lee `n_published`, `seed`, `generator_version` y el sha256 del `manifest.json` del propio directorio; sin manifest publicado se queda en `null` |
 | Un lote no puede ser más laxo que una petición suelta | `_teacher_verdict()` compartido; `test_batch_12_publishes_exactly_what_batch_1_publishes` |
 | Un item que falte en una respuesta agrupada es rechazo con motivo, no un hueco desplazado | `_numbered_lines()`, `test_a_skipped_item_is_none_not_a_shift`, `test_a_missing_item_rejects_with_reason_not_silently` |
@@ -479,9 +480,15 @@ Cómputo: el generador pedía **una petición a Ollama por episodio** y
 `qwen3.6:27b-mlx` cuesta ~19 s de sobrecarga fija por petición contra ~3 s de
 cómputo (medido 2026-09-27) — 18 h de GPU para el piloto, con concurrencia 4
 dando sólo ×1,5. Agrupando 16 episodios por petición baja a ~13 s/episodio
-(prosa 6,0 + profesor 7,2 medidos a lote 12), **ETA ~6 h**. El piloto NO cabe
-en un turno: la task sigue `active` y el volumen sin firmar hasta que el job
-termine. 12 tests nuevos en `data/test_episode_gen.py` (24 en total).
+(prosa 6,0 + profesor 7,2 medidos a lote 12). El primer tramo real destapó que
+el camino `--prose qwen` nunca se había ejercitado: 46 de 100 episodios caían
+con `evidence is not a fragment of the state` porque Qwen reescribía el tramo
+que el contrato exige literal, y la familia de extracción caía entera a prosa
+local por una comparación sensible a mayúsculas. Arreglado y medido contra el
+modelo real: 20 publicados, 0 rechazos, 18 con prosa de Qwen, **11,0
+s/episodio → ETA ~6,5 h**. El piloto NO cabe en un turno: la task sigue
+`active` con `outcome: partial` y el volumen SIN firmar hasta que el job
+termine. 17 tests nuevos en `data/test_episode_gen.py` (29 en total).
 
 ## Entregado 2026-09-26 — `#T-episode-contract` (entrada del piloto, `#episodic-data`)
 

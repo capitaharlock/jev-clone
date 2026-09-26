@@ -10,6 +10,7 @@ depends_on:
   - T-episode-contract
 created: 2026-09-25
 updated: 2026-09-27
+outcome: partial
 ---
 
 # Qwen genera episodios completos por familia, no plantillas rellenadas
@@ -90,3 +91,34 @@ Qwen sigue descartándose entera si pierde un token crítico de la regla.
 - El gold numérico sale de una regla determinista, reproducible por semilla.
 - Existe un piloto publicado (≥2.000 episodios) con su manifest, semilla y
   versión de generador, consumible por un entreno sin conversión manual.
+
+## Estado 2026-09-27 — piloto EN VUELO, volumen sin firmar
+
+`status` sigue `active` a propósito. Tres de las cuatro casillas del gate
+están medidas en verde desde `fdfa2a7`; `volume_ge_2000` **no se firma**
+porque el piloto todavía no existe: está generándose en el job canónico
+`datagen` (`artifacts/episodes-qwen/pilot-2k`, semilla 20260926, 2 100
+episodios = los 2 000 exigidos más un 5 % de holgura). Ritmo medido
+**11,0 s/episodio** → ETA ~6,5 h. No hay cifra que firmar hasta que el
+job termine y `_volume_check` lea su manifest.
+
+Lo que este turno sí cerró son los dos motivos por los que el piloto no
+podía existir:
+
+1. **Coste.** Una petición por episodio contra `qwen3.6:27b-mlx` cuesta
+   ~19 s de sobrecarga fija frente a ~3 s de cómputo, y la concurrencia
+   sólo daba ×1,5 → 18 h. Agrupando 16 episodios por petición: ~13 s de
+   arranque y 11,0 s/episodio medidos → ~6,5 h. Commit `834d2a0`.
+2. **Corrección.** El primer tramo publicó 54 de 100: los 46 rechazos
+   eran todos `evidence is not a fragment of the state`, con la prosa de
+   Qwen llevándose por delante el tramo que el contrato exige literal —
+   el camino `--prose qwen` no se había ejercitado nunca (el smoke de 25
+   era `--prose local`). Y la familia de extracción caía al 100 % a
+   prosa local por una comparación sensible a mayúsculas. Commit
+   `a5e029b`; medido después: 20 publicados, 0 rechazos, 18 con prosa de
+   Qwen.
+
+Cuando el job termine, `datagen` firma el gate él mismo
+(`data.episode_gen gate --dir … --job-id datagen`). Si el piloto se
+quedara por debajo de 2 000, `volume_ge_2000` sale **`false` medido**, no
+`null`: hay cifra, y dice que no llega.
