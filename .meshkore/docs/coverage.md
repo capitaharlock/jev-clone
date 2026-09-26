@@ -464,6 +464,25 @@ los 3 `reading` que la task nombra cuando se restauran las frases originales (4
 defectos) y sobre **nada más** en las 52 carpetas de `artifacts/gates/`.
 44 tests nuevos (38 en `eval/test_metrics_suite.py`, 6 en `eval/test_gate_rules.py`).
 
+## En curso 2026-09-27 — `#T-episode-gen` (piloto de 2 000, `#episodic-data`)
+
+| Requisito de la task | Dónde está |
+|---|---|
+| Cinco familias en ES y EN con el reparto DECLARADO antes de generar | `declared_split()`; el `manifest.json` se escribe con `status: planned` y `planned_split` ANTES de la primera petición a Qwen |
+| Gold numérico por regla determinista, reproducible por semilla | `comparison_gold()` / `priority_gold()`; `rule_gold_flips_on_perturb` 11/11 en el gate |
+| Piloto ≥2 000 publicado con manifest, semilla y versión de generador | job canónico `datagen`, salida `artifacts/episodes-qwen/pilot-2k` — **en vuelo**, ver abajo |
+| El volumen se firma con la cifra MEDIDA, nunca con una prometida (C7) | `_volume_check()` lee `n_published`, `seed`, `generator_version` y el sha256 del `manifest.json` del propio directorio; sin manifest publicado se queda en `null` |
+| Un lote no puede ser más laxo que una petición suelta | `_teacher_verdict()` compartido; `test_batch_12_publishes_exactly_what_batch_1_publishes` |
+| Un item que falte en una respuesta agrupada es rechazo con motivo, no un hueco desplazado | `_numbered_lines()`, `test_a_skipped_item_is_none_not_a_shift`, `test_a_missing_item_rejects_with_reason_not_silently` |
+
+Cómputo: el generador pedía **una petición a Ollama por episodio** y
+`qwen3.6:27b-mlx` cuesta ~19 s de sobrecarga fija por petición contra ~3 s de
+cómputo (medido 2026-09-27) — 18 h de GPU para el piloto, con concurrencia 4
+dando sólo ×1,5. Agrupando 16 episodios por petición baja a ~13 s/episodio
+(prosa 6,0 + profesor 7,2 medidos a lote 12), **ETA ~6 h**. El piloto NO cabe
+en un turno: la task sigue `active` y el volumen sin firmar hasta que el job
+termine. 12 tests nuevos en `data/test_episode_gen.py` (24 en total).
+
 ## Entregado 2026-09-26 — `#T-episode-contract` (entrada del piloto, `#episodic-data`)
 
 | Requisito de la task | Dónde está |

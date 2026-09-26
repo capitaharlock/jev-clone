@@ -1,7 +1,7 @@
 ---
 id: T-episode-gen
 title: Qwen genera episodios completos por familia, no plantillas rellenadas
-status: blocked
+status: active
 priority: high
 owner: unassigned
 category: data
@@ -9,7 +9,7 @@ initiative: episodic-data
 depends_on:
   - T-episode-contract
 created: 2026-09-25
-updated: 2026-09-26
+updated: 2026-09-27
 ---
 
 # Qwen genera episodios completos por familia, no plantillas rellenadas
@@ -54,6 +54,34 @@ Qwen local es la referencia de capacidad y la fuente; no es el modelo servido.
   contradiga.
 - Test: ningún episodio contiene el marcador de plantilla de `data/labelgen.py`
   ni una pregunta igual a un ID de dataset.
+
+
+## Cómputo del piloto — medido, no estimado (2026-09-27)
+
+El piloto de 2 000 episodios no cabía en el generador que había: pedía
+**una petición a Ollama por episodio**, y con `qwen3.6:27b-mlx` una
+petición cuesta ~19 s de sobrecarga fija contra ~3 s de cómputo real
+(26 tokens generados en 3,4 s dentro de 21 s de reloj). Concurrencia 4
+sólo da ×1,5 (0,062 vs 0,041 llamadas/s medidas sobre 8 llamadas). Es
+decir: **~18 h de GPU** sin tocar nada.
+
+La palanca que sí mueve la aguja es meter muchos episodios en la misma
+petición. Medido el 2026-09-27 sobre el modelo real:
+
+| Camino | s/item | Piloto de 2 000 |
+|---|---:|---:|
+| 1 petición por episodio (secuencial) | 21 + 21 | ~23 h |
+| 1 petición por episodio, 4 en vuelo | — (×1,5) | ~18 h |
+| Lote de 12, prosa | 6,0 | — |
+| Lote de 12, profesor | 7,2 | — |
+| **Lote de 16, prosa + profesor, 2 en vuelo** | **~13** | **~6 h** |
+
+Lo que el lote NO cambia es qué se acepta: `_teacher_verdict` es la
+misma regla para el camino de uno y el de muchos (id válido + evidencia
+literalmente presente en los hechos), un item que falte en la respuesta
+sale como rechazo con motivo y no como hueco desplazado, y la prosa de
+Qwen sigue descartándose entera si pierde un token crítico de la regla.
+`test_batch_12_publishes_exactly_what_batch_1_publishes` lo fija.
 
 ## Done when
 

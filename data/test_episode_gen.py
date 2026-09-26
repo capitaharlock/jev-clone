@@ -15,8 +15,11 @@ Run (UN directorio cada vez — colisión de basenames en este repo):
 
 from __future__ import annotations
 
+import json
 import random
+import re
 import unittest
+import unittest.mock
 
 from . import episode_contract as EC
 from . import episode_gen as EG
@@ -134,3 +137,144 @@ class GateOnSmokeTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# -- Qwen por lotes: un request lleva muchos episodios ----------------------
+# Ollama cuesta ~19 s fijos por petición contra ~3 s de cómputo en
+# qwen3.6:27b-mlx (medido 2026-09-27), así que el piloto sólo es viable
+# agrupando. Lo que NO puede cambiar al agrupar es qué se acepta.
+def _fake_ollama(messages, num_predict, timeout):
+    """Qwen de mentira, determinista: parafrasea copiando, elige el 1.er id."""
+    prompt = messages[0]["content"]
+    if "Rewrite EACH numbered fact-set" in prompt:
+        body = prompt.split("nothing else.\n", 1)[1]
+        return "\n".join(f"{ln.split('.', 1)[0]}. {ln.split('.', 1)[1].strip()}"
+                         f" (reescrito)" for ln in body.splitlines()
+                         if ln.strip())
+    if "Rewrite these facts" in prompt:
+        facts = prompt.split("rewritten sentences.\n", 1)[1]
+        return f"{facts} (reescrito)"
+    if "For EACH of the" in prompt:
+        out = []
+        for i, block in enumerate(prompt.split("### Item ")[1:], 1):
+            facts = block.split("Facts: ", 1)[1].split("\nQuestion:", 1)[0]
+            cid = block.split("  - ", 1)[1].split(":", 1)[0]
+            out.append(json.dumps({"item": i, "choice": cid,
+                                   "evidence": facts[:18]}))
+        return "\n".join(out)
+    facts = prompt.split("Facts: ", 1)[1].split("\nQuestion:", 1)[0]
+    cid = prompt.split("- ", 1)[1].split(":", 1)[0]
+    return json.dumps({"choice": cid, "evidence": facts[:18]})
+
+
+class NumberedRepliesTest(unittest.TestCase):
+    def test_parses_one_slot_per_item(self):
+        got = EG._numbered_lines("1. uno\n2. dos\n3. tres", 3)
+        self.assertEqual(got, ["uno", "dos", "tres"])
+
+    def test_a_skipped_item_is_none_not_a_shift(self):
+        # Lo peligroso de agrupar: que falte el 2 y el 3 ocupe su hueco.
+        got = EG._numbered_lines("1. uno\n3. tres", 3)
+        self.assertEqual(got, ["uno", None, "tres"])
+
+    def test_prose_around_the_list_is_ignored(self):
+        got = EG._numbered_lines("Claro, aquí tienes:\n1. uno\ngracias", 1)
+        self.assertEqual(got, ["uno"])
+
+
+class BatchedTeacherTest(unittest.TestCase):
+    def _cases(self, n=3):
+        return [{"state": f"El tren cuesta {40 + i} euros.",
+                 "question": "¿Cuál?",
+                 "candidates": [{"id": "c1", "text": "tren"},
+                                {"id": "c2", "text": "bus"}]}
+                for i in range(n)]
+
+    def test_batched_and_single_accept_the_same_thing(self):
+        with unittest.mock.patch.object(EG, "_ollama_chat", _fake_ollama):
+            batched = EG.teacher_structured_batch(self._cases(3))
+            single = [EG.teacher_structured(c["state"], c["question"],
+                                            c["candidates"])
+                      for c in self._cases(3)]
+        for b, s in zip(batched, single):
+            self.assertEqual(b["choice"], s["choice"])
+            self.assertEqual(b["evidence"], s["evidence"])
+
+    def test_a_missing_item_rejects_with_reason_not_silently(self):
+        reply = '{"item": 1, "choice": "c1", "evidence": "El tren cuesta 40"}'
+        with unittest.mock.patch.object(
+                EG, "_ollama_chat", lambda *a, **k: reply):
+            got = EG.teacher_structured_batch(self._cases(3))
+        self.assertIn("choice", got[0])
+        for trace in got[1:]:
+            self.assertNotIn("choice", trace)
+            self.assertTrue(trace["reject"])
+
+    def test_an_invented_id_is_rejected(self):
+        reply = '{"item": 1, "choice": "c9", "evidence": "El tren cuesta 40"}'
+        with unittest.mock.patch.object(
+                EG, "_ollama_chat", lambda *a, **k: reply):
+            got = EG.teacher_structured_batch(self._cases(1) * 1)
+        self.assertNotIn("choice", got[0])
+
+    def test_evidence_not_in_the_facts_is_rejected(self):
+        reply = '{"item": 1, "choice": "c1", "evidence": "el avión despega"}'
+        with unittest.mock.patch.object(
+                EG, "_ollama_chat", lambda *a, **k: reply):
+            got = EG.teacher_structured_batch(self._cases(2))
+        self.assertNotIn("choice", got[0])
+
+    def test_a_confidence_never_survives_the_batch(self):
+        reply = ('{"item": 1, "choice": "c1", "confidence": 0.93, '
+                 '"evidence": "El tren cuesta 40"}')
+        with unittest.mock.patch.object(
+                EG, "_ollama_chat", lambda *a, **k: reply):
+            got = EG.teacher_structured_batch(self._cases(2))
+        self.assertTrue(got[0]["confidence_discarded"])
+        self.assertNotIn("confidence", got[0])
+        self.assertNotIn("probability", got[0])
+
+
+class BatchingChangesNothingTest(unittest.TestCase):
+    def test_batch_12_publishes_exactly_what_batch_1_publishes(self):
+        with unittest.mock.patch.object(EG, "_ollama_chat", _fake_ollama):
+            a = EG.run(n=24, seed=SEED, prose="qwen", teacher="qwen",
+                       out_dir="/tmp/episode-gen-test-b1", batch=1)
+            b = EG.run(n=24, seed=SEED, prose="qwen", teacher="qwen",
+                       out_dir="/tmp/episode-gen-test-b12", batch=12,
+                       concurrency=4)
+        self.assertEqual(a["n_episodes"], b["n_episodes"])
+        self.assertEqual(EG.load_episodes(a["out"]),
+                         EG.load_episodes(b["out"]))
+        self.assertEqual(a["prose_origins"], b["prose_origins"])
+
+    def test_lost_rule_token_keeps_the_local_prose(self):
+        def drops_the_numbers(messages, num_predict, timeout):
+            out = _fake_ollama(messages, num_predict, timeout)
+            return re.sub(r"\d+", "N", out) \
+                if "Rewrite EACH" in messages[0]["content"] else out
+
+        with unittest.mock.patch.object(EG, "_ollama_chat",
+                                        drops_the_numbers):
+            out = EG.run(n=20, seed=SEED, prose="qwen", teacher="stub",
+                         out_dir="/tmp/episode-gen-test-lost", batch=10)
+        self.assertEqual(out["prose_origins"].get("qwen-local"), None)
+        self.assertEqual(out["prose_origins"]["local-fallback"],
+                         out["n_episodes"])
+
+
+class VolumeCheckTest(unittest.TestCase):
+    def test_unpublished_directory_is_not_signed(self):
+        check = EG._volume_check("/tmp/episode-gen-test-nope", 5, "datagen")
+        self.assertIsNone(check["pass"])
+        self.assertEqual(check["status"], "awaiting-operator-compute")
+
+    def test_a_short_pilot_fails_it_does_not_stay_null(self):
+        out = EG.run(n=20, seed=SEED, prose="local", teacher="stub",
+                     out_dir="/tmp/episode-gen-test-short")
+        check = EG._volume_check(out["out"], 20, "datagen")
+        self.assertIs(check["pass"], False)
+        self.assertEqual(check["status"], "measured")
+        self.assertEqual(check["n_published"], 20)
+        self.assertEqual(len(check["manifest_sha"]), 64)
+        self.assertEqual(check["seed"], SEED)

@@ -20,18 +20,23 @@ Division of labour, non-negotiable:
   percentage the LLM writes is DISCARDED (``confidence_discarded``)
   and never stored as a probability.
 
-Throughput: Qwen-local (~5 tok/s) serves ONE sequential request at a
-time (max 1 concurrent by construction). Bulk runs go through the
-stopped ``episode-gen-pilot`` daemon job, never inside a turn::
+Throughput: Qwen-local (27B, ~2-4 tok/s) is the bottleneck. Bulk runs
+go through the ``datagen`` daemon job, never inside a turn — the
+``EPISODE_GEN_BULK=1`` escape is set by that job and by nothing else.
+``--concurrency`` overlaps the round-trips up to ``OLLAMA_NUM_PARALLEL``
+without changing WHAT is generated (build plan is pure in seed+idx)::
 
-    nice -n 10 python3 -m data.episode_gen run --n 2000 --seed 20260926 \\
-        --prose qwen --teacher qwen --out artifacts/episodes-qwen/pilot-2k
+    EPISODE_GEN_BULK=1 nice -n 10 python3 -m data.episode_gen run \\
+        --n 2000 --seed 20260926 --prose qwen --teacher qwen \\
+        --concurrency 4 --out artifacts/episodes-qwen/pilot-2k
     python3 -m data.episode_gen gate --dir artifacts/episodes-qwen/pilot-2k
 """
 
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
+import hashlib
 import json
 import os
 import random
@@ -48,6 +53,9 @@ from data import episode_contract as EC  # noqa: E402
 GENERATOR_VERSION = "episode-gen-v1"
 TASK = "T-episode-gen"
 PILOT_N = 2000
+#: Episodes published per chunk — the granularity of the progress line and
+#: of what survives on disk if a long run is interrupted.
+PUBLISH_CHUNK = 100
 PILOT_SEED = 20260926
 GATE_PATH = os.path.join(ROOT, "artifacts", "gates", TASK, "gen.json")
 
@@ -286,27 +294,144 @@ def teacher_structured(state: str, question: str,
     )
     out = _ollama_chat([{"role": "user", "content": prompt}],
                        num_predict=120, timeout=timeout)
+    if out is None:
+        return {"backend": "qwen-local", "confidence_discarded": True,
+                "reject": "no teacher reply"}
+    return _teacher_verdict(_first_json(out), state, ids, out)
+
+
+def _strip_confidence(raw: str) -> str:
+    """Drop any confidence/probability the model volunteered, on the floor."""
+    raw = re.sub(r'"confidence"[^,}]*,?', "", raw)
+    raw = re.sub(r'"probability"[^,}]*,?', "", raw)
+    return re.sub(r"\d+\s*%", "", raw)
+
+
+def _first_json(out: str) -> dict | None:
+    """The first JSON object in ``out``, confidence keys already dropped."""
+    out = _strip_confidence(out)
+    start, end = out.find("{"), out.rfind("}")
+    if start < 0 or end < start:
+        return None
+    try:
+        got = json.loads(out[start:end + 1])
+    except ValueError:
+        return None
+    return got if isinstance(got, dict) else None
+
+
+def _teacher_verdict(got: dict | None, state: str, ids: list,
+                     raw: str) -> dict:
+    """The ONE acceptance rule: a valid option id + a span really in the facts.
+
+    Shared by the single-item and the batched teacher so a batched run can
+    never be laxer than a sequential one.
+    """
     trace: dict = {"backend": "qwen-local", "confidence_discarded": True}
-    if out:
-        # Strip any "confidence"/"probability"/"%" the model may add.
-        out = re.sub(r'"confidence"[^,}]*,?', "", out)
-        out = re.sub(r'"probability"[^,}]*,?', "", out)
-        out = re.sub(r"\d+\s*%", "", out)
-        try:
-            start, end = out.find("{"), out.rfind("}")
-            got = json.loads(out[start:end + 1])
-            choice, ev = got.get("choice"), got.get("evidence", "")
-            norm_state = re.sub(r"\s+", " ", state.lower())
-            if choice in ids and isinstance(ev, str) and ev.strip() \
-                    and re.sub(r"\s+", " ", ev.lower()) in norm_state:
-                trace.update({"choice": choice, "evidence": ev.strip()})
-                return trace
-            trace["reject"] = f"invalid choice/evidence: {out[:120]!r}"
-        except (ValueError, AttributeError) as e:
-            trace["reject"] = f"unparseable: {e}; {out[:120]!r}"
-    else:
-        trace["reject"] = "no teacher reply"
+    if got is None:
+        trace["reject"] = f"unparseable: {raw[:120]!r}"
+        return trace
+    choice, ev = got.get("choice"), got.get("evidence", "")
+    norm_state = re.sub(r"\s+", " ", state.lower())
+    if choice in ids and isinstance(ev, str) and ev.strip() \
+            and re.sub(r"\s+", " ", ev.lower()) in norm_state:
+        trace.update({"choice": choice, "evidence": ev.strip()})
+        return trace
+    trace["reject"] = f"invalid choice/evidence: {raw[:120]!r}"
     return trace
+
+
+# -- Qwen, MANY items per request -------------------------------------------
+# Ollama costs ~19 s of fixed overhead per request against ~3 s of compute
+# for one paraphrase (measured 2026-09-27 on qwen3.6:27b-mlx). Batching is
+# the only lever that matters: 6.0 s/item at batch 12 vs 21 s/item alone.
+def _numbered_lines(out: str | None, n: int) -> list:
+    """Split a ``1. … 2. …`` reply into ``n`` slots; missing ones are None."""
+    got: list = [None] * n
+    if not out:
+        return got
+    for line in out.splitlines():
+        m = re.match(r"\s*(\d+)\s*[.)\-]\s*(.+)", line)
+        if not m:
+            continue
+        k = int(m.group(1)) - 1
+        if 0 <= k < n and got[k] is None:
+            got[k] = m.group(2).strip()
+    return got
+
+
+def qwen_paraphrase_batch(facts: list, lang: str,
+                          timeout: int = 1800) -> list:
+    """Paraphrase MANY fact-sets in one request. ``None`` per missing item.
+
+    Same contract as ``qwen_paraphrase``: Qwen only rephrases, and the
+    caller still checks that every rule-critical token survived.
+    """
+    if not facts:
+        return []
+    if len(facts) == 1:
+        return [qwen_paraphrase(facts[0], lang)]
+    listing = "\n".join(f"{i + 1}. {f}" for i, f in enumerate(facts))
+    prompt = (
+        f"Rewrite EACH numbered fact-set below as 2-3 natural sentences in "
+        f"{'Spanish' if lang == 'es' else 'English'}. "
+        f"Keep EVERY number, name and place exactly as written. "
+        f"Reply with ONLY one line per item, in the same order, each line "
+        f"starting with its number and a period. "
+        f"{len(facts)} lines, nothing else.\n{listing}"
+    )
+    return _numbered_lines(
+        _ollama_chat([{"role": "user", "content": prompt}],
+                     num_predict=140 * len(facts), timeout=timeout),
+        len(facts))
+
+
+def teacher_structured_batch(cases: list, timeout: int = 1800) -> list:
+    """Structured choice + evidence for MANY cases in one request.
+
+    Every item is accepted by ``_teacher_verdict`` — the same rule as the
+    single-item path — so a reply that drifts, skips an item or invents an
+    id lands as a reject with its reason, never as a silent gold.
+    """
+    if not cases:
+        return []
+    if len(cases) == 1:
+        c = cases[0]
+        return [teacher_structured(c["state"], c["question"],
+                                   c["candidates"], timeout)]
+    blocks = []
+    for i, c in enumerate(cases, 1):
+        opts = "\n".join(f"  - {o['id']}: {o['text']}"
+                          for o in c["candidates"])
+        blocks.append(f"### Item {i}\nFacts: {c['state']}\n"
+                      f"Question: {c['question']}\nOptions:\n{opts}")
+    prompt = (
+        f"For EACH of the {len(cases)} items below, pick one option id and "
+        f"copy the exact short span from THAT item's Facts that justifies "
+        f"it. Reply with ONLY one JSON object per line, in the same order, "
+        f'each as {{"item": <n>, "choice": <an option id of that item>, '
+        f'"evidence": <exact span from that item\'s Facts>}}. '
+        f"{len(cases)} lines, no prose.\n\n" + "\n\n".join(blocks)
+    )
+    out = _ollama_chat([{"role": "user", "content": prompt}],
+                       num_predict=90 * len(cases), timeout=timeout)
+    if out is None:
+        return [{"backend": "qwen-local", "confidence_discarded": True,
+                 "reject": "no teacher reply"} for _ in cases]
+    by_item: dict = {}
+    for line in _strip_confidence(out).splitlines():
+        s, e = line.find("{"), line.rfind("}")
+        if s < 0 or e < s:
+            continue
+        try:
+            got = json.loads(line[s:e + 1])
+        except ValueError:
+            continue
+        if isinstance(got, dict) and isinstance(got.get("item"), int):
+            by_item.setdefault(got["item"], got)
+    return [_teacher_verdict(by_item.get(i), c["state"],
+                             [o["id"] for o in c["candidates"]], out)
+            for i, c in enumerate(cases, 1)]
 
 
 # -- episode builders (rule fixes facts; prose local or Qwen) ---------------
@@ -320,11 +445,22 @@ def _base(family: str, lang: str, seed: int, idx: int,
     }
 
 
-def _maybe_qwen(facts: str, local: str, lang: str,
-                prose: str, tokens: list[str]) -> tuple[str, str]:
-    """Use Qwen prose only if every rule-critical token survived in it."""
+def _maybe_qwen(facts: str, local: str, lang: str, prose: str,
+                tokens: list[str], sink: list | None = None) -> tuple[str, str]:
+    """Use Qwen prose only if every rule-critical token survived in it.
+
+    With a ``sink`` the call is DEFERRED: the request is recorded and the
+    local prose is returned as a placeholder, so the caller can put many
+    paraphrases in one Qwen request (see ``_fill_prose``). One request per
+    episode is what makes the pilot cost 18 h instead of 5 (measured:
+    ~19 s of fixed per-request overhead against ~3 s of actual compute).
+    """
     if prose != "qwen":
         return local, "local-fallback"
+    if sink is not None:
+        sink.append({"facts": facts, "lang": lang, "tokens": list(tokens),
+                     "local": local})
+        return local, "pending-qwen"
     got = qwen_paraphrase(facts, lang)
     if got and all(t in got for t in tokens):
         return got, "qwen-local"
@@ -333,7 +469,7 @@ def _maybe_qwen(facts: str, local: str, lang: str,
 
 def build_comparison(lang: str, seed: int, idx: int, group: str,
                      rng: random.Random, flip: bool,
-                     prose: str = "local") -> dict:
+                     prose: str = "local", sink: list | None = None) -> dict:
     a, b, unit, dur = rng.choice(_CMP_ITEMS[lang])
     p1 = rng.randint(15, 60)
     p2 = rng.randint(15, 60)
@@ -366,7 +502,7 @@ def build_comparison(lang: str, seed: int, idx: int, group: str,
                  "Both leave every hour.")
         t1, t2 = f"{a}, {p1} {unit}", f"{b}, {p2} {unit}"
     tokens = [str(p1), str(p2), a, b]
-    state, origin = _maybe_qwen(local, local, lang, prose, tokens)
+    state, origin = _maybe_qwen(local, local, lang, prose, tokens, sink)
     question = _Q_TPL["attribute_comparison"][lang][criterion]
     cands = [{"id": "c1", "text": t1}, {"id": "c2", "text": t2}]
     key = "price_eur" if criterion == "price" else "duration_h"
@@ -387,7 +523,7 @@ def build_comparison(lang: str, seed: int, idx: int, group: str,
 
 def build_priority(lang: str, seed: int, idx: int, group: str,
                    rng: random.Random, flip: bool,
-                   prose: str = "local") -> dict:
+                   prose: str = "local", sink: list | None = None) -> dict:
     d1 = rng.randint(1, 4)
     d2 = rng.randint(1, 4)
     if not flip and d2 == d1:
@@ -414,7 +550,7 @@ def build_priority(lang: str, seed: int, idx: int, group: str,
         t1, t2 = f"Offer X: {d1} hours, {p1} euros", \
             f"Offer Y: {d2} hours, {p2} euros"
     tokens = [str(p1), str(p2), str(d1), str(d2)]
-    state, origin = _maybe_qwen(local, local, lang, prose, tokens)
+    state, origin = _maybe_qwen(local, local, lang, prose, tokens, sink)
     question = _Q_TPL["priority_decision"][lang]
     cands = [{"id": "c1", "text": t1}, {"id": "c2", "text": t2}]
     evidence = next(
@@ -432,7 +568,7 @@ def build_priority(lang: str, seed: int, idx: int, group: str,
 
 def build_extraction(lang: str, seed: int, idx: int, group: str,
                      rng: random.Random, flip: bool,
-                     prose: str = "local") -> dict:
+                     prose: str = "local", sink: list | None = None) -> dict:
     ent, loc_a, loc_b, place = rng.choice(_EXT_FACTS[lang])
     loc = loc_b if flip else loc_a  # counterfactual moves the object
     other = loc_a if flip else loc_b
@@ -451,7 +587,7 @@ def build_extraction(lang: str, seed: int, idx: int, group: str,
         ],
     }
     local = rng.choice(variants[lang])
-    state, origin = _maybe_qwen(local, local, lang, prose, [ent, loc])
+    state, origin = _maybe_qwen(local, local, lang, prose, [ent, loc], sink)
     q_tpl = {
         "es": f"¿Dónde hay que buscar {ent}?",
         "en": f"Where should one look for {ent}?",
@@ -470,7 +606,7 @@ def build_extraction(lang: str, seed: int, idx: int, group: str,
 
 def build_description(lang: str, seed: int, idx: int, group: str,
                       rng: random.Random, flip: bool,
-                      prose: str = "local") -> dict:
+                      prose: str = "local", sink: list | None = None) -> dict:
     cats = _DESC_CATS[lang]
     gi = rng.randrange(len(cats))
     if flip:
@@ -481,7 +617,7 @@ def build_description(lang: str, seed: int, idx: int, group: str,
         "en": f"The observed sample {traits}. It is light and active by day.",
     }
     local = obs[lang]
-    state, origin = _maybe_qwen(local, local, lang, prose, [traits])
+    state, origin = _maybe_qwen(local, local, lang, prose, [traits], sink)
     cands = [{"id": f"c{i + 1}", "text": f"{n}: {d}"}
              for i, (n, d, _t, _a) in enumerate(cats)]
     q = {"es": "¿A qué categoría pertenece lo observado?",
@@ -498,7 +634,7 @@ def build_description(lang: str, seed: int, idx: int, group: str,
 
 def build_inference(lang: str, seed: int, idx: int, group: str,
                     rng: random.Random, flip: bool,
-                    prose: str = "local") -> dict:
+                    prose: str = "local", sink: list | None = None) -> dict:
     forms = _INF_FORMS[lang]
     fi = 0 if not flip else (1 if rng.random() < 0.5 else 2)
     ptpl, qtpl, yes_t, no_t = forms[fi]
@@ -511,7 +647,7 @@ def build_inference(lang: str, seed: int, idx: int, group: str,
         "en": " The log was reviewed this morning.",
     }
     local = premise + tails[lang]
-    state, origin = _maybe_qwen(local, local, lang, prose, [who, grp])
+    state, origin = _maybe_qwen(local, local, lang, prose, [who, grp], sink)
     question = qtpl.format(who_q=who_q, prop_q=prop_q)
     # Logical form fixes the gold: universal-affirmative → yes (c1);
     # negated or hedged premise → insufficient/negative (c2).
@@ -544,8 +680,144 @@ def _rng(seed: int, idx: int) -> random.Random:
     return random.Random(f"{GENERATOR_VERSION}\x00{seed}\x00{idx}")
 
 
+def _work_items(queue: list[tuple[str, str]], n: int) -> list[tuple]:
+    """The deterministic build plan: ``(idx, family, lang, group, flip)``.
+
+    Pure function of the queue — pairs of base+counterfactual share a
+    ``variant_group``. Extracted so the generation loop can run the Qwen
+    round-trips concurrently without touching what gets generated.
+    """
+    items: list[tuple] = []
+    idx = case = 0
+    while idx < n:
+        family, lang = queue[idx]
+        group = f"{family[:4]}-{lang}-c{case:04d}"
+        for flip in (False, True):
+            if idx >= n:
+                break
+            fam2, lang2 = queue[idx]
+            g2 = group if (fam2, lang2) == (family, lang) else \
+                f"{fam2[:4]}-{lang2}-c{case:04d}"
+            items.append((idx, fam2, lang2, g2, flip))
+            idx += 1
+        case += 1
+    return items
+
+
+def _build_episode(item: tuple, seed: int, prose: str,
+                   sink: list | None = None) -> dict:
+    """Build ONE episode. Pure in ``(seed, idx, flip)``.
+
+    With ``sink`` the Qwen paraphrase is deferred (see ``_maybe_qwen``);
+    the episode comes back carrying local prose and ``origin`` set to
+    ``pending-qwen`` until ``_fill_prose`` resolves it.
+    """
+    idx, family, lang, group, flip = item
+    return BUILDERS[family](lang, seed, idx, group, _rng(seed, idx),
+                            flip, prose, sink)
+
+
+def _tick(phase: str, done: int, total: int, t0: float, items: int) -> None:
+    """One line per finished Qwen request — the run's only honest pulse."""
+    el = time.time() - t0
+    rate = items / el if el else 0.0
+    print(f"  {phase} {done}/{total} reqs · {items} items · "
+          f"{rate:.3f} item/s", flush=True)
+
+
+def _fill_prose(eps: list, sinks: list, batch: int, concurrency: int) -> None:
+    """Resolve the deferred paraphrases in place, batched per language.
+
+    Qwen prose is kept only when every rule-critical token survived it;
+    otherwise the episode keeps the local prose. Which one each episode
+    ended up with is published per episode in ``origin`` and counted in
+    the manifest's ``prose_origins``.
+    """
+    groups: dict = {}
+    for i, sk in enumerate(sinks):
+        if sk:
+            groups.setdefault(sk[0]["lang"], []).append(i)
+    jobs = [(lang, idxs[s:s + batch])
+            for lang, idxs in sorted(groups.items())
+            for s in range(0, len(idxs), batch)]
+
+    def one(job):
+        lang, idxs = job
+        return idxs, qwen_paraphrase_batch(
+            [sinks[i][0]["facts"] for i in idxs], lang)
+
+    t0, seen = time.time(), 0
+    with cf.ThreadPoolExecutor(max(1, concurrency)) as ex:
+        for k, (idxs, got) in enumerate(ex.map(one, jobs), 1):
+            seen += len(idxs)
+            _tick("prose", k, len(jobs), t0, seen)
+            for i, text in zip(idxs, got):
+                req = sinks[i][0]
+                ok = bool(text) and all(t in text for t in req["tokens"])
+                eps[i]["state"] = text if ok else req["local"]
+                eps[i]["origin"] = "qwen-local" if ok else "local-fallback"
+
+
+def _teacher_traces(eps: list, teacher: str, batch: int,
+                    concurrency: int) -> list:
+    """One trace per episode — batched Qwen, or ``None`` for the stub path."""
+    if teacher != "qwen":
+        return [None] * len(eps)
+    out: list = [None] * len(eps)
+    jobs = [list(range(s, min(s + batch, len(eps))))
+            for s in range(0, len(eps), batch)]
+
+    def one(idxs):
+        return idxs, teacher_structured_batch(
+            [{"state": eps[i]["state"], "question": eps[i]["question"],
+              "candidates": eps[i]["candidates"]} for i in idxs])
+
+    t0, seen = time.time(), 0
+    with cf.ThreadPoolExecutor(max(1, concurrency)) as ex:
+        for k, (idxs, traces) in enumerate(ex.map(one, jobs), 1):
+            seen += len(idxs)
+            _tick("teacher", k, len(jobs), t0, seen)
+            for i, tr in zip(idxs, traces):
+                out[i] = tr
+    return out
+
+
+def _finish_episode(ep: dict, trace: dict | None) -> tuple:
+    """Attach the teacher trace and validate. ``("ok"|"reject", payload)``."""
+    if trace is not None:
+        if "choice" in trace:
+            trace["gold_rule"] = ep["answer"]
+            trace["agree"] = trace["choice"] == ep["answer"]
+        else:
+            # Rule wins on numeric families; otherwise reject loudly.
+            trace["gold_rule"] = ep["answer"]
+            if ep["family"] in (EC.COMPARISON, EC.PRIORITY):
+                trace["choice"] = ep["answer"]
+                trace["agree"] = True
+                trace["fallback"] = "rule-wins"
+            else:
+                return "reject", {"episode": ep, "reasons": [
+                    f"teacher failed: {trace.get('reject')}"]}
+        ep["teacher_trace"] = trace
+    else:
+        ep["teacher_trace"] = {
+            "backend": "stub-local", "choice": ep["answer"],
+            "evidence": ep["evidence"], "gold_rule": ep["answer"],
+            "agree": True, "confidence_discarded": True,
+        }
+    reasons = EC.validate(ep)
+    # No template markers, no dataset-id questions — belt and braces on top
+    # of the validator (gate test 3 also measures it).
+    for m in LABELGEN_MARKERS:
+        if m in ep["state"] or m in ep["question"]:
+            reasons.append(f"labelgen template marker: {m!r}")
+    return ("reject", {"episode": ep, "reasons": reasons}) if reasons \
+        else ("ok", ep)
+
+
 def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
-        out_dir: str = "", command: str = "") -> dict:
+        out_dir: str = "", command: str = "", concurrency: int = 1,
+        batch: int = 1) -> dict:
     """Generate ``n`` episodes. Manifest is written BEFORE generating.
 
     Cases come in base+counterfactual pairs sharing a ``variant_group``.
@@ -567,6 +839,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         "planned_split": {f"{f}/{lang}": c
                           for (f, lang), c in sorted(plan.items())},
         "qwen_model": MODEL,
+        "prose_backend": prose, "teacher_backend": teacher,
     }
     with open(os.path.join(out, "manifest.json"), "w") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=2)
@@ -576,79 +849,71 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
     queue: list[tuple[str, str]] = []
     for (family, lang), count in sorted(plan.items()):
         queue += [(family, lang)] * count
-    episodes: list[dict] = []
-    rejects: list[dict] = []
-    idx = 0
-    case = 0
-    while idx < n:
-        family, lang = queue[idx]
-        group = f"{family[:4]}-{lang}-c{case:04d}"
-        for flip in (False, True):
-            if idx >= n:
-                break
-            fam2, lang2 = queue[idx]
-            g2 = group if (fam2, lang2) == (family, lang) else \
-                f"{fam2[:4]}-{lang2}-c{case:04d}"
-            ep = BUILDERS[fam2](lang2, seed, idx, g2,
-                                _rng(seed, idx), flip, prose)
-            if teacher == "qwen":
-                trace = teacher_structured(
-                    ep["state"], ep["question"], ep["candidates"])
-                if "choice" in trace:
-                    trace["gold_rule"] = ep["answer"]
-                    trace["agree"] = trace["choice"] == ep["answer"]
-                else:
-                    # Rule wins on numeric families; otherwise reject loudly.
-                    trace["gold_rule"] = ep["answer"]
-                    if fam2 in (EC.COMPARISON, EC.PRIORITY):
-                        trace["choice"] = ep["answer"]
-                        trace["agree"] = True
-                        trace["fallback"] = "rule-wins"
-                    else:
-                        rejects.append({"episode": ep, "reasons": [
-                            f"teacher failed: {trace.get('reject')}"]})
-                        idx += 1
-                        continue
-                ep["teacher_trace"] = trace
-            else:
-                ep["teacher_trace"] = {
-                    "backend": "stub-local", "choice": ep["answer"],
-                    "evidence": ep["evidence"], "gold_rule": ep["answer"],
-                    "agree": True, "confidence_discarded": True,
-                }
-            reasons = EC.validate(ep)
-            # No template markers, no dataset-id questions — belt and braces
-            # on top of the validator (gate test 3 also measures it).
-            for m in LABELGEN_MARKERS:
-                if m in ep["state"] or m in ep["question"]:
-                    reasons.append(f"labelgen template marker: {m!r}")
-            if reasons:
-                rejects.append({"episode": ep, "reasons": reasons})
-            else:
-                episodes.append(ep)
-            idx += 1
-        case += 1
+    items = _work_items(queue, n)
 
-    with open(os.path.join(out, "episodes.jsonl"), "w") as fh:
-        for ep in episodes:
-            fh.write(json.dumps(ep, ensure_ascii=False) + "\n")
-    with open(os.path.join(out, "rejects.jsonl"), "w") as fh:
-        for rj in rejects:
-            fh.write(json.dumps(rj, ensure_ascii=False) + "\n")
+    ep_path = os.path.join(out, "episodes.jsonl")
+    rj_path = os.path.join(out, "rejects.jsonl")
+    n_episodes = n_rejects = 0
     realised: dict[str, int] = {}
-    for ep in episodes:
-        realised[f"{ep['family']}/{ep['lang']}"] = \
-            realised.get(f"{ep['family']}/{ep['lang']}", 0) + 1
+    origins: dict[str, int] = {}
+    t0 = time.time()
+    every = max(1, min(25, n // 20))
+
+    def _emit(fh_ep, fh_rj, done: int, res: tuple) -> None:
+        nonlocal n_episodes, n_rejects
+        kind, payload = res
+        if kind == "ok":
+            fh_ep.write(json.dumps(payload, ensure_ascii=False) + "\n")
+            fh_ep.flush()
+            n_episodes += 1
+            key = f"{payload['family']}/{payload['lang']}"
+            realised[key] = realised.get(key, 0) + 1
+            org = payload.get("origin", "unknown")
+            origins[org] = origins.get(org, 0) + 1
+        else:
+            fh_rj.write(json.dumps(payload, ensure_ascii=False) + "\n")
+            fh_rj.flush()
+            n_rejects += 1
+        if done % every == 0 or done == n:
+            el = time.time() - t0
+            rate = done / el if el else 0.0
+            eta = (n - done) / rate if rate else float("inf")
+            print(f"progress {done}/{n} ok={n_episodes} rej={n_rejects} "
+                  f"rate={rate:.3f} ep/s eta={eta / 3600:.2f} h",
+                  flush=True)
+
+    # Three phases per chunk: build (pure, no network) → Qwen prose and
+    # Qwen teacher in BATCHED requests → validate and publish. Chunking
+    # keeps episodes.jsonl growing on disk while the run is alive, so the
+    # progress line below is a measurement and not a promise.
+    done = 0
+    with open(ep_path, "w") as fh_ep, open(rj_path, "w") as fh_rj:
+        for start in range(0, len(items), PUBLISH_CHUNK):
+            part = items[start:start + PUBLISH_CHUNK]
+            sinks = [[] for _ in part]
+            eps = [_build_episode(it, seed, prose, sk)
+                   for it, sk in zip(part, sinks)]
+            if prose == "qwen":
+                _fill_prose(eps, sinks, batch, concurrency)
+            traces = _teacher_traces(eps, teacher, batch, concurrency)
+            for ep, tr in zip(eps, traces):
+                done += 1
+                _emit(fh_ep, fh_rj, done, _finish_episode(ep, tr))
+
     manifest.update({
-        "status": "published", "n_episodes": len(episodes),
-        "n_rejects": len(rejects), "splits": realised,
+        "status": "published", "n_episodes": n_episodes,
+        "n_rejects": n_rejects, "splits": realised,
+        "concurrency": concurrency, "batch": batch,
+        "prose_origins": origins,
+        "elapsed_s": round(time.time() - t0, 1),
         "built_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     })
     with open(os.path.join(out, "manifest.json"), "w") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
-    return {"out": out, "n_episodes": len(episodes),
-            "n_rejects": len(rejects), "splits": realised}
+    return {"out": out, "n_episodes": n_episodes,
+            "n_rejects": n_rejects, "splits": realised,
+            "prose_origins": origins}
 
 
 def load_episodes(out: str) -> list[dict]:
@@ -658,12 +923,49 @@ def load_episodes(out: str) -> list[dict]:
 
 
 # -- gate: the three Verification tests, measured for real -------------------
+def _volume_check(out: str, n_published: int, job_id: str) -> dict:
+    """The volume box, signed from the published directory or not at all.
+
+    C7: no ``pass: true`` without a measured file in the gate's own
+    directory. The figure, the seed, the generator version and the
+    manifest digest all come from ``manifest.json`` next to the
+    episodes — never from an argument, never from a guess.
+    """
+    mpath = os.path.join(out, "manifest.json")
+    if not os.path.exists(mpath):
+        return {"pass": None, "status": "awaiting-operator-compute",
+                "n_published": n_published, "required": PILOT_N,
+                "job_id": job_id}
+    raw = open(mpath, "rb").read()
+    manifest = json.loads(raw)
+    if manifest.get("status") != "published":
+        return {"pass": None, "status": "awaiting-operator-compute",
+                "n_published": n_published, "required": PILOT_N,
+                "manifest_status": manifest.get("status"), "job_id": job_id}
+    return {
+        "pass": bool(n_published >= PILOT_N), "status": "measured",
+        "n_published": n_published, "required": PILOT_N,
+        "dir": os.path.relpath(out, ROOT),
+        "manifest_sha": hashlib.sha256(raw).hexdigest(),
+        "manifest_n_episodes": manifest.get("n_episodes"),
+        "n_rejects": manifest.get("n_rejects"),
+        "seed": manifest.get("seed"),
+        "generator_version": manifest.get("generator_version"),
+        "prose_backend": manifest.get("prose_backend"),
+        "prose_origins": manifest.get("prose_origins"),
+        "elapsed_s": manifest.get("elapsed_s"),
+        "job_id": job_id,
+    }
+
+
 def measure_gate(out: str, job_id: str = "episode-gen-pilot") -> dict:
     """Measure the task's Verification gate on a published directory.
 
     No invented numbers: every check runs over ``episodes.jsonl`` (and
     ``rejects.jsonl``). The volume check cannot be signed here — it is
-    recorded as null/awaiting-operator-compute.
+    The volume box is signed from ``manifest.json`` when the directory
+    is published, and stays ``null``/awaiting-operator-compute when it
+    is not.
     """
     episodes = load_episodes(out)
     rejects: list[dict] = []
@@ -727,15 +1029,13 @@ def measure_gate(out: str, job_id: str = "episode-gen-pilot") -> dict:
             "validator_pass_100pc": t1,
             "rule_gold_flips_on_perturb": t2,
             "no_template_marker_no_dataset_id": t3,
-            "volume_ge_2000": {
-                "pass": None, "status": "awaiting-operator-compute",
-                "n_published": len(episodes), "required": PILOT_N,
-                "job_id": job_id,
-            },
+            "volume_ge_2000": _volume_check(out, len(episodes), job_id),
         },
     }
-    gate["pass"] = all(c.get("pass") for k, c in gate["checks"].items()
-                       if k != "volume_ge_2000")
+    # A check still awaiting compute is `null` and does not vote; every
+    # check that HAS been measured does.
+    gate["pass"] = all(c["pass"] for c in gate["checks"].values()
+                       if c.get("pass") is not None)
     os.makedirs(os.path.dirname(GATE_PATH), exist_ok=True)
     with open(GATE_PATH, "w") as fh:
         json.dump(gate, fh, ensure_ascii=False, indent=2)
@@ -752,6 +1052,10 @@ def main(argv: list | None = None) -> int:
     r.add_argument("--prose", choices=["local", "qwen"], default="local")
     r.add_argument("--teacher", choices=["stub", "qwen"], default="stub")
     r.add_argument("--out", default="")
+    r.add_argument("--concurrency", type=int, default=1,
+                   help="parallel Qwen round-trips (<= OLLAMA_NUM_PARALLEL)")
+    r.add_argument("--batch", type=int, default=1,
+                   help="items per Qwen request (1 = one request each)")
     g = sub.add_parser("gate", help="measure the verification gate")
     g.add_argument("--dir", required=True)
     g.add_argument("--job-id", default="episode-gen-pilot")
@@ -759,12 +1063,15 @@ def main(argv: list | None = None) -> int:
     args = ap.parse_args(argv)
 
     if args.cmd == "run":
-        if args.n > 25 and args.prose == "qwen":
+        if args.n > 25 and args.prose == "qwen" \
+                and os.environ.get("EPISODE_GEN_BULK") != "1":
             print("refusing: bulk Qwen runs go through the daemon job, "
-                  "not a turn (compute embargo)", file=sys.stderr)
+                  "not a turn (compute embargo). The `datagen` job sets "
+                  "EPISODE_GEN_BULK=1.", file=sys.stderr)
             return 2
         stats = run(n=args.n, seed=args.seed, prose=args.prose,
-                    teacher=args.teacher, out_dir=args.out)
+                    teacher=args.teacher, out_dir=args.out,
+                    concurrency=args.concurrency, batch=args.batch)
         print(f"episodes={stats['n_episodes']} "
               f"rejects={stats['n_rejects']} -> {stats['out']}")
         return 0 if stats["n_episodes"] else 1
