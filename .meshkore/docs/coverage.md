@@ -579,7 +579,7 @@ rehacen sin cargar un modelo (`eval.preflight_refs table`).
 
 | Requisito | Quién lo entrega | Estado |
 |---|---|---|
-| Tabla de diferencias arquitectónicas Laya vs pointer head, y cuál se prueba primero | `#T-laya-archdiff` | **SIN MEDIR** |
+| Tabla de diferencias arquitectónicas Laya vs pointer head, y cuál se prueba primero | `#T-laya-archdiff` | **entregado 2026-09-27** — `docs/laya-archdiff.md`; presupuesto 48/192 medido con su `build_sequence`: techo de formato 0,948 a K=77, no 0,425 (`artifacts/gates/T-laya-archdiff/token_budget.json`) |
 | Laya sin ajustar sobre la batería privada + contrafactuales, con IC95 % | `#T-laya-baseline` | **SIN MEDIR** |
 | BANKING77 a K=77 de Laya reproducido en nuestro arnés (`eval/fullspace.py`) | `#T-laya-baseline` | **SIN MEDIR** |
 | Declaración por dataset de si estaba en la mezcla publicada de Laya | `#T-laya-baseline` | **SIN MEDIR** |
@@ -613,3 +613,20 @@ ejecución, reglas, bucle diario, comandos). Resumen de lo que cambia:
 | `history.jsonl` con ≥ 3 filas y dashboard | `#T-loop-scoreboard` | **SIN MEDIR** |
 | 7 noches con regla de promoción | `#T-loop-nightly` | **SIN MEDIR** |
 | Jev reproduce ≈ 0,73 en typed-decisions test | `#T-teacher-probe` | **bloqueado por credencial** |
+
+## Entregado 2026-09-27 — `#T-laya-archdiff` (`#laya-teardown`, sólo lectura y CPU)
+
+Documento `docs/laya-archdiff.md`: once diferencias Laya vs pointer head vs cross-encoder, con
+qué hace cada sistema, si es estilo o candidata a explicar 0,425 vs 0,0123 en BANKING77 K=77, y
+qué costaría medirla aquí. Una sola elegida para probar primero (D1, las opciones dentro de la
+secuencia del encoder), con predicción escrita antes de medir: cross-encoder `nli-nograd` SIN
+ajustar sobre el corte de desarrollo de BANKING77 a K=77; GO si el límite inferior del IC95 %
+≥ 0,05 (≈ 4× azar 0,013), a ejecutar dentro de `#T-laya-baseline` sobre las mismas filas.
+
+| Requisito | Medido | Estado |
+|---|---|---|
+| Presupuesto 48/192 de Laya sobre las 77 etiquetas, con su propio `build_sequence` y el tokenizador de ModernBERT | cap 4 tokens/opción incl. `[MASK]` → 3 de texto; 47/77 intactas, 73/77 distinguibles, 3 grupos de colisión (7 etiquetas); techo de formato 0,948 (uniforme) / 0,952 (frecuencia de train) | **medido** — `artifacts/gates/T-laya-archdiff/token_budget.json` |
+| Ese presupuesto en nuestro scorer (`length_report`) | no existe: par más largo 62 tokens (MiniLM) / 60 (ModernBERT-zs) sobre 200 filas, 0 recortes en 512; con contexto comparativo 437/463, 0 recortes | **medido** — ídem |
+| Coste de una pasada K=77 del scorer en CPU | 63,0 pares/s sobre 308 pares → ≈ 63 min el test (237 160 pares), ≈ 20 min el corte dev | **medido (ritmo), estimado (total)** |
+| Ablación 192 vs 512 en el checkpoint de Laya; mmBERT; reproducción del 0,425 | — | **SIN MEDIR** → `#T-laya-baseline` |
+

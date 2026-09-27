@@ -1,0 +1,196 @@
+{
+  "task": "T-laya-archdiff",
+  "artifact": "token-budget",
+  "question": "¿explica el presupuesto de tokens por opción de Laya su 0,425 en BANKING77 K=77?",
+  "label_space": {
+    "dataset": "banking77",
+    "split_read": "train (dev cut; el test reservado no se abre)",
+    "rows_read": 10003,
+    "n_labels": 77,
+    "rendering": "bench_apps.py:115 — nombre con `_` → espacio, sin descripción"
+  },
+  "laya_tokenizer": {
+    "path": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/artifacts/weights/modernbert-base",
+    "vocab_size": 50280,
+    "note": "tokenizador de ModernBERT-base verificado en artifacts/weights; ModernBERT-large (el encoder de `laya`) comparte vocabulario y tokenizer.json — NO verificado aquí contra el checkpoint de Laya, que no está descargado. mmBERT (laya-multilingual) NO medido"
+  },
+  "laya": {
+    "laya (ModernBERT-large, 512/192)": {
+      "max_len": 512,
+      "head_max_len": 192,
+      "n_options": 77,
+      "option_tokens_raw": {
+        "min": 2,
+        "median": 3,
+        "max": 9,
+        "sum": 265
+      },
+      "per_option_after_cap": {
+        "min": 2,
+        "max": 3,
+        "sum_with_masks": 289
+      },
+      "budget_rule": "common.py:127-131 — si head_max_len - Σ(1+len) < 16, cada opción se recorta a max(4, (head_max_len-16)//K) tokens INCLUIDO su [MASK]",
+      "per_option_cap_incl_mask": 4,
+      "instruction_tokens_kept": 9,
+      "state_room_tokens": 211,
+      "state_tokens_first_row": 13,
+      "labels_intact": 47,
+      "distinct_after_cap": 73,
+      "collision_groups": 3,
+      "labels_in_a_collision": 7,
+      "largest_group": 3,
+      "collisions": {
+        "balance not updated": [
+          "balance not updated after bank transfer",
+          "balance not updated after cheque or cash deposit"
+        ],
+        "lost or stolen": [
+          "lost or stolen card",
+          "lost or stolen phone"
+        ],
+        "top up by": [
+          "top up by bank transfer charge",
+          "top up by card charge",
+          "top up by cash or cheque"
+        ]
+      },
+      "accuracy_ceiling_uniform_labels": 0.9481,
+      "accuracy_ceiling_train_label_freq": 0.9522,
+      "ceiling_reading": "un grupo de g etiquetas con el mismo texto recortado sólo puede acertarse 1/g de las veces; el techo suma el mejor miembro de cada grupo. Es un techo del FORMATO, no del modelo"
+    },
+    "laya-typed-decisions (ModernBERT-large, 1024/256)": {
+      "max_len": 1024,
+      "head_max_len": 256,
+      "n_options": 77,
+      "option_tokens_raw": {
+        "min": 2,
+        "median": 3,
+        "max": 9,
+        "sum": 265
+      },
+      "per_option_after_cap": {
+        "min": 2,
+        "max": 3,
+        "sum_with_masks": 289
+      },
+      "budget_rule": "common.py:127-131 — si head_max_len - Σ(1+len) < 16, cada opción se recorta a max(4, (head_max_len-16)//K) tokens INCLUIDO su [MASK]",
+      "per_option_cap_incl_mask": 4,
+      "instruction_tokens_kept": 9,
+      "state_room_tokens": 723,
+      "state_tokens_first_row": 13,
+      "labels_intact": 47,
+      "distinct_after_cap": 73,
+      "collision_groups": 3,
+      "labels_in_a_collision": 7,
+      "largest_group": 3,
+      "collisions": {
+        "balance not updated": [
+          "balance not updated after bank transfer",
+          "balance not updated after cheque or cash deposit"
+        ],
+        "lost or stolen": [
+          "lost or stolen card",
+          "lost or stolen phone"
+        ],
+        "top up by": [
+          "top up by bank transfer charge",
+          "top up by card charge",
+          "top up by cash or cheque"
+        ]
+      },
+      "accuracy_ceiling_uniform_labels": 0.9481,
+      "accuracy_ceiling_train_label_freq": 0.9522,
+      "ceiling_reading": "un grupo de g etiquetas con el mismo texto recortado sólo puede acertarse 1/g de las veces; el techo suma el mejor miembro de cada grupo. Es un techo del FORMATO, no del modelo"
+    },
+    "README remedy (1024/512)": {
+      "max_len": 1024,
+      "head_max_len": 512,
+      "n_options": 77,
+      "option_tokens_raw": {
+        "min": 2,
+        "median": 3,
+        "max": 9,
+        "sum": 265
+      },
+      "per_option_after_cap": {
+        "min": 2,
+        "max": 9,
+        "sum_with_masks": 342
+      },
+      "budget_rule": "common.py:127-131 — si head_max_len - Σ(1+len) < 16, cada opción se recorta a max(4, (head_max_len-16)//K) tokens INCLUIDO su [MASK]",
+      "per_option_cap_incl_mask": null,
+      "instruction_tokens_kept": 13,
+      "state_room_tokens": 666,
+      "state_tokens_first_row": 13,
+      "labels_intact": 77,
+      "distinct_after_cap": 77,
+      "collision_groups": 0,
+      "labels_in_a_collision": 0,
+      "largest_group": 1,
+      "collisions": {},
+      "accuracy_ceiling_uniform_labels": 1.0,
+      "accuracy_ceiling_train_label_freq": 1.0,
+      "ceiling_reading": "un grupo de g etiquetas con el mismo texto recortado sólo puede acertarse 1/g de las veces; el techo suma el mejor miembro de cada grupo. Es un techo del FORMATO, no del modelo"
+    }
+  },
+  "ours": {
+    "minilmv2-l6-mnli-xnli": {
+      "measured": true,
+      "rows_measured": 200,
+      "pairs_per_row": 77,
+      "max_length_per_pair": 512,
+      "truncation": "only_first — la hipótesis (opción) no se recorta nunca",
+      "option_tokens": {
+        "min": 2,
+        "max": 9,
+        "median": 4
+      },
+      "hypothesis_tokens": {
+        "min": 10,
+        "max": 17
+      },
+      "max_pair_tokens_over_rows": 62,
+      "rows_with_truncation": 0,
+      "tokens_read_per_decision_approx": "77 × (estado + pregunta + hipótesis); cada opción entera",
+      "with_comparative_context_max_tokens": 437,
+      "with_comparative_context_truncated": 0,
+      "reading": "el presupuesto de Laya (≈3 tokens de texto por etiqueta) no existe en el scorer: cada etiqueta entra entera en su propio par, a cambio de 77 pasadas por decisión"
+    },
+    "modernbert-zeroshot-v2": {
+      "measured": true,
+      "rows_measured": 200,
+      "pairs_per_row": 77,
+      "max_length_per_pair": 512,
+      "truncation": "only_first — la hipótesis (opción) no se recorta nunca",
+      "option_tokens": {
+        "min": 2,
+        "max": 9,
+        "median": 3
+      },
+      "hypothesis_tokens": {
+        "min": 10,
+        "max": 17
+      },
+      "max_pair_tokens_over_rows": 60,
+      "rows_with_truncation": 0,
+      "tokens_read_per_decision_approx": "77 × (estado + pregunta + hipótesis); cada opción entera",
+      "with_comparative_context_max_tokens": 463,
+      "with_comparative_context_truncated": 0,
+      "reading": "el presupuesto de Laya (≈3 tokens de texto por etiqueta) no existe en el scorer: cada etiqueta entra entera en su propio par, a cambio de 77 pasadas por decisión"
+    }
+  },
+  "throughput_cpu": {
+    "scorer": "minilmv2-l6-mnli-xnli",
+    "device": "cpu",
+    "pairs_timed": 308,
+    "seconds": 4.89,
+    "pairs_per_second": 63.0,
+    "banking77_test_pairs": 237160,
+    "estimated_minutes_full_test_cpu": 62.8,
+    "reading": "estimación lineal desde una muestra de 4 filas; no es una medida del test"
+  },
+  "seconds": 25.5,
+  "command": "PYTHONPATH=.:TMP/laya .venv-train/bin/python artifacts/gates/T-laya-archdiff/token_budget.py",
+  "generated_utc": "2026-09-27T11:51:12Z"
+}

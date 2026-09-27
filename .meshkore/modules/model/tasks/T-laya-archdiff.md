@@ -1,9 +1,9 @@
 ---
 id: T-laya-archdiff
 title: Laya vs nuestro pointer head — las diferencias, y cuáles son medibles
-status: next
+status: done
 priority: high
-owner: unassigned
+owner: developer
 category: model
 initiative: laya-teardown
 created: 2026-09-27
@@ -44,3 +44,28 @@ Las cinco diferencias que ya están identificadas en la lectura del código
 - Está comprobado en su código (no supuesto) si el presupuesto de 48/192 tokens
   explica su propio techo de BANKING77, y qué valor tendría en el nuestro.
 - Queda registrado qué se puede adoptar bajo Apache-2.0 y con qué atribución.
+
+## Resolution
+
+**done · 2026-09-27 · developer (claude-fable-5-1)** — sólo lectura y CPU; nada entrenado.
+
+- Entregable: `.meshkore/docs/laya-archdiff.md` (enlazado desde `docs/INDEX.md`). Once
+  diferencias (las cinco de arriba + objetivo RLCD, temperatura por (tipo, K), orden de
+  opciones, estado compartido, backbone/tamaño, datos de entreno), cada una con qué hace cada
+  sistema, estilo vs candidata, y coste de medirla aquí.
+- Elegida UNA (D1, opciones dentro de la secuencia) con predicción escrita antes de medir:
+  `nli-nograd` sin ajustar sobre el corte dev de BANKING77 a K=77, GO si IC95 % inferior ≥ 0,05.
+  Se mide en `#T-laya-baseline` sobre las mismas filas (hash), no aquí.
+- Comprobado en su código (`TMP/laya/laya/common.py:119-132`, clon `4066d5d`, laya 0.3.20) y
+  medido con su propio `build_sequence` + tokenizador ModernBERT: a K=77 cada etiqueta conserva
+  3 tokens de texto; 73/77 siguen siendo distinguibles; techo de formato **0,948**, no 0,425.
+  El presupuesto NO explica su techo por sí solo. En nuestro scorer no existe tal presupuesto
+  (par más largo 62/512, 0 recortes; 63 pares/s en CPU).
+- Licencia: Apache-2.0, sin NOTICE; regla y texto de atribución en el doc §6.
+- Comando reproducible del artefacto: `PYTHONPATH=.:TMP/laya .venv-train/bin/python
+  artifacts/gates/T-laya-archdiff/token_budget.py` → `token_budget.json` (25 s, CPU).
+- Tests: sin código de producto tocado; `ruff check` limpio sobre el script. Snapshot del daemon
+  rechazado (`401`), anotado en el diario.
+- NO medido (dicho como tal): Laya en nuestro arnés, mmBERT, ablación 192/512, cualquier cifra
+  de entreno.
+
