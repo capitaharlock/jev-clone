@@ -12,6 +12,8 @@ created: 2026-09-27
 updated: 2026-09-27
 ---
 
+> **2026-09-27:** P0 del bucle (`docs/bucle-infinito.md` §1, §2, §8.3). Añade a lo de abajo: **tope de repetición** (ningún episodio se ve más de 4 veces en total), fuentes = `artifacts/episodes-qwen/{pilot-2k/verified.jsonl,stream/*}` + `artifacts/episodes-rule/*` + `artifacts/episodes-external/typed-decisions/train`, y `--weights` de cualquier peldaño de `#T-backbone-ladder`. Escribe `consumed_ids` en `train_manifest.json`: cierra la casilla «consumido» del embudo de `#T-episode-verify`.
+
 # El trainer que continúa — mezcla multi-fuente declarada y checkpoint que no empieza de cero
 
 ## Contexto

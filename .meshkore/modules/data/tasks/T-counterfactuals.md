@@ -9,8 +9,10 @@ initiative: episodic-data
 depends_on:
   - T-episode-gen
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **2026-09-27:** P1, no bloquea el bucle. El dev y el sellado ya tienen sus grupos contrafactuales, y el productor y `#T-numeric-gen` generan pares base+contrafactual. Esta task amplía los cuatro tipos de variante al productor.
 
 # Contrafactuales — cambiar el hecho decisivo cambia la respuesta
 

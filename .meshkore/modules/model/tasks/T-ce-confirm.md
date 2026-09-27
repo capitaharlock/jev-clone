@@ -7,11 +7,13 @@ owner: unassigned
 category: model
 initiative: cross-encoder-pilot
 depends_on:
-  - T-ce-finetune
+  - T-loop-nightly
   - T-battery-sealed
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **2026-09-27:** la dispara un hito H3/H4 del bucle (`docs/bucle-infinito.md` §5), no una task previa. El candidato es el `current` del bucle en ese momento; la segunda semilla repite su último ciclo con otra semilla. Después de abrir el sellado, prepara el siguiente con `data/battery_sealed.py` y el protocolo de `.meshkore/docs/sealed-rotation-protocol.md`. **No hay push** hasta que el operador lo diga.
 
 # Confirmación — segunda semilla y una única apertura del test sellado
 

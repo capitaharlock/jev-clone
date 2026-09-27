@@ -663,3 +663,22 @@ preflight por `same_rows()` (`8e8ccea5…`), formato forzado `choice` con id opa
 | Verificador separado + cuarentena + embudo | `#T-episode-verify` | **medido**: acuerdo 0,9355 [0,924 · 0,945], 1 840 verificados / 252 cuarentena; **muestra humana pendiente del operador** |
 | Trainer con `eval none` = 0,6225 | `#T-ce-finetune` | **hecho**: 249/400 exacto, mismas filas |
 | Smoke: dev > nli-nograd con IC, sin caer familia/idioma | `#T-ce-finetune` | **NO-GO** en 4 variantes: contrafactual +0,121 [0,043 · 0,200] y forzada +0,055 [0,015 · 0,098] en la primera, pero comparación de atributos y prioridad caen bajo el control; atributos no se aprende ni en el holdout del piloto (0,574 → 0,574). No se escala; brazo siguiente lo decide el operador |
+
+## Reordenación 2026-09-27 (tarde) — se escala sin parar: el bucle infinito
+
+Decisión del operador tras el smoke. El manual de operación es
+`bucle-infinito.md`. `#T-ce-finetune` pasa a done: su sección C queda absorbida
+por el bucle. `#daily-learning-loop` pasa a active.
+
+| Requisito | Quién lo entrega | Estado |
+|---|---|---|
+| Qwen 3.8 medido en dev contra el 3.6 (0,965) | `#T-qwen38-ref` | **SIN MEDIR** |
+| Generador por regla de atributos/prioridad + prueba de valor con 5 000 | `#T-numeric-gen` | **SIN MEDIR** |
+| Mezcla multi-fuente con tope de repetición y `consumed_ids` | `#T-loop-trainer` | **SIN MEDIR** |
+| Marcador con ciclo, escalón, brazo y delta contra el control original | `#T-loop-scoreboard` | **SIN MEDIR** |
+| Productor sin fin 24 h sin intervención | `#T-episode-scale` (`data.stream`) | **SIN MEDIR** |
+| 10 ciclos reales con cambio de escalón y de brazo | `#T-loop-nightly` (`training.python.loop`) | **SIN MEDIR** |
+| Dos peldaños de backbone medidos (control + smoke) | `#T-backbone-ladder` | **SIN MEDIR** |
+| Scorer listwise con permutación dentro de la tolerancia | `#T-listwise-format` | **SIN MEDIR** |
+| Dev v2 y columna de regresión | `#T-dev-rotation` | **SIN MEDIR** |
+| Hitos H1–H4 (Jev 0,727, Laya 0,766, dev ≥ 0,70, ≥ 0,85) | bucle → `#T-ce-confirm` | **SIN MEDIR** |

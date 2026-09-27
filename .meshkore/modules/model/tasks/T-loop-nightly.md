@@ -1,6 +1,6 @@
 ---
 id: T-loop-nightly
-title: La noche encadenada — un comando, siete etapas, y la regla de promoción que no se negocia
+title: El bucle sin fin — orquestador de ciclos, escalera de volumen y de brazos, hitos
 status: next
 priority: high
 owner: unassigned
@@ -9,10 +9,12 @@ initiative: daily-learning-loop
 depends_on:
   - T-loop-trainer
   - T-loop-scoreboard
-  - T-episode-scale
+  - T-numeric-gen
 created: 2026-09-27
 updated: 2026-09-27
 ---
+
+> **Reescrita el 2026-09-27 (decisión del operador: escalar sin parar).** Ya no es «una noche»: es `training/python/loop.py` (`run --forever`, `status`), el **proceso B** de `docs/bucle-infinito.md`. Implementa §1–§5 del manual **literalmente**: ciclo reanudable por etapa, `artifacts/loop/state.json`, `artifacts/loop/cycle-XXXX/`, escalera de volumen (§2), la regla de promoción de abajo (§3, **sin cambios**), escalera de brazos por racha (§4) e hitos (§5, que llaman a `#T-ce-confirm`). La etapa `datagen` sale de este proceso: la hace el productor (`#T-episode-scale` → `data.stream`), y el bucle consume lo publicado. Tests obligatorios: la regla de promoción (media sube + familia con caída significativa → no promueve; todo sube → promueve), la escalera (promueve → sube escalón; racha 1..5 → brazo correcto), la reanudación (matar en TRAIN y relanzar → retoma sin repetir ciclo) y la inanición (sin datos → `starved`, no inventa). El «Done when» de abajo pasa a ser: 10 ciclos reales seguidos en `history.jsonl` con `decision.json`, y al menos un cambio de escalón y uno de brazo ejercitados.
 
 # La noche encadenada — un comando, siete etapas, y la regla de promoción que no se negocia
 

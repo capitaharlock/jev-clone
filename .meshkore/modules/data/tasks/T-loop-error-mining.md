@@ -1,7 +1,7 @@
 ---
 id: T-loop-error-mining
 title: Minar los errores de dev — la cuota de mañana la deciden los fallos de hoy
-status: backlog
+status: next
 priority: medium
 owner: unassigned
 category: data
@@ -11,6 +11,8 @@ depends_on:
 created: 2026-09-27
 updated: 2026-09-27
 ---
+
+> **2026-09-27:** peldaño 1 de la escalera de brazos (`docs/bucle-infinito.md` §4). Sube de backlog a next.
 
 # Minar los errores de dev — la cuota de mañana la deciden los fallos de hoy
 

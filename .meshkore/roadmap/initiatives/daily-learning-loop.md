@@ -1,7 +1,7 @@
 ---
 id: daily-learning-loop
-title: El bucle diario — que mañana el modelo sea mejor que hoy, medido
-status: next
+title: El bucle sin fin — entrenar, probar, promover, escalar
+status: active
 owner: architect-master
 modules:
   - model
@@ -10,6 +10,8 @@ modules:
 created: 2026-09-27
 updated: 2026-09-27
 ---
+
+> **Activa desde el 2026-09-27** (decisión del operador: el entreno funciona, se escala a la máxima potencia de la máquina y no se para). El manual de operación es `docs/bucle-infinito.md`: dos procesos sin fin (productor de datos y bucle), la escalera de volumen, la regla de promoción, la escalera de brazos y los hitos. Tasks nuevas: `#T-qwen38-ref`, `#T-numeric-gen`, `#T-backbone-ladder`, `#T-listwise-format`, `#T-dev-rotation`. Lo de abajo es el diseño original «diario»; donde choque, manda el manual.
 
 # El bucle diario — que mañana el modelo sea mejor que hoy, medido
 

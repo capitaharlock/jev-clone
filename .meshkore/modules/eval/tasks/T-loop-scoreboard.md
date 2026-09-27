@@ -13,6 +13,8 @@ created: 2026-09-27
 updated: 2026-09-27
 ---
 
+> **2026-09-27:** P0 del bucle (`docs/bucle-infinito.md` §1, paso 5). Columnas añadidas: `cycle`, `step` (escalón), `arm`, `backbone`, delta contra `current` **y** contra el control original, holdout en distribución por familia, dev de regresión (tras `#T-dev-rotation`) y `milestone`.
+
 # El marcador diario — una fila por día, contra Jev y Laya, en el dashboard
 
 ## Contexto

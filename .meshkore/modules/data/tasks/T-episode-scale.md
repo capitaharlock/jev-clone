@@ -1,16 +1,19 @@
 ---
 id: T-episode-scale
-title: De 2 000 a 20 000 episodios con Qwen — cuota diaria, familias nuevas y dedup
+title: El productor sin fin — data.stream: Qwen 3.8 verificado + generador por regla, lotes continuos y dedup
 status: next
 priority: high
 owner: unassigned
 category: data
 initiative: episodic-data
 depends_on:
-  - T-episode-splits
+  - T-episode-gen
+  - T-qwen38-ref
 created: 2026-09-27
 updated: 2026-09-27
 ---
+
+> **Reescrita el 2026-09-27:** es el **proceso A** de `docs/bucle-infinito.md`. `data/stream.py run --forever`: lotes de `--qwen-batch` episodios con Qwen 3.8, **verificados en la misma tanda** (`data.episode_verify`) y publicados sólo los verificados en `artifacts/episodes-qwen/stream/batch-XXXX/`; en paralelo, lotes de `--rule-batch` de `#T-numeric-gen`. Semilla = número de lote, dedup contra todo lo anterior y contra dev/sellado, `--resume` por lote, pausa mientras exista `artifacts/loop/TRAINING` si la contención de GPU lo exige, y `funnel.json` por lote. La cuota por familia la mueve `#T-loop-error-mining`. El «Done when» pasa a ser: 24 h seguidas sin intervención, con el volumen y los rechazos medidos por lote.
 
 # De 2 000 a 20 000 episodios con Qwen — cuota diaria, familias nuevas y dedup
 

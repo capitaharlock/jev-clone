@@ -10,8 +10,10 @@ depends_on:
   - T-counterfactuals
   - T-episode-verify
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **2026-09-27:** P1, no bloquea el bucle. El bucle evalúa en la batería dev (escrita aparte) y el productor deduplica contra dev y sellado. Esta task formaliza el repartidor de cuatro dimensiones para las mezclas publicadas.
 
 # Splits que no filtran — por familia, entidad, espacio y grupo de variantes
 

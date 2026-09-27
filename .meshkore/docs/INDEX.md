@@ -1,5 +1,6 @@
 # docs/ — map
 
+- [bucle-infinito.md](bucle-infinito.md) — **manual de operación del bucle sin fin** (productor + entreno/prueba/promoción, escaleras, hitos). Léelo antes de tocar el entreno.
 - [guia-un-solo-objetivo.md](guia-un-solo-objetivo.md) — **léela primero**: el único objetivo (2026-09-27), el orden de ejecución, las reglas y el bucle diario.
 - [context.md](context.md) — product, architecture and execution constraints.
 - [coverage.md](coverage.md) — source requirements mapped to roadmap tasks.

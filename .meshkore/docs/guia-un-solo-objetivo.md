@@ -39,59 +39,47 @@ sólo si el operador lo pide, y ninguna task viva depende de ellas.
 | pointer heads actuales (control) | batería de desarrollo | 0,33 (= azar 0,3375) | ídem |
 | Meta del operador | batería sellada, macro por familia, preguntas respondibles | **≥ 0,70 con IC95 % inferior ≥ 0,70** | `#T-ce-confirm` |
 
-## 2. Dónde estamos (2026-09-27)
+## 2. Dónde estamos (2026-09-27, 19:30)
 
-- **Mecánica validada:** el scorer compartido (`model/ce_scorer.py`) sobreajusta
-  48 casos a 0,958 en 117 s en MPS (`#T-ce-mechanics`). La tubería aprende.
-- **Puerta previa abierta:** Qwen resuelve la batería (0,965), el punto de
-  partida es `nli-nograd` (0,6225), los pointer actuales son el control
-  (`#T-preflight-refs`, GO).
-- **Datos:** el piloto de 2 100 episodios con Qwen está EN VUELO (job `datagen`,
-  `artifacts/episodes-qwen/pilot-2k/`, con `--resume`). Murió una vez a 1 394;
-  se retomó el 27 a las 12:40.
-- **Entreno real:** NO ha empezado. `#T-ce-finetune` espera los splits
-  (`#T-episode-splits`), que esperan verificador y contrafactuales, que esperan
-  el piloto. **El trainer se puede construir ya** con la fixture y el piloto
-  parcial; sólo la cifra que cuenta espera a los splits.
-- **Laya:** clon leído en `TMP/laya/`; ninguna de sus tres tasks ejecutada.
-- **Jev como profesor:** cliente hecho (`eval/teacher.py`), credencial
-  rechazada (401). Necesita key válida del operador (`#T-teacher-auth`).
+- **El entreno aprende.** Trainer `training/python/ce_finetune.py` y smoke de
+  1 000 decisiones en ≈ 40 s en MPS: contrafactual +0,121 [0,043 · 0,200],
+  forzada +0,055 [0,015 · 0,098] sobre el control (0,6225). **No aprende la
+  comparación numérica**: la comparación de atributos queda en 0,574 incluso
+  en su propia distribución (`#T-ce-finetune`, done).
+- **Datos disponibles:** piloto de 2 092 episodios (1 840 verificados),
+  typed-decisions train con 6 000 decisiones, y typed-decisions test con 2 000
+  (solo evaluación).
+- **Laya sin ajustar** empata con nuestro control (0,595) y falla en las mismas
+  familias. En BANKING77 con K=77 da 0,379; su 0,425 publicado no se reproduce.
+- **Profesor local:** `qwen3.8:27b-mlx` desde hoy, sin medir (`#T-qwen38-ref`).
+- **Remoto** `origin` conectado, **sin push** hasta que el acierto lo justifique.
 
-## 3. El orden de ejecución — qué se despacha primero
+## 3. El orden de ejecución
 
-Cuando haya que elegir, este es el orden. Dentro de cada fila, las tasks van
-en el orden en que se listan; entre filas, todo lo que no dependa de otra cosa
-va **en paralelo**.
+**Decisión del operador (2026-09-27): se escala sin parar.** El orden y el
+funcionamiento están en **`bucle-infinito.md` §8**. Resumen:
 
-| Prioridad | Iniciativa | Tasks (en orden) | Por qué ahora |
-|---|---|---|---|
-| P0 | `#episodic-data` | `T-episode-gen` (vigilar el piloto) → `T-episode-verify` + `T-counterfactuals` → `T-episode-splits` → `T-episode-scale` | Sin datos con splits no hay entreno medido. Bloquea todo. |
-| P0 | `#cross-encoder-pilot` | `T-ce-finetune` (construir el trainer YA; correr el smoke de 20 min con el piloto parcial; la cifra oficial con los splits) → `T-ce-confirm` | Es el experimento que decide si la técnica aprende. |
-| P1 | `#laya-teardown` | `T-laya-archdiff` → `T-laya-baseline` → `T-laya-objective` | Cota externa sin entrenar; enseña qué copiar. Sólo CPU/inferencia. |
-| P1 | `#data-flywheel` | `T-ingest-laya` → `T-ingest-public` → (`T-jev-soft-targets` cuando haya key) | Volumen: de 2 000 episodios a cientos de miles de decisiones. Sólo CPU. |
-| P2 | `#teacher-distill` | `T-teacher-auth` (necesita al operador) → `T-teacher-probe` | Jev como vara de medir y como profesor. |
-| P2 | `#daily-learning-loop` | `T-loop-trainer` → `T-loop-scoreboard` → `T-loop-nightly` → (`T-loop-error-mining`, `T-loop-rl-jev`) | El sistema que hace que mañana sea mejor que hoy. Arranca cuando `T-ce-finetune` dé GO. |
-| P3 | `#honest-eval` | `T-battery-calib` (tras `T-ce-finetune`) | Calibración y abstención, medidas aparte. |
+| Prioridad | Qué | Tasks |
+|---|---|---|
+| P0 | Profesor nuevo medido | `#T-qwen38-ref` |
+| P0 | Volumen dirigido a lo que no aprendemos | `#T-numeric-gen` |
+| P0 | Trainer de mezcla + marcador | `#T-loop-trainer`, `#T-loop-scoreboard` |
+| P0 | Los dos procesos sin fin | `#T-episode-scale` (productor `data.stream`), `#T-loop-nightly` (bucle `training.python.loop`) |
+| P1 | Escalera de brazos | `#T-backbone-ladder`, `#T-listwise-format`, `#T-loop-error-mining` |
+| P1 | Más volumen y calidad de datos | `#T-ingest-public` (a medias), `#T-counterfactuals`, `#T-episode-splits`, `#T-dev-rotation` |
+| P2 | Jev como vara y profesor | `#T-teacher-auth` (bloqueada: key), `#T-teacher-probe`, `#T-jev-soft-targets`, `#T-loop-rl-jev` |
+| Hito | Confirmación con sellado | `#T-ce-confirm`, disparada por H3/H4 del bucle |
+| Operador | Muestra humana del piloto | `#T-episode-verify` (active) |
 
-## 4. El bucle diario — a dónde vamos
+## 4. El bucle — cómo funciona
 
-```
- cada noche (job canónico, un solo comando encadenado, #T-loop-nightly)
- ┌──────────────────────────────────────────────────────────────────────┐
- │ 1. datagen   Qwen genera N episodios nuevos (semilla = fecha)         │
- │ 2. verify    verificador separado + contrafactuales + cuarentena     │
- │ 3. splits    se AÑADE al train; dev y sellado NO se tocan            │
- │ 4. trainer   continúa desde artifacts/checkpoints/ce/current         │
- │              mezcla declarada: episodios + Laya + públicos (+ Jev)   │
- │ 5. evalgate  batería de desarrollo: forzada, con abstención,         │
- │              macro por familia, contrafactual conjunto, por idioma,  │
- │              IC95 %; typed-decisions test contra Jev/Laya            │
- │ 6. scoreboard fila del día en artifacts/scoreboard/history.jsonl     │
- │ 7. promote   sólo si dev mejora y ninguna familia/idioma cae:        │
- │              current → candidato; si no, se conserva el anterior    │
- └──────────────────────────────────────────────────────────────────────┘
- el test sellado se abre UNA vez por decisión final (#T-ce-confirm), nunca aquí
-```
+Está en **`bucle-infinito.md`**: dos procesos sin fin, un productor de datos y
+un bucle de entreno/prueba/promoción. Una escalera de volumen: el presupuesto
+sube un escalón por cada promoción. Una regla de promoción escrita antes de
+medir. Una escalera de brazos para cuando no se promueve: datos dirigidos, LR,
+backbone mayor, formato listwise y, al final, alerta al operador. Hitos que
+abren el sellado y protección contra agotar dev. **Cualquier agente que tome
+el control lee ese documento entero antes de tocar nada.**
 
 ## 5. Reglas de oro (violarlas invalida el trabajo)
 

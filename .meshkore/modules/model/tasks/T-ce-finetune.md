@@ -1,8 +1,7 @@
 ---
 id: T-ce-finetune
 title: Aprender de verdad — ajustar con 5.000 decisiones verificadas, ampliar a 20.000 si mejora
-blocked_reason: smoke NO-GO en cuatro variantes; decisión del operador sobre el siguiente brazo (backbone mayor o datos dirigidos a comparación numérica)
-status: blocked
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -14,6 +13,8 @@ depends_on:
 created: 2026-09-25
 updated: 2026-09-27
 ---
+
+> **Cerrada el 2026-09-27 por decisión del operador:** «si el entreno funciona, se escala». Las secciones A y B están hechas y medidas (abajo). La sección C (5 000 → 20 000) queda **absorbida por el bucle**, `docs/bucle-infinito.md`: son los escalones 2 y 4 de su escalera, con la regla de promoción que `#T-loop-nightly` escribió antes del smoke. El NO-GO del smoke se conserva tal cual como registro de la regla del piloto.
 
 # Aprender de verdad — ajustar con 5.000 decisiones verificadas, ampliar a 20.000 si mejora
 
