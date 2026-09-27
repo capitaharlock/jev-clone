@@ -94,3 +94,110 @@ barato para las familias que sí se mueven, no la palanca de las numéricas.
 
 Modelo de la prueba: MiniLMv2-L6 cross-encoder, **~107 M parámetros, todos
 ajustables** (`artifacts/checkpoints/ce/numeric-5k`).
+
+### 4. La predicción acertó en atributos y FALLÓ en prioridad
+
+La predicción (`value_proof_prediction`, escrita antes de mezclar) decía dos
+cosas. La primera se cumplió: atributos no se mueve. La segunda **no**:
+
+> «`priority_decision` se mueve en dev y en el holdout: ya se movió en
+> distribución en el piloto (0,62 → 0,78)».
+
+Medido: en el holdout del piloto `priority_decision` se queda en **0,6118 →
+0,6118** (Δ 0,000 [−0,106, 0,106], n=85) y en dev CAE de 0,3750 a 0,3250. En el
+holdout entero sube +0,041 [0,0017, 0,0826] sobre 605 filas — apenas despega
+de 0. O sea: la subida de prioridad del piloto (0,62 → 0,78) **no se reproduce**
+con cinco veces el volumen y un corpus más duro. Las DOS familias numéricas se
+comportan igual, y eso refuerza el diagnóstico de backbone en vez de debilitarlo:
+no es una rareza de una familia.
+
+### 5. Una restricción del backbone salió antes que la conclusión
+
+El scorer tiene una ventana de 512 tokens y `model.ce_scorer.length_report` se
+niega a recortar el estado en silencio. Con K = 8 y tres atributos por opción,
+**419 de 17 328 pares pasaban de 512** (máximo 570, medido con el tokenizador de
+minilmv2-l6-mnli-xnli). De ahí `rule_variety.MAX_STATE_ATTRS = {2: 4, 3: 3,
+8: 2}`: las formas que necesitan tres atributos (umbral y tres criterios
+encadenados) viven en K = 3, no en K = 8. Con la cota, máximo 482 tokens y 0
+recortados en el run real (`holdout.json#length_report`). No es una decisión de
+diseño del generador: es el techo del backbone apareciendo en la longitud antes
+de aparecer en el acierto.
+
+### 6. Comandos (los que dejaron cada cifra)
+
+```bash
+# lote de 50 000 — job `datagen`
+env PYTHONPATH=. .venv-train/bin/python -u -m data.rule_variety publish \
+    --batch 1 --n 50000 --variety 16
+env PYTHONPATH=. .venv-train/bin/python -u -m data.rule_variety gate \
+    --dir artifacts/episodes-rule/batch-0001 --required 50000
+
+# predicción, ANTES de todo lo demás
+env PYTHONPATH=. .venv-train/bin/python -m eval.numeric_value predict
+
+# prueba de valor — job `trainer`, cadena completa
+env PYTHONPATH=. .venv-train/bin/python -m eval.numeric_value mix \
+    --rule artifacts/episodes-rule/batch-0001 \
+    --pilot artifacts/episodes-qwen/pilot-2k/verified.jsonl \
+    --n-rule 5000 --out artifacts/episodes-rule/mix-smoke
+env PYTHONPATH=. TOKENIZERS_PARALLELISM=false PYTORCH_ENABLE_MPS_FALLBACK=1 \
+  .venv-train/bin/python -m training.python.ce_finetune eval --checkpoint none \
+    --battery data/battery_dev.jsonl --device mps \
+    --out artifacts/gates/T-numeric-gen/eval-none.json
+env PYTHONPATH=. TOKENIZERS_PARALLELISM=false PYTORCH_ENABLE_MPS_FALLBACK=1 \
+  .venv-train/bin/python -u -m training.python.ce_finetune train \
+    --episodes artifacts/episodes-rule/mix-smoke \
+    --weights minilmv2-l6-mnli-xnli --init none \
+    --out artifacts/checkpoints/ce/numeric-5k --device mps --seed 20260926 \
+    --epochs 4 --lr-encoder 2e-5 --lr-head 1e-4 --decisions-per-batch 8 \
+    --eval-every 1250 --budget 5000 --holdout 0.2 --split-seed 20260927
+env PYTHONPATH=. ... ce_finetune gate --run artifacts/checkpoints/ce/numeric-5k \
+    --control artifacts/gates/T-numeric-gen/eval-none.json \
+    --out artifacts/gates/T-numeric-gen/smoke.json
+env PYTHONPATH=. ... -m eval.numeric_value measure \
+    --run artifacts/checkpoints/ce/numeric-5k \
+    --mix artifacts/episodes-rule/mix-smoke
+env PYTHONPATH=. .venv-train/bin/python -m eval.numeric_value gate \
+    --run artifacts/checkpoints/ce/numeric-5k
+```
+
+Los dos `gate` salen con exit 1 en NO-GO, así que van con `;` y no con `&&` en
+el command del job: por eso el job `trainer` aparece como `failed` con todo
+medido. El entreno tardó 1 806 s + 579 s de evaluación (5 000 decisiones, 625
+pasos, MPS).
+
+### 7. Conteo verbatim de tests
+
+```
+$ PYTHONPATH=. .venv-train/bin/python -m pytest data/test_rule_variety.py -q
+56 passed in 5.59s
+$ PYTHONPATH=. .venv-train/bin/python -m pytest eval/test_numeric_value.py -q
+19 passed in 0.55s
+$ PYTHONPATH=. .venv-train/bin/python -m pytest data/test_episode_gen.py -q
+31 passed in 0.07s
+$ PYTHONPATH=. .venv-train/bin/python -m pytest data/ -q
+566 passed, 6 skipped in 22.74s
+$ PYTHONPATH=. .venv-train/bin/python -m pytest eval/ -q
+1 failed, 514 passed, 78 subtests passed in 44.34s
+$ PYTHONPATH=. python3 -m eval.gate_rules scan
+errors 0
+$ ruff check data/rule_variety.py data/test_rule_variety.py \
+      data/episode_gen.py eval/numeric_value.py eval/test_numeric_value.py
+All checks passed!
+```
+
+El único rojo es `eval/test_release_gate.py::TestPublishedVerdict::
+test_the_numbers_are_the_ones_t_unseen_labels_published` (0,292141 != 0,304943),
+preexistente y ajeno a esta task (`#T-unseen-labels`).
+`eval/test_data_eval.py::test_ood_abstention_separates`, el otro rojo conocido,
+pasó en esta tanda.
+
+### 8. Nota de operación: el profesor se quedó en la GPU
+
+A mitad del entreno el paso cayó de 11 s a 625 s. Causa: `ollama` seguía
+reteniendo **29 GB** de `qwen3.8:27b-mlx` en GPU con `#T-qwen38-ref` ya
+terminado (exit 0), y la máquina llegó a **28,8 GB de swap**. Se descargó con
+`ollama stop qwen3.8:27b-mlx` (reversible, sin tocar `ollama serve`) y el ritmo
+volvió. **Cualquier entreno MPS de este repo debe comprobar `ollama ps` antes de
+empezar**, no sólo que el job de Qwen haya terminado: el job termina y el modelo
+se queda cargado hasta que expira su `keep_alive`.
