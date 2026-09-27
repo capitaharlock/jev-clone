@@ -1,0 +1,110 @@
+{
+  "format": 1,
+  "marked_by": "T-release-gate",
+  "marked_utc": "2026-09-24T13:54:01Z",
+  "gate": "T-mix-5m",
+  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3) + R2 (C4), .meshkore/docs/fase-2-espacio-completo.md \u00a77",
+  "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
+  "verdict": "INVALID \u2014 published against a coherence rule",
+  "kept": "this artifact is MARKED, not deleted: a bad published number is part of the record",
+  "green_claimed_by": [],
+  "errors": [
+    {
+      "rule": "C4",
+      "severity": "error",
+      "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+      "n_offending": 24,
+      "offending": [
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/boolq",
+          "accuracy": 0.614724,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/civil-comments",
+          "accuracy": 0.941328,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/dbpedia14",
+          "accuracy": 0.976364,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/detox-attack",
+          "accuracy": 0.663736,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/email-triage",
+          "accuracy": 0.694,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/goemotions",
+          "accuracy": 0.656943,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/huffpost",
+          "accuracy": 0.760444,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/evidence/in_corpus_rescore/mix1m-curve-ettin-68m-s20260922/massive",
+          "accuracy": 0.62531,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        }
+      ],
+      "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+    }
+  ]
+}

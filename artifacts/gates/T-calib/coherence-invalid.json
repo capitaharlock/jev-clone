@@ -1,17 +1,92 @@
 {
   "format": 1,
   "marked_by": "T-release-gate",
-  "marked_utc": "2026-09-22T20:40:24Z",
+  "marked_utc": "2026-09-24T13:54:01Z",
   "gate": "T-calib",
-  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3)",
-  "criteria_sha": "0d505241e0edbe2a9b1caf162fc55fc60e0364fe5bc60e3ec5981b66066e76f0",
-  "verdict": "INVALID \u2014 published green against a coherence rule",
+  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3) + R2 (C4), .meshkore/docs/fase-2-espacio-completo.md \u00a77",
+  "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
+  "verdict": "INVALID \u2014 published against a coherence rule",
   "kept": "this artifact is MARKED, not deleted: a bad published number is part of the record",
   "green_claimed_by": [
     "gate.json",
     "report.json"
   ],
   "errors": [
+    {
+      "rule": "C4",
+      "severity": "error",
+      "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+      "n_offending": 6,
+      "offending": [
+        {
+          "file": "report.json",
+          "at": "/test/pre",
+          "accuracy": 1.0,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "report.json",
+          "at": "/test/post",
+          "accuracy": 1.0,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "report.json",
+          "at": "/ood/pre",
+          "accuracy": 0.5,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "report.json",
+          "at": "/ood/post",
+          "accuracy": 0.5,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "report.json",
+          "at": "/drift_by_locale_test/en-US",
+          "accuracy": 1.0,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        },
+        {
+          "file": "report.json",
+          "at": "/drift_by_locale_test/es-ES",
+          "accuracy": 1.0,
+          "missing": [
+            "chance",
+            "cardinality",
+            "accuracy_ci95"
+          ],
+          "citation": false
+        }
+      ],
+      "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+    },
     {
       "rule": "C2",
       "severity": "error",

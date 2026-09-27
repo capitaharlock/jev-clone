@@ -1,7 +1,7 @@
 {
   "format": 1,
   "task": "T-release",
-  "commit": "0cc95e8a590cf3eed7420baf0f95e2df83f26d77",
+  "commit": "83c6ab57adce2b7d5b2574e9a0304b2897c5847d",
   "predictor": {
     "name": "cosine-char3-softmax",
     "base_temperature": 1.0,
@@ -48,7 +48,7 @@
     {
       "claim": "cold-start",
       "path": "artifacts/gates/T-cloud-api/coldstart.json",
-      "sha256": "c760887cea911beab7fb0fc7edaaffc3f86af60052d1d9a083d9273b0cf31f7b"
+      "sha256": "b35f9eb4941d28a7a511ea29e8f8f74a8124019f739fdf76c19dbe6b0068c89f"
     },
     {
       "claim": "sbom",
@@ -58,7 +58,7 @@
     {
       "claim": "model-card",
       "path": ".meshkore/docs/model-card.md",
-      "sha256": "0595d8fb0638d1ed604fd140b91c1bd061877e1323832c6ebfd4ffd8f3e9e0cf"
+      "sha256": "a178cb9d03677142150fddc9b7683002b1c3dce4ec022004178b0f5fade82b02"
     },
     {
       "claim": "pod-train",
@@ -73,7 +73,7 @@
     {
       "claim": "sources",
       "path": ".meshkore/docs/source-register.md",
-      "sha256": "2da3f9655902d0ac40d2528c98ec866a997edddb203db4dde5eca42b1d4970e4"
+      "sha256": "3a402ffdc85fa68c7179a40c3b8c9026c52e19f321e89a769fb5bdcc445d93ae"
     },
     {
       "claim": "dataset-registry",

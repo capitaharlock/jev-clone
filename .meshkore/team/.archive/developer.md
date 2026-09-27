@@ -1,25 +1,11 @@
 ---
 id: developer
-name: "Developer"
-emoji: "💻"
-color: "#10B981"
-kind: profile
-required: false
-agent_type: custom
+title: "Developer"
 client: muse
 provider: anthropic
 model: muse-spark-1.3-contributor
 effort: default
-pinned_order: 10
-owns: "Any coding task not tied to one module: features, fixes, refactors, and the tests that cover them."
-delegates_to:
-  - tester
-  - deployer
-never: "Deploy, release, or publish (→ deployer) — even when it knows the commands."
-refs:
-  - .meshkore/context/stack.md
-  - .meshkore/context/architecture.md
-credentials_hint: ".meshkore/credentials/"
+context: []
 created: 2026-07-03
 updated: 2026-09-21
 ---

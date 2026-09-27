@@ -14,6 +14,8 @@ created: 2026-09-25
 updated: 2026-09-27
 resolved_by: A003
 resolved_by_conv: roadmap-architect-uwgjq
+completed_at: 2026-09-26T22:40:29.615Z
+commit_shas: ['4ea6e133231fdb8960b506584c5deeaf4fdd6362']
 ---
 # Referencias antes de entrenar — Qwen local, NLI sin ajustar y el checkpoint actual
 
@@ -136,14 +138,28 @@ las que se midió.
 
 ## Resolution
 
-**GO — el piloto sigue.** Las tres referencias están medidas sobre las
-mismas 400 filas y el gate (`artifacts/gates/T-preflight-refs/gate.json`)
-está firmado `PASS` con las diez casillas resueltas. Qwen responde la
-batería (0,965 contra 0,3375, las cinco familias despejando), el control
-pointer reproduce en ella el fallo de mecanismo documentado (azar en
-forzada, 2/140 y 1/140 en conjunto contrafactual contra 0,0826) y el
-punto de partida del ajuste queda decidido con cifras: `nli-nograd`.
-`#T-ce-finetune` puede arrancar desde ahí.
+✓ #honest-eval #T-preflight-refs **done** — ya lo estaba en disco (commit `4ea6e13`), gate `PASS` con las 10 casillas resueltas. Sin reescritura; el `no-commit` del wake es falso otra vez.
 
-Queda dicho y no tapado: el control de orden de la columna Qwen falla al
-12,5 % en 24 filas, y esa cota viaja con el 0,965 a donde se cite.
+**Lo que abre esta puerta:** el enunciado no está roto. Qwen contesta la batería al **0,965** (386/400, IC [0,942 · 0,979]) contra un azar de 0,3375, y el control pointer **reproduce el fallo** en los dos checkpoints — la batería mide lo que tiene que medir. Punto de partida del fine-tune fijado: `nli-nograd` (0,6225).
+
+🚀 #episodic-data #T-episode-gen → `developer-copy` (opus, pid **83392**, vivo verificado con `ps`)
+· **Reabierta de `blocked` a `active`**: sus 3 primeras casillas ya están en `pass: true` y solo falta `volume_ge_2000` (25 de 2 000 publicados, `awaiting-operator-compute`) — es decir, estaba bloqueada únicamente por el cómputo que ya autorizaste. Job canónico `datagen`, sin crear jobs nuevos.
+· Es el cuello de botella de **toda** la cadena: #T-episode-verify → #T-counterfactuals → #T-episode-splits → #T-ce-finetune cuelgan de ella.
+
+⚠ La cola del daemon sigue apuntando a `multi-cli-clients` y `deploy-pipeline-reconcile`, que **no existen en disco** (0 tareas). Ignorada: despaché la cadena real.
+
+<details><summary>Por qué #T-ce-finetune no era despachable todavía</summary>
+
+`depends_on: T-ce-mechanics (done), T-preflight-refs (done ahora), T-episode-splits (next)`. La tercera cuelga de `T-counterfactuals` + `T-episode-verify`, y las dos de `T-episode-gen`. Ordenar el fine-tune ahora daría `409 task-dependencies-not-done`.
+</details>
+
+<details><summary>Estado de #T-episode-gen antes del despacho</summary>
+
+- `artifacts/gates/T-episode-gen/gen.json`: `validator_pass_100pc` ✓ · `rule_gold_flips_on_perturb` ✓ · `no_template_marker_no_dataset_id` ✓ · `volume_ge_2000` → `null`, `n_published: 25`, `required: 2000`.
+- Sonda Qwen del propio gate: alcanzable, `qwen3.6:27b-mlx`, 20,2 s de latencia. Ollama confirmado arriba en :11434.
+- Brief con condición de honestidad: si el piloto no llega a 2 000 por ritmo o rechazos, queda `partial` con la cifra, no `done`.
+</details>
+
+— T-preflight-refs · la puerta previa al entreno queda firmada en GO (Qwen 0,965, arranque en `nli-nograd`)
+
+1.8M tokens

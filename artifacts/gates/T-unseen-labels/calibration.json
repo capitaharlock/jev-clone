@@ -3,13 +3,13 @@
   "calib_version": 2,
   "predictor": {
     "name": "pointer-decision-head",
-    "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-28aa3b10cda8-bbbf95622c",
-    "checkpoint": "artifacts/checkpoints/decision/unfreeze-lastn3-prior-ettin-68m-s20260922/stage-001000000",
+    "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+    "checkpoint": "artifacts/checkpoints/decision/fullspace-sampled-d512-prior-ettin-68m-s20260922/stage-000062500",
     "backbone": "ettin-68m",
     "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
-    "samples_seen": 1000000,
+    "samples_seen": 62528,
     "architecture": {
-      "d_model": 256,
+      "d_model": 512,
       "loss": "listwise cross-entropy over [K + 1] + prior penalty 1.0",
       "n_heads": 8,
       "n_layers": 2,
@@ -22,7 +22,7 @@
       "why": "parameter-free scorer, not the product"
     }
   },
-  "model_version": "jev-dec-ettin-68m-d256l2h8-s20260922-n1000000-28aa3b10cda8-bbbf95622c",
+  "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
   "fit_split": "calibration",
   "fit_cut": "seen labels only \u2014 a held-out label may not be fitted on, not even a temperature",
   "applied_to": [
@@ -33,97 +33,97 @@
   "split_sha256": "ee0bf8a274f55cfff68196a1d48edfde5e3036578bc4086fe81abe3f0da8830c",
   "n_fit": 2924,
   "global": {
-    "temperature": 2.9046445964319725,
-    "nll_before": 1.6167528462592609,
-    "nll_after": 1.190510101115043,
+    "temperature": 5.389475481372905,
+    "nll_before": 2.588080214219608,
+    "nll_after": 1.4898558271813571,
     "n": 2924,
     "group": "global"
   },
   "by_dataset": {
     "banking77": {
-      "temperature": 4.5169522616122135,
-      "nll_before": 2.2875688648476538,
-      "nll_after": 1.700103410522507,
+      "temperature": 10.0,
+      "nll_before": 5.456437648436671,
+      "nll_after": 1.9457544739497872,
       "n": 674
     },
     "boolq": {
-      "temperature": 1.3120140979033093,
-      "nll_before": 0.6501454295890259,
-      "nll_after": 0.6467924185776198,
+      "temperature": 2.040285773368369,
+      "nll_before": 0.7201006704833606,
+      "nll_after": 0.6715209201150264,
       "n": 750
     },
     "huffpost": {
-      "temperature": 2.228648108953747,
-      "nll_before": 1.2355046695148404,
-      "nll_after": 0.899240522838055,
+      "temperature": 2.6591479484724942,
+      "nll_before": 1.7260829795625523,
+      "nll_after": 1.3481487934771386,
       "n": 750
     },
     "massive": {
-      "temperature": 3.465724215775733,
-      "nll_before": 2.3617684443024802,
-      "nll_after": 1.4977252403150418,
+      "temperature": 4.933964274748139,
+      "nll_before": 2.74035977839651,
+      "nll_after": 1.7075031120226898,
       "n": 750
     }
   },
   "by_cardinality": {
     "2": {
-      "temperature": 1.3120140979033093,
-      "nll_before": 0.6501454295890259,
-      "nll_after": 0.6467924185776198,
+      "temperature": 2.040285773368369,
+      "nll_before": 0.7201006704833606,
+      "nll_after": 0.6715209201150264,
       "n": 750
     },
     "3": {
-      "temperature": 2.9046445964319725,
-      "nll_before": 1.3127399419919827,
-      "nll_after": 0.9275913099260455,
+      "temperature": 7.672704990109253,
+      "nll_before": 2.753827965554407,
+      "nll_after": 1.3148002739304223,
       "n": 370
     },
     "4": {
-      "temperature": 3.17280587431321,
-      "nll_before": 1.7008876249180744,
-      "nll_after": 1.1543398210023763,
+      "temperature": 6.43054083417572,
+      "nll_before": 2.98098644150889,
+      "nll_after": 1.5203183811534189,
       "n": 352
     },
     "5": {
-      "temperature": 2.6591479484724942,
-      "nll_before": 1.695891225956494,
-      "nll_after": 1.2448333081482403,
+      "temperature": 6.43054083417572,
+      "nll_before": 3.2182904265075116,
+      "nll_after": 1.7015778825901902,
       "n": 351
     },
     "6": {
-      "temperature": 2.9046445964319725,
-      "nll_before": 2.1164831557609864,
-      "nll_after": 1.4914384874850033,
+      "temperature": 7.024218301525188,
+      "nll_before": 3.499070854208593,
+      "nll_after": 1.8682830029244692,
       "n": 395
     },
     "7": {
-      "temperature": 3.17280587431321,
-      "nll_before": 2.3594356539050017,
-      "nll_after": 1.6468850274441234,
+      "temperature": 5.8870401865247475,
+      "nll_before": 3.470846212697972,
+      "nll_after": 1.9829464887507913,
       "n": 361
     },
     "8": {
-      "temperature": 3.17280587431321,
-      "nll_before": 2.5284785213509826,
-      "nll_after": 1.7698384431067495,
+      "temperature": 4.933964274748139,
+      "nll_before": 3.4623740839097232,
+      "nll_after": 2.0588554280881524,
       "n": 345
     }
   },
   "thresholds": {
     "unknown": {
-      "threshold": 0.9500282159410042,
+      "threshold": 0.6639174311877634,
       "target_coverage": 0.9
     },
     "maxprob": {
-      "threshold": 0.26278200475130653,
+      "threshold": 0.20181036015178944,
       "target_coverage": 0.9
     },
     "margin": {
-      "threshold": 0.021822263020369465,
+      "threshold": 0.013900757587476609,
       "target_coverage": 0.9
     },
     "energy": {
-      "threshold": -0.004258161708862451,
+      "threshold": -2.215706505308512,
       "target_coverage": 0.9
     }
   }

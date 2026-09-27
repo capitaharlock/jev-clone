@@ -10,8 +10,51 @@
     "frozen": true,
     "hidden_size": 512,
     "id": "ettin-68m",
+    "lr": null,
     "params": 68144640,
-    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2"
+    "revision": "ac19ae4bc51093b31c475665ac872a936d056cc2",
+    "state_dict_params": 68144640,
+    "state_dict_trainable_params": 0,
+    "trainable_params": 0,
+    "unfreeze": {
+      "frozen": true,
+      "last_n": null,
+      "lr": null,
+      "mode": "none",
+      "n_blocks": 19,
+      "opened": [],
+      "params": 68144640,
+      "trainable_params": 0
+    }
+  },
+  "cardinality_regime": {
+    "hard_fraction": 0.5,
+    "k_max": 8,
+    "k_min": 3,
+    "loss_normalised_over": "the [K + 1] columns handed to `cross_entropy` \u2014 that is the denominator, and it is this K, not the label space",
+    "mode": "sampled options",
+    "options_per_row": "3-8 sampled from the row's label space, plus the `unknown` logit",
+    "resampled_each_epoch": false,
+    "rule": "R4 \u2014 a verdict measured in this regime does not transfer to another one; it is marked non-transferable instead of inherited",
+    "sampler_regime": {
+      "distractor_sampling": "50 % of the distractors from the hard bucket (the top 25 % of the difficulty ranking, at least 4 labels), the rest from the easy bucket, both without replacement",
+      "hard_fraction_applies": true,
+      "k_max": 8,
+      "k_min": 3,
+      "k_per_row": "3-8 drawn uniformly, clamped by |space|",
+      "loss_denominator": "the [K + 1] columns handed to `cross_entropy` \u2014 a SUBSET of the space",
+      "mode": "sampled options",
+      "unknown_fraction": 0.12
+    },
+    "stage_eval": {
+      "k_max": 8,
+      "k_min": 3,
+      "mode": "sampled options",
+      "rule": "R1 \u2014 a divergence between the training regime and the eval regime is declared in the gate, not discovered",
+      "same_as_training": true,
+      "why": "train and eval share the regime"
+    },
+    "unknown_fraction": 0.12
   },
   "data_manifest": {
     "banking77": {
@@ -130,31 +173,31 @@
     "synth-v1"
   ],
   "format": "safetensors",
-  "generated_utc": "2026-09-22T11:20:33Z",
+  "generated_utc": "2026-09-27T12:01:09Z",
   "head_params": 2699778,
   "holdout": "artifacts/runs/test-train-real/holdout.json",
   "loss": "listwise cross-entropy over [K + 1] logits (unknown last)",
   "metrics": {
     "seen": {
       "abstain_rate": 0.0,
-      "accuracy": 0.4375,
+      "accuracy": 0.515625,
       "accuracy_ci95": [
-        0.354623,
-        0.524019
+        0.429862,
+        0.600477
       ],
-      "accuracy_options_only": 0.4375,
+      "accuracy_options_only": 0.515625,
       "accuracy_options_only_ci95": [
-        0.354623,
-        0.524019
+        0.429862,
+        0.600477
       ],
       "beats_chance": true,
-      "brier": 0.695552,
+      "brier": 0.692665,
       "chance": 0.248106,
       "chance_options_only": 0.348996,
-      "ece": 0.225061,
+      "ece": 0.189523,
       "mean_k": 3.7812,
       "n": 128,
-      "nll": 1.329307,
+      "nll": 1.32308,
       "per_dataset": {
         "banking77": {
           "accuracy": 1.0,
@@ -162,8 +205,8 @@
           "n": 32
         },
         "boolq": {
-          "accuracy": 0.53125,
-          "accuracy_options_only": 0.53125,
+          "accuracy": 0.84375,
+          "accuracy_options_only": 0.84375,
           "n": 32
         },
         "civil-comments": {
@@ -177,7 +220,9 @@
           "n": 32
         }
       },
-      "ranking_beats_chance": true
+      "ranking_beats_chance": true,
+      "role": "diagnostic",
+      "why_diagnostic": "n=128, mean K=3.7812 \u2014 the training regime's cardinality, not the label space. The primary metric is full-cardinality accuracy (`eval.scoreboard`); this number may not head a report"
     },
     "unseen": {
       "abstain_rate": 0.0,
@@ -192,13 +237,13 @@
         0.625673
       ],
       "beats_chance": true,
-      "brier": 0.806455,
+      "brier": 0.806745,
       "chance": 0.160687,
       "chance_options_only": 0.194808,
-      "ece": 0.321149,
+      "ece": 0.320984,
       "mean_k": 5.6389,
       "n": 72,
-      "nll": 1.764052,
+      "nll": 1.764934,
       "per_dataset": {
         "banking77": {
           "accuracy": 0.75,
@@ -216,17 +261,19 @@
           "n": 10
         }
       },
-      "ranking_beats_chance": true
+      "ranking_beats_chance": true,
+      "role": "diagnostic",
+      "why_diagnostic": "n=72, mean K=5.6389 \u2014 the training regime's cardinality, not the label space. The primary metric is full-cardinality accuracy (`eval.scoreboard`); this number may not head a report"
     }
   },
-  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n256-0c186773b96f",
+  "model_version": "jev-dec-ettin-68m-d256l2h8-s1789-n256-a8147fb9cb11",
   "run_id": "test-train-real",
   "runtime_cache_key": "jev_runtime::CacheKey(model_version, state_hash, tokenizer_hash)",
   "samples_seen": 256,
   "seed": 1789,
   "task": "T-train-real",
   "tokenizer_hash": "9fd55248d51d33976b324fc11592e28071da7d41e0e9401dfb7082e30574b7b1",
-  "tokens_seen": 23012,
+  "tokens_seen": 23200,
   "weights_file": "model.safetensors",
-  "weights_sha256": "0c186773b96f3b822412a6a9fbc07dbe78e49ba77e4e1bbc34be20b089410f46"
+  "weights_sha256": "a8147fb9cb11458599bf538292747cfff159f97f5a99ee7e6a72d49b2f28fe9a"
 }

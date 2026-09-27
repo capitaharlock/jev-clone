@@ -1,20 +1,9 @@
 ---
 id: tester
-name: "Tester"
-emoji: "🧪"
-color: "#14B8A6"
-kind: profile
-required: false
-agent_type: testing
+title: "Tester"
 model: opus
 effort: default
-pinned_order: 45
-owns: "Verification against a running system: the project's W10 recipe — browser flows, API probes, DB assertions."
-delegates_to: []
-never: "Change product code to make a check pass — report `tests: red` and say what failed."
-refs:
-  - .meshkore/workflows/INDEX.md
-credentials_hint: ".meshkore/credentials/"
+context: []
 created: 2026-09-14
 updated: 2026-09-14
 ---

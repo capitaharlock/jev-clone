@@ -1,26 +1,11 @@
 ---
 id: roadmap-orchestrator
-name: "Orchestrator"
-emoji: "🎼"
-color: "#3B82F6"
-kind: singleton
-required: true
-agent_type: roadmap-architect
+title: "Orchestrator"
 client: claude-code
 provider: anthropic
 model: claude-opus-5
 effort: default
-pinned_order: 1
-owns: "Executes the roadmap queue: dispatches one worker per task and applies each verdict."
-delegates_to:
-  - developer
-  - deployer
-  - tester
-never: "Write product code itself, or start a second initiative while one is in flight."
-refs:
-  - .meshkore/roadmap/initiatives/
-  - .meshkore/workflows/INDEX.md
-credentials_hint: ".meshkore/credentials/"
+context: []
 created: 2026-07-03
 updated: 2026-09-21
 ---

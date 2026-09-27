@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "marked_by": "T-release-gate",
+  "marked_utc": "2026-09-24T13:54:01Z",
+  "gate": "T-train-real",
+  "rules": ".meshkore/docs/release-criteria.md \u00a75 (C1/C2/C3) + R2 (C4), .meshkore/docs/fase-2-espacio-completo.md \u00a77",
+  "criteria_sha": "d9e6489531f931c81349149b8b24da8e282a0cd2570b5003f39ed4bcbec6493f",
+  "verdict": "INVALID \u2014 published against a coherence rule",
+  "kept": "this artifact is MARKED, not deleted: a bad published number is part of the record",
+  "green_claimed_by": [],
+  "errors": [
+    {
+      "rule": "C4",
+      "severity": "error",
+      "why": "accuracy published without chance, cardinality and a 95 % interval beside it: rule R2 \u2014 an accuracy with no chance rate is a number, not a result",
+      "n_offending": 4,
+      "offending": [
+        {
+          "file": "gate.json",
+          "at": "/checks/unseen_beats_chance",
+          "accuracy": 0.093085,
+          "missing": [
+            "cardinality"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/checks/unseen_beats_chance/per_dataset/banking77",
+          "accuracy": 0.183594,
+          "missing": [
+            "cardinality"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/checks/unseen_beats_chance/per_dataset/huffpost",
+          "accuracy": 0.078947,
+          "missing": [
+            "cardinality"
+          ],
+          "citation": false
+        },
+        {
+          "file": "gate.json",
+          "at": "/checks/unseen_beats_chance/per_dataset/massive",
+          "accuracy": 0.089193,
+          "missing": [
+            "cardinality"
+          ],
+          "citation": false
+        }
+      ],
+      "exempt": "a cited third-party number (`citation: true`, or `who` + `source`), which carries its own protocol"
+    }
+  ]
+}

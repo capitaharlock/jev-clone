@@ -1,22 +1,9 @@
 ---
 id: deployer
-name: "Deployer"
-emoji: "🚀"
-color: "#EF4444"
-kind: profile
-required: false
-agent_type: deploy
+title: "Deployer"
 model: opus
 effort: default
-pinned_order: 40
-owns: "Release operations: deploying webapp/cockpit/api, publishing the standard, daemon releases (W1/W2/W9)."
-delegates_to:
-  - tester
-never: "Author features or fixes (→ the developers), or deploy work that is uncommitted or unverified."
-refs:
-  - .meshkore/workflows/W2-deploy-project.md
-  - .meshkore/workflows/W4-daemon-upgrade.md
-credentials_hint: ".meshkore/credentials/"
+context: []
 created: 2026-07-03
 updated: 2026-07-03
 ---

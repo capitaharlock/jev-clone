@@ -1,26 +1,12 @@
 ---
 id: developer-copy
-name: "Developer (duplicate)"
-emoji: "💻"
-color: "#10B981"
-kind: profile
-required: false
-agent_type: custom
+title: "Developer (duplicate)"
 client: claude-code
 provider: anthropic
 model: claude-opus-5
 effort: default
-pinned_order: 11
+context: []
 exposure: internal
-owns: "Any coding task not tied to one module: features, fixes, refactors, and the tests that cover them."
-delegates_to:
-  - tester
-  - deployer
-never: "Deploy, release, or publish (→ deployer) — even when it knows the commands."
-refs:
-  - .meshkore/context/stack.md
-  - .meshkore/context/architecture.md
-credentials_hint: ".meshkore/credentials/"
 created: 2026-09-21
 updated: 2026-09-21
 ---
