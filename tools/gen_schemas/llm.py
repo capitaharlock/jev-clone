@@ -21,7 +21,7 @@ from .domains import Domain
 ENDPOINT_ENV = "JEV_GEN_ENDPOINT"
 MODEL_ENV = "JEV_GEN_MODEL"
 KEY_ENV = "JEV_GEN_API_KEY"
-DEFAULT_MODEL = "qwen3.6:27b-mlx"
+DEFAULT_MODEL = "qwen3.8:27b-mlx"
 
 
 def endpoint() -> str:

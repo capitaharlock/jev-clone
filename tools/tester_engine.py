@@ -34,7 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SESS_DIR = ROOT / "artifacts" / "tester" / "sessions"
 MINE_DIR = ROOT / "artifacts" / "tester" / "mined"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.environ.get("TESTER_JUDGE_MODEL", "qwen3.6:27b-mlx")
+OLLAMA_MODEL = os.environ.get("TESTER_JUDGE_MODEL", "qwen3.8:27b-mlx")
 
 
 def load_pack(run: str, task: str):

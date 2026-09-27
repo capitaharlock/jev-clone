@@ -1,7 +1,7 @@
 """Qwen converter: enrich prefetched training sets nonstop (#T-prefetch).
 
 Watches `artifacts/data-prefetch/*.jsonl` (universal schema rows + P1 raw
-dumps) and uses the local Qwen (`qwen3.6:27b-mlx` via ollama,
+dumps) and uses the local Qwen (`qwen3.8:27b-mlx` via ollama,
 http://localhost:11434) to produce one augmented variant per row:
 paraphrase + quality flags, appended to `artifacts/data-qwen/<id>.aug.jsonl`.
 
@@ -23,7 +23,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IN_DIR = os.path.join(BASE, "artifacts", "data-prefetch")
 OUT_DIR = os.path.join(BASE, "artifacts", "data-qwen")
 OFFSETS = os.path.join(OUT_DIR, "_offsets.json")
-MODEL = os.environ.get("QWEN_MODEL", "qwen3.6:27b-mlx")
+MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 POLL_SECS = int(os.environ.get("QWEN_POLL_SECS", "30"))
 

@@ -4,7 +4,7 @@
 as the denominator — not paraphrases of existing rows (`data.qwen_convert`
 grows text, not spaces) and not pseudoword mini-taxonomies (`data.episodic`
 already covers that corner). This module asks the local Qwen
-(`qwen3.6:27b-mlx` via ollama, job `ollama-serve`) for ONE taxonomy per
+(`qwen3.8:27b-mlx` via ollama, job `ollama-serve`; was qwen3.6 until 2026-09-27) for ONE taxonomy per
 call — a domain, K sibling labels with definitions, and the plausible
 confusions between them — and then populates rows with a deterministic
 template. One LLM call per SPACE, not per row: ~200 output tokens buy
@@ -77,7 +77,7 @@ REGISTRY_PATH = os.path.join(OUT_DIR, "registry.json")
 NEIGHBORHOOD_PATH = os.path.join(OUT_DIR, "neighborhood.json")
 MIX_PATH = os.path.join(OUT_DIR, "factory-mix.json")
 
-MODEL = os.environ.get("QWEN_MODEL", "qwen3.6:27b-mlx")
+MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
 #: spaces the task asks for; rows are template-cheap, LLM calls are not.
@@ -369,7 +369,7 @@ def card_of(space_id: str, space: dict) -> DatasetCard:
     sha = space_sha(space)
     return DatasetCard(
         id=f"{SOURCE_ID}/{space_id}",
-        source_original="local Qwen qwen3.6:27b-mlx taxonomy (ollama job)",
+        source_original=f"local Qwen {MODEL} taxonomy (ollama job)",
         mirror="none — generated, no upstream",
         license="CC0-1.0",
         usage="train",
