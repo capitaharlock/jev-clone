@@ -1,0 +1,94 @@
+{
+  "task": "T-ingest-laya",
+  "converter_version": "typed-decisions-v1",
+  "origin": "laya-typed-decisions",
+  "dataset": "LocalLLaMA/typed-decisions",
+  "config": "all",
+  "revision": "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8",
+  "license": "Apache-2.0",
+  "split": "train",
+  "eval_only": false,
+  "seed": 20260927,
+  "command": "PYTHONPATH=. .venv-train/bin/python -m data.convert_typed_decisions convert",
+  "source": {
+    "parquet": "all/train-00000-of-00001.parquet",
+    "parquet_sha256": "46a58d63edfd86e23229c78afe8b72307bb4ca9fb0e8df180cabb3c67ec9dcd5",
+    "parquet_bytes": 598824,
+    "raw": "artifacts/data-raw/typed-decisions/train.jsonl",
+    "raw_sha256": "071a696f1419b16f1ce3e67cd700224bd5c19cfc4d7c6d1903eef89d6ff5cb87",
+    "rows": 1200
+  },
+  "contract": {
+    "contract_task": "T-episode-contract",
+    "schema_version": "episode-v1",
+    "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+    "n_episodes": 6000,
+    "seed": 20260927,
+    "generator_version": "typed-decisions-v1",
+    "splits": {
+      "train": 6000
+    }
+  },
+  "rules": {
+    "question_render": {
+      "choice": "verbatim",
+      "score": "verbatim",
+      "noul": "statement + 'Is this statement true?'"
+    },
+    "candidate_text": {
+      "choice": "criteria[label] description",
+      "score": "'<level> — <description>'",
+      "noul": "criteria description, or NOUL_DEFAULT_CRITERIA when absent"
+    },
+    "noul_default_criteria": {
+      "false": "The statement is false.",
+      "true": "The statement is true."
+    },
+    "evidence": "heuristic:factor-overlap",
+    "family_of": {
+      "choice": "description_classification",
+      "score": "description_classification",
+      "noul": "textual_inference_negation"
+    }
+  },
+  "n_cases": 1200,
+  "n_decisions": 6000,
+  "n_episodes": 6000,
+  "n_rejects": 0,
+  "per_workflow_type": {
+    "agent_trace_observability": {
+      "choice": 600,
+      "noul": 300,
+      "score": 600
+    },
+    "customer_service": {
+      "choice": 600,
+      "noul": 300,
+      "score": 600
+    },
+    "invoice_processing": {
+      "choice": 300,
+      "noul": 600,
+      "score": 600
+    },
+    "security_incidents": {
+      "choice": 300,
+      "noul": 600,
+      "score": 600
+    }
+  },
+  "rejects_by_reason": {},
+  "files": {
+    "episodes.jsonl": {
+      "rows": 6000,
+      "sha256": "d6dcafc4d06c6b2d6240eb86c705c22ae9cf30430e8ce5ff6898ac529de8e902"
+    },
+    "rejects.jsonl": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "elapsed_s": 3.1,
+  "built_utc": "2026-09-27T11:51:44Z",
+  "status": "published"
+}

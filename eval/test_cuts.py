@@ -149,3 +149,64 @@ class TestLedger(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestExternalCut(unittest.TestCase):
+    """`external_cut` returns an episode-v1 cut BY SHA (#T-ingest-laya)."""
+
+    def _publish(self, tmp: Path, split: str = "test", rows: int = 3,
+                 eval_only: bool = True) -> Path:
+        base = tmp / "typed-decisions" / split
+        base.mkdir(parents=True)
+        lines = "".join(json.dumps({"id": f"td-x-{i}", "state": "s",
+                                    "eval_only": eval_only}) + "\n"
+                        for i in range(rows))
+        (base / "episodes.jsonl").write_text(lines, encoding="utf-8")
+        from eval import splits as S
+        (base / "manifest.json").write_text(json.dumps({
+            "dataset": "LocalLLaMA/typed-decisions", "revision": "abc",
+            "seed": 1, "eval_only": eval_only,
+            "files": {"episodes.jsonl": {
+                "rows": rows,
+                "sha256": S.sha256_file(base / "episodes.jsonl")}}}))
+        return base
+
+    def test_the_cut_comes_back_with_its_sha_and_reserved_flag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = self._publish(Path(tmp))
+            cut = K.external_cut("typed-decisions", "test", external_dir=Path(tmp))
+            self.assertEqual(cut["rows"], 3)
+            self.assertTrue(cut["reserved"])
+            self.assertEqual(cut["revision"], "abc")
+            self.assertEqual(len(cut["sha256"]), 64)
+            again = K.external_cut("typed-decisions", "test", sha256=cut["sha256"],
+                                   external_dir=Path(tmp))
+            self.assertEqual(again["episodes"], cut["episodes"])
+            self.assertTrue((base / "episodes.jsonl").exists())
+
+    def test_a_moved_file_or_another_sha_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = self._publish(Path(tmp))
+            with self.assertRaises(ValueError):
+                K.external_cut("typed-decisions", "test", sha256="0" * 64,
+                               external_dir=Path(tmp))
+            with (base / "episodes.jsonl").open("a") as fh:
+                fh.write(json.dumps({"id": "td-x-9"}) + "\n")
+            with self.assertRaises(ValueError):
+                K.external_cut("typed-decisions", "test", external_dir=Path(tmp))
+
+    def test_a_cut_that_was_never_converted_says_how_to_get_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(FileNotFoundError) as cm:
+                K.external_cut("typed-decisions", "test", external_dir=Path(tmp))
+            self.assertIn("convert", str(cm.exception))
+
+    @unittest.skipUnless((K.EXTERNAL_DIR / "typed-decisions" / "test"
+                          / "manifest.json").exists(),
+                         "typed-decisions not converted on this machine")
+    def test_the_published_test_cut_is_reserved_and_verifies(self):
+        cut = K.external_cut("typed-decisions", "test")
+        self.assertTrue(cut["reserved"])
+        self.assertEqual(cut["rows"], cut["rows"])
+        self.assertEqual(cut["rows"], len(cut["episodes"]))
+        self.assertTrue(all(ep["eval_only"] for ep in cut["episodes"]))

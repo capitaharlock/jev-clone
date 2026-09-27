@@ -608,7 +608,7 @@ ejecución, reglas, bucle diario, comandos). Resumen de lo que cambia:
 | Trainer `ce_finetune.py` con `eval none` = 0,6225 | `#T-ce-finetune` | **SIN MEDIR** |
 | Smoke ≈ 20 min: dev > nli-nograd con IC | `#T-ce-finetune` | **SIN MEDIR** |
 | 5 000 → decisión sobre 20 000 | `#T-ce-finetune` | **SIN MEDIR** |
-| typed-decisions convertido, test eval-only | `#T-ingest-laya` | **SIN MEDIR** |
+| typed-decisions convertido, test eval-only | `#T-ingest-laya` | **medido** (2026-09-27): 6 000 + 2 000 episodios, 0 rechazos, gate PASS |
 | ≥ 8 fuentes públicas, volumen consumible | `#T-ingest-public` | **SIN MEDIR** |
 | `history.jsonl` con ≥ 3 filas y dashboard | `#T-loop-scoreboard` | **SIN MEDIR** |
 | 7 noches con regla de promoción | `#T-loop-nightly` | **SIN MEDIR** |
@@ -630,3 +630,12 @@ ajustar sobre el corte de desarrollo de BANKING77 a K=77; GO si el límite infer
 | Coste de una pasada K=77 del scorer en CPU | 63,0 pares/s sobre 308 pares → ≈ 63 min el test (237 160 pares), ≈ 20 min el corte dev | **medido (ritmo), estimado (total)** |
 | Ablación 192 vs 512 en el checkpoint de Laya; mmBERT; reproducción del 0,425 | — | **SIN MEDIR** → `#T-laya-baseline` |
 
+
+## #data-flywheel — typed-decisions convertido (2026-09-27)
+
+| Requisito | Quién lo entrega | Estado |
+|---|---|---|
+| typed-decisions train/test como `episode-v1` con manifest, revisión y sha | `#T-ingest-laya` | **medido**: 6 000 + 2 000 episodios, 0 rechazos, `artifacts/gates/T-ingest-laya/gate.json` PASS |
+| Test `eval-only` con barrera que impide que entre en una mezcla | `#T-ingest-laya` | **medido**: `assert_trainable` + `NEVER_TRAINABLE` + `firewall.BENCHMARKS`, con tests |
+| `eval/` lee el test por sha para compararlo con Jev 0,727 / Laya 0,766 | `#T-ingest-laya` | **hecho**: `eval.cuts.external_cut("typed-decisions", "test")`; la comparación la publica `#T-loop-scoreboard` |
+| Accuracy nuestra sobre typed-decisions test | `#T-loop-scoreboard` | **SIN MEDIR** |

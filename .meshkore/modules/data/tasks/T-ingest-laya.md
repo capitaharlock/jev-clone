@@ -1,9 +1,9 @@
 ---
 id: T-ingest-laya
 title: typed-decisions de Laya a episode-v1 — el corte donde Jev publica 0,727
-status: next
+status: done
 priority: high
-owner: unassigned
+owner: developer
 category: data
 initiative: data-flywheel
 depends_on:
@@ -89,3 +89,87 @@ siempre**; el train es volumen para el trainer.
 - No copiar código de Laya al repo. Lee `TMP/laya/laya/common.py::build_sequence`
   para entender su formato si te ayuda; escribe el nuestro.
 - No entrenar, no evaluar: esta task es sólo datos. CPU.
+
+## Resolution (2026-09-27, developer)
+
+**Fuente fijada.** `LocalLLaMA/typed-decisions`, config `all`, commit
+`f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8`, licencia Apache-2.0 declarada en la
+card. Parquet re-hasheado al bajar contra el LFS del Hub (train
+`46a58d63…`, test `4f294f21…`); una revisión o un sha distintos hacen que
+`fetch` se niegue a decodificar. Fila en `source-register.md`.
+
+**Comandos (los del manifest):**
+
+```
+PYTHONPATH=. <venv-con-pyarrow>/bin/python -m data.convert_typed_decisions fetch
+PYTHONPATH=. .venv-train/bin/python -m data.convert_typed_decisions convert
+PYTHONPATH=. .venv-train/bin/python -m data.convert_typed_decisions gate
+```
+
+`fetch` necesita `pyarrow` (parquet), que el `.venv-train` no lleva porque
+está bloqueado por hash (`requirements-train.txt`); se corrió desde un venv
+efímero con `pyarrow huggingface_hub` y sólo escribe el raw jsonl
+(`artifacts/data-raw/typed-decisions/`, gitignorado, con su manifest y sha).
+`convert` y `gate` son stdlib y corren en `.venv-train`.
+
+**Conteos medidos (`artifacts/gates/T-ingest-laya/gate.json`, verdict PASS,
+10/10 comprobaciones):**
+
+| split | casos | decisiones | episodios | rechazos | choice | score | noul | sha256 de `episodes.jsonl` |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| train | 1 200 | 6 000 | 6 000 | 0 | 1 800 | 2 400 | 1 800 | `d6dcafc4…de8e902` |
+| test | 400 | 2 000 | 2 000 | 0 | 600 | 800 | 600 | `a294de92…f26843bc` |
+
+Por flujo (train; test es exactamente un tercio en cada celda):
+agent_trace_observability choice 600 / score 600 / noul 300;
+customer_service 600 / 600 / 300; invoice_processing 300 / 600 / 600;
+security_incidents 300 / 600 / 600. Ningún `case_id`, ningún estado y ningún
+id de episodio compartido entre train y test; los 2 000 de test llevan
+`eval_only: true`; `teacher_soft` presente en los 8 000 y con exactamente los
+ids de sus candidatos. Sin cifra de accuracy: aquí no se mide nada.
+
+**Decisiones del adaptador que la task no podía prever (todas en código,
+ninguna a mano, todas registradas en el manifest bajo `rules`):**
+
+- `family` es una enumeración cerrada en `episode-v1`, así que
+  `external/typed-decisions/<flujo>/<tipo>` habría rechazado los 8 000. Va en
+  `subfamily`; `family` mapea `choice`/`score` → `description_classification`
+  (cada opción lleva su definición) y `noul` → `textual_inference_negation`.
+- Las instrucciones `noul` son afirmaciones («This trace requires human
+  review.») y el contrato exige pregunta: se publican como `<afirmación> Is
+  this statement true?` (`question_render` por episodio). `choice` y `score`
+  van verbatim (las 2 400 + 3 200 terminan en `?`).
+- 800 decisiones `noul` (invoice `duplicate`, security `credential_compromise`)
+  vienen sin `criteria`: reciben las dos descripciones de
+  `NOUL_DEFAULT_CRITERIA`.
+- El dataset no anota evidencia y el contrato la exige literal: se toma la
+  línea del estado con más solape con los `factors` del caso (desempate por
+  la descripción gold), marcada `evidence_origin: heuristic:factor-overlap`.
+  Es una evidencia débil (en invoices gana `payment.terms`, en agent traces
+  `constraints`/`task`) y queda dicho: sirve al contrato, no a un
+  verificador. Un caso cuyos factores no tocan ninguna línea sería rechazo;
+  no hubo ninguno.
+
+**Barrera del corte test (tres capas, con test cada una):**
+`data.convert_typed_decisions.assert_trainable` rechaza rutas
+`…/typed-decisions/test`, manifests con `eval_only: true` u
+`origin`+`split`, y los propios episodios; `data.mix.NEVER_TRAINABLE` y
+`data.firewall.BENCHMARKS` (`typed-decisions-test`, revisión fijada) lo
+conocen, así que `check_job_allowed("typed-decisions-test")` lanza.
+`eval.cuts.external_cut("typed-decisions", "test")` devuelve el corte por
+sha (manifest re-hasheado; sha esperado opcional; `reserved: true`) para
+`#T-loop-scoreboard`.
+
+**Tests.** `data/`: 510 passed, 6 skipped (33 nuevos en
+`data/test_convert_typed_decisions.py`; `test_firewall` cuenta `BENCHMARKS`
+dinámicamente y sigue en verde con la card nueva). `eval/`: 478 passed, 4 failed — los cuatro
+ajenos: `test_release_gate…published` (rojo preexistente), dos de
+`test_gate_rules::TestPilotCensusOnDisk` por `artifacts/gates/T-ce-finetune/`
+que otro agente está escribiendo ahora mismo, y
+`test_splits::test_repo_has_no_index_modulo_split` por `RecursionError` en
+`.venv-laya/…/sympy/…/resolvent_lookup.py` (un venv ajeno que el escáner no
+salta). `ruff check` limpio en los seis ficheros tocados.
+
+**Git.** `episodes.jsonl` (14 MB + 4,5 MB) no se versiona
+(`artifacts/episodes-external/.gitignore`): manifest + rejects + gate sí, y
+el comando y el sha del manifest lo reconstruyen y verifican.

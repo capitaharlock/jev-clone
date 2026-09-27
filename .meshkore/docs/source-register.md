@@ -51,6 +51,17 @@ run. Esto no sustituye una revisión legal.
 | ReClor | [`sxiong/ReClor`](https://huggingface.co/datasets/sxiong/ReClor) | MIT declarada en la card | Train P1 tras reservar un holdout y revisar procedencia |
 | ANLI | [`facebook/anli`](https://huggingface.co/datasets/facebook/anli) | No comercial según el plan maestro; verificar por revisión | Research/eval-only; no pesos comerciales |
 
+## Referencia externa de decisión tipada (#T-ingest-laya)
+
+| Dataset | Fuente | Revisión | Licencia declarada | Transformación | Uso |
+|---|---|---|---|---|---|
+| typed-decisions | [`LocalLLaMA/typed-decisions`](https://huggingface.co/datasets/LocalLLaMA/typed-decisions), config `all` (parquet `all/{train,test}-00000-of-00001.parquet`) | commit `f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8` · sha256 train `46a58d63…c8ccdd5` · test `4f294f21…31b647c` (LFS del Hub, re-hasheado al bajar) | Apache-2.0 (card, `license: apache-2.0`); sintético, etiquetado por un teacher ~4B, sólo inglés | `data/convert_typed_decisions.py`: una decisión = un episodio `episode-v1`; estado JSON renderizado línea a línea; candidatos con id opaco barajado por semilla y texto = descripción del criterio; `variant_group` = las 5 preguntas del mismo estado; `gold.probabilities` conservado en `teacher_soft` | **train → train** (1 200 casos, 6 000 episodios). **test → `eval-only` para siempre** (400 casos, 2 000 episodios): es el corte donde Jev 1.13.0 publica 0,727 y `laya-typed-decisions` 0,766. Cada episodio de test lleva `eval_only: true`; `data.convert_typed_decisions.assert_trainable` rechaza cualquier mezcla que lo nombre por ruta, manifest o episodio; `data.mix.NEVER_TRAINABLE` y `data.firewall.BENCHMARKS` lo registran como `typed-decisions-test`. Se lee por sha con `eval.cuts.external_cut("typed-decisions", "test")` |
+
+Los bytes viven en `artifacts/episodes-external/typed-decisions/{train,test}/`
+(manifest, rejects y gate versionados; `episodes.jsonl` se reconstruye con el
+comando del manifest y se verifica por sha256). Gate:
+`artifacts/gates/T-ingest-laya/gate.json`.
+
 ## Material de texto de etiqueta (no es un dataset de entreno)
 
 | Material | Fuente | Licencia declarada | Decisión |

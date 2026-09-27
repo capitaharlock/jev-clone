@@ -294,6 +294,12 @@ NEVER_TRAINABLE = {
     "synth-loop": "quarantined (finding C): 190 skeletons, split by i % 10",
     "logiqa": "reasoning benchmark, eval-only (finding G)",
     "reclor": "reasoning benchmark, eval-only (finding G)",
+    # the cut Jev 0,727 / Laya 0,766 are quoted on (#T-ingest-laya): the
+    # TRAIN split is episode-v1 volume, the TEST split never trains —
+    # `data.convert_typed_decisions.assert_trainable` refuses it by path,
+    # by manifest and by episode.
+    "typed-decisions-test": "external reference cut, eval-only forever "
+                            "(#T-ingest-laya)",
 }
 
 # -- `decision-mix-clean-1m`: ONE recipe, two consumers (#T-mix-1m) -------

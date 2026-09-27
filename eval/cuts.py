@@ -225,6 +225,68 @@ def samples(cut: Cut, limit: int | None = None, root: str = PREFETCH_DIR,
                           keep=keep)
 
 
+# ------------------------------------------------- external episode cuts
+
+#: episode-v1 corpora converted from public datasets (#T-ingest-laya and
+#: successors): `artifacts/episodes-external/<name>/<split>/`
+EXTERNAL_DIR = ROOT / "artifacts" / "episodes-external"
+
+
+def external_cut(name: str = "typed-decisions", split: str = "test",
+                 sha256: str | None = None,
+                 external_dir: Path | None = None) -> dict:
+    """An external episode-v1 cut, returned BY SHA — the reference cut the
+    scoreboard compares against published numbers (typed-decisions test:
+    Jev 1.13.0 0,727, laya-typed-decisions 0,766, both quoted in
+    `TMP/laya/BENCHMARKS.md`, neither measured here).
+
+    The episodes file is re-hashed and checked against the manifest the
+    converter wrote; a caller that knows which rows it expects passes
+    `sha256` and a different file raises instead of scoring. The
+    manifest's `eval_only` travels out as `reserved`: a reserved cut is
+    read to be reported on, never to choose anything.
+    """
+    base = (external_dir or EXTERNAL_DIR) / name / split
+    manifest_path = base / "manifest.json"
+    if not manifest_path.exists():
+        raise FileNotFoundError(
+            f"{manifest_path.relative_to(ROOT) if manifest_path.is_relative_to(ROOT) else manifest_path}: "
+            f"not converted; run `python -m data.convert_{name.replace('-', '_')} "
+            "fetch` then `convert`")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    recorded = manifest["files"]["episodes.jsonl"]["sha256"]
+    path = base / "episodes.jsonl"
+    digest = S.sha256_file(path)
+    if digest != recorded:
+        raise ValueError(
+            f"{name}/{split}: episodes.jsonl hashes to {digest}, its manifest "
+            f"recorded {recorded}. The cut moved under its seal; do not score "
+            "against it")
+    if sha256 is not None and sha256 != digest:
+        raise ValueError(
+            f"{name}/{split}: caller expected sha256 {sha256}, the cut on disk "
+            f"is {digest} — not the rows the comparison was written for")
+    episodes = [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines()
+                if ln.strip()]
+    if len(episodes) != manifest["files"]["episodes.jsonl"]["rows"]:
+        raise ValueError(
+            f"{name}/{split}: {len(episodes)} episodes read, manifest says "
+            f"{manifest['files']['episodes.jsonl']['rows']}")
+    return {
+        "cut": f"{name}-{split}",
+        "dataset": manifest.get("dataset"),
+        "revision": manifest.get("revision"),
+        "split": split,
+        "reserved": bool(manifest.get("eval_only")),
+        "seed": manifest.get("seed"),
+        "manifest": str(manifest_path.relative_to(ROOT))
+        if manifest_path.is_relative_to(ROOT) else str(manifest_path),
+        "sha256": digest,
+        "rows": len(episodes),
+        "episodes": episodes,
+    }
+
+
 # ------------------------------------------------------------- the ledger
 
 def ledger() -> dict:

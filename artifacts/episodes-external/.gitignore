@@ -1,0 +1,4 @@
+# Los episodios convertidos se reconstruyen con el comando y la revisión que
+# cada manifest.json registra (sha256 comprobado por eval.cuts.external_cut);
+# git lleva manifest + rejects + gate, no los ~18 MB de filas.
+*/*/episodes.jsonl

@@ -64,6 +64,11 @@ BENCHMARKS = [
     # Not a benchmark — registered so a silent re-add to any train JOBS list
     # fails loudly at the barrier instead of re-contaminating the dashboard.
     BenchmarkCard("synth-loop", "rev-quarantined-20260921", ""),
+    # typed-decisions TEST split (#T-ingest-laya): the cut where Jev 1.13.0
+    # publishes 0,727 and Laya 0,766. Pinned at the dataset's commit sha;
+    # the train split is trainable, this one never is.
+    BenchmarkCard("typed-decisions-test",
+                  "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8", ""),
 ]
 
 

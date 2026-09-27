@@ -1,0 +1,182 @@
+{
+  "task": "T-ingest-laya",
+  "status": "measured",
+  "measured_utc": "2026-09-27T11:51:45Z",
+  "dataset": "LocalLLaMA/typed-decisions",
+  "config": "all",
+  "revision": "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8",
+  "license": "Apache-2.0",
+  "seed": 20260927,
+  "converter_version": "typed-decisions-v1",
+  "schema_version": "episode-v1",
+  "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+  "eval_only": [
+    "test"
+  ],
+  "reference_cut": {
+    "split": "test",
+    "compare_against": "Jev 1.13.0 and laya-typed-decisions as published in TMP/laya/BENCHMARKS.md §typed-decisions (not measured here)",
+    "reader": "eval.cuts.external_cut('typed-decisions', 'test')"
+  },
+  "accuracy": null,
+  "note": "no accuracy is measured in this task: it is data only",
+  "command": "PYTHONPATH=. .venv-train/bin/python -m data.convert_typed_decisions gate",
+  "splits": {
+    "train": {
+      "manifest": "artifacts/episodes-external/typed-decisions/train/manifest.json",
+      "revision": "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8",
+      "episodes_sha256": "d6dcafc4d06c6b2d6240eb86c705c22ae9cf30430e8ce5ff6898ac529de8e902",
+      "eval_only": false,
+      "n_cases": 1200,
+      "n_decisions": 6000,
+      "n_episodes": 6000,
+      "n_rejects": 0,
+      "n_valid": 6000,
+      "duplicate_ids": [],
+      "n_groups": 1200,
+      "per_workflow_type": {
+        "agent_trace_observability": {
+          "choice": 600,
+          "noul": 300,
+          "score": 600
+        },
+        "customer_service": {
+          "choice": 600,
+          "noul": 300,
+          "score": 600
+        },
+        "invoice_processing": {
+          "choice": 300,
+          "noul": 600,
+          "score": 600
+        },
+        "security_incidents": {
+          "choice": 300,
+          "noul": 600,
+          "score": 600
+        }
+      },
+      "per_type": {
+        "choice": 1800,
+        "noul": 1800,
+        "score": 2400
+      },
+      "rejects_by_reason": {}
+    },
+    "test": {
+      "manifest": "artifacts/episodes-external/typed-decisions/test/manifest.json",
+      "revision": "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8",
+      "episodes_sha256": "a294de92e15e045f076049d0492a901c7e7553698b50a7e3c661bbd5f26843bc",
+      "eval_only": true,
+      "n_cases": 400,
+      "n_decisions": 2000,
+      "n_episodes": 2000,
+      "n_rejects": 0,
+      "n_valid": 2000,
+      "duplicate_ids": [],
+      "n_groups": 400,
+      "per_workflow_type": {
+        "agent_trace_observability": {
+          "choice": 200,
+          "noul": 100,
+          "score": 200
+        },
+        "customer_service": {
+          "choice": 200,
+          "noul": 100,
+          "score": 200
+        },
+        "invoice_processing": {
+          "choice": 100,
+          "noul": 200,
+          "score": 200
+        },
+        "security_incidents": {
+          "choice": 100,
+          "noul": 200,
+          "score": 200
+        }
+      },
+      "per_type": {
+        "choice": 600,
+        "noul": 600,
+        "score": 800
+      },
+      "rejects_by_reason": {}
+    }
+  },
+  "checks": [
+    {
+      "name": "all_published_episodes_validate",
+      "pass": true,
+      "detail": {
+        "train": "6000/6000",
+        "test": "2000/2000"
+      }
+    },
+    {
+      "name": "rejects_carry_reasons",
+      "pass": true,
+      "detail": {
+        "train": 0,
+        "test": 0
+      }
+    },
+    {
+      "name": "no_test_case_id_in_train",
+      "pass": true,
+      "detail": {
+        "shared_case_ids": 0
+      }
+    },
+    {
+      "name": "no_test_state_in_train",
+      "pass": true,
+      "detail": {
+        "shared_states": 0
+      }
+    },
+    {
+      "name": "no_episode_id_in_both",
+      "pass": true,
+      "detail": {
+        "shared_episode_ids": 0
+      }
+    },
+    {
+      "name": "test_episodes_marked_eval_only",
+      "pass": true,
+      "detail": {
+        "n_test": 2000
+      }
+    },
+    {
+      "name": "train_episodes_not_eval_only",
+      "pass": true,
+      "detail": {
+        "n_train": 6000
+      }
+    },
+    {
+      "name": "no_duplicate_ids",
+      "pass": true,
+      "detail": {
+        "train": 0,
+        "test": 0
+      }
+    },
+    {
+      "name": "revision_pinned",
+      "pass": true,
+      "detail": {
+        "revision": "f7a2487edd7a043a5441a5e9ccc7fe5ddbd9ebe8"
+      }
+    },
+    {
+      "name": "teacher_soft_kept",
+      "pass": true,
+      "detail": {}
+    }
+  ],
+  "verdict": "PASS"
+}
