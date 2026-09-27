@@ -51,6 +51,18 @@ verificado por `model/weights.py`):
 4. Gate por peldaño contra su control y contra el `current` del bucle, con
    la regla de promoción del manual §3.
 
-**Done when.** Al menos dos peldaños por encima del actual medidos (control y
-smoke), con tiempos y memoria, y registrados en `training.python.loop` como
-peldaños seleccionables.
+## Done when
+
+1. Los peldaños 2 y 3 están registrados en `model/weights.py` con revisión fija y
+   `sha256` verificado, y su fila está en `.meshkore/docs/source-register.md`.
+2. El **control sin ajustar** de cada peldaño está medido en dev y publicado
+   *antes* de entrenarlo (`ce_finetune eval --checkpoint none --weights <id>`),
+   con `format_fingerprint()` idéntico al del peldaño 1.
+3. Cada peldaño tiene un smoke de 5 000 decisiones con la misma mezcla que el
+   último ciclo promovido, y su gate escrito contra su propio control y contra el
+   `current` del bucle (regla de promoción del manual §3).
+4. `attribute_comparison` en el holdout del piloto (n=64) tiene su Δ pareado con
+   IC95 % para cada peldaño — la cifra que decide si el techo era de capacidad.
+   La predicción se escribe antes de entrenar, como en `#T-numeric-gen`.
+5. Segundos por 1 000 decisiones y memoria MPS anotados por peldaño, y la tabla
+   de tiempos de `docs/bucle-infinito.md` §2 actualizada con ellos.
