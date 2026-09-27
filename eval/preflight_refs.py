@@ -727,8 +727,41 @@ QWEN_PERM_SAMPLE = 24
 QWEN_PERM_SALT = "preflight-refs-qwen-perm-v1"
 
 
+def _perm_caveat(temperature: float | None) -> str:
+    """Qué acota este control, que depende de la temperatura del chooser.
+
+    A temperatura > 0 un cambio de elección es sensibilidad al orden O
+    ruido del muestreo, y contarlos juntos es una COTA SUPERIOR de la
+    inestabilidad de orden, no su descomposición. A temperatura 0 el
+    muestreo no interviene y el control mide lo que dice medir, con el
+    resto (kernels no bit-exactos) declarado.
+    """
+    if temperature is None:
+        return ("the chooser samples at its own default temperature "
+                f"({data_default_temperature()}), so a flip is order "
+                "sensitivity OR sampling noise and this control cannot "
+                "separate the two: it is the upper bound on order "
+                "stability, not a decomposition of it")
+    if temperature > 0:
+        return (f"the chooser samples at temperature {temperature}, so a "
+                "flip is order sensitivity OR sampling noise and this "
+                "control cannot separate the two: it is the upper bound "
+                "on order stability, not a decomposition of it")
+    return ("the chooser decodes greedily (temperature 0, the "
+            "verifier's), so sampling noise is out and a flip is order "
+            "sensitivity — with the floor that MLX kernels are not "
+            "bit-exact across runs")
+
+
+def data_default_temperature() -> float:
+    """La temperatura por defecto del chooser, leída de donde vive."""
+    from data.episode_gen import TEMPERATURE
+    return TEMPERATURE
+
+
 def qwen_permutation(episodes: list, picks: dict, choose=None,
-                     sample: int = QWEN_PERM_SAMPLE, log=None) -> dict:
+                     sample: int = QWEN_PERM_SAMPLE, log=None,
+                     temperature: float | None = None) -> dict:
     """El control `#T-option-text` para un chooser que no da distribución.
 
     Una elección estructurada publica un INDICADOR, así que «permutar los
@@ -781,10 +814,8 @@ def qwen_permutation(episodes: list, picks: dict, choose=None,
         "sample": f"{n} rows of {len(episodes)}, taken in "
                   f"sha256('{QWEN_PERM_SALT}' + row_id) order — fixed "
                   "before measuring, not chosen after seeing a flip",
-        "caveat": "the chooser samples at temperature 0.7, so a flip is "
-                  "order sensitivity OR sampling noise and this control "
-                  "cannot separate the two: it is the upper bound on "
-                  "order stability, not a decomposition of it",
+        "temperature": temperature,
+        "caveat": _perm_caveat(temperature),
         "source": f"{TASK} — measured in this run, same model, same "
                   "protocol, same rows",
         "pairs": rows[:8],
@@ -1075,16 +1106,22 @@ def dev_temperature(rows: list) -> dict:
 def report_for(reference: str, rows: list, *, episodes: list,
                model_version: str, permutation: dict,
                calibration: dict | None = None,
-               notes: list | None = None) -> dict:
-    """La suite, y nada que este módulo haya calculado por su cuenta."""
+               notes: list | None = None, task: str = TASK) -> dict:
+    """La suite, y nada que este módulo haya calculado por su cuenta.
+
+    `task` es un parámetro porque otra task puede medir UNA de estas
+    columnas con su propio profesor y firmarla a su nombre
+    (`#T-qwen38-ref`): el protocolo, las filas y los controles son los de
+    aquí, y la firma es la de quien mide.
+    """
     tracking = tracking_control(
         episodes, rows,
-        source=f"{TASK} on {CUT_NAME} {BD.battery_sha(episodes)[:12]}")
+        source=f"{task} on {CUT_NAME} {BD.battery_sha(episodes)[:12]}")
     doc = MS.report(
         rows,
         cut=cut_descriptor(episodes),
         model_version=model_version,
-        task=TASK,
+        task=task,
         calibration=calibration or dev_temperature(rows),
         permutation=permutation,
         tracking=tracking,

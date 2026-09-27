@@ -143,7 +143,8 @@ if __name__ == "__main__":
 # Ollama cuesta ~19 s fijos por petición contra ~3 s de cómputo en
 # qwen3.6:27b-mlx (medido 2026-09-27), así que el piloto sólo es viable
 # agrupando. Lo que NO puede cambiar al agrupar es qué se acepta.
-def _fake_ollama(messages, num_predict, timeout):
+def _fake_ollama(messages, num_predict, timeout,
+                 temperature=EG.TEMPERATURE):
     """Qwen de mentira, determinista: parafrasea copiando, elige el 1.er id."""
     prompt = messages[0]["content"]
     if "Rewrite EACH numbered fact-set" in prompt:

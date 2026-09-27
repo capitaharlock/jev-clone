@@ -672,8 +672,8 @@ por el bucle. `#daily-learning-loop` pasa a active.
 
 | Requisito | Quién lo entrega | Estado |
 |---|---|---|
-| Qwen 3.8 medido en dev contra el 3.6 (0,965) | `#T-qwen38-ref` | **SIN MEDIR** |
-| Generador por regla de atributos/prioridad + prueba de valor con 5 000 | `#T-numeric-gen` | **SIN MEDIR** |
+| Qwen 3.8 medido en dev contra el 3.6 (0,965) | `#T-qwen38-ref` | **MIDIENDO** (job `qwen38-ref`): `eval/qwen38_ref.py` + 14 tests, regla del gate pre-registrada (GO = la diferencia pareada no queda por debajo de 0), control de permutación a 0,7 y a 0 |
+| Generador por regla de atributos/prioridad + prueba de valor con 5 000 | `#T-numeric-gen` | **EN CURSO** en `developer-copy` (`rq-f80e6e`) |
 | Mezcla multi-fuente con tope de repetición y `consumed_ids` | `#T-loop-trainer` | **SIN MEDIR** |
 | Marcador con ciclo, escalón, brazo y delta contra el control original | `#T-loop-scoreboard` | **SIN MEDIR** |
 | Productor sin fin 24 h sin intervención | `#T-episode-scale` (`data.stream`) | **SIN MEDIR** |

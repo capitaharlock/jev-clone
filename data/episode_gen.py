@@ -62,6 +62,14 @@ GATE_PATH = os.path.join(ROOT, "artifacts", "gates", TASK, "gen.json")
 MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
+#: Temperatura del profesor. El generador MUESTREA (0,7) para que dos
+#: tandas no escriban el mismo episodio; el verificador DECIDE en greedy
+#: (0,0, `data.episode_verify`). Es un parámetro y no una constante
+#: enterrada porque el mismo profesor se mide a las dos temperaturas
+#: (#T-qwen38-ref): un control de permutación a 0,7 no puede separar la
+#: sensibilidad al orden del ruido del muestreo, y a 0 sí.
+TEMPERATURE = 0.7
+
 #: Labelgen markers that must NEVER appear in an episode (gate test 3).
 LABELGEN_MARKERS = ("Field report", "Cross-check against")
 
@@ -226,12 +234,14 @@ _Q_TPL = {
 
 # -- Qwen: prose only -------------------------------------------------------
 def _ollama_chat(messages: list[dict], num_predict: int,
-                 timeout: int) -> str | None:
+                 timeout: int,
+                 temperature: float = TEMPERATURE) -> str | None:
     """One sequential Ollama call; None on any failure (fallback path)."""
     body = json.dumps({
         "model": MODEL, "stream": False, "think": False,
         "messages": messages,
-        "options": {"temperature": 0.7, "num_predict": num_predict},
+        "options": {"temperature": float(temperature),
+                    "num_predict": num_predict},
     }).encode()
     try:
         req = urllib.request.Request(
@@ -291,7 +301,8 @@ def qwen_paraphrase(facts: str, lang: str, timeout: int = 120,
 
 def teacher_structured(state: str, question: str,
                        candidates: list[dict],
-                       timeout: int = 120) -> dict:
+                       timeout: int = 120,
+                       temperature: float = TEMPERATURE) -> dict:
     """Ask the teacher for a STRUCTURED choice among valid option ids.
 
     Returns {"choice", "evidence", "backend", "confidence_discarded"}.
@@ -307,7 +318,8 @@ def teacher_structured(state: str, question: str,
         f"Facts: {state}\nQuestion: {question}\nOptions:\n{opts}"
     )
     out = _ollama_chat([{"role": "user", "content": prompt}],
-                       num_predict=120, timeout=timeout)
+                       num_predict=120, timeout=timeout,
+                       temperature=temperature)
     if out is None:
         return {"backend": "qwen-local", "model": MODEL, "confidence_discarded": True,
                 "reject": "no teacher reply"}
