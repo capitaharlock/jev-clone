@@ -580,9 +580,9 @@ rehacen sin cargar un modelo (`eval.preflight_refs table`).
 | Requisito | Quién lo entrega | Estado |
 |---|---|---|
 | Tabla de diferencias arquitectónicas Laya vs pointer head, y cuál se prueba primero | `#T-laya-archdiff` | **entregado 2026-09-27** — `docs/laya-archdiff.md`; presupuesto 48/192 medido con su `build_sequence`: techo de formato 0,948 a K=77, no 0,425 (`artifacts/gates/T-laya-archdiff/token_budget.json`) |
-| Laya sin ajustar sobre la batería privada + contrafactuales, con IC95 % | `#T-laya-baseline` | **SIN MEDIR** |
-| BANKING77 a K=77 de Laya reproducido en nuestro arnés (`eval/fullspace.py`) | `#T-laya-baseline` | **SIN MEDIR** |
-| Declaración por dataset de si estaba en la mezcla publicada de Laya | `#T-laya-baseline` | **SIN MEDIR** |
+| Laya sin ajustar sobre la batería privada + contrafactuales, con IC95 % | `#T-laya-baseline` | **medido**: forzada 0,595 [0,546 · 0,642], conjunto 50/140 = 0,357 [0,283 · 0,439]; `artifacts/gates/T-laya-baseline/gate.json` |
+| BANKING77 a K=77 de Laya reproducido en nuestro arnés (`eval/fullspace.py`) | `#T-laya-baseline` | **medido**: 0,379 [0,362 · 0,396], azar 0,013, n 3 080 — su 0,425 publicado **no reproduce**; `artifacts/gates/T-laya-baseline/fullspace.json` |
+| Declaración por dataset de si estaba en la mezcla publicada de Laya | `#T-laya-baseline` | **hecho**: gate `mix_declared_per_dataset`, citando `BENCHMARKS.md` / `README.md` / `bench_apps.py` |
 | Temperatura por (tipo, K) contra nuestra global, en ECE y acc@50 % cobertura | `#T-laya-objective` | **SIN MEDIR** |
 | `proper_reward` (log + esférica + RPS) comparada con nuestro CE listwise | `#T-laya-objective` | **SIN MEDIR** |
 
@@ -639,3 +639,27 @@ ajustar sobre el corte de desarrollo de BANKING77 a K=77; GO si el límite infer
 | Test `eval-only` con barrera que impide que entre en una mezcla | `#T-ingest-laya` | **medido**: `assert_trainable` + `NEVER_TRAINABLE` + `firewall.BENCHMARKS`, con tests |
 | `eval/` lee el test por sha para compararlo con Jev 0,727 / Laya 0,766 | `#T-ingest-laya` | **hecho**: `eval.cuts.external_cut("typed-decisions", "test")`; la comparación la publica `#T-loop-scoreboard` |
 | Accuracy nuestra sobre typed-decisions test | `#T-loop-scoreboard` | **SIN MEDIR** |
+
+## Entregado 2026-09-27 — `#T-laya-baseline` (`#laya-teardown`, inferencia en CPU, sin ajustar)
+
+Runner `eval/laya_baseline.py` (`.venv-laya`, `laya==0.3.20`; checkpoints por commit pinado
+`laya@55cf4c4e` para `en`, `laya-multilingual@e4e9ddf2` para `es`), mismas 400 filas que el
+preflight por `same_rows()` (`8e8ccea5…`), formato forzado `choice` con id opaco + texto.
+
+| Requisito | Medido | Estado |
+|---|---|---|
+| Pares contrafactuales, éxito conjunto (140 grupos) | 50/140 = 0,357 [0,283 · 0,439], azar 0,083; en 0,429, es 0,286; seguimiento 74/140 | **medido** — empata con nli-nograd (0,343), gana al pointer (1–2/140), pierde con Qwen (0,879) |
+| Batería completa forzada, macro por familia, por idioma | 238/400 = 0,595 [0,546 · 0,642], azar 0,3375; macro 0,595; en 0,660, es 0,530; comparación de atributos 0,325 y prioridad 0,363 no despejan el azar (las mismas dos de nli-nograd) | **medido** — empata con nli-nograd (0,6225), gana al pointer (0,33), pierde con Qwen (0,965) |
+| Control de permutación (opciones al revés, 400 filas) | 128/400 cambian de id (0,32), delta máx. 0,889 | **medido — FALLA**: Laya lee la posición; nli-nograd 0,0 |
+| BANKING77 K=77 en `eval.fullspace` (3 080 filas test, checkpoint inglés, presupuesto por defecto) | 0,379 [0,362 · 0,396], azar 0,013, n 3 080 — su 0,425 publicado **no reproduce** | **medido** — `fullspace.json`, lectura del corte reservado en el ledger |
+| Mezcla publicada por dataset | batería y BANKING77 fuera; spam/phishing/RAG/triage/AG News/BoolQ dentro | **declarado** con cita de fichero |
+| Barrido de cardinalidad; `nli-nograd` a K=77 (predicción D1 de `#T-laya-archdiff`); `laya-typed-decisions` | — | **SIN MEDIR** → `#T-laya-objective` |
+
+## Medido 2026-09-27 — `#T-ce-finetune` sección B (smoke) y `#episodic-data`
+
+| Requisito | Quién lo entrega | Estado |
+|---|---|---|
+| Piloto de 2 000 episodios con Qwen | `#T-episode-gen` | **done**: 2 092 publicados, `artifacts/gates/T-episode-gen/gen.json` |
+| Verificador separado + cuarentena + embudo | `#T-episode-verify` | **medido**: acuerdo 0,9355 [0,924 · 0,945], 1 840 verificados / 252 cuarentena; **muestra humana pendiente del operador** |
+| Trainer con `eval none` = 0,6225 | `#T-ce-finetune` | **hecho**: 249/400 exacto, mismas filas |
+| Smoke: dev > nli-nograd con IC, sin caer familia/idioma | `#T-ce-finetune` | **NO-GO** en 4 variantes: contrafactual +0,121 [0,043 · 0,200] y forzada +0,055 [0,015 · 0,098] en la primera, pero comparación de atributos y prioridad caen bajo el control; atributos no se aprende ni en el holdout del piloto (0,574 → 0,574). No se escala; brazo siguiente lo decide el operador |

@@ -1,7 +1,7 @@
 ---
 id: T-ingest-public
 title: Datasets públicos de decisión a episode-v1 — el adaptador genérico y las primeras ocho fuentes
-status: next
+status: active
 priority: high
 owner: unassigned
 category: data
@@ -89,3 +89,11 @@ PAWS-X para no dejar el idioma atrás.
 - No inventar descripciones de etiquetas «para ayudar»: si el dataset no las
   trae, `text` es el nombre y punto. Documenta qué datasets las tienen.
 - No convertir sin leer la card de licencia. Si duda, `eval-only` y se anota.
+
+## Estado 2026-09-27 — a medias (el agente se cortó por límite de sesión)
+
+`data/episode_bridge.py` (1 744 líneas: specs de fuentes, fence de licencia, puente
+universal → `episode-v1`, cap de mezcla, fuga) está escrito e importa limpio, **sin tests, sin
+ejecutar y sin ninguna fuente convertida**. Quien retome: leer el módulo entero, escribir
+`data/test_episode_bridge.py` según el paso 6, convertir las fuentes y firmar el gate. Nada de
+lo que hay en el módulo se ha validado contra datos reales.
