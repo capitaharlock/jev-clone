@@ -89,6 +89,7 @@ artifacts/*.log
 # Scratch planning docs (pre-roadmap strategy drafts). The roadmap under
 # .meshkore/ is the versioned source of truth for all of it.
 tmp/
+tmp
 
 # Trained encoder bytes (#T-unfreeze-backbone): an unfrozen run ships its
 # backbone next to the head so the checkpoint is not silently scored
@@ -102,3 +103,9 @@ artifacts/checkpoints/*/*/*/backbone.safetensors
 # third-party output in the tree; the gate and the subsample stay versioned.
 .secrets/
 artifacts/cache/
+
+# Entornos auxiliares y logs de servicios locales (2026-09-27)
+.venv-*/
+artifacts/episodes-qwen/*.log
+artifacts/episodes-qwen/*/*.log
+artifacts/labelspace-qwen/cache/
