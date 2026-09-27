@@ -98,8 +98,16 @@
       "artifact": "artifacts/gates/T-teacher-probe/fullspace.json",
       "rows": 3080,
       "by": "eval.fullspace"
+    },
+    {
+      "when": "2026-09-27T12:52:31Z",
+      "checkpoint": "laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "reason": "T-laya-baseline: Laya (untuned, laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851) on the full label space, to see whether its published 0.425 reproduces in our harness",
+      "artifact": "artifacts/gates/T-laya-baseline/fullspace.json",
+      "rows": 3080,
+      "by": "eval.fullspace"
     }
   ],
-  "updated_utc": "2026-09-24T13:44:38Z",
-  "n_queries": 11
+  "updated_utc": "2026-09-27T12:52:31Z",
+  "n_queries": 12
 }

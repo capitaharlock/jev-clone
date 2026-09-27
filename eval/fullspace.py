@@ -193,9 +193,17 @@ def scored(engine, samples: list, batch_size: int = 16) -> tuple:
     """
     from eval import calib as C
 
-    entries = C.entries_from_samples(engine, samples, "test", "full-space",
-                                     samples[0].dataset if samples else "",
-                                     batch_size)
+    dataset = samples[0].dataset if samples else ""
+    if hasattr(engine, "entries"):
+        # an EXTERNAL scorer (#T-laya-baseline): anything that answers the
+        # same rows with the same entry shape — `probs` over the K options
+        # (+ `unknown`), `pred`, `label` — gets the same arithmetic below.
+        # The metric does not change; only who produced the forward pass.
+        entries = engine.entries(samples, "test", "full-space", dataset,
+                                 batch_size)
+    else:
+        entries = C.entries_from_samples(engine, samples, "test",
+                                         "full-space", dataset, batch_size)
     return entries, tally(samples, entries)
 
 
@@ -428,15 +436,29 @@ def emit_parity(ckpt_rel: str, manifest: dict, scoring: dict,
 def run(ckpt_dir: str, datasets: tuple = ("banking77",),
         limit: int = DEFAULT_ROWS, device: str = "auto",
         write: bool = True, sweep: bool = True, reason: str = "",
-        log=print) -> dict:
+        log=print, engine=None, manifest: dict | None = None,
+        gate_path: Path | None = None, parity: bool = True) -> dict:
     """Score the RESERVED cut. Rule R7: the query goes in the ledger.
 
     These are the 3 080 official test rows — the cut `eval.cuts` keeps
     reserved — so running this is a read of the test set and is written down
     with its date, its checkpoint and its reason. Arms are chosen on the dev
     cut (`eval.scoreboard`, `--cut dev`), never here.
+
+    `engine` / `manifest` / `gate_path` / `parity` are the minimal seam for
+    an external scorer (#T-laya-baseline): an object with `.entries(...)`
+    and `.device` scores the SAME rows through the SAME `tally`, its gate
+    goes to `gate_path` instead of this task's file, and the parity artifact
+    — which belongs to the pointer head — is not rewritten for it. With
+    `engine` given, `ckpt_dir` is the label the ledger records, not a path.
     """
-    engine, manifest = U.T.load_checkpoint(ckpt_dir, device)
+    if engine is None:
+        engine, manifest = U.T.load_checkpoint(ckpt_dir, device)
+        ckpt_rel = os.path.relpath(ckpt_dir, ROOT)
+    else:
+        manifest = dict(manifest or {})
+        ckpt_rel = str(ckpt_dir)
+    gate_path = Path(gate_path) if gate_path else GATE_PATH
     results = {}
     scoring = {}
     first = None
@@ -453,21 +475,25 @@ def run(ckpt_dir: str, datasets: tuple = ("banking77",),
         log(f"[fullspace] {dataset}: {json.dumps(results[dataset])}")
     curve = cardinality_sweep(engine, first, log=log) if sweep and first \
         else {}
-    gate = compose_gate(os.path.relpath(ckpt_dir, ROOT), manifest, results,
-                        curve)
-    gate["parity"] = emit_parity(os.path.relpath(ckpt_dir, ROOT), manifest,
-                                 scoring, reason, write, log)
+    gate = compose_gate(ckpt_rel, manifest, results, curve)
+    gate["parity"] = (
+        emit_parity(ckpt_rel, manifest, scoring, reason, write, log)
+        if parity else
+        {"emitted": False,
+         "why": "external scorer: the parity artifact "
+                "(artifacts/gates/T-jev-parity/parity.json) is the pointer "
+                "head's and is not rewritten for another model"})
     if write:
-        GATE_DIR.mkdir(parents=True, exist_ok=True)
-        GATE_PATH.write_text(json.dumps(gate, indent=2,
+        gate_path.parent.mkdir(parents=True, exist_ok=True)
+        gate_path.write_text(json.dumps(gate, indent=2,
                                         ensure_ascii=False) + "\n")
         from eval import cuts as K  # here: `eval.cuts` imports this module
         K.record_query(
-            os.path.relpath(ckpt_dir, ROOT),
+            ckpt_rel,
             reason or "eval.fullspace gate, no reason given on the command "
                       "line — the read happened anyway and is logged as "
                       "unexplained",
-            os.path.relpath(GATE_PATH, ROOT), rows=limit, by="eval.fullspace")
+            os.path.relpath(gate_path, ROOT), rows=limit, by="eval.fullspace")
         gate["test_cut_query_logged"] = os.path.relpath(K.LEDGER_PATH, ROOT)
     return gate
 

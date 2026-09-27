@@ -1,0 +1,118 @@
+{
+  "format": "jev.gate.v1",
+  "task": "T-teacher-probe",
+  "artifact": "fullspace",
+  "generated_utc": "2026-09-27T12:52:31+00:00",
+  "model_version": "laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "run_id": "T-laya-baseline-banking77",
+  "checkpoint": "laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+  "same_rows": false,
+  "same_rows_reading": {
+    "value_means": "NOT ESTABLISHED. It does not say the rows differ — nobody has compared them. `false` reads as 'this is a citation, not a same-rows measurement' (R3)",
+    "verified": false,
+    "what_is_NOT_verified": [
+      "the teacher has never been scored with our pipeline: 0.924 is read off a published report, and no forward pass of it has ever gone through `eval.calib.entries_from_samples`",
+      "there is no row-by-row evidence from the teacher's side — no per-row prediction list to align against our ids — so neither 'same rows' nor 'different rows' can be asserted",
+      "the information regime differs even where the rows do match: definitions and up to 24 retrieved examples against raw identifiers (R8), which makes two numbers on identical rows still not the same measurement"
+    ],
+    "enumerated_in_full": "artifacts/gates/T-jev-parity/parity.json — #T-jev-parity carries every protocol difference with `matched: true | false | unverifiable`, the per-row evidence for our side, and what would verify the rest"
+  },
+  "table": {
+    "banking77": {
+      "ours": {
+        "n": 3080,
+        "hits": 1168,
+        "cardinality": 77,
+        "chance": 0.012987,
+        "accuracy": 0.379221,
+        "accuracy_ci95": [
+          0.362246,
+          0.396496
+        ],
+        "hits_options_only": 1168,
+        "accuracy_options_only": 0.379221,
+        "accuracy_options_only_ci95": [
+          0.362246,
+          0.396496
+        ],
+        "abstain_rate": 0.0,
+        "beats_chance": true,
+        "ranking_beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "references": [
+        {
+          "who": "Jev (teacher)",
+          "citation": true,
+          "accuracy": 0.924,
+          "setup": "all 3 080 official test messages, 77 intents, category definitions + 24 labelled examples per prediction, no weight updates",
+          "source": "github.com/simonmesmith/jev-banking77-experiment",
+          "caveat": "BANKING77 is public; nobody can inspect Jev's training data, so this is not a held-out claim"
+        },
+        {
+          "who": "fine-tuned BERT (BANKING77 paper)",
+          "citation": true,
+          "accuracy": 0.9366,
+          "setup": "supervised fine-tune on the 10 003 training messages",
+          "source": "Casanueva et al. 2020, BANKING77",
+          "caveat": "trained ON this label space; our head never was"
+        }
+      ],
+      "distance_to_teacher": 0.544779,
+      "ratio_to_teacher": 0.4104
+    }
+  },
+  "cardinality_sweep": {},
+  "cardinality_reading": null,
+  "honesty": [
+    "the teacher's number here is CITED, not measured by us: it was never scored through this pipeline, it publishes no per-row evidence to align against ours, and it was given labelled examples per prediction while our head gets none",
+    "`same_rows: false` says 'citation, not a same-rows measurement' (R3). It does NOT say the rows differ — nobody has compared them, and `same_rows_reading` spells out which of the two is the case for each part",
+    "the same-rows measurement is #T-teacher-probe and it needs a working API key; this artifact does not replace it",
+    "K is the whole label space, not our sampler's 3-8: this is the regime the product promises and the hardest one we publish"
+  ],
+  "parity": {
+    "emitted": false,
+    "why": "external scorer: the parity artifact (artifacts/gates/T-jev-parity/parity.json) is the pointer head's and is not rewritten for another model"
+  },
+  "test_cut_query_logged": "artifacts/gates/T-eval-cardinality/test-queries.json",
+  "package": {
+    "name": "laya",
+    "version": "0.3.20",
+    "interpreter": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-laya/bin/python"
+  },
+  "checkpoint_detail": {
+    "repo": "convaiinnovations/laya",
+    "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "encoder": "ModernBERT-large (English, ~421 M)",
+    "local_dir": "/Users/ricartjuncadella/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "weights_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+    "cfg": {
+      "max_len": 512,
+      "head_max_len": 192,
+      "encoder": "answerdotai/ModernBERT-large",
+      "temperature": [
+        1.6369030475616455,
+        1.2514300346374512,
+        1.983399510383606
+      ]
+    },
+    "device": "cpu",
+    "load_seconds": 7.0
+  },
+  "command": "PYTHONPATH=. .venv-laya/bin/python -m eval.laya_baseline banking77 --device cpu --no-sweep",
+  "published": {
+    "who": "Laya (both base checkpoints)",
+    "citation": true,
+    "accuracy": 0.425,
+    "n": 400,
+    "setup": "400 test cases, seed 13, CPU, criteria = the 77 labels with underscores replaced by spaces, state {'message': text}, laya 0.2.1",
+    "source": "TMP/laya/BENCHMARKS.md §'On the public datasets where Jev numbers exist'; research/scripts/bench_apps.py",
+    "caveat": "their harness, their 400 rows; ours below is the full official test split through eval.fullspace"
+  },
+  "mix": {
+    "in_laya_training_mix": false,
+    "source": "TMP/laya/BENCHMARKS.md §'On the public datasets where Jev numbers exist' lists banking77 without an in-training mark; TMP/laya/research/scripts/bench_apps.py registers `jev.banking77_full` with `in_training=False`; build_benchmark_nb.py: 'sst5, emotion, prompt_injections, banking77 were held out'",
+    "transfer": "clean, as declared by the authors — the mix itself is not published row by row, so this is their word"
+  }
+}

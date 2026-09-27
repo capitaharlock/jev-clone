@@ -1,0 +1,400 @@
+{"row_id": "dev-ext-es-2k-t01a", "probs": [0.8453, 0.1547], "model": "laya-multilingual", "ms": 93.7}
+{"row_id": "dev-ext-es-2k-t01b", "probs": [0.5808, 0.4192], "model": "laya-multilingual", "ms": 44.9}
+{"row_id": "dev-ext-es-2k-t01c", "probs": [0.7802, 0.2198], "model": "laya-multilingual", "ms": 43.6}
+{"row_id": "dev-ext-es-2k-t02a", "probs": [0.8673, 0.1327], "model": "laya-multilingual", "ms": 43.0}
+{"row_id": "dev-ext-es-2k-t02b", "probs": [0.9563, 0.0437], "model": "laya-multilingual", "ms": 43.2}
+{"row_id": "dev-ext-es-2k-t02c", "probs": [0.3911, 0.6089], "model": "laya-multilingual", "ms": 43.0}
+{"row_id": "dev-ext-es-2k-t03a", "probs": [0.5825, 0.4175], "model": "laya-multilingual", "ms": 42.5}
+{"row_id": "dev-ext-es-2k-t03b", "probs": [0.6701, 0.3299], "model": "laya-multilingual", "ms": 42.5}
+{"row_id": "dev-ext-es-2k-t03c", "probs": [0.58, 0.42], "model": "laya-multilingual", "ms": 42.8}
+{"row_id": "dev-ext-es-2k-t04a", "probs": [0.4498, 0.5502], "model": "laya-multilingual", "ms": 37.4}
+{"row_id": "dev-ext-es-2k-t04b", "probs": [0.8341, 0.1659], "model": "laya-multilingual", "ms": 36.7}
+{"row_id": "dev-ext-es-2k-t04c", "probs": [0.5665, 0.4335], "model": "laya-multilingual", "ms": 36.8}
+{"row_id": "dev-ext-es-2k-p01a", "probs": [0.3911, 0.6089], "model": "laya-multilingual", "ms": 36.9}
+{"row_id": "dev-ext-es-2k-p01b", "probs": [0.7408, 0.2592], "model": "laya-multilingual", "ms": 36.9}
+{"row_id": "dev-ext-es-2k-p02a", "probs": [0.8199, 0.1801], "model": "laya-multilingual", "ms": 36.4}
+{"row_id": "dev-ext-es-2k-p02b", "probs": [0.7435, 0.2565], "model": "laya-multilingual", "ms": 36.9}
+{"row_id": "dev-ext-es-3k-t01a", "probs": [0.078, 0.8975, 0.0245], "model": "laya-multilingual", "ms": 42.5}
+{"row_id": "dev-ext-es-3k-t01b", "probs": [0.1899, 0.0605, 0.7495], "model": "laya-multilingual", "ms": 42.2}
+{"row_id": "dev-ext-es-3k-t01c", "probs": [0.0713, 0.9087, 0.02], "model": "laya-multilingual", "ms": 42.4}
+{"row_id": "dev-ext-es-3k-t02a", "probs": [0.6902, 0.1481, 0.1617], "model": "laya-multilingual", "ms": 41.9}
+{"row_id": "dev-ext-es-3k-t02b", "probs": [0.3837, 0.4737, 0.1426], "model": "laya-multilingual", "ms": 42.1}
+{"row_id": "dev-ext-es-3k-t02c", "probs": [0.6342, 0.159, 0.2068], "model": "laya-multilingual", "ms": 42.7}
+{"row_id": "dev-ext-es-3k-t03a", "probs": [0.3494, 0.343, 0.3076], "model": "laya-multilingual", "ms": 37.6}
+{"row_id": "dev-ext-es-3k-t03b", "probs": [0.2602, 0.413, 0.3268], "model": "laya-multilingual", "ms": 37.7}
+{"row_id": "dev-ext-es-3k-t03c", "probs": [0.3062, 0.4053, 0.2884], "model": "laya-multilingual", "ms": 37.2}
+{"row_id": "dev-ext-es-3k-t04a", "probs": [0.2215, 0.3048, 0.4737], "model": "laya-multilingual", "ms": 42.7}
+{"row_id": "dev-ext-es-3k-t04b", "probs": [0.598, 0.2016, 0.2004], "model": "laya-multilingual", "ms": 42.9}
+{"row_id": "dev-ext-es-3k-t04c", "probs": [0.1868, 0.3416, 0.4716], "model": "laya-multilingual", "ms": 42.7}
+{"row_id": "dev-ext-es-8k-t01a", "probs": [0.0026, 0.9835, 0.0025, 0.0023, 0.0023, 0.0023, 0.0023, 0.0023], "model": "laya-multilingual", "ms": 53.2}
+{"row_id": "dev-ext-es-8k-t01b", "probs": [0.0207, 0.0027, 0.0027, 0.0027, 0.0027, 0.0027, 0.9633, 0.0027], "model": "laya-multilingual", "ms": 60.2}
+{"row_id": "dev-ext-es-8k-t01c", "probs": [0.0081, 0.9538, 0.0116, 0.0053, 0.0054, 0.0053, 0.0053, 0.0053], "model": "laya-multilingual", "ms": 60.4}
+{"row_id": "dev-ext-es-8k-t02a", "probs": [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0], "model": "laya-multilingual", "ms": 55.6}
+{"row_id": "dev-ext-es-8k-t02b", "probs": [0.0001, 0.9995, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001], "model": "laya-multilingual", "ms": 54.7}
+{"row_id": "dev-ext-es-8k-t02c", "probs": [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0], "model": "laya-multilingual", "ms": 53.9}
+{"row_id": "dev-ext-es-8k-t03a", "probs": [0.0007, 0.0005, 0.0008, 0.0002, 0.0003, 0.0004, 0.001, 0.9961], "model": "laya-multilingual", "ms": 59.6}
+{"row_id": "dev-ext-es-8k-t03b", "probs": [0.001, 0.0016, 0.0029, 0.9885, 0.002, 0.0019, 0.0011, 0.001], "model": "laya-multilingual", "ms": 58.4}
+{"row_id": "dev-ext-es-8k-t03c", "probs": [0.0203, 0.0181, 0.0474, 0.0116, 0.0182, 0.0169, 0.0416, 0.8258], "model": "laya-multilingual", "ms": 60.7}
+{"row_id": "dev-ext-es-8k-t04a", "probs": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0], "model": "laya-multilingual", "ms": 59.3}
+{"row_id": "dev-ext-es-8k-t04b", "probs": [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], "model": "laya-multilingual", "ms": 60.9}
+{"row_id": "dev-ext-es-8k-t04c", "probs": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0], "model": "laya-multilingual", "ms": 60.8}
+{"row_id": "dev-ext-en-2k-t01a", "probs": [0.8137, 0.1863], "model": "laya", "ms": 504.9}
+{"row_id": "dev-ext-en-2k-t01b", "probs": [0.3714, 0.6286], "model": "laya", "ms": 119.5}
+{"row_id": "dev-ext-en-2k-t01c", "probs": [0.7751, 0.2249], "model": "laya", "ms": 74.6}
+{"row_id": "dev-ext-en-2k-t02a", "probs": [0.0448, 0.9552], "model": "laya", "ms": 72.7}
+{"row_id": "dev-ext-en-2k-t02b", "probs": [0.9462, 0.0538], "model": "laya", "ms": 69.1}
+{"row_id": "dev-ext-en-2k-t02c", "probs": [0.1809, 0.8191], "model": "laya", "ms": 68.6}
+{"row_id": "dev-ext-en-2k-t03a", "probs": [0.6037, 0.3963], "model": "laya", "ms": 69.6}
+{"row_id": "dev-ext-en-2k-t03b", "probs": [0.872, 0.128], "model": "laya", "ms": 69.0}
+{"row_id": "dev-ext-en-2k-t03c", "probs": [0.8686, 0.1314], "model": "laya", "ms": 69.8}
+{"row_id": "dev-ext-en-2k-t04a", "probs": [0.3541, 0.6459], "model": "laya", "ms": 69.8}
+{"row_id": "dev-ext-en-2k-t04b", "probs": [0.9449, 0.0551], "model": "laya", "ms": 69.0}
+{"row_id": "dev-ext-en-2k-t04c", "probs": [0.3526, 0.6474], "model": "laya", "ms": 70.6}
+{"row_id": "dev-ext-en-2k-p01a", "probs": [0.1517, 0.8483], "model": "laya", "ms": 68.2}
+{"row_id": "dev-ext-en-2k-p01b", "probs": [0.9638, 0.0362], "model": "laya", "ms": 67.2}
+{"row_id": "dev-ext-en-2k-p02a", "probs": [0.6842, 0.3158], "model": "laya", "ms": 79.6}
+{"row_id": "dev-ext-en-2k-p02b", "probs": [0.9457, 0.0543], "model": "laya", "ms": 71.1}
+{"row_id": "dev-ext-en-3k-t01a", "probs": [0.3271, 0.5583, 0.1146], "model": "laya", "ms": 72.4}
+{"row_id": "dev-ext-en-3k-t01b", "probs": [0.8889, 0.0798, 0.0313], "model": "laya", "ms": 70.4}
+{"row_id": "dev-ext-en-3k-t01c", "probs": [0.2479, 0.5925, 0.1596], "model": "laya", "ms": 73.0}
+{"row_id": "dev-ext-en-3k-t02a", "probs": [0.8351, 0.1247, 0.0402], "model": "laya", "ms": 74.7}
+{"row_id": "dev-ext-en-3k-t02b", "probs": [0.0479, 0.9131, 0.039], "model": "laya", "ms": 75.1}
+{"row_id": "dev-ext-en-3k-t02c", "probs": [0.9165, 0.0633, 0.0203], "model": "laya", "ms": 80.1}
+{"row_id": "dev-ext-en-3k-t03a", "probs": [0.2279, 0.3779, 0.3942], "model": "laya", "ms": 77.2}
+{"row_id": "dev-ext-en-3k-t03b", "probs": [0.012, 0.9802, 0.0078], "model": "laya", "ms": 86.8}
+{"row_id": "dev-ext-en-3k-t03c", "probs": [0.1461, 0.243, 0.6109], "model": "laya", "ms": 86.8}
+{"row_id": "dev-ext-en-3k-t04a", "probs": [0.1768, 0.7578, 0.0653], "model": "laya", "ms": 78.8}
+{"row_id": "dev-ext-en-3k-t04b", "probs": [0.9226, 0.0365, 0.0409], "model": "laya", "ms": 83.8}
+{"row_id": "dev-ext-en-3k-t04c", "probs": [0.2296, 0.6793, 0.0911], "model": "laya", "ms": 85.2}
+{"row_id": "dev-ext-en-8k-t01a", "probs": [0.0002, 0.0009, 0.9974, 0.0003, 0.0002, 0.0003, 0.0003, 0.0004], "model": "laya", "ms": 118.8}
+{"row_id": "dev-ext-en-8k-t01b", "probs": [0.9994, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001], "model": "laya", "ms": 119.4}
+{"row_id": "dev-ext-en-8k-t01c", "probs": [0.0003, 0.0015, 0.996, 0.0005, 0.0003, 0.0004, 0.0004, 0.0006], "model": "laya", "ms": 129.4}
+{"row_id": "dev-ext-en-8k-t02a", "probs": [0.0008, 0.001, 0.0007, 0.0006, 0.0057, 0.0005, 0.9906, 0.0001], "model": "laya", "ms": 110.6}
+{"row_id": "dev-ext-en-8k-t02b", "probs": [0.0005, 0.0009, 0.0007, 0.0008, 0.9965, 0.0002, 0.0001, 0.0002], "model": "laya", "ms": 108.4}
+{"row_id": "dev-ext-en-8k-t02c", "probs": [0.0011, 0.0014, 0.0012, 0.0011, 0.0041, 0.0014, 0.9895, 0.0003], "model": "laya", "ms": 112.8}
+{"row_id": "dev-ext-en-8k-t03a", "probs": [0.0009, 0.0172, 0.9785, 0.0007, 0.0005, 0.0007, 0.0006, 0.0009], "model": "laya", "ms": 127.1}
+{"row_id": "dev-ext-en-8k-t03b", "probs": [0.0, 0.0001, 0.0001, 0.0001, 0.0001, 0.9995, 0.0, 0.0], "model": "laya", "ms": 165.2}
+{"row_id": "dev-ext-en-8k-t03c", "probs": [0.0001, 0.0008, 0.999, 0.0, 0.0, 0.0, 0.0, 0.0], "model": "laya", "ms": 150.3}
+{"row_id": "dev-ext-en-8k-t04a", "probs": [0.0002, 0.0015, 0.0009, 0.9964, 0.0003, 0.0003, 0.0002, 0.0002], "model": "laya", "ms": 283.7}
+{"row_id": "dev-ext-en-8k-t04b", "probs": [0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0004, 0.9989, 0.0001], "model": "laya", "ms": 99.6}
+{"row_id": "dev-ext-en-8k-t04c", "probs": [0.0001, 0.0004, 0.0003, 0.9989, 0.0001, 0.0001, 0.0001, 0.0001], "model": "laya", "ms": 138.5}
+{"row_id": "dev-cmp-es-2k-t01a", "probs": [0.5615, 0.4385], "model": "laya-multilingual", "ms": 170.8}
+{"row_id": "dev-cmp-es-2k-t01b", "probs": [0.4764, 0.5236], "model": "laya-multilingual", "ms": 48.7}
+{"row_id": "dev-cmp-es-2k-t01c", "probs": [0.4361, 0.5639], "model": "laya-multilingual", "ms": 50.3}
+{"row_id": "dev-cmp-es-2k-t02a", "probs": [0.6252, 0.3748], "model": "laya-multilingual", "ms": 55.0}
+{"row_id": "dev-cmp-es-2k-t02b", "probs": [0.2826, 0.7174], "model": "laya-multilingual", "ms": 52.7}
+{"row_id": "dev-cmp-es-2k-t02c", "probs": [0.3719, 0.6281], "model": "laya-multilingual", "ms": 48.4}
+{"row_id": "dev-cmp-es-2k-t03a", "probs": [0.2666, 0.7334], "model": "laya-multilingual", "ms": 50.0}
+{"row_id": "dev-cmp-es-2k-t03b", "probs": [0.6637, 0.3363], "model": "laya-multilingual", "ms": 49.1}
+{"row_id": "dev-cmp-es-2k-t03c", "probs": [0.3155, 0.6845], "model": "laya-multilingual", "ms": 49.7}
+{"row_id": "dev-cmp-es-2k-t04a", "probs": [0.7418, 0.2582], "model": "laya-multilingual", "ms": 51.1}
+{"row_id": "dev-cmp-es-2k-t04b", "probs": [0.8636, 0.1364], "model": "laya-multilingual", "ms": 49.8}
+{"row_id": "dev-cmp-es-2k-t04c", "probs": [0.4967, 0.5033], "model": "laya-multilingual", "ms": 49.6}
+{"row_id": "dev-cmp-es-2k-p01a", "probs": [0.9716, 0.0284], "model": "laya-multilingual", "ms": 48.9}
+{"row_id": "dev-cmp-es-2k-p01b", "probs": [0.9709, 0.0291], "model": "laya-multilingual", "ms": 50.8}
+{"row_id": "dev-cmp-es-2k-p02a", "probs": [0.4814, 0.5186], "model": "laya-multilingual", "ms": 61.2}
+{"row_id": "dev-cmp-es-2k-p02b", "probs": [0.6241, 0.3759], "model": "laya-multilingual", "ms": 55.6}
+{"row_id": "dev-cmp-es-3k-t01a", "probs": [0.1504, 0.7402, 0.1093], "model": "laya-multilingual", "ms": 53.2}
+{"row_id": "dev-cmp-es-3k-t01b", "probs": [0.4807, 0.1951, 0.3242], "model": "laya-multilingual", "ms": 55.9}
+{"row_id": "dev-cmp-es-3k-t01c", "probs": [0.3953, 0.3177, 0.287], "model": "laya-multilingual", "ms": 54.5}
+{"row_id": "dev-cmp-es-3k-t02a", "probs": [0.6674, 0.2719, 0.0607], "model": "laya-multilingual", "ms": 57.2}
+{"row_id": "dev-cmp-es-3k-t02b", "probs": [0.5269, 0.2747, 0.1984], "model": "laya-multilingual", "ms": 51.0}
+{"row_id": "dev-cmp-es-3k-t02c", "probs": [0.8126, 0.1241, 0.0632], "model": "laya-multilingual", "ms": 48.9}
+{"row_id": "dev-cmp-es-3k-t03a", "probs": [0.3535, 0.0898, 0.5567], "model": "laya-multilingual", "ms": 45.3}
+{"row_id": "dev-cmp-es-3k-t03b", "probs": [0.517, 0.0992, 0.3837], "model": "laya-multilingual", "ms": 46.3}
+{"row_id": "dev-cmp-es-3k-t03c", "probs": [0.1497, 0.0428, 0.8075], "model": "laya-multilingual", "ms": 46.2}
+{"row_id": "dev-cmp-es-3k-t04a", "probs": [0.5041, 0.0972, 0.3988], "model": "laya-multilingual", "ms": 44.7}
+{"row_id": "dev-cmp-es-3k-t04b", "probs": [0.1462, 0.0612, 0.7926], "model": "laya-multilingual", "ms": 46.1}
+{"row_id": "dev-cmp-es-3k-t04c", "probs": [0.05, 0.0074, 0.9426], "model": "laya-multilingual", "ms": 44.4}
+{"row_id": "dev-cmp-es-8k-t01a", "probs": [0.7663, 0.1312, 0.0233, 0.0145, 0.0125, 0.0139, 0.0292, 0.0092], "model": "laya-multilingual", "ms": 67.3}
+{"row_id": "dev-cmp-es-8k-t01b", "probs": [0.7661, 0.1191, 0.0201, 0.0129, 0.0178, 0.0128, 0.0356, 0.0156], "model": "laya-multilingual", "ms": 73.9}
+{"row_id": "dev-cmp-es-8k-t01c", "probs": [0.7788, 0.1117, 0.0179, 0.0079, 0.0092, 0.0178, 0.0278, 0.0289], "model": "laya-multilingual", "ms": 73.6}
+{"row_id": "dev-cmp-es-8k-t02a", "probs": [0.2492, 0.115, 0.0719, 0.058, 0.1517, 0.0525, 0.2668, 0.0349], "model": "laya-multilingual", "ms": 73.6}
+{"row_id": "dev-cmp-es-8k-t02b", "probs": [0.1992, 0.1013, 0.0785, 0.0548, 0.1452, 0.0558, 0.3258, 0.0394], "model": "laya-multilingual", "ms": 74.8}
+{"row_id": "dev-cmp-es-8k-t02c", "probs": [0.2323, 0.1224, 0.0486, 0.0284, 0.1225, 0.0569, 0.3221, 0.0668], "model": "laya-multilingual", "ms": 83.3}
+{"row_id": "dev-cmp-es-8k-t03a", "probs": [0.3732, 0.1634, 0.0687, 0.0373, 0.0639, 0.1815, 0.0832, 0.0289], "model": "laya-multilingual", "ms": 74.5}
+{"row_id": "dev-cmp-es-8k-t03b", "probs": [0.3068, 0.1945, 0.093, 0.052, 0.0758, 0.1859, 0.0683, 0.0238], "model": "laya-multilingual", "ms": 75.5}
+{"row_id": "dev-cmp-es-8k-t03c", "probs": [0.6001, 0.1138, 0.0676, 0.0357, 0.0353, 0.0432, 0.0604, 0.0439], "model": "laya-multilingual", "ms": 73.1}
+{"row_id": "dev-cmp-es-8k-t04a", "probs": [0.1949, 0.0757, 0.1757, 0.1031, 0.0426, 0.2833, 0.0451, 0.0796], "model": "laya-multilingual", "ms": 87.5}
+{"row_id": "dev-cmp-es-8k-t04b", "probs": [0.0331, 0.012, 0.0083, 0.0421, 0.0125, 0.741, 0.0632, 0.0878], "model": "laya-multilingual", "ms": 94.6}
+{"row_id": "dev-cmp-es-8k-t04c", "probs": [0.194, 0.0824, 0.1136, 0.2016, 0.0433, 0.2542, 0.0437, 0.0673], "model": "laya-multilingual", "ms": 125.6}
+{"row_id": "dev-cmp-en-2k-t01a", "probs": [0.6083, 0.3917], "model": "laya", "ms": 95.9}
+{"row_id": "dev-cmp-en-2k-t01b", "probs": [0.6142, 0.3858], "model": "laya", "ms": 76.1}
+{"row_id": "dev-cmp-en-2k-t01c", "probs": [0.6945, 0.3055], "model": "laya", "ms": 83.9}
+{"row_id": "dev-cmp-en-2k-t02a", "probs": [0.8893, 0.1107], "model": "laya", "ms": 97.9}
+{"row_id": "dev-cmp-en-2k-t02b", "probs": [0.819, 0.181], "model": "laya", "ms": 100.4}
+{"row_id": "dev-cmp-en-2k-t02c", "probs": [0.8049, 0.1951], "model": "laya", "ms": 130.5}
+{"row_id": "dev-cmp-en-2k-t03a", "probs": [0.8294, 0.1706], "model": "laya", "ms": 174.1}
+{"row_id": "dev-cmp-en-2k-t03b", "probs": [0.8247, 0.1753], "model": "laya", "ms": 112.9}
+{"row_id": "dev-cmp-en-2k-t03c", "probs": [0.7773, 0.2227], "model": "laya", "ms": 97.3}
+{"row_id": "dev-cmp-en-2k-t04a", "probs": [0.847, 0.153], "model": "laya", "ms": 97.3}
+{"row_id": "dev-cmp-en-2k-t04b", "probs": [0.6648, 0.3352], "model": "laya", "ms": 92.8}
+{"row_id": "dev-cmp-en-2k-t04c", "probs": [0.8347, 0.1653], "model": "laya", "ms": 91.8}
+{"row_id": "dev-cmp-en-2k-p01a", "probs": [0.8114, 0.1886], "model": "laya", "ms": 81.8}
+{"row_id": "dev-cmp-en-2k-p01b", "probs": [0.5666, 0.4334], "model": "laya", "ms": 84.9}
+{"row_id": "dev-cmp-en-2k-p02a", "probs": [0.7161, 0.2839], "model": "laya", "ms": 146.1}
+{"row_id": "dev-cmp-en-2k-p02b", "probs": [0.6996, 0.3004], "model": "laya", "ms": 68.0}
+{"row_id": "dev-cmp-en-3k-t01a", "probs": [0.7266, 0.1659, 0.1075], "model": "laya", "ms": 84.4}
+{"row_id": "dev-cmp-en-3k-t01b", "probs": [0.5461, 0.2854, 0.1685], "model": "laya", "ms": 89.5}
+{"row_id": "dev-cmp-en-3k-t01c", "probs": [0.6953, 0.1651, 0.1396], "model": "laya", "ms": 97.2}
+{"row_id": "dev-cmp-en-3k-t02a", "probs": [0.7059, 0.1434, 0.1507], "model": "laya", "ms": 115.8}
+{"row_id": "dev-cmp-en-3k-t02b", "probs": [0.6291, 0.2031, 0.1678], "model": "laya", "ms": 112.0}
+{"row_id": "dev-cmp-en-3k-t02c", "probs": [0.7288, 0.1593, 0.112], "model": "laya", "ms": 159.7}
+{"row_id": "dev-cmp-en-3k-t03a", "probs": [0.5715, 0.3041, 0.1244], "model": "laya", "ms": 109.8}
+{"row_id": "dev-cmp-en-3k-t03b", "probs": [0.4061, 0.4635, 0.1304], "model": "laya", "ms": 89.2}
+{"row_id": "dev-cmp-en-3k-t03c", "probs": [0.6106, 0.2896, 0.0998], "model": "laya", "ms": 85.4}
+{"row_id": "dev-cmp-en-3k-t04a", "probs": [0.9128, 0.0639, 0.0233], "model": "laya", "ms": 83.9}
+{"row_id": "dev-cmp-en-3k-t04b", "probs": [0.892, 0.085, 0.023], "model": "laya", "ms": 86.9}
+{"row_id": "dev-cmp-en-3k-t04c", "probs": [0.8812, 0.0822, 0.0366], "model": "laya", "ms": 87.7}
+{"row_id": "dev-cmp-en-8k-t01a", "probs": [0.9497, 0.0113, 0.0072, 0.0027, 0.0136, 0.0031, 0.0032, 0.0092], "model": "laya", "ms": 161.0}
+{"row_id": "dev-cmp-en-8k-t01b", "probs": [0.9365, 0.0162, 0.0107, 0.004, 0.0151, 0.0037, 0.0034, 0.0103], "model": "laya", "ms": 183.7}
+{"row_id": "dev-cmp-en-8k-t01c", "probs": [0.9641, 0.0082, 0.0049, 0.0029, 0.0073, 0.0047, 0.0028, 0.0051], "model": "laya", "ms": 168.4}
+{"row_id": "dev-cmp-en-8k-t02a", "probs": [0.6819, 0.0483, 0.0601, 0.0115, 0.0185, 0.0487, 0.0395, 0.0915], "model": "laya", "ms": 455.6}
+{"row_id": "dev-cmp-en-8k-t02b", "probs": [0.7482, 0.0252, 0.0472, 0.0108, 0.0158, 0.0388, 0.0358, 0.0782], "model": "laya", "ms": 327.8}
+{"row_id": "dev-cmp-en-8k-t02c", "probs": [0.5779, 0.0615, 0.0625, 0.014, 0.0227, 0.07, 0.0526, 0.1388], "model": "laya", "ms": 326.7}
+{"row_id": "dev-cmp-en-8k-t03a", "probs": [0.9366, 0.0116, 0.0077, 0.0022, 0.0017, 0.0044, 0.0063, 0.0296], "model": "laya", "ms": 491.7}
+{"row_id": "dev-cmp-en-8k-t03b", "probs": [0.8924, 0.0199, 0.0257, 0.0041, 0.0031, 0.0099, 0.0105, 0.0343], "model": "laya", "ms": 432.3}
+{"row_id": "dev-cmp-en-8k-t03c", "probs": [0.9228, 0.0234, 0.0154, 0.003, 0.003, 0.0053, 0.0072, 0.0199], "model": "laya", "ms": 328.6}
+{"row_id": "dev-cmp-en-8k-t04a", "probs": [0.5706, 0.1023, 0.0989, 0.0314, 0.0888, 0.0205, 0.0555, 0.0319], "model": "laya", "ms": 348.7}
+{"row_id": "dev-cmp-en-8k-t04b", "probs": [0.4883, 0.1619, 0.0698, 0.0222, 0.1211, 0.0162, 0.0505, 0.0701], "model": "laya", "ms": 367.8}
+{"row_id": "dev-cmp-en-8k-t04c", "probs": [0.7212, 0.0756, 0.055, 0.0253, 0.0693, 0.0188, 0.0268, 0.008], "model": "laya", "ms": 337.5}
+{"row_id": "dev-dsc-es-2k-t01a", "probs": [0.3214, 0.6786], "model": "laya-multilingual", "ms": 117.6}
+{"row_id": "dev-dsc-es-2k-t01b", "probs": [0.9474, 0.0526], "model": "laya-multilingual", "ms": 111.0}
+{"row_id": "dev-dsc-es-2k-t01c", "probs": [0.4809, 0.5191], "model": "laya-multilingual", "ms": 157.0}
+{"row_id": "dev-dsc-es-2k-t02a", "probs": [0.2072, 0.7928], "model": "laya-multilingual", "ms": 148.6}
+{"row_id": "dev-dsc-es-2k-t02b", "probs": [0.4971, 0.5029], "model": "laya-multilingual", "ms": 116.2}
+{"row_id": "dev-dsc-es-2k-t02c", "probs": [0.2931, 0.7069], "model": "laya-multilingual", "ms": 128.2}
+{"row_id": "dev-dsc-es-2k-t03a", "probs": [0.0426, 0.9574], "model": "laya-multilingual", "ms": 121.9}
+{"row_id": "dev-dsc-es-2k-t03b", "probs": [0.8736, 0.1264], "model": "laya-multilingual", "ms": 87.7}
+{"row_id": "dev-dsc-es-2k-t03c", "probs": [0.6086, 0.3914], "model": "laya-multilingual", "ms": 109.8}
+{"row_id": "dev-dsc-es-2k-t04a", "probs": [0.6693, 0.3307], "model": "laya-multilingual", "ms": 107.8}
+{"row_id": "dev-dsc-es-2k-t04b", "probs": [0.4436, 0.5564], "model": "laya-multilingual", "ms": 108.2}
+{"row_id": "dev-dsc-es-2k-t04c", "probs": [0.8775, 0.1225], "model": "laya-multilingual", "ms": 88.9}
+{"row_id": "dev-dsc-es-2k-p01a", "probs": [0.1158, 0.8842], "model": "laya-multilingual", "ms": 103.0}
+{"row_id": "dev-dsc-es-2k-p01b", "probs": [0.869, 0.131], "model": "laya-multilingual", "ms": 149.5}
+{"row_id": "dev-dsc-es-2k-p02a", "probs": [0.5592, 0.4408], "model": "laya-multilingual", "ms": 155.8}
+{"row_id": "dev-dsc-es-2k-p02b", "probs": [0.0544, 0.9456], "model": "laya-multilingual", "ms": 127.0}
+{"row_id": "dev-dsc-es-3k-t01a", "probs": [0.9002, 0.0681, 0.0317], "model": "laya-multilingual", "ms": 108.2}
+{"row_id": "dev-dsc-es-3k-t01b", "probs": [0.2209, 0.7052, 0.0739], "model": "laya-multilingual", "ms": 85.9}
+{"row_id": "dev-dsc-es-3k-t01c", "probs": [0.9716, 0.0185, 0.0098], "model": "laya-multilingual", "ms": 95.2}
+{"row_id": "dev-dsc-es-3k-t02a", "probs": [0.1259, 0.6404, 0.2338], "model": "laya-multilingual", "ms": 111.7}
+{"row_id": "dev-dsc-es-3k-t02b", "probs": [0.3585, 0.1771, 0.4644], "model": "laya-multilingual", "ms": 96.7}
+{"row_id": "dev-dsc-es-3k-t02c", "probs": [0.0533, 0.6482, 0.2984], "model": "laya-multilingual", "ms": 138.0}
+{"row_id": "dev-dsc-es-3k-t03a", "probs": [0.3761, 0.2944, 0.3295], "model": "laya-multilingual", "ms": 128.7}
+{"row_id": "dev-dsc-es-3k-t03b", "probs": [0.317, 0.1681, 0.5149], "model": "laya-multilingual", "ms": 111.6}
+{"row_id": "dev-dsc-es-3k-t03c", "probs": [0.3924, 0.361, 0.2466], "model": "laya-multilingual", "ms": 143.3}
+{"row_id": "dev-dsc-es-3k-t04a", "probs": [0.2961, 0.645, 0.0589], "model": "laya-multilingual", "ms": 205.0}
+{"row_id": "dev-dsc-es-3k-t04b", "probs": [0.0741, 0.844, 0.0819], "model": "laya-multilingual", "ms": 233.2}
+{"row_id": "dev-dsc-es-3k-t04c", "probs": [0.172, 0.7678, 0.0603], "model": "laya-multilingual", "ms": 168.8}
+{"row_id": "dev-dsc-es-8k-t01a", "probs": [0.1036, 0.1541, 0.4968, 0.0426, 0.0215, 0.0365, 0.0509, 0.094], "model": "laya-multilingual", "ms": 198.4}
+{"row_id": "dev-dsc-es-8k-t01b", "probs": [0.1555, 0.1545, 0.3932, 0.0619, 0.0423, 0.0611, 0.0965, 0.0351], "model": "laya-multilingual", "ms": 225.6}
+{"row_id": "dev-dsc-es-8k-t01c", "probs": [0.0877, 0.2091, 0.3103, 0.0412, 0.0172, 0.0235, 0.0266, 0.2845], "model": "laya-multilingual", "ms": 168.0}
+{"row_id": "dev-dsc-es-8k-t02a", "probs": [0.0865, 0.0802, 0.0871, 0.0463, 0.5122, 0.0717, 0.0822, 0.0338], "model": "laya-multilingual", "ms": 174.6}
+{"row_id": "dev-dsc-es-8k-t02b", "probs": [0.2366, 0.0566, 0.3579, 0.0813, 0.0835, 0.0611, 0.067, 0.056], "model": "laya-multilingual", "ms": 161.2}
+{"row_id": "dev-dsc-es-8k-t02c", "probs": [0.065, 0.0861, 0.2154, 0.0738, 0.3979, 0.0655, 0.0502, 0.046], "model": "laya-multilingual", "ms": 153.0}
+{"row_id": "dev-dsc-es-8k-t03a", "probs": [0.0631, 0.1088, 0.0622, 0.2707, 0.0212, 0.4398, 0.0202, 0.0139], "model": "laya-multilingual", "ms": 144.6}
+{"row_id": "dev-dsc-es-8k-t03b", "probs": [0.0019, 0.0039, 0.0075, 0.9809, 0.0021, 0.0009, 0.0019, 0.0009], "model": "laya-multilingual", "ms": 140.8}
+{"row_id": "dev-dsc-es-8k-t03c", "probs": [0.1987, 0.033, 0.0223, 0.0137, 0.0213, 0.6862, 0.0123, 0.0126], "model": "laya-multilingual", "ms": 235.5}
+{"row_id": "dev-dsc-es-8k-t04a", "probs": [0.6282, 0.0336, 0.0276, 0.1381, 0.0316, 0.0361, 0.0578, 0.0469], "model": "laya-multilingual", "ms": 177.3}
+{"row_id": "dev-dsc-es-8k-t04b", "probs": [0.1841, 0.0341, 0.019, 0.5242, 0.0301, 0.0254, 0.0231, 0.16], "model": "laya-multilingual", "ms": 154.6}
+{"row_id": "dev-dsc-es-8k-t04c", "probs": [0.9081, 0.0043, 0.004, 0.0301, 0.0041, 0.0067, 0.0088, 0.0339], "model": "laya-multilingual", "ms": 156.1}
+{"row_id": "dev-dsc-en-2k-t01a", "probs": [0.6537, 0.3463], "model": "laya", "ms": 252.0}
+{"row_id": "dev-dsc-en-2k-t01b", "probs": [0.1852, 0.8148], "model": "laya", "ms": 250.8}
+{"row_id": "dev-dsc-en-2k-t01c", "probs": [0.6012, 0.3988], "model": "laya", "ms": 276.2}
+{"row_id": "dev-dsc-en-2k-t02a", "probs": [0.2453, 0.7547], "model": "laya", "ms": 329.8}
+{"row_id": "dev-dsc-en-2k-t02b", "probs": [0.9325, 0.0675], "model": "laya", "ms": 378.6}
+{"row_id": "dev-dsc-en-2k-t02c", "probs": [0.2029, 0.7971], "model": "laya", "ms": 238.4}
+{"row_id": "dev-dsc-en-2k-t03a", "probs": [0.0777, 0.9223], "model": "laya", "ms": 388.5}
+{"row_id": "dev-dsc-en-2k-t03b", "probs": [0.9741, 0.0259], "model": "laya", "ms": 323.1}
+{"row_id": "dev-dsc-en-2k-t03c", "probs": [0.1704, 0.8296], "model": "laya", "ms": 352.2}
+{"row_id": "dev-dsc-en-2k-t04a", "probs": [0.722, 0.278], "model": "laya", "ms": 374.9}
+{"row_id": "dev-dsc-en-2k-t04b", "probs": [0.9577, 0.0423], "model": "laya", "ms": 544.4}
+{"row_id": "dev-dsc-en-2k-t04c", "probs": [0.4733, 0.5267], "model": "laya", "ms": 332.5}
+{"row_id": "dev-dsc-en-2k-p01a", "probs": [0.0866, 0.9134], "model": "laya", "ms": 309.7}
+{"row_id": "dev-dsc-en-2k-p01b", "probs": [0.9755, 0.0245], "model": "laya", "ms": 225.6}
+{"row_id": "dev-dsc-en-2k-p02a", "probs": [0.0576, 0.9424], "model": "laya", "ms": 339.1}
+{"row_id": "dev-dsc-en-2k-p02b", "probs": [0.9709, 0.0291], "model": "laya", "ms": 311.6}
+{"row_id": "dev-dsc-en-3k-t01a", "probs": [0.9519, 0.0271, 0.021], "model": "laya", "ms": 234.6}
+{"row_id": "dev-dsc-en-3k-t01b", "probs": [0.1178, 0.8565, 0.0257], "model": "laya", "ms": 232.1}
+{"row_id": "dev-dsc-en-3k-t01c", "probs": [0.8735, 0.0684, 0.0582], "model": "laya", "ms": 657.3}
+{"row_id": "dev-dsc-en-3k-t02a", "probs": [0.8954, 0.0264, 0.0782], "model": "laya", "ms": 431.4}
+{"row_id": "dev-dsc-en-3k-t02b", "probs": [0.0811, 0.0631, 0.8558], "model": "laya", "ms": 293.1}
+{"row_id": "dev-dsc-en-3k-t02c", "probs": [0.8452, 0.0487, 0.1061], "model": "laya", "ms": 391.6}
+{"row_id": "dev-dsc-en-3k-t03a", "probs": [0.3745, 0.4274, 0.1982], "model": "laya", "ms": 618.5}
+{"row_id": "dev-dsc-en-3k-t03b", "probs": [0.175, 0.6221, 0.2029], "model": "laya", "ms": 533.3}
+{"row_id": "dev-dsc-en-3k-t03c", "probs": [0.3899, 0.4783, 0.1318], "model": "laya", "ms": 336.5}
+{"row_id": "dev-dsc-en-3k-t04a", "probs": [0.0584, 0.0324, 0.9092], "model": "laya", "ms": 320.1}
+{"row_id": "dev-dsc-en-3k-t04b", "probs": [0.9554, 0.0271, 0.0175], "model": "laya", "ms": 230.9}
+{"row_id": "dev-dsc-en-3k-t04c", "probs": [0.4042, 0.0811, 0.5146], "model": "laya", "ms": 228.5}
+{"row_id": "dev-dsc-en-8k-t01a", "probs": [0.1279, 0.2117, 0.0186, 0.0141, 0.0231, 0.106, 0.0314, 0.4672], "model": "laya", "ms": 562.1}
+{"row_id": "dev-dsc-en-8k-t01b", "probs": [0.0517, 0.2897, 0.4557, 0.0098, 0.0265, 0.0583, 0.08, 0.0283], "model": "laya", "ms": 653.9}
+{"row_id": "dev-dsc-en-8k-t01c", "probs": [0.1745, 0.3313, 0.0591, 0.0202, 0.0507, 0.1447, 0.0651, 0.1545], "model": "laya", "ms": 961.2}
+{"row_id": "dev-dsc-en-8k-t02a", "probs": [0.0023, 0.0078, 0.0021, 0.0029, 0.0097, 0.0048, 0.0015, 0.9689], "model": "laya", "ms": 939.1}
+{"row_id": "dev-dsc-en-8k-t02b", "probs": [0.8606, 0.0127, 0.0061, 0.0125, 0.0198, 0.0483, 0.0089, 0.0311], "model": "laya", "ms": 1628.6}
+{"row_id": "dev-dsc-en-8k-t02c", "probs": [0.0014, 0.0052, 0.0013, 0.0015, 0.0038, 0.0025, 0.0008, 0.9836], "model": "laya", "ms": 1454.8}
+{"row_id": "dev-dsc-en-8k-t03a", "probs": [0.0615, 0.0461, 0.4977, 0.019, 0.0312, 0.0262, 0.2289, 0.0894], "model": "laya", "ms": 1373.2}
+{"row_id": "dev-dsc-en-8k-t03b", "probs": [0.0606, 0.0566, 0.2005, 0.4486, 0.0529, 0.0379, 0.0411, 0.1018], "model": "laya", "ms": 1213.5}
+{"row_id": "dev-dsc-en-8k-t03c", "probs": [0.0772, 0.0415, 0.3718, 0.0238, 0.0407, 0.0353, 0.3642, 0.0455], "model": "laya", "ms": 1538.8}
+{"row_id": "dev-dsc-en-8k-t04a", "probs": [0.0002, 0.0007, 0.0008, 0.9964, 0.0003, 0.0005, 0.0002, 0.0008], "model": "laya", "ms": 1510.9}
+{"row_id": "dev-dsc-en-8k-t04b", "probs": [0.0, 0.0001, 0.0001, 0.0, 0.0, 0.0, 0.0, 0.9997], "model": "laya", "ms": 1629.5}
+{"row_id": "dev-dsc-en-8k-t04c", "probs": [0.0464, 0.0641, 0.0374, 0.5543, 0.026, 0.0359, 0.0062, 0.2297], "model": "laya", "ms": 1241.8}
+{"row_id": "dev-inf-es-2k-t01a", "probs": [0.6388, 0.3612], "model": "laya-multilingual", "ms": 707.1}
+{"row_id": "dev-inf-es-2k-t01b", "probs": [0.474, 0.526], "model": "laya-multilingual", "ms": 318.9}
+{"row_id": "dev-inf-es-2k-t01c", "probs": [0.6549, 0.3451], "model": "laya-multilingual", "ms": 741.8}
+{"row_id": "dev-inf-es-2k-t02a", "probs": [0.3563, 0.6437], "model": "laya-multilingual", "ms": 722.9}
+{"row_id": "dev-inf-es-2k-t02b", "probs": [0.6136, 0.3864], "model": "laya-multilingual", "ms": 365.0}
+{"row_id": "dev-inf-es-2k-t02c", "probs": [0.5864, 0.4136], "model": "laya-multilingual", "ms": 481.0}
+{"row_id": "dev-inf-es-2k-t03a", "probs": [0.7677, 0.2323], "model": "laya-multilingual", "ms": 497.1}
+{"row_id": "dev-inf-es-2k-t03b", "probs": [0.5359, 0.4641], "model": "laya-multilingual", "ms": 619.7}
+{"row_id": "dev-inf-es-2k-t03c", "probs": [0.8803, 0.1197], "model": "laya-multilingual", "ms": 717.1}
+{"row_id": "dev-inf-es-2k-t04a", "probs": [0.3013, 0.6987], "model": "laya-multilingual", "ms": 661.1}
+{"row_id": "dev-inf-es-2k-t04b", "probs": [0.4558, 0.5442], "model": "laya-multilingual", "ms": 357.6}
+{"row_id": "dev-inf-es-2k-t04c", "probs": [0.3228, 0.6772], "model": "laya-multilingual", "ms": 577.5}
+{"row_id": "dev-inf-es-2k-p01a", "probs": [0.6339, 0.3661], "model": "laya-multilingual", "ms": 681.3}
+{"row_id": "dev-inf-es-2k-p01b", "probs": [0.8674, 0.1326], "model": "laya-multilingual", "ms": 1124.1}
+{"row_id": "dev-inf-es-2k-p02a", "probs": [0.3106, 0.6894], "model": "laya-multilingual", "ms": 685.4}
+{"row_id": "dev-inf-es-2k-p02b", "probs": [0.3967, 0.6033], "model": "laya-multilingual", "ms": 210.5}
+{"row_id": "dev-inf-es-3k-t01a", "probs": [0.661, 0.1548, 0.1842], "model": "laya-multilingual", "ms": 856.1}
+{"row_id": "dev-inf-es-3k-t01b", "probs": [0.1236, 0.1441, 0.7323], "model": "laya-multilingual", "ms": 386.3}
+{"row_id": "dev-inf-es-3k-t01c", "probs": [0.5751, 0.2599, 0.165], "model": "laya-multilingual", "ms": 143.3}
+{"row_id": "dev-inf-es-3k-t02a", "probs": [0.2598, 0.479, 0.2612], "model": "laya-multilingual", "ms": 107.2}
+{"row_id": "dev-inf-es-3k-t02b", "probs": [0.2913, 0.4673, 0.2415], "model": "laya-multilingual", "ms": 209.0}
+{"row_id": "dev-inf-es-3k-t02c", "probs": [0.2924, 0.4188, 0.2888], "model": "laya-multilingual", "ms": 255.9}
+{"row_id": "dev-inf-es-3k-t03a", "probs": [0.5139, 0.1589, 0.3271], "model": "laya-multilingual", "ms": 281.5}
+{"row_id": "dev-inf-es-3k-t03b", "probs": [0.5104, 0.1288, 0.3608], "model": "laya-multilingual", "ms": 248.9}
+{"row_id": "dev-inf-es-3k-t03c", "probs": [0.7458, 0.0909, 0.1633], "model": "laya-multilingual", "ms": 326.4}
+{"row_id": "dev-inf-es-3k-t04a", "probs": [0.5214, 0.1297, 0.3489], "model": "laya-multilingual", "ms": 355.0}
+{"row_id": "dev-inf-es-3k-t04b", "probs": [0.532, 0.1307, 0.3374], "model": "laya-multilingual", "ms": 498.2}
+{"row_id": "dev-inf-es-3k-t04c", "probs": [0.6168, 0.1718, 0.2114], "model": "laya-multilingual", "ms": 689.2}
+{"row_id": "dev-inf-es-8k-t01a", "probs": [0.0652, 0.0768, 0.106, 0.0628, 0.0952, 0.1378, 0.1079, 0.3483], "model": "laya-multilingual", "ms": 374.3}
+{"row_id": "dev-inf-es-8k-t01b", "probs": [0.0653, 0.0957, 0.1471, 0.1031, 0.2527, 0.1187, 0.0674, 0.15], "model": "laya-multilingual", "ms": 177.0}
+{"row_id": "dev-inf-es-8k-t01c", "probs": [0.0164, 0.031, 0.0412, 0.0258, 0.0178, 0.0204, 0.0318, 0.8156], "model": "laya-multilingual", "ms": 138.8}
+{"row_id": "dev-inf-es-8k-t02a", "probs": [0.0379, 0.0855, 0.1331, 0.1903, 0.1294, 0.2138, 0.1409, 0.0691], "model": "laya-multilingual", "ms": 121.3}
+{"row_id": "dev-inf-es-8k-t02b", "probs": [0.0464, 0.0735, 0.2888, 0.1515, 0.1309, 0.1067, 0.1222, 0.08], "model": "laya-multilingual", "ms": 110.3}
+{"row_id": "dev-inf-es-8k-t02c", "probs": [0.0425, 0.0782, 0.1353, 0.1623, 0.1145, 0.127, 0.2583, 0.0818], "model": "laya-multilingual", "ms": 113.9}
+{"row_id": "dev-inf-es-8k-t03a", "probs": [0.0988, 0.1002, 0.356, 0.0296, 0.0195, 0.2117, 0.1309, 0.0533], "model": "laya-multilingual", "ms": 100.7}
+{"row_id": "dev-inf-es-8k-t03b", "probs": [0.0714, 0.3383, 0.4013, 0.0153, 0.011, 0.0864, 0.0559, 0.0205], "model": "laya-multilingual", "ms": 101.7}
+{"row_id": "dev-inf-es-8k-t03c", "probs": [0.0678, 0.0671, 0.1583, 0.0584, 0.0302, 0.3046, 0.1651, 0.1485], "model": "laya-multilingual", "ms": 99.4}
+{"row_id": "dev-inf-es-8k-t04a", "probs": [0.1171, 0.0597, 0.2882, 0.1713, 0.1055, 0.1042, 0.0953, 0.0586], "model": "laya-multilingual", "ms": 97.3}
+{"row_id": "dev-inf-es-8k-t04b", "probs": [0.1037, 0.095, 0.1845, 0.2226, 0.1223, 0.1036, 0.1049, 0.0635], "model": "laya-multilingual", "ms": 94.9}
+{"row_id": "dev-inf-es-8k-t04c", "probs": [0.1074, 0.155, 0.3436, 0.1162, 0.0977, 0.0788, 0.0678, 0.0336], "model": "laya-multilingual", "ms": 97.1}
+{"row_id": "dev-inf-en-2k-t01a", "probs": [0.6599, 0.3401], "model": "laya", "ms": 610.0}
+{"row_id": "dev-inf-en-2k-t01b", "probs": [0.5298, 0.4702], "model": "laya", "ms": 129.4}
+{"row_id": "dev-inf-en-2k-t01c", "probs": [0.2598, 0.7402], "model": "laya", "ms": 139.2}
+{"row_id": "dev-inf-en-2k-t02a", "probs": [0.8602, 0.1398], "model": "laya", "ms": 1155.5}
+{"row_id": "dev-inf-en-2k-t02b", "probs": [0.1437, 0.8563], "model": "laya", "ms": 1836.9}
+{"row_id": "dev-inf-en-2k-t02c", "probs": [0.9307, 0.0693], "model": "laya", "ms": 1514.6}
+{"row_id": "dev-inf-en-2k-t03a", "probs": [0.8219, 0.1781], "model": "laya", "ms": 1310.9}
+{"row_id": "dev-inf-en-2k-t03b", "probs": [0.3856, 0.6144], "model": "laya", "ms": 1574.4}
+{"row_id": "dev-inf-en-2k-t03c", "probs": [0.7072, 0.2928], "model": "laya", "ms": 1053.6}
+{"row_id": "dev-inf-en-2k-t04a", "probs": [0.7919, 0.2081], "model": "laya", "ms": 915.6}
+{"row_id": "dev-inf-en-2k-t04b", "probs": [0.6052, 0.3948], "model": "laya", "ms": 1080.7}
+{"row_id": "dev-inf-en-2k-t04c", "probs": [0.6522, 0.3478], "model": "laya", "ms": 1646.9}
+{"row_id": "dev-inf-en-2k-p01a", "probs": [0.8153, 0.1847], "model": "laya", "ms": 1020.4}
+{"row_id": "dev-inf-en-2k-p01b", "probs": [0.1994, 0.8006], "model": "laya", "ms": 1361.1}
+{"row_id": "dev-inf-en-2k-p02a", "probs": [0.97, 0.03], "model": "laya", "ms": 1174.1}
+{"row_id": "dev-inf-en-2k-p02b", "probs": [0.5356, 0.4644], "model": "laya", "ms": 1094.3}
+{"row_id": "dev-inf-en-3k-t01a", "probs": [0.0339, 0.9537, 0.0124], "model": "laya", "ms": 1450.0}
+{"row_id": "dev-inf-en-3k-t01b", "probs": [0.4832, 0.3936, 0.1232], "model": "laya", "ms": 1642.4}
+{"row_id": "dev-inf-en-3k-t01c", "probs": [0.3253, 0.6334, 0.0413], "model": "laya", "ms": 1353.9}
+{"row_id": "dev-inf-en-3k-t02a", "probs": [0.9658, 0.0205, 0.0136], "model": "laya", "ms": 1598.6}
+{"row_id": "dev-inf-en-3k-t02b", "probs": [0.2092, 0.1668, 0.6241], "model": "laya", "ms": 1199.5}
+{"row_id": "dev-inf-en-3k-t02c", "probs": [0.9896, 0.0052, 0.0051], "model": "laya", "ms": 1353.4}
+{"row_id": "dev-inf-en-3k-t03a", "probs": [0.6487, 0.2173, 0.1339], "model": "laya", "ms": 1072.3}
+{"row_id": "dev-inf-en-3k-t03b", "probs": [0.1043, 0.2317, 0.664], "model": "laya", "ms": 1498.5}
+{"row_id": "dev-inf-en-3k-t03c", "probs": [0.7928, 0.1201, 0.0871], "model": "laya", "ms": 1107.1}
+{"row_id": "dev-inf-en-3k-t04a", "probs": [0.9006, 0.0847, 0.0147], "model": "laya", "ms": 1176.4}
+{"row_id": "dev-inf-en-3k-t04b", "probs": [0.0286, 0.1222, 0.8492], "model": "laya", "ms": 1036.0}
+{"row_id": "dev-inf-en-3k-t04c", "probs": [0.871, 0.0987, 0.0303], "model": "laya", "ms": 878.8}
+{"row_id": "dev-inf-en-8k-t01a", "probs": [0.3443, 0.1086, 0.0844, 0.2482, 0.1182, 0.0594, 0.0212, 0.0158], "model": "laya", "ms": 1528.0}
+{"row_id": "dev-inf-en-8k-t01b", "probs": [0.284, 0.1254, 0.0973, 0.1129, 0.1444, 0.0963, 0.0302, 0.1095], "model": "laya", "ms": 1806.0}
+{"row_id": "dev-inf-en-8k-t01c", "probs": [0.0058, 0.0113, 0.0149, 0.9538, 0.0037, 0.004, 0.0026, 0.0038], "model": "laya", "ms": 1208.6}
+{"row_id": "dev-inf-en-8k-t02a", "probs": [0.0947, 0.511, 0.0207, 0.0162, 0.1792, 0.0201, 0.0134, 0.1447], "model": "laya", "ms": 1160.0}
+{"row_id": "dev-inf-en-8k-t02b", "probs": [0.0131, 0.0285, 0.0159, 0.0237, 0.8958, 0.0078, 0.0066, 0.0086], "model": "laya", "ms": 576.8}
+{"row_id": "dev-inf-en-8k-t02c", "probs": [0.0689, 0.6241, 0.0208, 0.0196, 0.0352, 0.0246, 0.0221, 0.1847], "model": "laya", "ms": 885.7}
+{"row_id": "dev-inf-en-8k-t03a", "probs": [0.0418, 0.0659, 0.0507, 0.0068, 0.0142, 0.8089, 0.0051, 0.0065], "model": "laya", "ms": 634.6}
+{"row_id": "dev-inf-en-8k-t03b", "probs": [0.0047, 0.0098, 0.0083, 0.0015, 0.0019, 0.0032, 0.0022, 0.9684], "model": "laya", "ms": 664.5}
+{"row_id": "dev-inf-en-8k-t03c", "probs": [0.0238, 0.0475, 0.0356, 0.0078, 0.0147, 0.8606, 0.0029, 0.0071], "model": "laya", "ms": 695.0}
+{"row_id": "dev-inf-en-8k-t04a", "probs": [0.1024, 0.0983, 0.0942, 0.6124, 0.038, 0.0223, 0.0124, 0.02], "model": "laya", "ms": 445.4}
+{"row_id": "dev-inf-en-8k-t04b", "probs": [0.0945, 0.1229, 0.0614, 0.1012, 0.5551, 0.0282, 0.0136, 0.0232], "model": "laya", "ms": 380.8}
+{"row_id": "dev-inf-en-8k-t04c", "probs": [0.0164, 0.0233, 0.0378, 0.8873, 0.0128, 0.0097, 0.0065, 0.0061], "model": "laya", "ms": 239.0}
+{"row_id": "dev-pri-es-2k-t01a", "probs": [0.5664, 0.4336], "model": "laya-multilingual", "ms": 237.3}
+{"row_id": "dev-pri-es-2k-t01b", "probs": [0.7711, 0.2289], "model": "laya-multilingual", "ms": 77.0}
+{"row_id": "dev-pri-es-2k-t01c", "probs": [0.5656, 0.4344], "model": "laya-multilingual", "ms": 79.1}
+{"row_id": "dev-pri-es-2k-t02a", "probs": [0.6186, 0.3814], "model": "laya-multilingual", "ms": 79.1}
+{"row_id": "dev-pri-es-2k-t02b", "probs": [0.7338, 0.2662], "model": "laya-multilingual", "ms": 81.8}
+{"row_id": "dev-pri-es-2k-t02c", "probs": [0.8166, 0.1834], "model": "laya-multilingual", "ms": 87.2}
+{"row_id": "dev-pri-es-2k-t03a", "probs": [0.7783, 0.2217], "model": "laya-multilingual", "ms": 99.0}
+{"row_id": "dev-pri-es-2k-t03b", "probs": [0.84, 0.16], "model": "laya-multilingual", "ms": 82.0}
+{"row_id": "dev-pri-es-2k-t03c", "probs": [0.7608, 0.2392], "model": "laya-multilingual", "ms": 84.7}
+{"row_id": "dev-pri-es-2k-t04a", "probs": [0.7711, 0.2289], "model": "laya-multilingual", "ms": 1048.2}
+{"row_id": "dev-pri-es-2k-t04b", "probs": [0.7399, 0.2601], "model": "laya-multilingual", "ms": 1338.4}
+{"row_id": "dev-pri-es-2k-t04c", "probs": [0.7105, 0.2895], "model": "laya-multilingual", "ms": 655.5}
+{"row_id": "dev-pri-es-2k-p01a", "probs": [0.6912, 0.3088], "model": "laya-multilingual", "ms": 851.4}
+{"row_id": "dev-pri-es-2k-p01b", "probs": [0.6272, 0.3728], "model": "laya-multilingual", "ms": 681.3}
+{"row_id": "dev-pri-es-2k-p02a", "probs": [0.4527, 0.5473], "model": "laya-multilingual", "ms": 635.6}
+{"row_id": "dev-pri-es-2k-p02b", "probs": [0.6608, 0.3392], "model": "laya-multilingual", "ms": 772.1}
+{"row_id": "dev-pri-es-3k-t01a", "probs": [0.7534, 0.0946, 0.1521], "model": "laya-multilingual", "ms": 1044.3}
+{"row_id": "dev-pri-es-3k-t01b", "probs": [0.7867, 0.1181, 0.0952], "model": "laya-multilingual", "ms": 824.7}
+{"row_id": "dev-pri-es-3k-t01c", "probs": [0.5741, 0.1707, 0.2551], "model": "laya-multilingual", "ms": 786.8}
+{"row_id": "dev-pri-es-3k-t02a", "probs": [0.1742, 0.633, 0.1928], "model": "laya-multilingual", "ms": 1117.2}
+{"row_id": "dev-pri-es-3k-t02b", "probs": [0.5688, 0.2984, 0.1328], "model": "laya-multilingual", "ms": 802.3}
+{"row_id": "dev-pri-es-3k-t02c", "probs": [0.1273, 0.5114, 0.3612], "model": "laya-multilingual", "ms": 952.0}
+{"row_id": "dev-pri-es-3k-t03a", "probs": [0.4142, 0.1439, 0.4418], "model": "laya-multilingual", "ms": 868.4}
+{"row_id": "dev-pri-es-3k-t03b", "probs": [0.3079, 0.214, 0.4781], "model": "laya-multilingual", "ms": 944.0}
+{"row_id": "dev-pri-es-3k-t03c", "probs": [0.3033, 0.0282, 0.6685], "model": "laya-multilingual", "ms": 1084.6}
+{"row_id": "dev-pri-es-3k-t04a", "probs": [0.5508, 0.2195, 0.2297], "model": "laya-multilingual", "ms": 775.4}
+{"row_id": "dev-pri-es-3k-t04b", "probs": [0.5865, 0.2093, 0.2042], "model": "laya-multilingual", "ms": 897.4}
+{"row_id": "dev-pri-es-3k-t04c", "probs": [0.2548, 0.317, 0.4282], "model": "laya-multilingual", "ms": 863.3}
+{"row_id": "dev-pri-es-8k-t01a", "probs": [0.5421, 0.1496, 0.0191, 0.0832, 0.0305, 0.079, 0.0673, 0.0292], "model": "laya-multilingual", "ms": 1237.8}
+{"row_id": "dev-pri-es-8k-t01b", "probs": [0.3869, 0.1822, 0.0245, 0.1102, 0.0263, 0.1509, 0.0708, 0.0481], "model": "laya-multilingual", "ms": 1217.4}
+{"row_id": "dev-pri-es-8k-t01c", "probs": [0.3022, 0.2367, 0.0408, 0.0519, 0.0364, 0.2012, 0.0905, 0.0404], "model": "laya-multilingual", "ms": 1769.7}
+{"row_id": "dev-pri-es-8k-t02a", "probs": [0.0713, 0.1036, 0.1414, 0.0496, 0.2075, 0.0789, 0.2676, 0.08], "model": "laya-multilingual", "ms": 1835.3}
+{"row_id": "dev-pri-es-8k-t02b", "probs": [0.0752, 0.1218, 0.2234, 0.0458, 0.1511, 0.0615, 0.2524, 0.0688], "model": "laya-multilingual", "ms": 1351.3}
+{"row_id": "dev-pri-es-8k-t02c", "probs": [0.0603, 0.0791, 0.046, 0.0516, 0.2169, 0.0739, 0.4224, 0.0498], "model": "laya-multilingual", "ms": 1245.7}
+{"row_id": "dev-pri-es-8k-t03a", "probs": [0.5977, 0.0266, 0.0925, 0.1042, 0.0095, 0.0315, 0.0687, 0.0693], "model": "laya-multilingual", "ms": 1466.2}
+{"row_id": "dev-pri-es-8k-t03b", "probs": [0.6861, 0.0334, 0.0705, 0.0831, 0.0071, 0.0229, 0.0433, 0.0536], "model": "laya-multilingual", "ms": 1309.6}
+{"row_id": "dev-pri-es-8k-t03c", "probs": [0.6879, 0.0345, 0.0746, 0.0736, 0.02, 0.0149, 0.0521, 0.0423], "model": "laya-multilingual", "ms": 1169.3}
+{"row_id": "dev-pri-es-8k-t04a", "probs": [0.1837, 0.1431, 0.0878, 0.114, 0.0448, 0.128, 0.0818, 0.2168], "model": "laya-multilingual", "ms": 1150.6}
+{"row_id": "dev-pri-es-8k-t04b", "probs": [0.1544, 0.1456, 0.16, 0.1656, 0.0896, 0.0964, 0.0574, 0.1311], "model": "laya-multilingual", "ms": 901.6}
+{"row_id": "dev-pri-es-8k-t04c", "probs": [0.22, 0.151, 0.0717, 0.1035, 0.0389, 0.1228, 0.1007, 0.1914], "model": "laya-multilingual", "ms": 978.2}
+{"row_id": "dev-pri-en-2k-t01a", "probs": [0.9149, 0.0851], "model": "laya", "ms": 1815.7}
+{"row_id": "dev-pri-en-2k-t01b", "probs": [0.833, 0.167], "model": "laya", "ms": 930.8}
+{"row_id": "dev-pri-en-2k-t01c", "probs": [0.9061, 0.0939], "model": "laya", "ms": 895.5}
+{"row_id": "dev-pri-en-2k-t02a", "probs": [0.7084, 0.2916], "model": "laya", "ms": 926.6}
+{"row_id": "dev-pri-en-2k-t02b", "probs": [0.8427, 0.1573], "model": "laya", "ms": 911.7}
+{"row_id": "dev-pri-en-2k-t02c", "probs": [0.886, 0.114], "model": "laya", "ms": 1023.3}
+{"row_id": "dev-pri-en-2k-t03a", "probs": [0.807, 0.193], "model": "laya", "ms": 1121.3}
+{"row_id": "dev-pri-en-2k-t03b", "probs": [0.8376, 0.1624], "model": "laya", "ms": 1312.0}
+{"row_id": "dev-pri-en-2k-t03c", "probs": [0.8703, 0.1297], "model": "laya", "ms": 663.4}
+{"row_id": "dev-pri-en-2k-t04a", "probs": [0.8763, 0.1237], "model": "laya", "ms": 601.4}
+{"row_id": "dev-pri-en-2k-t04b", "probs": [0.859, 0.141], "model": "laya", "ms": 430.8}
+{"row_id": "dev-pri-en-2k-t04c", "probs": [0.8934, 0.1066], "model": "laya", "ms": 778.4}
+{"row_id": "dev-pri-en-2k-p01a", "probs": [0.6771, 0.3229], "model": "laya", "ms": 248.2}
+{"row_id": "dev-pri-en-2k-p01b", "probs": [0.6719, 0.3281], "model": "laya", "ms": 239.5}
+{"row_id": "dev-pri-en-2k-p02a", "probs": [0.8286, 0.1714], "model": "laya", "ms": 221.4}
+{"row_id": "dev-pri-en-2k-p02b", "probs": [0.3676, 0.6324], "model": "laya", "ms": 164.2}
+{"row_id": "dev-pri-en-3k-t01a", "probs": [0.6297, 0.1919, 0.1784], "model": "laya", "ms": 163.1}
+{"row_id": "dev-pri-en-3k-t01b", "probs": [0.6328, 0.2369, 0.1302], "model": "laya", "ms": 173.6}
+{"row_id": "dev-pri-en-3k-t01c", "probs": [0.7854, 0.1289, 0.0857], "model": "laya", "ms": 778.8}
+{"row_id": "dev-pri-en-3k-t02a", "probs": [0.6092, 0.3451, 0.0458], "model": "laya", "ms": 1885.8}
+{"row_id": "dev-pri-en-3k-t02b", "probs": [0.6786, 0.2547, 0.0667], "model": "laya", "ms": 1926.2}
+{"row_id": "dev-pri-en-3k-t02c", "probs": [0.6103, 0.2918, 0.0979], "model": "laya", "ms": 1525.2}
+{"row_id": "dev-pri-en-3k-t03a", "probs": [0.7426, 0.1609, 0.0965], "model": "laya", "ms": 1510.1}
+{"row_id": "dev-pri-en-3k-t03b", "probs": [0.7225, 0.1709, 0.1065], "model": "laya", "ms": 1479.6}
+{"row_id": "dev-pri-en-3k-t03c", "probs": [0.7379, 0.1666, 0.0955], "model": "laya", "ms": 2441.6}
+{"row_id": "dev-pri-en-3k-t04a", "probs": [0.8879, 0.0772, 0.0349], "model": "laya", "ms": 1455.3}
+{"row_id": "dev-pri-en-3k-t04b", "probs": [0.8295, 0.1284, 0.042], "model": "laya", "ms": 2462.8}
+{"row_id": "dev-pri-en-3k-t04c", "probs": [0.9201, 0.0478, 0.0321], "model": "laya", "ms": 1886.3}
+{"row_id": "dev-pri-en-8k-t01a", "probs": [0.9757, 0.0042, 0.0029, 0.0018, 0.0022, 0.0012, 0.0063, 0.0057], "model": "laya", "ms": 1790.6}
+{"row_id": "dev-pri-en-8k-t01b", "probs": [0.9855, 0.0024, 0.0017, 0.0015, 0.0023, 0.0012, 0.0048, 0.0007], "model": "laya", "ms": 2020.2}
+{"row_id": "dev-pri-en-8k-t01c", "probs": [0.968, 0.005, 0.0043, 0.0027, 0.0023, 0.0024, 0.006, 0.0093], "model": "laya", "ms": 2305.1}
+{"row_id": "dev-pri-en-8k-t02a", "probs": [0.6109, 0.0369, 0.0603, 0.0196, 0.0337, 0.1121, 0.111, 0.0156], "model": "laya", "ms": 1749.4}
+{"row_id": "dev-pri-en-8k-t02b", "probs": [0.6819, 0.0324, 0.0555, 0.0181, 0.041, 0.1013, 0.047, 0.0228], "model": "laya", "ms": 1746.5}
+{"row_id": "dev-pri-en-8k-t02c", "probs": [0.5064, 0.0381, 0.0749, 0.0225, 0.0377, 0.1479, 0.1499, 0.0227], "model": "laya", "ms": 1692.2}
+{"row_id": "dev-pri-en-8k-t03a", "probs": [0.3069, 0.1681, 0.1693, 0.011, 0.0096, 0.25, 0.0641, 0.0211], "model": "laya", "ms": 1715.2}
+{"row_id": "dev-pri-en-8k-t03b", "probs": [0.0479, 0.098, 0.7331, 0.0094, 0.0125, 0.0487, 0.0352, 0.0153], "model": "laya", "ms": 1615.4}
+{"row_id": "dev-pri-en-8k-t03c", "probs": [0.3357, 0.2015, 0.1792, 0.0147, 0.0078, 0.1416, 0.0653, 0.0542], "model": "laya", "ms": 1218.5}
+{"row_id": "dev-pri-en-8k-t04a", "probs": [0.8975, 0.0416, 0.0158, 0.0082, 0.0042, 0.0187, 0.0052, 0.0088], "model": "laya", "ms": 851.6}
+{"row_id": "dev-pri-en-8k-t04b", "probs": [0.7691, 0.1101, 0.0421, 0.0155, 0.004, 0.0323, 0.0026, 0.0242], "model": "laya", "ms": 1265.3}
+{"row_id": "dev-pri-en-8k-t04c", "probs": [0.8805, 0.0488, 0.0208, 0.009, 0.0069, 0.0254, 0.0047, 0.0038], "model": "laya", "ms": 312.1}

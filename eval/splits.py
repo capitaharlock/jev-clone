@@ -741,7 +741,11 @@ def scan_index_modulo(
     base = root or ROOT
     out: list[ModuloViolation] = []
     for dirpath, dirnames, filenames in os.walk(base):
-        dirnames[:] = [d for d in dirnames if d not in SCAN_SKIP_DIRS]
+        # any `.venv*` (the Laya environment `.venv-laya` of
+        # #T-laya-baseline is one) is third-party code, never a split
+        dirnames[:] = [d for d in dirnames
+                       if d not in SCAN_SKIP_DIRS
+                       and not d.startswith(".venv")]
         for fn in sorted(filenames):
             if not fn.endswith(".py"):
                 continue

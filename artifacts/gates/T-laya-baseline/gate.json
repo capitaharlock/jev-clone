@@ -1,0 +1,1334 @@
+{
+  "artifact": "artifacts/gates/T-laya-baseline/gate.json",
+  "checkpoints": {
+    "laya": {
+      "cfg": {
+        "encoder": "answerdotai/ModernBERT-large",
+        "head_max_len": 192,
+        "max_len": 512,
+        "temperature": [
+          1.6369030475616455,
+          1.2514300346374512,
+          1.983399510383606
+        ]
+      },
+      "device": "cpu",
+      "encoder": "ModernBERT-large (English, ~421 M)",
+      "load_seconds": 2.8,
+      "local_dir": "/Users/ricartjuncadella/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "repo": "convaiinnovations/laya",
+      "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "weights_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c"
+    },
+    "laya-multilingual": {
+      "cfg": {
+        "encoder": "jhu-clsp/mmBERT-base",
+        "head_max_len": 256,
+        "max_len": 1024,
+        "temperature": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "device": "cpu",
+      "encoder": "mmBERT-base (100+ languages, ~300 M)",
+      "load_seconds": 27.6,
+      "local_dir": "/Users/ricartjuncadella/.cache/huggingface/hub/models--convaiinnovations--laya-multilingual/snapshots/e4e9ddf21a7b1903b7acffd8814ad4307bf63a67",
+      "repo": "convaiinnovations/laya-multilingual",
+      "revision": "e4e9ddf21a7b1903b7acffd8814ad4307bf63a67",
+      "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"
+    }
+  },
+  "checks": {
+    "banking77_k77": {
+      "cardinality_reading": null,
+      "cardinality_sweep": {},
+      "checkpoint": "laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "measured": true,
+      "model_version": "laya:convaiinnovations/laya@55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "ours_harness": {
+        "abstain_rate": 0.0,
+        "accuracy": 0.379221,
+        "accuracy_ci95": [
+          0.362246,
+          0.396496
+        ],
+        "accuracy_options_only": 0.379221,
+        "accuracy_options_only_ci95": [
+          0.362246,
+          0.396496
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 77,
+        "chance": 0.012987,
+        "hits": 1168,
+        "hits_options_only": 1168,
+        "n": 3080,
+        "ranking_beats_chance": true,
+        "ranking_beats_chance_decided_by": "accuracy_options_only_ci95[0] > chance — the ranking with `unknown` taken out of the race, a diagnostic"
+      },
+      "pass": true,
+      "pointer_head_for_scale": {
+        "accuracy": 0.0123,
+        "chance": 0.013,
+        "citation": true,
+        "source": "artifacts/gates/T-fullspace-objective/",
+        "who": "our pointer head (#T-fullspace-objective)"
+      },
+      "published": {
+        "accuracy": 0.425,
+        "caveat": "their harness, their 400 rows; ours below is the full official test split through eval.fullspace",
+        "citation": true,
+        "n": 400,
+        "setup": "400 test cases, seed 13, CPU, criteria = the 77 labels with underscores replaced by spaces, state {'message': text}, laya 0.2.1",
+        "source": "TMP/laya/BENCHMARKS.md §'On the public datasets where Jev numbers exist'; research/scripts/bench_apps.py",
+        "who": "Laya (both base checkpoints)"
+      },
+      "read_from": "artifacts/gates/T-laya-baseline/fullspace.json",
+      "test_cut_query_logged": "artifacts/gates/T-eval-cardinality/test-queries.json"
+    },
+    "battery_dev_forced": {
+      "accuracy": 0.595,
+      "accuracy_ci95": [
+        0.546211,
+        0.641982
+      ],
+      "beats_chance": true,
+      "by_family": {
+        "attribute_comparison": {
+          "accuracy": 0.325,
+          "accuracy_ci95": [
+            0.232442,
+            0.433595
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 26,
+          "n": 80
+        },
+        "description_classification": {
+          "accuracy": 0.7875,
+          "accuracy_ci95": [
+            0.685778,
+            0.862876
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 63,
+          "n": 80
+        },
+        "extraction_paraphrase": {
+          "accuracy": 0.8125,
+          "accuracy_ci95": [
+            0.713417,
+            0.882947
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 65,
+          "n": 80
+        },
+        "priority_decision": {
+          "accuracy": 0.3625,
+          "accuracy_ci95": [
+            0.265708,
+            0.471892
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 29,
+          "n": 80
+        },
+        "textual_inference_negation": {
+          "accuracy": 0.6875,
+          "accuracy_ci95": [
+            0.579322,
+            0.778496
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 55,
+          "n": 80
+        }
+      },
+      "by_lang": {
+        "en": {
+          "answered_by": "laya",
+          "counterfactual": {
+            "accuracy": 0.428571,
+            "accuracy_ci95": [
+              0.319353,
+              0.545222
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 30,
+            "n": 70
+          },
+          "macro_ranking": 0.66,
+          "ranking": {
+            "accuracy": 0.66,
+            "accuracy_ci95": [
+              0.591885,
+              0.722085
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 132,
+            "n": 200
+          },
+          "report": "artifacts/gates/T-laya-baseline/refs-laya-lang-en.json"
+        },
+        "es": {
+          "answered_by": "laya-multilingual",
+          "counterfactual": {
+            "accuracy": 0.285714,
+            "accuracy_ci95": [
+              0.193222,
+              0.400502
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.082569,
+            "hits": 20,
+            "n": 70
+          },
+          "macro_ranking": 0.53,
+          "ranking": {
+            "accuracy": 0.53,
+            "accuracy_ci95": [
+              0.460917,
+              0.597952
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 106,
+            "n": 200
+          },
+          "report": "artifacts/gates/T-laya-baseline/refs-laya-lang-es.json"
+        }
+      },
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "hits": 238,
+      "macro_by_family": {
+        "accuracy_ranking": 0.595,
+        "chance_ranking": 0.3375,
+        "ci95_why_absent": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here",
+        "worst_family": "attribute_comparison"
+      },
+      "measured": true,
+      "n": 400,
+      "pass": true,
+      "permutation_control": {
+        "caveat": "the API rounds each weight to 4 decimals, so a delta at 1e-4 is rounding and a delta well above it is order sensitivity; the tolerance is the suite's and is not moved",
+        "flip_rate": 0.32,
+        "flipped": 128,
+        "max_abs_prob_delta": 0.8891,
+        "measured": true,
+        "n_perms": 400,
+        "n_rows": 400,
+        "pass": false,
+        "sample": "all 400 rows of the cut, one reversal each",
+        "source": "T-laya-baseline — measured in this run, same checkpoints, same protocol, same rows",
+        "tolerance": 1e-05
+      },
+      "read_from": "artifacts/gates/T-laya-baseline/refs-laya.json",
+      "rows_by_model": {
+        "laya": 200,
+        "laya-multilingual": 200
+      }
+    },
+    "counterfactual_pairs": {
+      "accuracy": 0.357143,
+      "accuracy_ci95": [
+        0.282561,
+        0.439355
+      ],
+      "beats_chance": true,
+      "beside_ours": {
+        "nli-nograd": {
+          "accuracy": 0.342857,
+          "accuracy_ci95": [
+            0.269371,
+            0.424737
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 48,
+          "n": 140
+        },
+        "pointer-control:fullspace-62528": {
+          "accuracy": 0.014286,
+          "accuracy_ci95": [
+            0.003926,
+            0.050588
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 2,
+          "n": 140
+        },
+        "pointer-control:leverstack-1m": {
+          "accuracy": 0.007143,
+          "accuracy_ci95": [
+            0.001262,
+            0.039348
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 1,
+          "n": 140
+        },
+        "qwen-local": {
+          "accuracy": 0.878571,
+          "accuracy_ci95": [
+            0.814135,
+            0.922787
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 123,
+          "n": 140
+        }
+      },
+      "cardinality": 4.1,
+      "chance": 0.082569,
+      "groups_with_one_half_only": 68,
+      "hits": 50,
+      "measured": true,
+      "n": 140,
+      "outcome_vs_ours": {
+        "nli-nograd": "ties",
+        "pointer-control:fullspace-62528": "wins",
+        "pointer-control:leverstack-1m": "wins",
+        "qwen-local": "loses"
+      },
+      "pass": true,
+      "read_from": "artifacts/gates/T-laya-baseline/refs-laya.json /counterfactual",
+      "tracking": {
+        "followed": 74,
+        "n": 140,
+        "rate": 0.528571,
+        "same_slot": 66,
+        "same_slot_rate": 0.471429
+      }
+    },
+    "mix_declared_per_dataset": {
+      "datasets": {
+        "ag_news": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/README.md §'English tasks': 'AG News … in training mix'",
+          "transfer": "NOT clean"
+        },
+        "banking77": {
+          "in_laya_training_mix": false,
+          "source": "TMP/laya/BENCHMARKS.md §'On the public datasets where Jev numbers exist' lists banking77 without an in-training mark; TMP/laya/research/scripts/bench_apps.py registers `jev.banking77_full` with `in_training=False`; build_benchmark_nb.py: 'sst5, emotion, prompt_injections, banking77 were held out'",
+          "transfer": "clean, as declared by the authors — the mix itself is not published row by row, so this is their word"
+        },
+        "battery-dev": {
+          "in_laya_training_mix": false,
+          "source": "data/battery_dev.jsonl is hand-written (#T-battery-dev, 2026-09-26) and has never left this repo",
+          "transfer": "clean"
+        },
+        "boolq": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/README.md §'English tasks': 'BoolQ … in training mix'",
+          "transfer": "NOT clean"
+        },
+        "email-spam": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/BENCHMARKS.md §Themes: 'Email spam … in training'",
+          "transfer": "NOT clean"
+        },
+        "phishing": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/BENCHMARKS.md §Themes: 'Phishing … in training'",
+          "transfer": "NOT clean"
+        },
+        "rag-passage-relevance": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/BENCHMARKS.md §Themes: 'RAG passage relevance … in training'",
+          "transfer": "NOT clean"
+        },
+        "support-triage": {
+          "in_laya_training_mix": true,
+          "source": "TMP/laya/BENCHMARKS.md §Themes: 'Support triage … in training'",
+          "transfer": "NOT clean"
+        }
+      },
+      "how_measured": "read off the cited files of the Laya clone; the mix itself is not published row by row",
+      "measured_here": [
+        "battery-dev",
+        "banking77"
+      ],
+      "needs_compute": false,
+      "pass": true
+    },
+    "same_rows_as_preflight": {
+      "columns": [
+        "laya",
+        "nli-nograd",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m",
+        "qwen-local"
+      ],
+      "compared_on": "row_id, family, variant_group, K and the gold slot — identity, not size: two columns of 400 rows each can still be two different cuts",
+      "how_measured": "eval.preflight_refs.same_rows() over the Laya column and every preflight column measured on these rows, compared by identity; the sha is then matched against the one the preflight gate signed",
+      "matches_preflight_gate": true,
+      "n": 400,
+      "pass": true,
+      "preflight_columns": [
+        "nli-nograd",
+        "pointer-control:fullspace-62528",
+        "pointer-control:leverstack-1m",
+        "qwen-local"
+      ],
+      "preflight_gate_rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+      "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+      "rule": "the runner FAILS if the n of the columns do not match"
+    }
+  },
+  "commands": {
+    "banking77": "PYTHONPATH=. .venv-laya/bin/python -m eval.laya_baseline banking77 --device cpu --no-sweep",
+    "battery": "PYTHONPATH=. .venv-laya/bin/python -m eval.laya_baseline battery --device cpu",
+    "gate": "PYTHONPATH=. .venv-train/bin/python -m eval.laya_baseline gate"
+  },
+  "comparison": {
+    "nli-nograd": {
+      "by_family": {
+        "attribute_comparison": {
+          "laya": {
+            "accuracy": 0.325,
+            "accuracy_ci95": [
+              0.232442,
+              0.433595
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 26,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.4125,
+            "accuracy_ci95": [
+              0.311059,
+              0.52196
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 33,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "description_classification": {
+          "laya": {
+            "accuracy": 0.7875,
+            "accuracy_ci95": [
+              0.685778,
+              0.862876
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 63,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.5875,
+            "accuracy_ci95": [
+              0.47804,
+              0.688941
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 47,
+            "n": 80
+          },
+          "outcome": "ties"
+        },
+        "extraction_paraphrase": {
+          "laya": {
+            "accuracy": 0.8125,
+            "accuracy_ci95": [
+              0.713417,
+              0.882947
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 65,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.9375,
+            "accuracy_ci95": [
+              0.861899,
+              0.973011
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 75,
+            "n": 80
+          },
+          "outcome": "ties"
+        },
+        "priority_decision": {
+          "laya": {
+            "accuracy": 0.3625,
+            "accuracy_ci95": [
+              0.265708,
+              0.471892
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 29,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.276942,
+              0.484513
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 30,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "textual_inference_negation": {
+          "laya": {
+            "accuracy": 0.6875,
+            "accuracy_ci95": [
+              0.579322,
+              0.778496
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 55,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.8,
+            "accuracy_ci95": [
+              0.699538,
+              0.872972
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 64,
+            "n": 80
+          },
+          "outcome": "ties"
+        }
+      },
+      "counterfactual": {
+        "laya": {
+          "accuracy": 0.357143,
+          "accuracy_ci95": [
+            0.282561,
+            0.439355
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 50,
+          "n": 140
+        },
+        "ours": {
+          "accuracy": 0.342857,
+          "accuracy_ci95": [
+            0.269371,
+            0.424737
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 48,
+          "n": 140
+        }
+      },
+      "macro_ranking": {
+        "laya": 0.595,
+        "ours": 0.6225
+      },
+      "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+      "outcome": {
+        "counterfactual": "ties",
+        "ranking": "ties",
+        "rule": {
+          "fails_alike": "neither interval clears its chance by the lower bound",
+          "loses": "laya.accuracy_ci95[1] < ours.accuracy_ci95[0]",
+          "ties": "the intervals overlap",
+          "why_intervals": "same rows, same K, so the two Wilson intervals are on the same axis; a paired test is not published because the suite does not compute one and no arithmetic is done here",
+          "wins": "laya.accuracy_ci95[0] > ours.accuracy_ci95[1]"
+        }
+      },
+      "paired": {
+        "both_right": 186,
+        "laya_only": 52,
+        "neither": 99,
+        "ours_only": 63,
+        "what": "forced pick per row, counted; a McNemar test is not published because the suite has none"
+      },
+      "ranking": {
+        "laya": {
+          "accuracy": 0.595,
+          "accuracy_ci95": [
+            0.546211,
+            0.641982
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 238,
+          "n": 400
+        },
+        "ours": {
+          "accuracy": 0.6225,
+          "accuracy_ci95": [
+            0.574041,
+            0.668628
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 249,
+          "n": 400
+        }
+      },
+      "report": "artifacts/gates/T-preflight-refs/refs-nli-nograd.json"
+    },
+    "pointer-control:fullspace-62528": {
+      "by_family": {
+        "attribute_comparison": {
+          "laya": {
+            "accuracy": 0.325,
+            "accuracy_ci95": [
+              0.232442,
+              0.433595
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 26,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.3,
+            "accuracy_ci95": [
+              0.210646,
+              0.407682
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 24,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "description_classification": {
+          "laya": {
+            "accuracy": 0.7875,
+            "accuracy_ci95": [
+              0.685778,
+              0.862876
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 63,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.3875,
+            "accuracy_ci95": [
+              0.288246,
+              0.497063
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 31,
+            "n": 80
+          },
+          "outcome": "wins"
+        },
+        "extraction_paraphrase": {
+          "laya": {
+            "accuracy": 0.8125,
+            "accuracy_ci95": [
+              0.713417,
+              0.882947
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 65,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.2875,
+            "accuracy_ci95": [
+              0.199869,
+              0.394603
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 23,
+            "n": 80
+          },
+          "outcome": "wins"
+        },
+        "priority_decision": {
+          "laya": {
+            "accuracy": 0.3625,
+            "accuracy_ci95": [
+              0.265708,
+              0.471892
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 29,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.3375,
+            "accuracy_ci95": [
+              0.243456,
+              0.446435
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 27,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "textual_inference_negation": {
+          "laya": {
+            "accuracy": 0.6875,
+            "accuracy_ci95": [
+              0.579322,
+              0.778496
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 55,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.3375,
+            "accuracy_ci95": [
+              0.243456,
+              0.446435
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 27,
+            "n": 80
+          },
+          "outcome": "wins"
+        }
+      },
+      "counterfactual": {
+        "laya": {
+          "accuracy": 0.357143,
+          "accuracy_ci95": [
+            0.282561,
+            0.439355
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 50,
+          "n": 140
+        },
+        "ours": {
+          "accuracy": 0.014286,
+          "accuracy_ci95": [
+            0.003926,
+            0.050588
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 2,
+          "n": 140
+        }
+      },
+      "macro_ranking": {
+        "laya": 0.595,
+        "ours": 0.33
+      },
+      "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+      "outcome": {
+        "counterfactual": "wins",
+        "ranking": "wins",
+        "rule": {
+          "fails_alike": "neither interval clears its chance by the lower bound",
+          "loses": "laya.accuracy_ci95[1] < ours.accuracy_ci95[0]",
+          "ties": "the intervals overlap",
+          "why_intervals": "same rows, same K, so the two Wilson intervals are on the same axis; a paired test is not published because the suite does not compute one and no arithmetic is done here",
+          "wins": "laya.accuracy_ci95[0] > ours.accuracy_ci95[1]"
+        }
+      },
+      "paired": {
+        "both_right": 90,
+        "laya_only": 148,
+        "neither": 120,
+        "ours_only": 42,
+        "what": "forced pick per row, counted; a McNemar test is not published because the suite has none"
+      },
+      "ranking": {
+        "laya": {
+          "accuracy": 0.595,
+          "accuracy_ci95": [
+            0.546211,
+            0.641982
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 238,
+          "n": 400
+        },
+        "ours": {
+          "accuracy": 0.33,
+          "accuracy_ci95": [
+            0.285728,
+            0.377506
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 132,
+          "n": 400
+        }
+      },
+      "report": "artifacts/gates/T-preflight-refs/refs-pointer-control-fullspace-62528.json"
+    },
+    "pointer-control:leverstack-1m": {
+      "by_family": {
+        "attribute_comparison": {
+          "laya": {
+            "accuracy": 0.325,
+            "accuracy_ci95": [
+              0.232442,
+              0.433595
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 26,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.275,
+            "accuracy_ci95": [
+              0.189178,
+              0.381441
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 22,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "description_classification": {
+          "laya": {
+            "accuracy": 0.7875,
+            "accuracy_ci95": [
+              0.685778,
+              0.862876
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 63,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.3375,
+            "accuracy_ci95": [
+              0.243456,
+              0.446435
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 27,
+            "n": 80
+          },
+          "outcome": "wins"
+        },
+        "extraction_paraphrase": {
+          "laya": {
+            "accuracy": 0.8125,
+            "accuracy_ci95": [
+              0.713417,
+              0.882947
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 65,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.275,
+            "accuracy_ci95": [
+              0.189178,
+              0.381441
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 22,
+            "n": 80
+          },
+          "outcome": "wins"
+        },
+        "priority_decision": {
+          "laya": {
+            "accuracy": 0.3625,
+            "accuracy_ci95": [
+              0.265708,
+              0.471892
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 29,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.276942,
+              0.484513
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 30,
+            "n": 80
+          },
+          "outcome": "fails_alike"
+        },
+        "textual_inference_negation": {
+          "laya": {
+            "accuracy": 0.6875,
+            "accuracy_ci95": [
+              0.579322,
+              0.778496
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 55,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.276942,
+              0.484513
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 30,
+            "n": 80
+          },
+          "outcome": "wins"
+        }
+      },
+      "counterfactual": {
+        "laya": {
+          "accuracy": 0.357143,
+          "accuracy_ci95": [
+            0.282561,
+            0.439355
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 50,
+          "n": 140
+        },
+        "ours": {
+          "accuracy": 0.007143,
+          "accuracy_ci95": [
+            0.001262,
+            0.039348
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 1,
+          "n": 140
+        }
+      },
+      "macro_ranking": {
+        "laya": 0.595,
+        "ours": 0.3275
+      },
+      "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+      "outcome": {
+        "counterfactual": "wins",
+        "ranking": "wins",
+        "rule": {
+          "fails_alike": "neither interval clears its chance by the lower bound",
+          "loses": "laya.accuracy_ci95[1] < ours.accuracy_ci95[0]",
+          "ties": "the intervals overlap",
+          "why_intervals": "same rows, same K, so the two Wilson intervals are on the same axis; a paired test is not published because the suite does not compute one and no arithmetic is done here",
+          "wins": "laya.accuracy_ci95[0] > ours.accuracy_ci95[1]"
+        }
+      },
+      "paired": {
+        "both_right": 82,
+        "laya_only": 156,
+        "neither": 113,
+        "ours_only": 49,
+        "what": "forced pick per row, counted; a McNemar test is not published because the suite has none"
+      },
+      "ranking": {
+        "laya": {
+          "accuracy": 0.595,
+          "accuracy_ci95": [
+            0.546211,
+            0.641982
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 238,
+          "n": 400
+        },
+        "ours": {
+          "accuracy": 0.3275,
+          "accuracy_ci95": [
+            0.28334,
+            0.374942
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 131,
+          "n": 400
+        }
+      },
+      "report": "artifacts/gates/T-preflight-refs/refs-pointer-control-leverstack-1m.json"
+    },
+    "qwen-local": {
+      "by_family": {
+        "attribute_comparison": {
+          "laya": {
+            "accuracy": 0.325,
+            "accuracy_ci95": [
+              0.232442,
+              0.433595
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 26,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.9875,
+            "accuracy_ci95": [
+              0.932537,
+              0.99779
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 79,
+            "n": 80
+          },
+          "outcome": "loses"
+        },
+        "description_classification": {
+          "laya": {
+            "accuracy": 0.7875,
+            "accuracy_ci95": [
+              0.685778,
+              0.862876
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 63,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.9375,
+            "accuracy_ci95": [
+              0.861899,
+              0.973011
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 75,
+            "n": 80
+          },
+          "outcome": "ties"
+        },
+        "extraction_paraphrase": {
+          "laya": {
+            "accuracy": 0.8125,
+            "accuracy_ci95": [
+              0.713417,
+              0.882947
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 65,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.975,
+            "accuracy_ci95": [
+              0.913356,
+              0.993117
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 78,
+            "n": 80
+          },
+          "outcome": "loses"
+        },
+        "priority_decision": {
+          "laya": {
+            "accuracy": 0.3625,
+            "accuracy_ci95": [
+              0.265708,
+              0.471892
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 29,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.878377,
+              0.980386
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 76,
+            "n": 80
+          },
+          "outcome": "loses"
+        },
+        "textual_inference_negation": {
+          "laya": {
+            "accuracy": 0.6875,
+            "accuracy_ci95": [
+              0.579322,
+              0.778496
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 55,
+            "n": 80
+          },
+          "ours": {
+            "accuracy": 0.975,
+            "accuracy_ci95": [
+              0.913356,
+              0.993117
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 78,
+            "n": 80
+          },
+          "outcome": "loses"
+        }
+      },
+      "counterfactual": {
+        "laya": {
+          "accuracy": 0.357143,
+          "accuracy_ci95": [
+            0.282561,
+            0.439355
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 50,
+          "n": 140
+        },
+        "ours": {
+          "accuracy": 0.878571,
+          "accuracy_ci95": [
+            0.814135,
+            0.922787
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.082569,
+          "hits": 123,
+          "n": 140
+        }
+      },
+      "macro_ranking": {
+        "laya": 0.595,
+        "ours": 0.965
+      },
+      "model_version": "qwen-local:qwen3.6:27b-mlx",
+      "outcome": {
+        "counterfactual": "loses",
+        "ranking": "loses",
+        "rule": {
+          "fails_alike": "neither interval clears its chance by the lower bound",
+          "loses": "laya.accuracy_ci95[1] < ours.accuracy_ci95[0]",
+          "ties": "the intervals overlap",
+          "why_intervals": "same rows, same K, so the two Wilson intervals are on the same axis; a paired test is not published because the suite does not compute one and no arithmetic is done here",
+          "wins": "laya.accuracy_ci95[0] > ours.accuracy_ci95[1]"
+        }
+      },
+      "paired": {
+        "both_right": 227,
+        "laya_only": 11,
+        "neither": 3,
+        "ours_only": 159,
+        "what": "forced pick per row, counted; a McNemar test is not published because the suite has none"
+      },
+      "ranking": {
+        "laya": {
+          "accuracy": 0.595,
+          "accuracy_ci95": [
+            0.546211,
+            0.641982
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 238,
+          "n": 400
+        },
+        "ours": {
+          "accuracy": 0.965,
+          "accuracy_ci95": [
+            0.942115,
+            0.979039
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 386,
+          "n": 400
+        }
+      },
+      "report": "artifacts/gates/T-preflight-refs/refs-qwen-local.json"
+    }
+  },
+  "cut": {
+    "file": "data/battery_dev.jsonl",
+    "manifest": "data/battery_dev_manifest.json",
+    "manifest_sha256": "567729de1661693047c5ea45a21750edb8e4baaf410ddca218cd05a96054c9d1",
+    "name": "battery-dev",
+    "reserved": false,
+    "rule": "the development cut, read as often as needed. The sealed cut is opened once by #T-battery-sealed with the arm already chosen, and nothing here reads it",
+    "sealed_cut_read": false,
+    "sealed_files_present": [
+      "data/battery_sealed.jsonl"
+    ],
+    "split": "development",
+    "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
+    "task": "T-battery-dev"
+  },
+  "generated_utc": "2026-09-27T16:38:01Z",
+  "honesty": [
+    "no figure in this file was computed by hand: what was not measured is `null`, and every number is copied from a suite report this gate points at",
+    "Laya is untuned: no weight, temperature or threshold was touched, and the option budget is the checkpoint's default",
+    "the checkpoint per row is chosen by the row's declared language, which is what Laya's Router would do by script detection",
+    "BANKING77 is the official test split through eval.fullspace and its read is in the reserved-cut ledger; Laya's own 0.425 is on 400 rows of its own harness and is quoted as a citation",
+    "the permutation control is measured on every row with the API's 4-decimal weights: a delta at the rounding scale is not order sensitivity, and the suite's tolerance is not moved to fit"
+  ],
+  "package": {
+    "interpreter": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/.venv-laya/bin/python",
+    "name": "laya",
+    "version": "0.3.20"
+  },
+  "pass": true,
+  "protocol": {
+    "abstains": "no — the API publishes no abstention, so the abstention figure equals the forced figure by construction",
+    "api_rounding": "4 decimals per weight, as the API returns them",
+    "budget": "the checkpoint's defaults (`max_len`, `head_max_len`): nothing is raised, because the question is whether the published number reproduces as shipped",
+    "candidates": "each candidate is a criterion: its opaque id is the label, its text the description — rendered by Laya as `<id>: <text>`; a candidate whose text is its own id (BANKING77) is rendered as the label alone",
+    "device": "cpu",
+    "question": "the episode question as `instructions` of ONE `choice`",
+    "routing": {
+      "en": "laya",
+      "es": "laya-multilingual",
+      "how": "by the row's DECLARED lang, not by script detection: what Laya's Router would do without the detector"
+    },
+    "state": "the episode state, verbatim, as a plain string",
+    "untuned": "no weight, temperature or threshold is touched",
+    "weights": "Laya's `probabilities` per label, realigned by id to the offered order — softmax over the K candidates, no `unknown` column; the pick is the argmax",
+    "what": "one input format, written before any measurement on this cut and never changed after seeing a figure"
+  },
+  "publishes_no_figure_of_its_own": "every figure here is copied from a `jev.metrics.v1` report in this directory or from eval.fullspace's gate; nothing is recomputed here",
+  "question": "does an untuned public checkpoint of the same product class answer our battery, and where exactly does it beat, tie or fail like our columns?",
+  "runner": "eval/laya_baseline.py",
+  "task": "T-laya-baseline",
+  "trains_nothing": true,
+  "tunes_nothing": true,
+  "verdict": "PASS",
+  "verdict_line": "Laya untuned, forced 0.595 CI [0.546211, 0.641982] (chance 0.3375), joint counterfactual 50/140 = 0.357143 CI [0.282561, 0.439355] (chance 0.082569); wins on forced vs [pointer-control:fullspace-62528, pointer-control:leverstack-1m]; ties vs [nli-nograd]; loses vs [qwen-local]; fails alike (neither clears chance) vs [none]; counterfactual: wins vs [pointer-control:fullspace-62528, pointer-control:leverstack-1m], ties vs [nli-nograd], loses vs [qwen-local], fails alike vs [none]; BANKING77 K=77 in our harness: 0.379221 CI [0.362246, 0.396496] (chance 0.012987) — published 0.425 does NOT reproduce (0.425 outside the interval); our pointer head measured 0.0123 there",
+  "verdict_rule": {
+    "fails_alike": "neither interval clears its chance by the lower bound",
+    "loses": "laya.accuracy_ci95[1] < ours.accuracy_ci95[0]",
+    "ties": "the intervals overlap",
+    "why_intervals": "same rows, same K, so the two Wilson intervals are on the same axis; a paired test is not published because the suite does not compute one and no arithmetic is done here",
+    "wins": "laya.accuracy_ci95[0] > ours.accuracy_ci95[1]"
+  }
+}
