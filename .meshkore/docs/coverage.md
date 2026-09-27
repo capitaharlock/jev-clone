@@ -585,3 +585,31 @@ rehacen sin cargar un modelo (`eval.preflight_refs table`).
 | Declaración por dataset de si estaba en la mezcla publicada de Laya | `#T-laya-baseline` | **SIN MEDIR** |
 | Temperatura por (tipo, K) contra nuestra global, en ECE y acc@50 % cobertura | `#T-laya-objective` | **SIN MEDIR** |
 | `proper_reward` (log + esférica + RPS) comparada con nuestro CE listwise | `#T-laya-objective` | **SIN MEDIR** |
+
+## Reordenación 2026-09-27 — un solo objetivo: aprender y mejorar cada día
+
+Decisión del operador. Guía completa en `guia-un-solo-objetivo.md` (orden de
+ejecución, reglas, bucle diario, comandos). Resumen de lo que cambia:
+
+| Qué | Antes | Ahora |
+|---|---|---|
+| `oss-release`, `shared-state-distill`, `train-scaleout` (+ 10 tasks) | backlog | **archivadas** en `initiatives/log/` y `modules/<m>/log/`; nadie las despacha |
+| `#T-release-gate` | blocked | backlog: no hay release en el objetivo; el veredicto lo publica `#T-ce-confirm` |
+| `#laya-teardown` | next | **active** (P1): cota externa y qué copiar |
+| `#teacher-distill` | backlog | **next** (P2): Jev como vara de medir y profesor; `#T-teacher-auth` blocked hasta key válida del operador |
+| `#data-flywheel` | — | **nueva, active** (P1): `#T-ingest-laya` (typed-decisions, Jev 0,727 / Laya 0,766), `#T-ingest-public` (≥ 8 fuentes), `#T-jev-soft-targets` |
+| `#daily-learning-loop` | — | **nueva, next** (P2, arranca con el GO de `#T-ce-finetune`): `#T-loop-trainer`, `#T-loop-scoreboard`, `#T-loop-nightly`, `#T-loop-error-mining`, `#T-loop-rl-jev` |
+| `#T-episode-scale` | — | nueva (episodic-data): 2 000 → 20 000 con cuota diaria y dedup |
+| `#T-ce-finetune` | spec | guía ejecutable: trainer hoy, smoke de 20 min con el piloto parcial, cifra oficial con splits, regla de escalado escrita |
+| piloto `datagen` | muerto a 1 394 | `--resume` en `data.episode_gen` (tests), relanzado 12:40 |
+
+| Requisito | Quién lo entrega | Estado |
+|---|---|---|
+| Trainer `ce_finetune.py` con `eval none` = 0,6225 | `#T-ce-finetune` | **SIN MEDIR** |
+| Smoke ≈ 20 min: dev > nli-nograd con IC | `#T-ce-finetune` | **SIN MEDIR** |
+| 5 000 → decisión sobre 20 000 | `#T-ce-finetune` | **SIN MEDIR** |
+| typed-decisions convertido, test eval-only | `#T-ingest-laya` | **SIN MEDIR** |
+| ≥ 8 fuentes públicas, volumen consumible | `#T-ingest-public` | **SIN MEDIR** |
+| `history.jsonl` con ≥ 3 filas y dashboard | `#T-loop-scoreboard` | **SIN MEDIR** |
+| 7 noches con regla de promoción | `#T-loop-nightly` | **SIN MEDIR** |
+| Jev reproduce ≈ 0,73 en typed-decisions test | `#T-teacher-probe` | **bloqueado por credencial** |

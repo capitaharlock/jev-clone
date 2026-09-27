@@ -9,8 +9,10 @@ initiative: oss-release
 depends_on:
   - T-train-real
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-27
 ---
+
+> **Archivada el 2026-09-27** por decisión del operador: el único objetivo es un modelo que aprende y mejora cada día (`docs/guia-un-solo-objetivo.md`). No se despacha. Se reactiva sólo si el operador lo pide.
 # Inferencia local real — Candle Metal/CUDA en jev-model con fallback Python
 
 > **Actualización 2026-09-24.** El punto de partida de abajo está desfasado:

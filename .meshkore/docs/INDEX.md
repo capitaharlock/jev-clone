@@ -1,5 +1,6 @@
 # docs/ — map
 
+- [guia-un-solo-objetivo.md](guia-un-solo-objetivo.md) — **léela primero**: el único objetivo (2026-09-27), el orden de ejecución, las reglas y el bucle diario.
 - [context.md](context.md) — product, architecture and execution constraints.
 - [coverage.md](coverage.md) — source requirements mapped to roadmap tasks.
 - [source-register.md](source-register.md) — canonical model/dataset sources, licenses and intended use.

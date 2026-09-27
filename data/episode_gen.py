@@ -848,14 +848,27 @@ def _finish_episode(ep: dict, trace: dict | None) -> tuple:
         else ("ok", ep)
 
 
+def _read_jsonl(path: str) -> list[dict]:
+    with open(path, encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh if line.strip()]
+
+
 def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         out_dir: str = "", command: str = "", concurrency: int = 1,
-        batch: int = 1) -> dict:
+        batch: int = 1, resume: bool = False) -> dict:
     """Generate ``n`` episodes. Manifest is written BEFORE generating.
 
     Cases come in base+counterfactual pairs sharing a ``variant_group``.
     Teacher trace is attached per episode; rejects land in rejects.jsonl
     with reasons, never dropped silently.
+
+    ``resume=True`` continues a run that died in ``out_dir``: the build
+    plan is a pure function of ``(n, seed)``, so with the SAME ``n`` and
+    ``seed`` the items already on disk (episodes + rejects, one line
+    each) are skipped and the files are opened in append mode. A
+    different ``n`` or ``seed`` is refused: it would be another plan. Without it a relaunch overwrites what the
+    previous run published (measured 2026-09-27: 1 394 episodes lost
+    otherwise).
     """
     out = out_dir or os.path.join(ROOT, "artifacts", "episodes-qwen",
                                   f"seed-{seed}")
@@ -864,7 +877,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
     manifest = {
         "task": TASK, "generator_version": GENERATOR_VERSION,
         "contract_task": EC.TASK, "schema_version": EC.SCHEMA_VERSION,
-        "schema_sha": EC.schema_sha(), "seed": seed,
+        "schema_sha": EC.schema_sha(), "seed": seed, "n": n,
         "command": command or f"python3 -m data.episode_gen run --n {n} "
                               f"--seed {seed} --prose {prose} "
                               f"--teacher {teacher}",
@@ -874,6 +887,29 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         "qwen_model": MODEL,
         "prose_backend": prose, "teacher_backend": teacher,
     }
+    ep_path = os.path.join(out, "episodes.jsonl")
+    rj_path = os.path.join(out, "rejects.jsonl")
+    n_episodes = n_rejects = 0
+    realised: dict[str, int] = {}
+    origins: dict[str, int] = {}
+    start_at = 0
+    if resume and os.path.exists(ep_path):
+        mpath = os.path.join(out, "manifest.json")
+        prev = json.load(open(mpath)) if os.path.exists(mpath) else {}
+        if prev.get("n", n) != n or prev.get("seed", seed) != seed:
+            raise ValueError(
+                f"resume needs the same plan: on disk n={prev.get('n')} "
+                f"seed={prev.get('seed')}, asked n={n} seed={seed}")
+        prev_eps = _read_jsonl(ep_path)
+        prev_rj = _read_jsonl(rj_path) if os.path.exists(rj_path) else []
+        start_at = len(prev_eps) + len(prev_rj)
+        n_episodes, n_rejects = len(prev_eps), len(prev_rj)
+        for payload in prev_eps:
+            key = f"{payload['family']}/{payload['lang']}"
+            realised[key] = realised.get(key, 0) + 1
+            org = payload.get("origin", "unknown")
+            origins[org] = origins.get(org, 0) + 1
+        manifest["resumed_from"] = start_at
     with open(os.path.join(out, "manifest.json"), "w") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
@@ -884,11 +920,6 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         queue += [(family, lang)] * count
     items = _work_items(queue, n)
 
-    ep_path = os.path.join(out, "episodes.jsonl")
-    rj_path = os.path.join(out, "rejects.jsonl")
-    n_episodes = n_rejects = 0
-    realised: dict[str, int] = {}
-    origins: dict[str, int] = {}
     t0 = time.time()
     every = max(1, min(25, n // 20))
 
@@ -919,9 +950,10 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
     # Qwen teacher in BATCHED requests → validate and publish. Chunking
     # keeps episodes.jsonl growing on disk while the run is alive, so the
     # progress line below is a measurement and not a promise.
-    done = 0
-    with open(ep_path, "w") as fh_ep, open(rj_path, "w") as fh_rj:
-        for start in range(0, len(items), PUBLISH_CHUNK):
+    done = start_at
+    mode = "a" if start_at else "w"
+    with open(ep_path, mode) as fh_ep, open(rj_path, mode) as fh_rj:
+        for start in range(start_at, len(items), PUBLISH_CHUNK):
             part = items[start:start + PUBLISH_CHUNK]
             sinks = [[] for _ in part]
             eps = [_build_episode(it, seed, prose, sk)
@@ -1089,6 +1121,8 @@ def main(argv: list | None = None) -> int:
                    help="parallel Qwen round-trips (<= OLLAMA_NUM_PARALLEL)")
     r.add_argument("--batch", type=int, default=1,
                    help="items per Qwen request (1 = one request each)")
+    r.add_argument("--resume", action="store_true",
+                   help="continue a dead run in --out: skip what is on disk")
     g = sub.add_parser("gate", help="measure the verification gate")
     g.add_argument("--dir", required=True)
     g.add_argument("--job-id", default="episode-gen-pilot")
@@ -1104,7 +1138,8 @@ def main(argv: list | None = None) -> int:
             return 2
         stats = run(n=args.n, seed=args.seed, prose=args.prose,
                     teacher=args.teacher, out_dir=args.out,
-                    concurrency=args.concurrency, batch=args.batch)
+                    concurrency=args.concurrency, batch=args.batch,
+                    resume=args.resume)
         print(f"episodes={stats['n_episodes']} "
               f"rejects={stats['n_rejects']} -> {stats['out']}")
         return 0 if stats["n_episodes"] else 1

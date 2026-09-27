@@ -6,66 +6,32 @@
 version: 1
 
 jobs:
-  - id: train-decision
-    name: "Listwise decision training (#T-train-real)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --device cpu --eval-samples 3000 --log-every 25 --run-id train-real-v1"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: training-monitor
-    name: "Dashboard :8794 (titular etiquetas no vistas)"
+  - id: dashboard
+    name: "Dashboard de entrenamiento :8794"
     command: ".venv-train/bin/python tools/training_monitor.py --interval 60 --tick 20 --port 8794"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
     port: 8794
-  - id: mix1m-curve
-    name: "decision-mix-clean-1m curve + §128 (#T-mix-1m)"
-    command: ".venv-train/bin/python -m tools.mix_1m.run_curve --device mps"
+    notes: "UNICO frontend del cluster."
+  - id: trainer
+    name: "Entrenador (único) — edita el command por run"
+    command: "env PYTHONPATH=. TOKENIZERS_PARALLELISM=false PYTORCH_ENABLE_MPS_FALLBACK=1 .venv-train/bin/python -m training.python.ce_overfit overfit --device mps --seed 20260926 --epochs 60 --lr 2e-05 --decisions-per-batch 8 --eval-every 5 --weights minilmv2-l6-mnli-xnli"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: gen-loop
-    name: "Continuous decision-schema loop (#T-gen-loop)"
-    command: "python3 tools/data_gen_loop.py --loop --per-cell 3 --interval 30 --run-id gen-loop-v1"
+    notes: "UNICO job de entrenamiento. Para otro experimento se EDITA este command (borrar + POST con el mismo id), no se crea otro job. Run actual: piloto T-ce-mechanics, sobreajuste 48 casos en MPS."
+  - id: evalgate
+    name: "Evaluacion / gates (unico)"
+    command: "env PYTHONPATH=. .venv-train/bin/python -m eval.preflight_refs refs --only qwen-local --no-table"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Self-limiting: stops when marginal diversity < 250 new skeletons/h over 4 rounds, or after 3 consecutive rejected batches."
-  - id: antiscale-wide
-    name: "Head-capacity sweep 2x/4x (#T-antiscale-diag eje 3)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id antiscale-wide-d512-modernbert-s20260922 --backbone modernbert-base --fence-clean --d-model 512 --no-gate && .venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --device mps --run-id antiscale-wide-d1024-modernbert-s20260922 --backbone modernbert-base --fence-clean --d-model 1024 --no-gate"
+    notes: "UNICO job de evaluacion: preflight, eval.unseen, release_gate. Se edita el command. Run actual: columna qwen-local de #T-preflight-refs (4 peticiones en vuelo sobre el unico servidor ollama)."
+  - id: ollama
+    name: "Ollama local (Qwen) :11434"
+    command: "/opt/homebrew/bin/ollama serve"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: gen-objective-sweep
-    name: "Gen-objective short sweep 5x62.5k (#T-gen-objective)"
-    command: "while [ ! -f artifacts/runs/antiscale-wide-d1024-modernbert-s20260922/summary.json ]; do sleep 600; done; .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-base-s20260922 --backbone modernbert-base --fence-clean --no-gate && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-dropout-s20260922 --backbone modernbert-base --fence-clean --no-gate --label-dropout 0.2 && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-episodic-s20260922 --backbone modernbert-base --fence-clean --no-gate --episodic-resample && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-contrastive-s20260922 --backbone modernbert-base --fence-clean --no-gate --contrastive-weight 0.5 && .venv-train/bin/python -m training.python.train_decision train --max-samples 62500 --batch-size 64 --seed 20260922 --device mps --run-id genobj-short-prior-s20260922 --backbone modernbert-base --fence-clean --no-gate --prior-penalty 1.0"
+    port: 11434
+    env:
+      OLLAMA_NUM_PARALLEL: "4"
+    notes: "UNICO servicio de modelo local (profesor Qwen). NUM_PARALLEL=4: las referencias del piloto preguntan 400 filas y con 1 slot se serializan."
+  - id: datagen
+    name: "Generador de datos (único)"
+    command: "nice -n 10 env EPISODE_GEN_BULK=1 PYTHONPATH=. .venv-train/bin/python -u -m data.episode_gen run --n 2100 --seed 20260926 --prose qwen --teacher qwen --concurrency 2 --batch 10 --out artifacts/episodes-qwen/pilot-2k --resume && env PYTHONPATH=. .venv-train/bin/python -m data.episode_gen gate --dir artifacts/episodes-qwen/pilot-2k --job-id datagen"
     cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "#T-gen-objective: baseline + 4 candidates, seed/mix/eval of the 1M baseline at 62.5k. Waits for antiscale-wide summaries before touching MPS."
-  - id: gen-objective-arms
-    name: "Gen-objective 5 arms 125k, concurrent on CPU (#T-gen-objective)"
-    command: ".venv-train/bin/python -m tools.gen_objective.arms run --parallel"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: labeldiv-curve
-    name: "labeldiv 62k/250k/1M unseen curve (#T-labelspace-div)"
-    command: "bash tools/labeldiv_curve.sh"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: gen-objective-arm-contrastive
-    name: "Gen-objective contrastive arm, normalised InfoNCE (#T-gen-objective)"
-    command: ".venv-train/bin/python -m tools.gen_objective.arms run --parallel --only contrastive"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: prior-1m
-    name: "Brazo prior a 1M + gates (#T-gen-objective -> #T-release-gate)"
-    command: "while [ ! -f artifacts/runs/antiscale-wide-d512-modernbert-s20260922/summary.json ]; do sleep 30; done; sleep 60; curl -sk -X POST -H \"Authorization: Bearer $(cat .meshkore/credentials/portal-token)\" -H 'X-MeshKore-Project: users-ricartjuncadella-documents-prj-asi' https://daemon.meshkore.com:5573/jobs/antiscale-wide/stop; sleep 20; .venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id genobj-prior-1m-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/genobj-prior-1m-ettin-68m-s20260922/stage-001000000 --device mps && .venv-train/bin/python -m eval.release_gate gate"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Espera el summary del d512, corta el d1024 encadenado (decision del operador: se corta en ambas ramas) y toma la GPU para el brazo adoptado prior a 1M; luego eval.unseen y eval.release_gate."
-  - id: unfreeze-lastn
-    name: "Brazo last-n a 1M sobre el objetivo prior (#T-unfreeze-backbone)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id unfreeze-lastn2-prior-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 --unfreeze last-n --unfreeze-layers 2 --backbone-lr 1e-5 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/unfreeze-lastn2-prior-ettin-68m-s20260922/stage-001000000 --device mps"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Mismo corpus/seed/evals que genobj-prior-1m-ettin-68m-s20260922 (el brazo none), con las 2 ultimas capas + final_norm abiertas a backbone-lr 1e-5. ~11h en MPS. Al acabar, gate de eval.unseen sobre el checkpoint 1M."
-  - id: unfreeze-lastn-fast
-    name: "Brazo last-n a 1M, objetivo prior, ruta batched (#T-unfreeze-backbone)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id unfreeze-lastn3-prior-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 --unfreeze last-n --unfreeze-layers 2 --backbone-lr 1e-5 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/unfreeze-lastn3-prior-ettin-68m-s20260922/stage-001000000 --device mps"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-  - id: lever-stack-d512-prior
-    name: "Apilado cabeza x2 + prior a 1M (#T-lever-stack)"
-    command: ".venv-train/bin/python -m training.python.train_decision train --max-samples 1000000 --batch-size 64 --seed 20260922 --mix-seed 20260922 --device mps --run-id leverstack-d512-prior-ettin-68m-s20260922 --backbone ettin-68m --fence-clean --no-gate --prior-penalty 1.0 --d-model 512 && .venv-train/bin/python -m eval.unseen gate --checkpoint artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000 --device mps"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Control = genobj-prior-1m-ettin-68m-s20260922 (mismo todo, d256). Unica variable: d_model 512. ~2h por la ruta batched de #T-metal-throughput."
-  - id: labeldiv-curve-d512
-    name: "Curva de la mezcla diversa, d512+prior (#T-labelspace-div)"
-    command: "bash tools/labeldiv_curve.sh"
-    cwd: "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone"
-    notes: "Centinela: espera el summary.json del run de control #T-lever-stack y arranca solo."
+    notes: "UNICO job de generacion de corpus. Run actual: piloto de #T-episode-gen, 2100 episodios (2000 exigidos + 5% de holgura). Lote 10, no 16: a 16 el modelo suelta el tramo KEEP y solo 38 de 100 quedaban con prosa de Qwen; a 10 fueron 18 de 20, al mismo coste. --resume (2026-09-27): el run murio a 1394 y sin resume un relanzamiento sobrescribe episodes.jsonl; con resume retoma en el item que toca (mismo --n y --seed). Al terminar firma el gate el propio job."

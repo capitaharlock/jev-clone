@@ -13,6 +13,8 @@ updated: 2026-09-27
 outcome: partial
 ---
 
+> **Estado 2026-09-27 12:40.** El piloto murió a 1 394/2 100 (último escrito 07:37, ollama caído). Se añadió `--resume` a `data.episode_gen run` (mismo `--n` y `--seed`: retoma en el ítem que toca, en modo append; distinto plan → error) con tests, se relanzó ollama y el job `datagen` con `--resume`, y el `command` del job canónico ya lo lleva. Copia de seguridad de los 1 394 en el scratchpad de la sesión. **Quien recoja esta task:** vigilar `artifacts/episodes-qwen/pilot-2k/run-resume.log`; al terminar, el propio job firma el gate (`volume_ge_2000`); si vuelve a morir, relanzar el job tal cual (retoma).
+
 # Qwen genera episodios completos por familia, no plantillas rellenadas
 
 Sustituye a `#T-labelspace-factory`. El generador deja de producir taxonomías

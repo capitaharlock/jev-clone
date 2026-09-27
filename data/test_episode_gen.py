@@ -341,3 +341,58 @@ class EvidenceSurvivesTheParaphraseTest(unittest.TestCase):
                                  ["the archive key", "drawer 2"]))
         self.assertFalse(EG._kept("The archive key is at drawer 9.",
                                   ["the archive key", "drawer 2"]))
+
+
+class ResumeTest(unittest.TestCase):
+    """A relaunch must continue the dead run, not overwrite it (2026-09-27)."""
+
+    def _truncate(self, out: str, keep: int) -> None:
+        import os
+        path = os.path.join(out, "episodes.jsonl")
+        with open(path, encoding="utf-8") as fh:
+            lines = fh.readlines()
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.writelines(lines[:keep])
+
+    def test_resume_finishes_a_dead_run_byte_identical_to_one_go(self):
+        import os
+        import shutil
+        out = "/tmp/episode-gen-resume-test"
+        shutil.rmtree(out, ignore_errors=True)
+        full = EG.run(n=10, seed=SEED, prose="local", teacher="stub",
+                      out_dir=out)
+        self.assertEqual(full["n_episodes"], 10)
+        expected = EG.load_episodes(out)
+        self._truncate(out, 6)                      # the run "dies" here
+        self.assertEqual(len(EG.load_episodes(out)), 6)
+        again = EG.run(n=10, seed=SEED, prose="local", teacher="stub",
+                       out_dir=out, resume=True)
+        got = EG.load_episodes(out)
+        self.assertEqual(again["n_episodes"], 10)
+        self.assertEqual([e["id"] for e in got], [e["id"] for e in expected])
+        self.assertEqual(len({e["id"] for e in got}), 10)
+        with open(os.path.join(out, "manifest.json")) as fh:
+            manifest = json.load(fh)
+        self.assertEqual(manifest["resumed_from"], 6)
+        self.assertEqual(manifest["n_episodes"], 10)
+        self.assertEqual(manifest["n"], 10)
+
+    def test_resume_refuses_another_plan(self):
+        import shutil
+        out = "/tmp/episode-gen-resume-test-3"
+        shutil.rmtree(out, ignore_errors=True)
+        EG.run(n=10, seed=SEED, prose="local", teacher="stub", out_dir=out)
+        self._truncate(out, 4)
+        with self.assertRaises(ValueError):
+            EG.run(n=12, seed=SEED, prose="local", teacher="stub",
+                   out_dir=out, resume=True)
+
+    def test_without_resume_a_relaunch_starts_over(self):
+        import shutil
+        out = "/tmp/episode-gen-resume-test-2"
+        shutil.rmtree(out, ignore_errors=True)
+        EG.run(n=6, seed=SEED, prose="local", teacher="stub", out_dir=out)
+        again = EG.run(n=4, seed=SEED, prose="local", teacher="stub",
+                       out_dir=out)
+        self.assertEqual(again["n_episodes"], 4)
+        self.assertEqual(len(EG.load_episodes(out)), 4)

@@ -9,8 +9,10 @@ initiative: train-scaleout
 depends_on:
   - T-curriculum
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-27
 ---
+
+> **Archivada el 2026-09-27** por decisión del operador: el único objetivo es un modelo que aprende y mejora cada día (`docs/guia-un-solo-objetivo.md`). No se despacha. Se reactiva sólo si el operador lo pide.
 
 # Criterio de activación e inventario x3
 

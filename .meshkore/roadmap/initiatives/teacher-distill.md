@@ -1,14 +1,24 @@
 ---
 id: teacher-distill
 title: Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
-status: backlog
+status: next
 owner: architect-master
 modules:
   - eval
   - data
 created: 2026-09-23
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **Reactivada el 2026-09-27** con otro papel: Jev deja de ser «evidencia del
+> release gate» y pasa a ser **la vara de medir y el profesor** del objetivo
+> único (ver `docs/guia-un-solo-objetivo.md`). Prioridad P2. Sigue bloqueada
+> por la credencial: `#T-teacher-auth` necesita del operador una key válida y
+> el proveedor exacto. En cuanto exista: `#T-teacher-probe` publica la distancia
+> a Jev sobre nuestra batería y sobre typed-decisions test, y
+> `#T-jev-soft-targets` (`#data-flywheel`) cachea sus probabilidades como
+> objetivos suaves y recompensa. `#T-teacher-kappa` queda en backlog: era del
+> release gate, que ya no es objetivo.
 
 > **A `backlog` el 2026-09-25.** El profesor externo (TypeSafe) sigue
 > devolviendo 401 con la key aportada y el plan de recuperación (§8) es

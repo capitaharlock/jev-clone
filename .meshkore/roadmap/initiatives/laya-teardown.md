@@ -1,7 +1,7 @@
 ---
 id: laya-teardown
 title: Laya — el clon de Jev que ya funciona: qué copiar, qué medimos mal
-status: next
+status: active
 owner: architect-master
 modules:
   - model
@@ -9,6 +9,12 @@ modules:
 created: 2026-09-27
 updated: 2026-09-27
 ---
+
+> **Activa desde 2026-09-27** (decisión del operador: un solo objetivo, ver
+> `docs/guia-un-solo-objetivo.md` §3). Prioridad P1, en paralelo con el
+> piloto: sólo inferencia, ninguna GPU de entreno. Nada de aquí ha sido
+> ejecutado todavía; `#T-laya-archdiff` tuvo un intento que sólo commiteó la
+> iniciativa.
 
 # Laya — el clon de Jev que ya funciona: qué copiar, qué medimos mal
 

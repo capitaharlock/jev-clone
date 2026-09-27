@@ -1,14 +1,20 @@
 ---
 id: T-teacher-auth
 title: Desbloquear el profesor — endpoint identificado, key rechazada
-status: backlog
+blocked_reason: necesita del operador una key válida de Jev (proveedor exacto + nombre del modelo); la aportada devuelve 401 en los seis endpoints probados
+status: blocked
 priority: medium
 owner: unassigned
 category: eval
 initiative: teacher-distill
 created: 2026-09-24
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **Reactivada el 2026-09-27** como primera task de `#teacher-distill` (P2). Es la única del roadmap que **no puede hacer un agente solo**: hace falta que el operador aporte la key válida y diga el proveedor. Cuando llegue, el resto son dos variables de entorno y un gate.
+>
+> **Cómo se comprueba una key en 30 segundos** (sin gastar saldo):
+> `curl -s -H "Authorization: Bearer $KEY" https://api.typesafe.ai/v1/models` → 200 con el catálogo = válida; 401 = no válida; 403 «Must supply an API key» = cabecera mal puesta. La key vive en `.meshkore/credentials/` (gitignored) y se lee por `eval/teacher.py::api_key()`; nunca se pega en una task, un gate ni un log.
 
 # Desbloquear el profesor — endpoint identificado, key rechazada
 

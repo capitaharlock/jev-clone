@@ -10,8 +10,10 @@ depends_on:
   - T-repo-clean
   - T-release-gate
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-27
 ---
+
+> **Archivada el 2026-09-27** por decisión del operador: el único objetivo es un modelo que aprende y mejora cada día (`docs/guia-un-solo-objetivo.md`). No se despacha. Se reactiva sólo si el operador lo pide.
 
 # README, quickstart de 3 comandos y model card ejecutable
 

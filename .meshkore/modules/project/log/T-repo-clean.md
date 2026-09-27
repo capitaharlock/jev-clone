@@ -8,8 +8,10 @@ category: project
 initiative: oss-release
 depends_on: []
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-27
 ---
+
+> **Archivada el 2026-09-27** por decisión del operador: el único objetivo es un modelo que aprende y mejora cada día (`docs/guia-un-solo-objetivo.md`). No se despacha. Se reactiva sólo si el operador lo pide.
 # Limpiar el repositorio — target/, datasets y pickles fuera del historial
 
 Hallazgo H: **9 145 ficheros de `target/`** (build de debug de Rust) están

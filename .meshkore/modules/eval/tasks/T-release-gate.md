@@ -1,8 +1,7 @@
 ---
 id: T-release-gate
 title: Criterio de release escrito antes de medir, y gate que lo aplica
-status: blocked
-blocked_reason: espera la firma del operador en .meshkore/docs/release-criteria.md v2 (criterio sobre la batería privada)
+status: backlog
 priority: high
 owner: unassigned
 category: eval
@@ -11,8 +10,10 @@ depends_on:
   - T-battery-sealed
   - T-ce-confirm
 created: 2026-09-21
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **A backlog el 2026-09-27.** No hay release en el objetivo (ver `docs/guia-un-solo-objetivo.md`). Lo que sobrevive de aquí ya vive en otro sitio: las reglas de coherencia (`eval/gate_rules.py`) siguen vigentes en todo gate, y el veredicto contra la meta del 70 % lo publica `#T-ce-confirm`. Se reactiva sólo cuando el operador pida una release.
 
 # Criterio de release escrito antes de medir, y gate que lo aplica
 

@@ -1,14 +1,16 @@
 ---
 id: T-teacher-probe
 title: Cablear el profesor y medir la distancia real — mismo corte, mismas filas
-status: backlog
+status: next
 priority: high
 owner: unassigned
 category: eval
 initiative: teacher-distill
 created: 2026-09-23
-updated: 2026-09-25
+updated: 2026-09-27
 ---
+
+> **2026-09-27 — alcance ampliado por el objetivo único.** Además del corte `unseen`, el profesor se mide sobre (a) la batería de desarrollo de `#honest-eval` (`data/battery_dev.jsonl`, 400 filas, mismo formato forzado que `eval/preflight_refs.py` usa para Qwen) y (b) el test de typed-decisions convertido por `#T-ingest-laya` (400 estados / 2 000 decisiones), donde Jev publica 0,727: si nuestra medición de Jev no reproduce ≈0,73 ahí, el protocolo no es comparable y hay que arreglarlo antes de citar ninguna distancia. Depende de `#T-teacher-auth`.
 
 # Cablear el profesor y medir la distancia real
 
