@@ -940,7 +940,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
             n_rejects += 1
         if done % every == 0 or done == n:
             el = time.time() - t0
-            rate = done / el if el else 0.0
+            rate = (done - start_at) / el if el else 0.0
             eta = (n - done) / rate if rate else float("inf")
             print(f"progress {done}/{n} ok={n_episodes} rej={n_rejects} "
                   f"rate={rate:.3f} ep/s eta={eta / 3600:.2f} h",
