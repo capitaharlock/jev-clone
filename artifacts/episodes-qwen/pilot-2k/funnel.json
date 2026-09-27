@@ -1,0 +1,112 @@
+{
+  "task": "T-episode-verify",
+  "dir": "artifacts/episodes-qwen/pilot-2k",
+  "stages": {
+    "planned": {
+      "total": 2100,
+      "by_cell": {
+        "attribute_comparison/en": 210,
+        "attribute_comparison/es": 210,
+        "description_classification/en": 210,
+        "description_classification/es": 210,
+        "extraction_paraphrase/en": 210,
+        "extraction_paraphrase/es": 210,
+        "priority_decision/en": 210,
+        "priority_decision/es": 210,
+        "textual_inference_negation/en": 210,
+        "textual_inference_negation/es": 210
+      }
+    },
+    "generated": {
+      "total": 2100,
+      "by_cell": {
+        "attribute_comparison/en": 210,
+        "attribute_comparison/es": 210,
+        "description_classification/en": 210,
+        "description_classification/es": 210,
+        "extraction_paraphrase/en": 210,
+        "extraction_paraphrase/es": 210,
+        "priority_decision/en": 210,
+        "priority_decision/es": 210,
+        "textual_inference_negation/en": 210,
+        "textual_inference_negation/es": 210
+      }
+    },
+    "accepted": {
+      "total": 2092,
+      "by_cell": {
+        "attribute_comparison/en": 210,
+        "attribute_comparison/es": 210,
+        "description_classification/en": 207,
+        "description_classification/es": 207,
+        "extraction_paraphrase/en": 210,
+        "extraction_paraphrase/es": 210,
+        "priority_decision/en": 210,
+        "priority_decision/es": 210,
+        "textual_inference_negation/en": 208,
+        "textual_inference_negation/es": 210
+      },
+      "rejected": 8,
+      "rejected_by_cell": {
+        "description_classification/en": 3,
+        "description_classification/es": 3,
+        "textual_inference_negation/en": 2
+      }
+    },
+    "published": {
+      "total": 2092,
+      "by_cell": {
+        "attribute_comparison/en": 210,
+        "attribute_comparison/es": 210,
+        "description_classification/en": 207,
+        "description_classification/es": 207,
+        "extraction_paraphrase/en": 210,
+        "extraction_paraphrase/es": 210,
+        "priority_decision/en": 210,
+        "priority_decision/es": 210,
+        "textual_inference_negation/en": 208,
+        "textual_inference_negation/es": 210
+      }
+    },
+    "verified": {
+      "total": 1840,
+      "by_cell": {
+        "attribute_comparison/en": 183,
+        "attribute_comparison/es": 207,
+        "description_classification/en": 207,
+        "description_classification/es": 190,
+        "extraction_paraphrase/en": 150,
+        "extraction_paraphrase/es": 156,
+        "priority_decision/en": 168,
+        "priority_decision/es": 202,
+        "textual_inference_negation/en": 179,
+        "textual_inference_negation/es": 198
+      },
+      "quarantined": 252,
+      "quarantined_by_cell": {
+        "attribute_comparison/en": 27,
+        "attribute_comparison/es": 3,
+        "description_classification/es": 17,
+        "extraction_paraphrase/en": 60,
+        "extraction_paraphrase/es": 54,
+        "priority_decision/en": 42,
+        "priority_decision/es": 8,
+        "textual_inference_negation/en": 29,
+        "textual_inference_negation/es": 12
+      }
+    },
+    "consumed": {
+      "total": 0,
+      "by_cell": {},
+      "train_manifests": []
+    }
+  },
+  "sources": {
+    "manifest.json": "72f25d32bc4f467bae0774e02550c9776947415f07ae63fb025aed64eacc44e7",
+    "episodes.jsonl": "5b115bc1ad8a5c2c42773811bbbe08e5cd765fa75333f7f73d7d6d039b13131c",
+    "rejects.jsonl": "aada584066e97b20f7e03b552cd05e83fc58f1fb3efc94e145f3f8374d53fc3b",
+    "verify_manifest.json": "25deb6988898d84b543f8e3070a5db9fdd3a9d372414ff1f9ee83b41e7bb55cb",
+    "verified.jsonl": "40d1810cf7035b19e7db7a6f8f12f8da76bc89905b6cc0887f7c7d02fe3d21b8",
+    "checkpoints_root": "artifacts/checkpoints"
+  }
+}

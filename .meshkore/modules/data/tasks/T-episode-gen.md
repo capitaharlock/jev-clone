@@ -1,7 +1,7 @@
 ---
 id: T-episode-gen
 title: Qwen genera episodios completos por familia, no plantillas rellenadas
-status: active
+status: done
 priority: high
 owner: unassigned
 category: data
@@ -124,3 +124,9 @@ Cuando el job termine, `datagen` firma el gate él mismo
 (`data.episode_gen gate --dir … --job-id datagen`). Si el piloto se
 quedara por debajo de 2 000, `volume_ge_2000` sale **`false` medido**, no
 `null`: hay cifra, y dice que no llega.
+
+## Resolution (2026-09-27)
+
+**done.** Gate `artifacts/gates/T-episode-gen/gen.json`, `volume_ge_2000`: **measured, pass** — 2 092 publicados de 2 100 planificados (8 rechazos, todos `teacher failed: invalid choice/evidence`), `manifest_sha` `72f25d32…`, semilla 20260926, prosa Qwen en 1 618 y fallback local en 474 (`prose_origins`). Tiempo: primer tramo 01:3x → murió a 1 394 (07:37, ollama caído); retomado con `--resume` a las 12:43 y terminado a las 15:34 (`elapsed_s` 1 788,7 cubre sólo el tramo final del manifest). Comando: el `command` del job `datagen` en `.meshkore/public/jobs.yaml`.
+
+Lo que no tapa: 118 estados arrastran el marcador `KEEP:` del prompt (fuga de prompt, 113 en extracción); `#T-episode-verify` los pone en cuarentena. El modelo local cambió después a `qwen3.8:27b-mlx` (default de `QWEN_MODEL`); este piloto se generó con `qwen3.6:27b-mlx`, y cada traza lleva ahora el campo `model`.

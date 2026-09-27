@@ -1,0 +1,235 @@
+{
+  "task": "T-episode-verify",
+  "measured_utc": "2026-09-27T13:27:32Z",
+  "dir": "artifacts/episodes-qwen/pilot-2k",
+  "verifier_version": "episode-verify-v1",
+  "prompt_sha": "5ba12747b1b1622ae4beffb89889216dac57fa4d32b79f6a38095125f0c3e9e0",
+  "qwen_model": "qwen3.8:27b-mlx",
+  "verify_manifest_sha": "25deb6988898d84b543f8e3070a5db9fdd3a9d372414ff1f9ee83b41e7bb55cb",
+  "command": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/data/episode_verify.py run --dir artifacts/episodes-qwen/pilot-2k --batch 20 --concurrency 2",
+  "elapsed_s": 2563.9,
+  "checks": {
+    "manipulated_gold_quarantined": {
+      "pass": true,
+      "n_manipulated": 1840,
+      "n_quarantined": 1840
+    },
+    "funnel_from_manifests": {
+      "pass": true,
+      "stages_total": {
+        "planned": 2100,
+        "generated": 2100,
+        "accepted": 2092,
+        "published": 2092,
+        "verified": 1840,
+        "consumed": 0
+      },
+      "consumed_train_manifests": []
+    },
+    "agreement_published": {
+      "pass": true,
+      "by_cell": {
+        "attribute_comparison/en": {
+          "n": 210,
+          "verdicts": 197,
+          "agree": 187,
+          "rate": 0.8905,
+          "ci95": [
+            0.841,
+            0.9259
+          ]
+        },
+        "attribute_comparison/es": {
+          "n": 210,
+          "verdicts": 210,
+          "agree": 207,
+          "rate": 0.9857,
+          "ci95": [
+            0.9588,
+            0.9951
+          ]
+        },
+        "description_classification/en": {
+          "n": 207,
+          "verdicts": 207,
+          "agree": 207,
+          "rate": 1.0,
+          "ci95": [
+            0.9818,
+            1.0
+          ]
+        },
+        "description_classification/es": {
+          "n": 207,
+          "verdicts": 190,
+          "agree": 190,
+          "rate": 0.9179,
+          "ci95": [
+            0.8724,
+            0.9481
+          ]
+        },
+        "extraction_paraphrase/en": {
+          "n": 210,
+          "verdicts": 210,
+          "agree": 209,
+          "rate": 0.9952,
+          "ci95": [
+            0.9735,
+            0.9992
+          ]
+        },
+        "extraction_paraphrase/es": {
+          "n": 210,
+          "verdicts": 210,
+          "agree": 210,
+          "rate": 1.0,
+          "ci95": [
+            0.982,
+            1.0
+          ]
+        },
+        "priority_decision/en": {
+          "n": 210,
+          "verdicts": 210,
+          "agree": 168,
+          "rate": 0.8,
+          "ci95": [
+            0.7407,
+            0.8485
+          ]
+        },
+        "priority_decision/es": {
+          "n": 210,
+          "verdicts": 210,
+          "agree": 202,
+          "rate": 0.9619,
+          "ci95": [
+            0.9266,
+            0.9806
+          ]
+        },
+        "textual_inference_negation/en": {
+          "n": 208,
+          "verdicts": 179,
+          "agree": 179,
+          "rate": 0.8606,
+          "ci95": [
+            0.8069,
+            0.9011
+          ]
+        },
+        "textual_inference_negation/es": {
+          "n": 210,
+          "verdicts": 198,
+          "agree": 198,
+          "rate": 0.9429,
+          "ci95": [
+            0.9028,
+            0.967
+          ]
+        }
+      },
+      "by_family": {
+        "attribute_comparison": {
+          "n": 420,
+          "agree": 394,
+          "rate": 0.9381,
+          "ci95": [
+            0.9108,
+            0.9574
+          ]
+        },
+        "description_classification": {
+          "n": 414,
+          "agree": 397,
+          "rate": 0.9589,
+          "ci95": [
+            0.9352,
+            0.9742
+          ]
+        },
+        "extraction_paraphrase": {
+          "n": 420,
+          "agree": 419,
+          "rate": 0.9976,
+          "ci95": [
+            0.9866,
+            0.9996
+          ]
+        },
+        "priority_decision": {
+          "n": 420,
+          "agree": 370,
+          "rate": 0.881,
+          "ci95": [
+            0.8465,
+            0.9085
+          ]
+        },
+        "textual_inference_negation": {
+          "n": 418,
+          "agree": 377,
+          "rate": 0.9019,
+          "ci95": [
+            0.8696,
+            0.9269
+          ]
+        }
+      },
+      "overall": {
+        "n": 2092,
+        "verdicts": 2021,
+        "agree": 1957,
+        "rate": 0.9355,
+        "ci95": [
+          0.9241,
+          0.9452
+        ]
+      }
+    },
+    "quarantine_is_artifact": {
+      "pass": true,
+      "n_quarantine": 252,
+      "reasons": {
+        "prompt-leak:state carries 'KEEP:' from the g": 118,
+        "verifier:abstain": 71,
+        "verifier:disagree": 64
+      }
+    },
+    "human_error_published": {
+      "pass": null,
+      "status": "awaiting-operator",
+      "per_cell_declared": 5,
+      "seed": 20260927,
+      "n_rows": 100,
+      "cells": {
+        "attribute_comparison/en/base": 5,
+        "attribute_comparison/en/counterfactual": 5,
+        "attribute_comparison/es/base": 5,
+        "attribute_comparison/es/counterfactual": 5,
+        "description_classification/en/base": 5,
+        "description_classification/en/counterfactual": 5,
+        "description_classification/es/base": 5,
+        "description_classification/es/counterfactual": 5,
+        "extraction_paraphrase/en/base": 5,
+        "extraction_paraphrase/en/counterfactual": 5,
+        "extraction_paraphrase/es/base": 5,
+        "extraction_paraphrase/es/counterfactual": 5,
+        "priority_decision/en/base": 5,
+        "priority_decision/en/counterfactual": 5,
+        "priority_decision/es/base": 5,
+        "priority_decision/es/counterfactual": 5,
+        "textual_inference_negation/en/base": 5,
+        "textual_inference_negation/en/counterfactual": 5,
+        "textual_inference_negation/es/base": 5,
+        "textual_inference_negation/es/counterfactual": 5
+      },
+      "n_reviewed": 0,
+      "human_error": null,
+      "file": "artifacts/episodes-qwen/pilot-2k/human_sample.jsonl"
+    }
+  },
+  "pass": true,
+  "resolved": false
+}

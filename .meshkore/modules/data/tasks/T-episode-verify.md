@@ -1,7 +1,7 @@
 ---
 id: T-episode-verify
 title: Verificador separado y revisión humana estratificada del gold
-status: next
+status: active
 priority: high
 owner: unassigned
 category: data
@@ -9,7 +9,7 @@ initiative: episodic-data
 depends_on:
   - T-episode-gen
 created: 2026-09-25
-updated: 2026-09-25
+updated: 2026-09-27
 ---
 
 # Verificador separado y revisión humana estratificada del gold
@@ -48,3 +48,12 @@ fichero no prueba que estén en la mezcla que un entreno consumió.
 - La muestra humana está revisada con tamaños fijados de antemano y su error
   publicado por familia e idioma.
 - El embudo generado/aceptado/publicado/consumido es consultable por run.
+
+## Resolution parcial (2026-09-27) — queda `active`: falta la muestra humana
+
+- Código: `data/episode_verify.py` + `data/test_episode_verify.py` (commit `41199ef`, 19 tests).
+- Ejecutado sobre el piloto (`verify.log`, 2 564 s con Qwen local): **1 840 verificados, 252 en cuarentena** (118 fuga `KEEP:`, 71 abstención del verificador, 64 desacuerdo). Artefactos en `artifacts/episodes-qwen/pilot-2k/`: `verified.jsonl`, `quarantine.jsonl`, `funnel.json`, `human_sample.jsonl`, `verify_manifest.json`.
+- Acuerdo generador↔verificador (gate `artifacts/gates/T-episode-verify/gate.json`): **0,9355** IC95 % [0,924 · 0,945] sobre 2 092; predicción escrita antes ≥ 0,90 → cumplida. Peor celda: prioridad/en 0,800 [0,741 · 0,849]; comparación de atributos/en 0,891.
+- Embudo: planificado 2 100 → generado 2 100 → aceptado 2 092 → publicado 2 092 → verificado 1 840 → consumido 0 (los smokes de `#T-ce-finetune` aún no escriben `consumed_ids`).
+- Gold manipulado a mano: 1 840/1 840 a cuarentena.
+- **Pendiente del operador:** revisar `human_sample.jsonl` (100 filas, 5 por celda familia × idioma × variante, fijadas antes) y anotar el error. Hasta entonces `human_error: null` y la task no se cierra.

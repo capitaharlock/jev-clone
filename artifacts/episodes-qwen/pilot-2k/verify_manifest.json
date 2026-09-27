@@ -1,0 +1,97 @@
+{
+  "task": "T-episode-verify",
+  "verifier_version": "episode-verify-v1",
+  "generator_manifest_sha": "72f25d32bc4f467bae0774e02550c9776947415f07ae63fb025aed64eacc44e7",
+  "episodes_sha": "5b115bc1ad8a5c2c42773811bbbe08e5cd765fa75333f7f73d7d6d039b13131c",
+  "n_input": 2092,
+  "qwen_model": "qwen3.8:27b-mlx",
+  "prompt_sha": "5ba12747b1b1622ae4beffb89889216dac57fa4d32b79f6a38095125f0c3e9e0",
+  "batch": 20,
+  "concurrency": 2,
+  "human_per_cell": 5,
+  "human_seed": 20260927,
+  "command": "/Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/data/episode_verify.py run --dir artifacts/episodes-qwen/pilot-2k --batch 20 --concurrency 2",
+  "status": "published",
+  "n_verified": 1840,
+  "n_quarantine": 252,
+  "quarantine_reasons": {
+    "prompt-leak:state carries 'KEEP:' from the g": 118,
+    "verifier:abstain": 71,
+    "verifier:disagree": 64
+  },
+  "agreement_by_cell": {
+    "attribute_comparison/en": {
+      "n": 210,
+      "verdicts": 197,
+      "agree": 187,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "attribute_comparison/es": {
+      "n": 210,
+      "verdicts": 210,
+      "agree": 207,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "description_classification/en": {
+      "n": 207,
+      "verdicts": 207,
+      "agree": 207,
+      "rule_applies": 207,
+      "rule_agree": 207
+    },
+    "description_classification/es": {
+      "n": 207,
+      "verdicts": 190,
+      "agree": 190,
+      "rule_applies": 207,
+      "rule_agree": 207
+    },
+    "extraction_paraphrase/en": {
+      "n": 210,
+      "verdicts": 210,
+      "agree": 209,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "extraction_paraphrase/es": {
+      "n": 210,
+      "verdicts": 210,
+      "agree": 210,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "priority_decision/en": {
+      "n": 210,
+      "verdicts": 210,
+      "agree": 168,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "priority_decision/es": {
+      "n": 210,
+      "verdicts": 210,
+      "agree": 202,
+      "rule_applies": 210,
+      "rule_agree": 210
+    },
+    "textual_inference_negation/en": {
+      "n": 208,
+      "verdicts": 179,
+      "agree": 179,
+      "rule_applies": 208,
+      "rule_agree": 208
+    },
+    "textual_inference_negation/es": {
+      "n": 210,
+      "verdicts": 198,
+      "agree": 198,
+      "rule_applies": 210,
+      "rule_agree": 210
+    }
+  },
+  "human_sample_n": 100,
+  "elapsed_s": 2563.9,
+  "built_utc": "2026-09-27T13:27:32Z"
+}

@@ -59,7 +59,7 @@ PUBLISH_CHUNK = 100
 PILOT_SEED = 20260926
 GATE_PATH = os.path.join(ROOT, "artifacts", "gates", TASK, "gen.json")
 
-MODEL = os.environ.get("QWEN_MODEL", "qwen3.6:27b-mlx")
+MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
 #: Labelgen markers that must NEVER appear in an episode (gate test 3).
@@ -309,7 +309,7 @@ def teacher_structured(state: str, question: str,
     out = _ollama_chat([{"role": "user", "content": prompt}],
                        num_predict=120, timeout=timeout)
     if out is None:
-        return {"backend": "qwen-local", "confidence_discarded": True,
+        return {"backend": "qwen-local", "model": MODEL, "confidence_discarded": True,
                 "reject": "no teacher reply"}
     return _teacher_verdict(_first_json(out), state, ids, out)
 
@@ -341,7 +341,7 @@ def _teacher_verdict(got: dict | None, state: str, ids: list,
     Shared by the single-item and the batched teacher so a batched run can
     never be laxer than a sequential one.
     """
-    trace: dict = {"backend": "qwen-local", "confidence_discarded": True}
+    trace: dict = {"backend": "qwen-local", "model": MODEL, "confidence_discarded": True}
     if got is None:
         trace["reject"] = f"unparseable: {raw[:120]!r}"
         return trace
@@ -431,7 +431,7 @@ def teacher_structured_batch(cases: list, timeout: int = 1800) -> list:
     out = _ollama_chat([{"role": "user", "content": prompt}],
                        num_predict=90 * len(cases), timeout=timeout)
     if out is None:
-        return [{"backend": "qwen-local", "confidence_discarded": True,
+        return [{"backend": "qwen-local", "model": MODEL, "confidence_discarded": True,
                  "reject": "no teacher reply"} for _ in cases]
     by_item: dict = {}
     for line in _strip_confidence(out).splitlines():

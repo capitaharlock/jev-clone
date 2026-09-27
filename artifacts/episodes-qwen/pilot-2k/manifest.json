@@ -1,0 +1,49 @@
+{
+  "task": "T-episode-gen",
+  "generator_version": "episode-gen-v1",
+  "contract_task": "T-episode-contract",
+  "schema_version": "episode-v1",
+  "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+  "seed": 20260926,
+  "n": 2100,
+  "command": "python3 -m data.episode_gen run --n 2100 --seed 20260926 --prose qwen --teacher qwen",
+  "status": "published",
+  "planned_split": {
+    "attribute_comparison/en": 210,
+    "attribute_comparison/es": 210,
+    "description_classification/en": 210,
+    "description_classification/es": 210,
+    "extraction_paraphrase/en": 210,
+    "extraction_paraphrase/es": 210,
+    "priority_decision/en": 210,
+    "priority_decision/es": 210,
+    "textual_inference_negation/en": 210,
+    "textual_inference_negation/es": 210
+  },
+  "qwen_model": "qwen3.8:27b-mlx",
+  "prose_backend": "qwen",
+  "teacher_backend": "qwen",
+  "resumed_from": 1800,
+  "n_episodes": 2092,
+  "n_rejects": 8,
+  "splits": {
+    "attribute_comparison/en": 210,
+    "attribute_comparison/es": 210,
+    "description_classification/en": 207,
+    "description_classification/es": 207,
+    "extraction_paraphrase/en": 210,
+    "extraction_paraphrase/es": 210,
+    "priority_decision/en": 210,
+    "priority_decision/es": 210,
+    "textual_inference_negation/en": 208,
+    "textual_inference_negation/es": 210
+  },
+  "concurrency": 2,
+  "batch": 10,
+  "prose_origins": {
+    "local-fallback": 474,
+    "qwen-local": 1618
+  },
+  "elapsed_s": 1788.7,
+  "built_utc": "2026-09-27T12:44:47Z"
+}
