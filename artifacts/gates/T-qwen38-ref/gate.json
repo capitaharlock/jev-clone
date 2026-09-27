@@ -1,0 +1,333 @@
+{
+  "task": "T-qwen38-ref",
+  "artifact": "gate",
+  "generated_utc": "2026-09-27T18:24:53Z",
+  "question": "is the new local teacher worse than the one whose reference we have, on the same development rows?",
+  "rule": {
+    "cut": "the 400 development rows of #T-battery-dev, by `eval.preflight_refs.load_cut()`; the sealed cut is not read",
+    "columns": "qwen-local (qwen3.6, reused from #T-preflight-refs) vs qwen-local-3.8 (measured here) — same rows, same structured-choice protocol, same `rows_sha256`",
+    "difference": "paired bootstrap of (3.8 − 3.6) over the same rows, B=2000, seed 20260927, percentile CI95; the counterfactual difference is paired by variant_group",
+    "go_if": "the forced accuracy of 3.8 does not sit below the 3.6 figure: the CI95 of the paired difference has an upper bound >= 0",
+    "no_go_if": "the CI95 of the paired difference lies entirely below 0 — the new teacher is measurably worse, and the producer (`data.stream`) goes back to QWEN_MODEL=qwen3.6:27b-mlx until the operator decides",
+    "better_is_not_required": "GO means `not worse`. Whether 3.8 is BETTER is published apart (`forced.ci95[0] > 0`) and changes no decision here",
+    "families_are_informative": "a family that falls is published with its delta but does not by itself flip the verdict: n per family is 80 and this gate decides which teacher generates, not which checkpoint is promoted",
+    "permutation": "measured at the generator's temperature (comparable with the 3.6 column) and repeated at temperature 0 (the verifier's); a failed control bounds the column's figure and is published, never hidden"
+  },
+  "cut": {
+    "name": "battery-dev",
+    "n": 400,
+    "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+    "sealed_cut_read": false
+  },
+  "columns": {
+    "qwen3.6": {
+      "model_version": "qwen-local:qwen3.6:27b-mlx",
+      "task_that_measured_it": "T-preflight-refs",
+      "measured_utc": "2026-09-26T19:42:07Z",
+      "forced": {
+        "n": 400,
+        "hits": 386,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.965,
+        "accuracy_ci95": [
+          0.942115,
+          0.979039
+        ],
+        "beats_chance": true
+      },
+      "with_abstention": {
+        "n": 400,
+        "hits": 378,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.945,
+        "accuracy_ci95": [
+          0.918133,
+          0.963402
+        ],
+        "beats_chance": true
+      },
+      "macro_by_family": null,
+      "counterfactual_joint": {
+        "n": 140,
+        "hits": 123,
+        "cardinality": 4.1,
+        "chance": 0.082569,
+        "accuracy": 0.878571,
+        "accuracy_ci95": [
+          0.814135,
+          0.922787
+        ],
+        "beats_chance": true
+      },
+      "permutation_control": {
+        "measured": true,
+        "pass": false,
+        "flipped": 3,
+        "flip_rate": 0.125,
+        "n_rows": 24,
+        "n_perms": 24,
+        "max_abs_prob_delta": 1.0,
+        "tolerance": 1e-05,
+        "caveat": "the chooser samples at temperature 0.7, so a flip is order sensitivity OR sampling noise and this control cannot separate the two: it is the upper bound on order stability, not a decomposition of it",
+        "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+        "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+        "temperature": null
+      },
+      "abstained_rows": 13,
+      "rejected_replies": 13
+    },
+    "qwen3.8": {
+      "model_version": "qwen-local:qwen3.8:27b-mlx",
+      "task_that_measured_it": "T-qwen38-ref",
+      "measured_utc": "2026-09-27T18:24:52Z",
+      "forced": {
+        "n": 400,
+        "hits": 393,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9825,
+        "accuracy_ci95": [
+          0.964323,
+          0.991498
+        ],
+        "beats_chance": true
+      },
+      "with_abstention": {
+        "n": 400,
+        "hits": 389,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9725,
+        "accuracy_ci95": [
+          0.951435,
+          0.984576
+        ],
+        "beats_chance": true
+      },
+      "macro_by_family": null,
+      "counterfactual_joint": {
+        "n": 140,
+        "hits": 132,
+        "cardinality": 4.1,
+        "chance": 0.082569,
+        "accuracy": 0.942857,
+        "accuracy_ci95": [
+          0.891297,
+          0.970764
+        ],
+        "beats_chance": true
+      },
+      "permutation_control": {
+        "measured": true,
+        "pass": true,
+        "flipped": 0,
+        "flip_rate": 0.0,
+        "n_rows": 24,
+        "n_perms": 24,
+        "max_abs_prob_delta": 0.0,
+        "tolerance": 1e-05,
+        "caveat": "the chooser samples at temperature 0.7, so a flip is order sensitivity OR sampling noise and this control cannot separate the two: it is the upper bound on order stability, not a decomposition of it",
+        "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+        "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+        "temperature": 0.7
+      },
+      "abstained_rows": 9,
+      "rejected_replies": 9
+    }
+  },
+  "comparison": {
+    "same_rows": {
+      "pass": true,
+      "columns": [
+        "control",
+        "tuned"
+      ],
+      "n": 400,
+      "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+      "compared_on": "row_id, family, variant_group, K and the gold slot — identity, not size: two columns of 400 rows each can still be two different cuts",
+      "rule": "the runner FAILS if the n of the columns do not match"
+    },
+    "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+    "n": 400,
+    "baseline_model": "qwen-local:qwen3.6:27b-mlx",
+    "candidate_model": "qwen-local:qwen3.8:27b-mlx",
+    "forced": {
+      "point": 0.0175,
+      "ci95": [
+        0.0,
+        0.0375
+      ],
+      "n": 400,
+      "bootstrap": {
+        "B": 2000,
+        "seed": 20260927,
+        "unit": "paired",
+        "ci": "percentile"
+      },
+      "baseline": 0.965,
+      "candidate": 0.9825
+    },
+    "counterfactual_joint": {
+      "point": 0.042857,
+      "ci95": [
+        -0.007143,
+        0.085714
+      ],
+      "n": 140,
+      "bootstrap": {
+        "B": 2000,
+        "seed": 20260928,
+        "unit": "paired",
+        "ci": "percentile"
+      },
+      "baseline": 0.907143,
+      "candidate": 0.95
+    },
+    "by_family": {
+      "attribute_comparison": {
+        "n": 80,
+        "control": 0.9875,
+        "tuned": 1.0,
+        "delta": 0.0125,
+        "below_control": false
+      },
+      "description_classification": {
+        "n": 80,
+        "control": 0.9375,
+        "tuned": 0.9375,
+        "delta": 0.0,
+        "below_control": false
+      },
+      "extraction_paraphrase": {
+        "n": 80,
+        "control": 0.975,
+        "tuned": 1.0,
+        "delta": 0.025,
+        "below_control": false
+      },
+      "priority_decision": {
+        "n": 80,
+        "control": 0.95,
+        "tuned": 0.9875,
+        "delta": 0.0375,
+        "below_control": false
+      },
+      "textual_inference_negation": {
+        "n": 80,
+        "control": 0.975,
+        "tuned": 0.9875,
+        "delta": 0.0125,
+        "below_control": false
+      }
+    },
+    "by_lang": {
+      "en": {
+        "n": 200,
+        "control": 0.965,
+        "tuned": 0.99,
+        "delta": 0.025,
+        "below_control": false
+      },
+      "es": {
+        "n": 200,
+        "control": 0.965,
+        "tuned": 0.975,
+        "delta": 0.01,
+        "below_control": false
+      }
+    },
+    "families_below_baseline": [],
+    "identical_picks": false,
+    "not_worse": true,
+    "better": false,
+    "verdict": "GO",
+    "pass": true,
+    "reason": "the paired CI95 of the forced difference is [0.0, 0.0375], whose upper bound is not below 0: not measurably worse",
+    "measured_by": "training.python.ce_finetune.compare (paired bootstrap over the same rows); the verdict rule is T-qwen38-ref's, not that gate's"
+  },
+  "permutation_at_temperature_0": {
+    "measured": true,
+    "max_abs_prob_delta": 0.0,
+    "tolerance": 1e-05,
+    "n_rows": 24,
+    "n_perms": 24,
+    "flipped": 0,
+    "flip_rate": 0.0,
+    "pass": true,
+    "how": "the options are offered in reverse order and the pick is compared by id; a flip moves that id's indicator weight by 1.0, which is what `max_abs_prob_delta` reports",
+    "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+    "temperature": 0.0,
+    "caveat": "the chooser decodes greedily (temperature 0, the verifier's), so sampling noise is out and a flip is order sensitivity — with the floor that MLX kernels are not bit-exact across runs",
+    "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+    "pairs": [
+      {
+        "row_id": "dev-pri-es-3k-t01c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-cmp-en-3k-t02c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-pri-es-2k-p01a",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-dsc-en-3k-t04b",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-dsc-en-8k-t03c",
+        "first": "c3",
+        "reversed": "c3",
+        "moved": false
+      },
+      {
+        "row_id": "dev-pri-en-2k-t04c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-inf-en-3k-t02c",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-inf-en-2k-t01c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      }
+    ]
+  },
+  "verdict": "GO",
+  "pass": true,
+  "producer": {
+    "qwen_model": "qwen3.8:27b-mlx",
+    "applies_to": "data.stream (the producer) and data.episode_verify (the verifier): both read data.episode_gen.MODEL",
+    "why": "the paired CI95 of the forced difference is [0.0, 0.0375], whose upper bound is not below 0: not measurably worse",
+    "how": "nothing to change: it is already the default of `data.episode_gen.MODEL`",
+    "operator_decides": false
+  },
+  "reports": {
+    "qwen3.6": "artifacts/gates/T-preflight-refs/refs-qwen-local.json",
+    "qwen3.8": "artifacts/gates/T-qwen38-ref/refs-qwen-local-3.8.json",
+    "columns": "artifacts/gates/T-qwen38-ref/columns"
+  },
+  "not_touched": [
+    "the sealed cut (no path of it was opened)",
+    "artifacts/gates/T-preflight-refs/refs-qwen-local.json and artifacts/gates/T-preflight-refs/columns/qwen-local.json (reused, not rewritten)"
+  ]
+}

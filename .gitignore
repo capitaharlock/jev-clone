@@ -109,3 +109,10 @@ artifacts/cache/
 artifacts/episodes-qwen/*.log
 artifacts/episodes-qwen/*/*.log
 artifacts/labelspace-qwen/cache/
+
+# Lotes por regla (#T-numeric-gen): el generador es instantáneo (≈ 6 500
+# episodios/s, CPU) y `manifest.json` lleva el comando, la semilla (= el
+# número de lote), la variedad y el sha256 de las filas. git lleva el
+# manifest y el gate; los 50 000 episodios de cada lote, no.
+artifacts/episodes-rule/*/episodes.jsonl
+artifacts/episodes-rule/*/rejects.jsonl

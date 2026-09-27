@@ -49,6 +49,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from data import episode_contract as EC  # noqa: E402
+from data import rule_variety as RV  # noqa: E402
 
 GENERATOR_VERSION = "episode-gen-v1"
 TASK = "T-episode-gen"
@@ -75,19 +76,46 @@ LABELGEN_MARKERS = ("Field report", "Cross-check against")
 
 
 # -- declared split ------------------------------------------------------
-def declared_split(n: int, seed: int) -> dict[tuple[str, str], int]:
+def declared_split(n: int, seed: int,
+                   families=None) -> dict[tuple[str, str], int]:
     """Per-family/per-language quota, DECLARED before generating.
 
-    ``n`` episodes over the 10 (family, lang) cells; the remainder goes
-    to cells in seeded-shuffle order. Pure function of (n, seed).
+    ``n`` episodes over the (family, lang) cells; the remainder goes to
+    cells in seeded-shuffle order. Pure function of (n, seed, families).
+
+    ``families`` filters the plan to a subset — the ES/EN proportion is
+    kept because the cells are still one per language per family, so a
+    run of the two rule families is half ES and half EN exactly as the
+    five-family plan is (``#T-numeric-gen``).
     """
-    cells = [(f, lang) for f in EC.FAMILIES for lang in EC.LANGS]
+    fams = tuple(families) if families else EC.FAMILIES
+    unknown = [f for f in fams if f not in EC.FAMILIES]
+    if unknown:
+        raise ValueError(f"unknown families {unknown}; closed: {EC.FAMILIES}")
+    cells = [(f, lang) for f in fams for lang in EC.LANGS]
     base, rem = divmod(n, len(cells))
     order = cells[:]
     random.Random(f"{GENERATOR_VERSION}\x00split\x00{seed}").shuffle(order)
     plan = {c: base for c in cells}
     for c in order[:rem]:
         plan[c] += 1
+    return plan
+
+
+def declared_ks(n_cases: int, seed: int, ks=RV.KS) -> list[int]:
+    """K per CASE, DECLARED before generating and balanced over ``ks``.
+
+    A case is a variant group — base plus its counterfactuals — so K is
+    assigned per case and never inside one: a counterfactual that
+    changed the cardinality would not be a counterfactual. Pure in
+    (n_cases, seed).
+    """
+    base, rem = divmod(n_cases, len(ks))
+    plan = [k for k in ks for _ in range(base)]
+    order = list(ks)
+    random.Random(f"{GENERATOR_VERSION}\x00ks-rem\x00{seed}").shuffle(order)
+    plan += order[:rem]
+    random.Random(f"{GENERATOR_VERSION}\x00ks\x00{seed}").shuffle(plan)
     return plan
 
 
@@ -707,41 +735,59 @@ def _rng(seed: int, idx: int) -> random.Random:
     return random.Random(f"{GENERATOR_VERSION}\x00{seed}\x00{idx}")
 
 
-def _work_items(queue: list[tuple[str, str]], n: int) -> list[tuple]:
-    """The deterministic build plan: ``(idx, family, lang, group, flip)``.
+def _work_items(queue: list[tuple[str, str]], n: int,
+                variants=(False, True), ks: list | None = None,
+                prefix: str = "") -> list[tuple]:
+    """The build plan: ``(idx, family, lang, group, variant, k)``.
 
-    Pure function of the queue — pairs of base+counterfactual share a
+    Pure function of the queue — every variant of one case shares a
     ``variant_group``. Extracted so the generation loop can run the Qwen
     round-trips concurrently without touching what gets generated.
+
+    ``variants`` is ``(False, True)`` for the five-family plan (base +
+    one counterfactual) and the four named variants of
+    ``data.rule_variety`` in variety mode. ``ks`` is the declared K per
+    case (``declared_ks``); ``None`` leaves K to the builder.
     """
     items: list[tuple] = []
     idx = case = 0
     while idx < n:
         family, lang = queue[idx]
-        group = f"{family[:4]}-{lang}-c{case:04d}"
-        for flip in (False, True):
+        group = f"{prefix}{family[:4]}-{lang}-c{case:04d}"
+        k = ks[case % len(ks)] if ks else None
+        for variant in variants:
             if idx >= n:
                 break
             fam2, lang2 = queue[idx]
             g2 = group if (fam2, lang2) == (family, lang) else \
-                f"{fam2[:4]}-{lang2}-c{case:04d}"
-            items.append((idx, fam2, lang2, g2, flip))
+                f"{prefix}{fam2[:4]}-{lang2}-c{case:04d}"
+            items.append((idx, fam2, lang2, g2, variant, k))
             idx += 1
         case += 1
     return items
 
 
 def _build_episode(item: tuple, seed: int, prose: str,
-                   sink: list | None = None) -> dict:
-    """Build ONE episode. Pure in ``(seed, idx, flip)``.
+                   sink: list | None = None, variety: int = 0) -> dict:
+    """Build ONE episode. Pure in ``(seed, idx, variant)``.
 
     With ``sink`` the Qwen paraphrase is deferred (see ``_maybe_qwen``);
     the episode comes back carrying local prose and ``origin`` set to
     ``pending-qwen`` until ``_fill_prose`` resolves it.
+
+    With ``variety > 0`` the two rule families go through
+    ``data.rule_variety``: 15 attributes, mixed number formats, ordinal
+    and threshold questions, K in {2, 3, 8} and the four named
+    counterfactuals. The other three families are untouched — their gold
+    is not arithmetic and there is nothing to widen by rule.
     """
-    idx, family, lang, group, flip = item
+    idx, family, lang, group, variant, k = item
+    if variety and family in RV.FAMILIES:
+        return RV.build(family, lang, seed, idx, group, _rng(seed, idx),
+                        variant, prose, sink, k=k or RV.KS[0],
+                        variety=variety, prose_hook=_maybe_qwen)
     return BUILDERS[family](lang, seed, idx, group, _rng(seed, idx),
-                            flip, prose, sink)
+                            variant, prose, sink)
 
 
 def _kept(text: str, tokens: list) -> bool:
@@ -867,7 +913,8 @@ def _read_jsonl(path: str) -> list[dict]:
 
 def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         out_dir: str = "", command: str = "", concurrency: int = 1,
-        batch: int = 1, resume: bool = False) -> dict:
+        batch: int = 1, resume: bool = False, families=None,
+        variety: int = 0, group_prefix: str = "") -> dict:
     """Generate ``n`` episodes. Manifest is written BEFORE generating.
 
     Cases come in base+counterfactual pairs sharing a ``variant_group``.
@@ -885,7 +932,10 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
     out = out_dir or os.path.join(ROOT, "artifacts", "episodes-qwen",
                                   f"seed-{seed}")
     os.makedirs(out, exist_ok=True)
-    plan = declared_split(n, seed)
+    plan = declared_split(n, seed, families)
+    variants = RV.VARIANTS if variety else (False, True)
+    n_cases = -(-n // len(variants)) + 1
+    ks = declared_ks(n_cases, seed) if variety else None
     manifest = {
         "task": TASK, "generator_version": GENERATOR_VERSION,
         "contract_task": EC.TASK, "schema_version": EC.SCHEMA_VERSION,
@@ -898,6 +948,13 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
                           for (f, lang), c in sorted(plan.items())},
         "qwen_model": MODEL,
         "prose_backend": prose, "teacher_backend": teacher,
+        "families": list(families) if families else list(EC.FAMILIES),
+        "variety": variety,
+        "variety_version": RV.VARIETY_VERSION if variety else None,
+        "variants": [str(v) for v in variants],
+        "planned_ks": (
+            {str(k): ks.count(k) for k in sorted(set(ks))} if ks else None),
+        "group_prefix": group_prefix,
     }
     ep_path = os.path.join(out, "episodes.jsonl")
     rj_path = os.path.join(out, "rejects.jsonl")
@@ -930,7 +987,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
     queue: list[tuple[str, str]] = []
     for (family, lang), count in sorted(plan.items()):
         queue += [(family, lang)] * count
-    items = _work_items(queue, n)
+    items = _work_items(queue, n, variants, ks, prefix=group_prefix)
 
     t0 = time.time()
     every = max(1, min(25, n // 20))
@@ -968,7 +1025,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         for start in range(start_at, len(items), PUBLISH_CHUNK):
             part = items[start:start + PUBLISH_CHUNK]
             sinks = [[] for _ in part]
-            eps = [_build_episode(it, seed, prose, sk)
+            eps = [_build_episode(it, seed, prose, sk, variety)
                    for it, sk in zip(part, sinks)]
             if prose == "qwen":
                 _fill_prose(eps, sinks, batch, concurrency)
@@ -1065,7 +1122,13 @@ def measure_gate(out: str, job_id: str = "episode-gen-pilot") -> dict:
     tested = flipped = 0
     for ep in episodes:
         rt = ep.get("rule_trace") or {}
-        if ep["family"] == EC.COMPARISON and "attrs" in rt:
+        if "criteria" in rt:
+            # Variety rows (`data.rule_variety`): the criterion is a
+            # chain, so the perturbation is the module's own — one number
+            # on the first criterion, beating the current winner.
+            tested += 1
+            flipped += RV.perturb_flips(rt)
+        elif ep["family"] == EC.COMPARISON and "attrs" in rt:
             attrs = [dict(a) for a in rt["attrs"]]
             crit = rt["criterion"]
             before = comparison_gold(attrs, crit)
@@ -1135,6 +1198,15 @@ def main(argv: list | None = None) -> int:
                    help="items per Qwen request (1 = one request each)")
     r.add_argument("--resume", action="store_true",
                    help="continue a dead run in --out: skip what is on disk")
+    r.add_argument("--families", default="",
+                   help="comma-separated subset of the five families; the "
+                        "plan is filtered and the ES/EN proportion kept")
+    r.add_argument("--variety", type=int, default=0,
+                   help="widen the two rule families (data.rule_variety): "
+                        "attributes, number formats, question forms, "
+                        "K in {2,3,8} and the four named counterfactuals")
+    r.add_argument("--group-prefix", default="",
+                   help="prefix for every variant_group (keeps batches apart)")
     g = sub.add_parser("gate", help="measure the verification gate")
     g.add_argument("--dir", required=True)
     g.add_argument("--job-id", default="episode-gen-pilot")
@@ -1148,10 +1220,12 @@ def main(argv: list | None = None) -> int:
                   "not a turn (compute embargo). The `datagen` job sets "
                   "EPISODE_GEN_BULK=1.", file=sys.stderr)
             return 2
+        fams = [f.strip() for f in args.families.split(",") if f.strip()]
         stats = run(n=args.n, seed=args.seed, prose=args.prose,
                     teacher=args.teacher, out_dir=args.out,
                     concurrency=args.concurrency, batch=args.batch,
-                    resume=args.resume)
+                    resume=args.resume, families=fams or None,
+                    variety=args.variety, group_prefix=args.group_prefix)
         print(f"episodes={stats['n_episodes']} "
               f"rejects={stats['n_rejects']} -> {stats['out']}")
         return 0 if stats["n_episodes"] else 1

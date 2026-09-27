@@ -1,13 +1,14 @@
 ---
 id: T-backbone-ladder
 title: La escalera de backbones — mismo trainer, encoder más grande, control sin ajustar medido en cada peldaño
-status: next
+status: active
 priority: high
 owner: unassigned
 category: model
 initiative: daily-learning-loop
 depends_on:
   - T-ce-finetune
+  - T-numeric-gen
 created: 2026-09-27
 updated: 2026-09-27
 ---
@@ -18,6 +19,16 @@ updated: 2026-09-27
 MiniLMv2-L6 (107 M) aprende clasificación y contrafactuales, pero no
 comparación numérica. Un cross-encoder mayor es la forma más directa de
 comprobar si ese techo es de capacidad.
+
+**Activada el 2026-09-27 por la medida de `#T-numeric-gen`, no por calendario.**
+Ese brazo dio 5 000 decisiones de exactamente la familia que falla y
+`attribute_comparison` **no se movió**: 0,5625 → 0,5625 en el holdout del piloto
+(Δ pareado 0,000 [−0,172, 0,172]) y 0,3706 → 0,4025 en el holdout entero, 564
+filas, IC95 % [−0,014, 0,080], sin despegarse de 0. En la misma corrida
+`description_classification` fue 0,558 → 1,000 y `extraction_paraphrase` 0,739 →
+1,000, así que el trainer y los datos funcionan. **El volumen no es el cuello;
+el encoder sí lo es**, y esta task es la que lo prueba o lo desmiente
+(`artifacts/gates/T-numeric-gen/gate.json`, sección `value_proof.bottleneck`).
 
 **Peldaños** (cada uno con fila en `source-register.md`, revisión fijada y sha
 verificado por `model/weights.py`):

@@ -8,8 +8,11 @@ category: model
 initiative: laya-teardown
 created: 2026-09-27
 updated: 2026-09-27
+completed_at: 2026-09-27T18:04:10.517Z
+resolved_by: A001
+resolved_by_conv: _onboarding_v1
+commit_shas: ['1d62a3b80f601f1225575285122ff6b2e837019a']
 ---
-
 # Laya vs nuestro pointer head — las diferencias, y cuáles son medibles
 
 Laya resuelve el mismo problema con otra forma. Esta task las escribe una al lado
@@ -68,4 +71,3 @@ Las cinco diferencias que ya están identificadas en la lectura del código
   rechazado (`401`), anotado en el diario.
 - NO medido (dicho como tal): Laya en nuestro arnés, mmBERT, ablación 192/512, cualquier cifra
   de entreno.
-

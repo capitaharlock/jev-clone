@@ -672,13 +672,17 @@ por el bucle. `#daily-learning-loop` pasa a active.
 
 | Requisito | Quién lo entrega | Estado |
 |---|---|---|
-| Qwen 3.8 medido en dev contra el 3.6 (0,965) | `#T-qwen38-ref` | **MIDIENDO** (job `qwen38-ref`): `eval/qwen38_ref.py` + 14 tests, regla del gate pre-registrada (GO = la diferencia pareada no queda por debajo de 0), control de permutación a 0,7 y a 0 |
-| Generador por regla de atributos/prioridad + prueba de valor con 5 000 | `#T-numeric-gen` | **EN CURSO** en `developer-copy` (`rq-f80e6e`) |
+| Qwen 3.8 medido en dev contra el 3.6 (0,965) | `#T-qwen38-ref` | **done · GO**: 400/400 filas, forzada **0,9825** [0,9643 · 0,9915] contra 0,9650; diferencia pareada +0,0175 IC95 % [0,0000 · 0,0375] → *no peor* (`better: false`, y se dice así). Ninguna familia cae; pasa el control de permutación a 0,7 y a 0, que el 3.6 fallaba. El productor se queda en `qwen3.8:27b-mlx` |
+| Generador por regla de atributos/prioridad con volumen ilimitado | `#T-numeric-gen` | **medido** (`data/rule_variety.py`, 75 tests sin GPU): lote 1 de **50 000** en 6,7 s (7 441 ep/s, 0 rechazos, 0 inválidos), 15 atributos, 49 combinaciones de formato numérico, 7 formas de pregunta (superlativo, ordinal, umbral, empate con desempate; 2 y 3 criterios encadenados, umbral+cadena), K 2/3/8 y ES/EN. Gate en `artifacts/gates/T-numeric-gen/gate.json` |
+| Contrafactuales por grupo: número y criterio/orden mueven el gold, la paráfrasis no | `#T-numeric-gen` | **medido**: 12 500 grupos, 12 500/12 500 en las tres variantes, y el gold de las 50 000 filas se recomputa desde `rule_trace` |
+| Posición del gold uniforme (χ² escrita antes) y sin fuga contra dev **y** sellado | `#T-numeric-gen` | **medido**: χ² 0,00 (K=2), 4,57 (K=3), 10,91 (K=8) contra críticos 6,64 / 9,21 / 18,48 a α=0,01; 0 coincidencias de vocabulario y 0 de paráfrasis en las dos baterías (2 440 y 3 660 textos bloqueados, muestra de 800) |
+| Prueba de valor: smoke con 5 000 por regla + el piloto verificado, predicción escrita antes | `#T-numeric-gen` | **done · NO-GO**, y es el resultado útil: `attribute_comparison` **no se mueve** con 5× su propio volumen — 0,5625 → 0,5625 en el holdout del piloto (Δ 0,000 [−0,172 · 0,172]) y 0,3706 → 0,4025 en las 564 filas del holdout entero ([−0,014 · 0,080]). En la misma corrida `description_classification` 0,558 → **1,000** y `extraction_paraphrase` 0,739 → **1,000**: el trainer y los datos funcionan. **El cuello es el backbone** → `#T-backbone-ladder` |
+| **Cuello identificado con medida, no con opinión** | `#T-numeric-gen` → `#T-backbone-ladder` | **done**: la predicción estaba escrita antes de mezclar (`value_proof_prediction`) y acertó. Se salta la espera del bucle (`docs/bucle-infinito.md` §4, r = 3) |
 | Mezcla multi-fuente con tope de repetición y `consumed_ids` | `#T-loop-trainer` | **SIN MEDIR** |
 | Marcador con ciclo, escalón, brazo y delta contra el control original | `#T-loop-scoreboard` | **SIN MEDIR** |
 | Productor sin fin 24 h sin intervención | `#T-episode-scale` (`data.stream`) | **SIN MEDIR** |
 | 10 ciclos reales con cambio de escalón y de brazo | `#T-loop-nightly` (`training.python.loop`) | **SIN MEDIR** |
-| Dos peldaños de backbone medidos (control + smoke) | `#T-backbone-ladder` | **SIN MEDIR** |
+| Dos peldaños de backbone medidos (control + smoke) | `#T-backbone-ladder` | **SIN MEDIR · ACTIVA**, es ahora la prioridad: la recibe del NO-GO de `#T-numeric-gen`. Peldaños candidatos mDeBERTa-v3-base (≈ 280 M) y XLM-R-large / ModernBERT-large (≈ 400 M) frente a los 107 M de hoy |
 | Scorer listwise con permutación dentro de la tolerancia | `#T-listwise-format` | **SIN MEDIR** |
 | Dev v2 y columna de regresión | `#T-dev-rotation` | **SIN MEDIR** |
 | Hitos H1–H4 (Jev 0,727, Laya 0,766, dev ≥ 0,70, ≥ 0,85) | bucle → `#T-ce-confirm` | **SIN MEDIR** |

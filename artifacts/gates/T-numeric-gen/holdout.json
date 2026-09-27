@@ -1,0 +1,1231 @@
+{
+  "budget_decisions": 5000,
+  "columns": {
+    "control": {
+      "init": {
+        "id": "minilmv2-l6-mnli-xnli",
+        "kind": "weights",
+        "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+        "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+        "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca"
+      },
+      "model_version": "T-numeric-gen:control",
+      "report": {
+        "abstention": {
+          "abstain_rate": 0.0,
+          "accuracy": 0.431655,
+          "accuracy_ci95": [
+            0.40584,
+            0.457846
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "coverage": {
+            "answered": 1390,
+            "cardinality": 3.6813,
+            "chance": 0.365468,
+            "coverage": 1.0,
+            "coverage_ci95": [
+              0.997244,
+              1.0
+            ],
+            "n": 1390,
+            "what": "share of rows the head answered"
+          },
+          "hits": 600,
+          "n": 1390,
+          "precision_among_answered": {
+            "accuracy": 0.431655,
+            "accuracy_ci95": [
+              0.40584,
+              0.457846
+            ],
+            "beats_chance": true,
+            "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+            "cardinality": 3.6813,
+            "chance": 0.365468,
+            "hits": 600,
+            "n": 1390,
+            "what": "accuracy restricted to the rows the head answered",
+            "why_not_alone": "precision among the answered rises by answering less; it is only readable beside coverage"
+          },
+          "unanswerable_rows": {
+            "correctly_abstained": 0,
+            "n": 0
+          },
+          "what": "accuracy including abstention: the published decision over [K + 1], an abstention on an answerable row counted as wrong"
+        },
+        "artifact": "metrics-suite",
+        "by_family": {
+          "attribute_comparison": {
+            "abstention": {
+              "accuracy": 0.370567,
+              "accuracy_ci95": [
+                0.33171,
+                0.411176
+              ],
+              "beats_chance": false,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 4.0,
+              "chance": 0.348404,
+              "hits": 209,
+              "n": 564,
+              "what": "accuracy including abstention, family attribute_comparison"
+            },
+            "ranking": {
+              "accuracy": 0.370567,
+              "accuracy_ci95": [
+                0.33171,
+                0.411176
+              ],
+              "beats_chance": false,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 4.0,
+              "chance": 0.348404,
+              "hits": 209,
+              "n": 564,
+              "what": "forced accuracy, family attribute_comparison"
+            }
+          },
+          "description_classification": {
+            "abstention": {
+              "accuracy": 0.558442,
+              "accuracy_ci95": [
+                0.447382,
+                0.663947
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3,
+              "chance": 0.333333,
+              "hits": 43,
+              "n": 77,
+              "what": "accuracy including abstention, family description_classification"
+            },
+            "ranking": {
+              "accuracy": 0.558442,
+              "accuracy_ci95": [
+                0.447382,
+                0.663947
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3,
+              "chance": 0.333333,
+              "hits": 43,
+              "n": 77,
+              "what": "forced accuracy, family description_classification"
+            }
+          },
+          "extraction_paraphrase": {
+            "abstention": {
+              "accuracy": 0.73913,
+              "accuracy_ci95": [
+                0.624894,
+                0.828144
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 51,
+              "n": 69,
+              "what": "accuracy including abstention, family extraction_paraphrase"
+            },
+            "ranking": {
+              "accuracy": 0.73913,
+              "accuracy_ci95": [
+                0.624894,
+                0.828144
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 51,
+              "n": 69,
+              "what": "forced accuracy, family extraction_paraphrase"
+            }
+          },
+          "priority_decision": {
+            "abstention": {
+              "accuracy": 0.366942,
+              "accuracy_ci95": [
+                0.329489,
+                0.406075
+              ],
+              "beats_chance": false,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3.8711,
+              "chance": 0.353444,
+              "hits": 222,
+              "n": 605,
+              "what": "accuracy including abstention, family priority_decision"
+            },
+            "ranking": {
+              "accuracy": 0.366942,
+              "accuracy_ci95": [
+                0.329489,
+                0.406075
+              ],
+              "beats_chance": false,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3.8711,
+              "chance": 0.353444,
+              "hits": 222,
+              "n": 605,
+              "what": "forced accuracy, family priority_decision"
+            }
+          },
+          "textual_inference_negation": {
+            "abstention": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.951276,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 75,
+              "n": 75,
+              "what": "accuracy including abstention, family textual_inference_negation"
+            },
+            "ranking": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.951276,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 75,
+              "n": 75,
+              "what": "forced accuracy, family textual_inference_negation"
+            }
+          }
+        },
+        "calibration": {
+          "brier": 0.593581,
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "ece": 0.026502,
+          "fitted_on": "pilot-holdout fit half (687 rows, 220 groups)",
+          "n": 1390,
+          "nll": 1.074743,
+          "nll_at_chance": 1.006577,
+          "reliability_bins": [
+            {
+              "acc": 0.0,
+              "conf": 0.0,
+              "hi": 0.06666666666666667,
+              "lo": 0.0,
+              "n": 0
+            },
+            {
+              "acc": 0.109375,
+              "conf": 0.13096723973823732,
+              "hi": 0.13333333333333333,
+              "lo": 0.06666666666666667,
+              "n": 64
+            },
+            {
+              "acc": 0.12790697674418605,
+              "conf": 0.14618011957877597,
+              "hi": 0.2,
+              "lo": 0.13333333333333333,
+              "n": 258
+            },
+            {
+              "acc": 0.0,
+              "conf": 0.2024860978773415,
+              "hi": 0.26666666666666666,
+              "lo": 0.2,
+              "n": 2
+            },
+            {
+              "acc": 0.0,
+              "conf": 0.0,
+              "hi": 0.3333333333333333,
+              "lo": 0.26666666666666666,
+              "n": 0
+            },
+            {
+              "acc": 0.36996336996337,
+              "conf": 0.3674088955635697,
+              "hi": 0.4,
+              "lo": 0.3333333333333333,
+              "n": 273
+            },
+            {
+              "acc": 0.3333333333333333,
+              "conf": 0.42166645959742655,
+              "hi": 0.4666666666666667,
+              "lo": 0.4,
+              "n": 75
+            },
+            {
+              "acc": 0.5205992509363296,
+              "conf": 0.51515974415222,
+              "hi": 0.5333333333333333,
+              "lo": 0.4666666666666667,
+              "n": 267
+            },
+            {
+              "acc": 0.5306122448979592,
+              "conf": 0.558294793545909,
+              "hi": 0.6,
+              "lo": 0.5333333333333333,
+              "n": 245
+            },
+            {
+              "acc": 0.6746987951807228,
+              "conf": 0.6262652704543917,
+              "hi": 0.6666666666666666,
+              "lo": 0.6,
+              "n": 83
+            },
+            {
+              "acc": 0.5,
+              "conf": 0.6952443920914984,
+              "hi": 0.7333333333333333,
+              "lo": 0.6666666666666666,
+              "n": 20
+            },
+            {
+              "acc": 0.6666666666666666,
+              "conf": 0.7620684266968266,
+              "hi": 0.8,
+              "lo": 0.7333333333333333,
+              "n": 12
+            },
+            {
+              "acc": 1.0,
+              "conf": 0.827417781232469,
+              "hi": 0.8666666666666667,
+              "lo": 0.8,
+              "n": 11
+            },
+            {
+              "acc": 1.0,
+              "conf": 0.907057258741012,
+              "hi": 0.9333333333333333,
+              "lo": 0.8666666666666667,
+              "n": 26
+            },
+            {
+              "acc": 1.0,
+              "conf": 0.9741640179291776,
+              "hi": 1.0,
+              "lo": 0.9333333333333333,
+              "n": 54
+            }
+          ],
+          "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+          "temperature": 0.8436960231581451,
+          "threshold": null,
+          "threshold_strategy": "argmax over the K weights; no abstention threshold is fitted here — that is #T-battery-calib",
+          "verified_on": "pilot-holdout verify half (703 rows, 236 groups)",
+          "what": "NLL, Brier and ECE over the offered candidates"
+        },
+        "chance": {
+          "by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 673
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 393
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 324
+            }
+          },
+          "chance": 0.365468,
+          "chance_including_unknown": 0.257974,
+          "how": "chance is the uniform guesser over the offered candidates, averaged per row; a mixed-K cut has no single K, so mean_k and the by_k table are published together",
+          "k_max": 8,
+          "k_min": 2,
+          "mean_k": 3.6813
+        },
+        "controls_are_distinct": "these are TWO properties and the 2026-09-24 measurement separates them: the scores follow the option text under permutation and the model still misses the decisive change. A green permutation check is not evidence of tracking and never stands in for one",
+        "counterfactual": {
+          "accuracy": 0.212264,
+          "accuracy_ci95": [
+            0.176015,
+            0.25368
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.7172,
+          "chance": 0.104204,
+          "chance_how": "product of the per-member uniform rates, averaged over groups — guessing both halves of a pair",
+          "groups_with_one_half_only": 254,
+          "hits": 90,
+          "measurable": true,
+          "n": 424,
+          "rule": "a group with exactly one half right scores 0: half of a counterfactual pair is what a prior gets for free",
+          "unpaired_group_ids": [
+            "attr-en-c0010",
+            "attr-en-c0018",
+            "attr-en-c0096",
+            "attr-en-c0099",
+            "desc-en-c0255",
+            "desc-es-c0354",
+            "desc-es-c0355",
+            "desc-es-c0357"
+          ],
+          "unpaired_groups": 32,
+          "what": "joint success by variant_group: every member of the group right, or the group scores 0",
+          "why_unmeasurable": null
+        },
+        "cut": {
+          "mix": "python -m eval.numeric_value mix --rule artifacts/episodes-rule/batch-0001 --pilot artifacts/episodes-qwen/pilot-2k/verified.jsonl --n-rule 5000 --out artifacts/episodes-rule/mix-smoke",
+          "mix_sha256": "27b59cceba01bd1e6f4088484494fd3f5cd1e24dc3e3680438a64fe2c52d9961",
+          "n": 1390,
+          "name": "pilot-holdout",
+          "reserved": false,
+          "rows_scored": 1390,
+          "rows_sha256": "8b3c26526e9f338083c26302e725b26df6c4389e43d7563890262a49e1acd11b",
+          "sealed_cut_read": false,
+          "source": "the 20 % by variant_group of the smoke's own training mix, recomputed from the mix directory and the split seed — never dev, never the sealed cut",
+          "split": "holdout",
+          "split_seed": 20260927,
+          "task": "T-numeric-gen"
+        },
+        "format": "jev.metrics.v1",
+        "generated_utc": "2026-09-27T19:19:43Z",
+        "macro": {
+          "accuracy": 0.607016,
+          "accuracy_ci95": null,
+          "accuracy_ranking": 0.607016,
+          "cardinality": 3.6813,
+          "chance": 0.407036,
+          "chance_ranking": 0.407036,
+          "ci95_why_absent": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here",
+          "n": 1390,
+          "n_families": 5,
+          "what": "unweighted mean over families — every family one vote",
+          "worst_family": "priority_decision"
+        },
+        "model_version": "T-numeric-gen:control",
+        "notes": [
+          "T-numeric-gen: control column on the pilot's own holdout, the cut #T-ce-finetune left at 0.574 -> 0.574",
+          "init: {'kind': 'weights', 'id': 'minilmv2-l6-mnli-xnli', 'repo': 'MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli', 'revision': '0a71e92a985b6e1ad1828cf67ce9c459639c1dca', 'model_version': 'minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca'}",
+          "the sealed cut was not read"
+        ],
+        "permutation_invariance": {
+          "distinct_from": "changing the decisive fact in the state, or the question asked of it, changes the answer",
+          "max_abs_prob_delta": 0.0,
+          "measured": true,
+          "n_perms": 6,
+          "pass": true,
+          "source": "T-numeric-gen — model.ce_scorer.check_permutation_invariance on the contract case, control weights, same run",
+          "tolerance": 1e-05,
+          "what": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control"
+        },
+        "ranking": {
+          "accuracy": 0.431655,
+          "accuracy_ci95": [
+            0.40584,
+            0.457846
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "excluded_unanswerable_rows": 0,
+          "hits": 600,
+          "measurable": true,
+          "measured_on": "the answerable rows only — a row whose gold was withheld has no correct option to rank",
+          "n": 1390,
+          "what": "forced accuracy: argmax over the offered candidates, `unknown` taken out of the race"
+        },
+        "reported_apart": "ranking and abstention are two measurements and are published side by side: neither is the headline on its own",
+        "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+        "task": "T-numeric-gen",
+        "tracking": {
+          "distinct_from": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+          "followed": 579,
+          "how": "pairs inside a variant_group whose rule gold differs; the pick has to move with it",
+          "measured": true,
+          "n_pairs": 1245,
+          "rate": 0.46506,
+          "same_slot": 666,
+          "source": "T-numeric-gen on pilot-holdout",
+          "what": "changing the decisive fact in the state, or the question asked of it, changes the answer"
+        }
+      }
+    },
+    "tuned": {
+      "init": {
+        "decisions_consumed": null,
+        "dir": "artifacts/checkpoints/ce/numeric-5k/model",
+        "kind": "checkpoint",
+        "model_version": "artifacts/checkpoints/ce/numeric-5k/model",
+        "run": null,
+        "weights": null
+      },
+      "model_version": "T-numeric-gen:tuned",
+      "report": {
+        "abstention": {
+          "abstain_rate": 0.0,
+          "accuracy": 0.5,
+          "accuracy_ci95": [
+            0.473751,
+            0.526249
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "coverage": {
+            "answered": 1390,
+            "cardinality": 3.6813,
+            "chance": 0.365468,
+            "coverage": 1.0,
+            "coverage_ci95": [
+              0.997244,
+              1.0
+            ],
+            "n": 1390,
+            "what": "share of rows the head answered"
+          },
+          "hits": 695,
+          "n": 1390,
+          "precision_among_answered": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.473751,
+              0.526249
+            ],
+            "beats_chance": true,
+            "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+            "cardinality": 3.6813,
+            "chance": 0.365468,
+            "hits": 695,
+            "n": 1390,
+            "what": "accuracy restricted to the rows the head answered",
+            "why_not_alone": "precision among the answered rises by answering less; it is only readable beside coverage"
+          },
+          "unanswerable_rows": {
+            "correctly_abstained": 0,
+            "n": 0
+          },
+          "what": "accuracy including abstention: the published decision over [K + 1], an abstention on an answerable row counted as wrong"
+        },
+        "artifact": "metrics-suite",
+        "by_family": {
+          "attribute_comparison": {
+            "abstention": {
+              "accuracy": 0.402482,
+              "accuracy_ci95": [
+                0.362801,
+                0.443482
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 4.0,
+              "chance": 0.348404,
+              "hits": 227,
+              "n": 564,
+              "what": "accuracy including abstention, family attribute_comparison"
+            },
+            "ranking": {
+              "accuracy": 0.402482,
+              "accuracy_ci95": [
+                0.362801,
+                0.443482
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 4.0,
+              "chance": 0.348404,
+              "hits": 227,
+              "n": 564,
+              "what": "forced accuracy, family attribute_comparison"
+            }
+          },
+          "description_classification": {
+            "abstention": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.952482,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3,
+              "chance": 0.333333,
+              "hits": 77,
+              "n": 77,
+              "what": "accuracy including abstention, family description_classification"
+            },
+            "ranking": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.952482,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3,
+              "chance": 0.333333,
+              "hits": 77,
+              "n": 77,
+              "what": "forced accuracy, family description_classification"
+            }
+          },
+          "extraction_paraphrase": {
+            "abstention": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.947263,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 69,
+              "n": 69,
+              "what": "accuracy including abstention, family extraction_paraphrase"
+            },
+            "ranking": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.947263,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 69,
+              "n": 69,
+              "what": "forced accuracy, family extraction_paraphrase"
+            }
+          },
+          "priority_decision": {
+            "abstention": {
+              "accuracy": 0.408264,
+              "accuracy_ci95": [
+                0.369797,
+                0.447889
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3.8711,
+              "chance": 0.353444,
+              "hits": 247,
+              "n": 605,
+              "what": "accuracy including abstention, family priority_decision"
+            },
+            "ranking": {
+              "accuracy": 0.408264,
+              "accuracy_ci95": [
+                0.369797,
+                0.447889
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 3.8711,
+              "chance": 0.353444,
+              "hits": 247,
+              "n": 605,
+              "what": "forced accuracy, family priority_decision"
+            }
+          },
+          "textual_inference_negation": {
+            "abstention": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.951276,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 75,
+              "n": 75,
+              "what": "accuracy including abstention, family textual_inference_negation"
+            },
+            "ranking": {
+              "accuracy": 1.0,
+              "accuracy_ci95": [
+                0.951276,
+                1.0
+              ],
+              "beats_chance": true,
+              "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+              "cardinality": 2,
+              "chance": 0.5,
+              "hits": 75,
+              "n": 75,
+              "what": "forced accuracy, family textual_inference_negation"
+            }
+          }
+        },
+        "calibration": {
+          "brier": 0.535136,
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "ece": 0.046034,
+          "fitted_on": "pilot-holdout fit half (687 rows, 220 groups)",
+          "n": 1390,
+          "nll": 0.977144,
+          "nll_at_chance": 1.006577,
+          "reliability_bins": [
+            {
+              "acc": 0.0,
+              "conf": 0.0,
+              "hi": 0.06666666666666667,
+              "lo": 0.0,
+              "n": 0
+            },
+            {
+              "acc": 0.15789473684210525,
+              "conf": 0.1309026835318827,
+              "hi": 0.13333333333333333,
+              "lo": 0.06666666666666667,
+              "n": 57
+            },
+            {
+              "acc": 0.2388663967611336,
+              "conf": 0.1536329117076947,
+              "hi": 0.2,
+              "lo": 0.13333333333333333,
+              "n": 247
+            },
+            {
+              "acc": 0.29411764705882354,
+              "conf": 0.2200715365370728,
+              "hi": 0.26666666666666666,
+              "lo": 0.2,
+              "n": 17
+            },
+            {
+              "acc": 0.5,
+              "conf": 0.2819865720589398,
+              "hi": 0.3333333333333333,
+              "lo": 0.26666666666666666,
+              "n": 2
+            },
+            {
+              "acc": 0.3787878787878788,
+              "conf": 0.3748535010377037,
+              "hi": 0.4,
+              "lo": 0.3333333333333333,
+              "n": 198
+            },
+            {
+              "acc": 0.3076923076923077,
+              "conf": 0.4274786603775042,
+              "hi": 0.4666666666666667,
+              "lo": 0.4,
+              "n": 91
+            },
+            {
+              "acc": 0.4900990099009901,
+              "conf": 0.5131783678878457,
+              "hi": 0.5333333333333333,
+              "lo": 0.4666666666666667,
+              "n": 202
+            },
+            {
+              "acc": 0.48484848484848486,
+              "conf": 0.5575820342476702,
+              "hi": 0.6,
+              "lo": 0.5333333333333333,
+              "n": 198
+            },
+            {
+              "acc": 0.5443037974683544,
+              "conf": 0.6308215615009215,
+              "hi": 0.6666666666666666,
+              "lo": 0.6,
+              "n": 79
+            },
+            {
+              "acc": 0.7058823529411765,
+              "conf": 0.699959291464699,
+              "hi": 0.7333333333333333,
+              "lo": 0.6666666666666666,
+              "n": 34
+            },
+            {
+              "acc": 0.7916666666666666,
+              "conf": 0.7603922113184031,
+              "hi": 0.8,
+              "lo": 0.7333333333333333,
+              "n": 24
+            },
+            {
+              "acc": 0.7692307692307693,
+              "conf": 0.8349072205569098,
+              "hi": 0.8666666666666667,
+              "lo": 0.8,
+              "n": 13
+            },
+            {
+              "acc": 0.875,
+              "conf": 0.8900576957033386,
+              "hi": 0.9333333333333333,
+              "lo": 0.8666666666666667,
+              "n": 8
+            },
+            {
+              "acc": 1.0,
+              "conf": 0.9991063080454697,
+              "hi": 1.0,
+              "lo": 0.9333333333333333,
+              "n": 220
+            }
+          ],
+          "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+          "temperature": 0.7071067811865476,
+          "threshold": null,
+          "threshold_strategy": "argmax over the K weights; no abstention threshold is fitted here — that is #T-battery-calib",
+          "verified_on": "pilot-holdout verify half (703 rows, 236 groups)",
+          "what": "NLL, Brier and ECE over the offered candidates"
+        },
+        "chance": {
+          "by_k": {
+            "2": {
+              "chance": 0.5,
+              "chance_including_unknown": 0.333333,
+              "k": 2,
+              "rows": 673
+            },
+            "3": {
+              "chance": 0.333333,
+              "chance_including_unknown": 0.25,
+              "k": 3,
+              "rows": 393
+            },
+            "8": {
+              "chance": 0.125,
+              "chance_including_unknown": 0.111111,
+              "k": 8,
+              "rows": 324
+            }
+          },
+          "chance": 0.365468,
+          "chance_including_unknown": 0.257974,
+          "how": "chance is the uniform guesser over the offered candidates, averaged per row; a mixed-K cut has no single K, so mean_k and the by_k table are published together",
+          "k_max": 8,
+          "k_min": 2,
+          "mean_k": 3.6813
+        },
+        "controls_are_distinct": "these are TWO properties and the 2026-09-24 measurement separates them: the scores follow the option text under permutation and the model still misses the decisive change. A green permutation check is not evidence of tracking and never stands in for one",
+        "counterfactual": {
+          "accuracy": 0.311321,
+          "accuracy_ci95": [
+            0.269107,
+            0.356923
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.7172,
+          "chance": 0.104204,
+          "chance_how": "product of the per-member uniform rates, averaged over groups — guessing both halves of a pair",
+          "groups_with_one_half_only": 240,
+          "hits": 132,
+          "measurable": true,
+          "n": 424,
+          "rule": "a group with exactly one half right scores 0: half of a counterfactual pair is what a prior gets for free",
+          "unpaired_group_ids": [
+            "attr-en-c0010",
+            "attr-en-c0018",
+            "attr-en-c0096",
+            "attr-en-c0099",
+            "desc-en-c0255",
+            "desc-es-c0354",
+            "desc-es-c0355",
+            "desc-es-c0357"
+          ],
+          "unpaired_groups": 32,
+          "what": "joint success by variant_group: every member of the group right, or the group scores 0",
+          "why_unmeasurable": null
+        },
+        "cut": {
+          "mix": "python -m eval.numeric_value mix --rule artifacts/episodes-rule/batch-0001 --pilot artifacts/episodes-qwen/pilot-2k/verified.jsonl --n-rule 5000 --out artifacts/episodes-rule/mix-smoke",
+          "mix_sha256": "27b59cceba01bd1e6f4088484494fd3f5cd1e24dc3e3680438a64fe2c52d9961",
+          "n": 1390,
+          "name": "pilot-holdout",
+          "reserved": false,
+          "rows_scored": 1390,
+          "rows_sha256": "8b3c26526e9f338083c26302e725b26df6c4389e43d7563890262a49e1acd11b",
+          "sealed_cut_read": false,
+          "source": "the 20 % by variant_group of the smoke's own training mix, recomputed from the mix directory and the split seed — never dev, never the sealed cut",
+          "split": "holdout",
+          "split_seed": 20260927,
+          "task": "T-numeric-gen"
+        },
+        "format": "jev.metrics.v1",
+        "generated_utc": "2026-09-27T19:20:30Z",
+        "macro": {
+          "accuracy": 0.762149,
+          "accuracy_ci95": null,
+          "accuracy_ranking": 0.762149,
+          "cardinality": 3.6813,
+          "chance": 0.407036,
+          "chance_ranking": 0.407036,
+          "ci95_why_absent": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here",
+          "n": 1390,
+          "n_families": 5,
+          "what": "unweighted mean over families — every family one vote",
+          "worst_family": "attribute_comparison"
+        },
+        "model_version": "T-numeric-gen:tuned",
+        "notes": [
+          "T-numeric-gen: tuned column on the pilot's own holdout, the cut #T-ce-finetune left at 0.574 -> 0.574",
+          "init: {'kind': 'checkpoint', 'dir': 'artifacts/checkpoints/ce/numeric-5k/model', 'run': None, 'weights': None, 'decisions_consumed': None, 'model_version': 'artifacts/checkpoints/ce/numeric-5k/model'}",
+          "the sealed cut was not read"
+        ],
+        "permutation_invariance": {
+          "distinct_from": "changing the decisive fact in the state, or the question asked of it, changes the answer",
+          "max_abs_prob_delta": 0.0,
+          "measured": true,
+          "n_perms": 6,
+          "pass": true,
+          "source": "T-numeric-gen — model.ce_scorer.check_permutation_invariance on the contract case, tuned weights, same run",
+          "tolerance": 1e-05,
+          "what": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control"
+        },
+        "ranking": {
+          "accuracy": 0.5,
+          "accuracy_ci95": [
+            0.473751,
+            0.526249
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3.6813,
+          "chance": 0.365468,
+          "excluded_unanswerable_rows": 0,
+          "hits": 695,
+          "measurable": true,
+          "measured_on": "the answerable rows only — a row whose gold was withheld has no correct option to rank",
+          "n": 1390,
+          "what": "forced accuracy: argmax over the offered candidates, `unknown` taken out of the race"
+        },
+        "reported_apart": "ranking and abstention are two measurements and are published side by side: neither is the headline on its own",
+        "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+        "task": "T-numeric-gen",
+        "tracking": {
+          "distinct_from": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+          "followed": 621,
+          "how": "pairs inside a variant_group whose rule gold differs; the pick has to move with it",
+          "measured": true,
+          "n_pairs": 1245,
+          "rate": 0.498795,
+          "same_slot": 624,
+          "source": "T-numeric-gen on pilot-holdout",
+          "what": "changing the decisive fact in the state, or the question asked of it, changes the answer"
+        }
+      }
+    }
+  },
+  "decisions_consumed": 5000,
+  "device": "mps",
+  "format": "jev.numeric-value.v1",
+  "generated_utc": "2026-09-27T19:20:30Z",
+  "holdout": {
+    "by": "variant_group (data.episode_contract.assign_split)",
+    "cuts": [
+      [
+        "train",
+        0.8
+      ],
+      [
+        "holdout",
+        0.2
+      ]
+    ],
+    "n": 1390,
+    "n_holdout": 1390,
+    "n_pilot": 370,
+    "n_rule": 1020,
+    "n_train": 5450,
+    "seed": 20260927
+  },
+  "length_report": {
+    "max_length": 512,
+    "max_tokens": 482,
+    "n_pairs": 20732,
+    "n_truncated": 0,
+    "pass": true,
+    "truncated_indices": [],
+    "truncation": "only_first"
+  },
+  "mix": "artifacts/episodes-rule/mix-smoke",
+  "pilot_holdout": {
+    "by_family": {
+      "attribute_comparison": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          -0.171875,
+          0.171875
+        ],
+        "control": 0.5625,
+        "moves": false,
+        "n": 64,
+        "point": 0.0,
+        "tuned": 0.5625
+      },
+      "description_classification": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.337662,
+          0.558442
+        ],
+        "control": 0.558442,
+        "moves": true,
+        "n": 77,
+        "point": 0.441558,
+        "tuned": 1.0
+      },
+      "extraction_paraphrase": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.15942,
+          0.376812
+        ],
+        "control": 0.73913,
+        "moves": true,
+        "n": 69,
+        "point": 0.26087,
+        "tuned": 1.0
+      },
+      "priority_decision": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          -0.105882,
+          0.105882
+        ],
+        "control": 0.611765,
+        "moves": false,
+        "n": 85,
+        "point": 0.0,
+        "tuned": 0.611765
+      },
+      "textual_inference_negation": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "control": 1.0,
+        "moves": false,
+        "n": 75,
+        "point": 0.0,
+        "tuned": 1.0
+      }
+    },
+    "by_lang": {
+      "en": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260930,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.094444,
+          0.227778
+        ],
+        "control": 0.677778,
+        "moves": true,
+        "n": 180,
+        "point": 0.161111,
+        "tuned": 0.838889
+      },
+      "es": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260930,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.042105,
+          0.2
+        ],
+        "control": 0.710526,
+        "moves": true,
+        "n": 190,
+        "point": 0.121053,
+        "tuned": 0.831579
+      }
+    },
+    "n": 370
+  },
+  "run": "artifacts/checkpoints/ce/numeric-5k",
+  "task": "T-numeric-gen",
+  "weights": "minilmv2-l6-mnli-xnli",
+  "whole_holdout": {
+    "by_family": {
+      "attribute_comparison": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          -0.014184,
+          0.079787
+        ],
+        "control": 0.370567,
+        "moves": false,
+        "n": 564,
+        "point": 0.031915,
+        "tuned": 0.402482
+      },
+      "description_classification": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.324675,
+          0.558442
+        ],
+        "control": 0.558442,
+        "moves": true,
+        "n": 77,
+        "point": 0.441558,
+        "tuned": 1.0
+      },
+      "extraction_paraphrase": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.15942,
+          0.362319
+        ],
+        "control": 0.73913,
+        "moves": true,
+        "n": 69,
+        "point": 0.26087,
+        "tuned": 1.0
+      },
+      "priority_decision": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.001653,
+          0.082645
+        ],
+        "control": 0.366942,
+        "moves": true,
+        "n": 605,
+        "point": 0.041322,
+        "tuned": 0.408264
+      },
+      "textual_inference_negation": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "control": 1.0,
+        "moves": false,
+        "n": 75,
+        "point": 0.0,
+        "tuned": 1.0
+      }
+    },
+    "by_source": {
+      "pilot": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260929,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.089189,
+          0.191892
+        ],
+        "control": 0.694595,
+        "moves": true,
+        "n": 370,
+        "point": 0.140541,
+        "tuned": 0.835135
+      },
+      "rule": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260929,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.008824,
+          0.07451
+        ],
+        "control": 0.336275,
+        "moves": true,
+        "n": 1020,
+        "point": 0.042157,
+        "tuned": 0.378431
+      }
+    }
+  }
+}

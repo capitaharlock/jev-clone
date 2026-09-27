@@ -1,0 +1,600 @@
+{
+  "task": "T-numeric-gen",
+  "value_proof_prediction": {
+    "written_utc": "2026-09-27",
+    "written_before": "the mix directory, the smoke run and every figure in this gate",
+    "what_is_measured": "the smoke of #T-ce-finetune with --budget 5000 over 5 000 rule episodes (data.rule_variety, batch 1) plus the verified pilot (artifacts/episodes-qwen/pilot-2k/verified.jsonl), against the SAME untuned control (--checkpoint none) on the same rows: development battery by family, and the pilot's own holdout by family",
+    "what_is_already_known": {
+      "untuned control on dev": "forced 0.6225, counterfactual 0.343 (artifacts/gates/T-ce-finetune/eval-none.json)",
+      "1 000 decisions moved the whole": "forced +0.055 [0.015, 0.098], counterfactual +0.121 [0.043, 0.200] (smoke.json)",
+      "and did not move this family": "attribute_comparison 0.574 -> 0.574 on the pilot's own holdout (#T-ce-finetune)"
+    },
+    "expect": {
+      "priority_decision": "moves on dev and on the holdout: it already moved in distribution in the pilot (0.62 -> 0.78)",
+      "attribute_comparison": "does NOT move on the pilot holdout. Five times the volume of exactly this family, with 15 attributes, mixed number formats and ordinal questions, is still read by a 107 M encoder that has to compare two numbers inside one sequence"
+    },
+    "go_if": "attribute_comparison forced accuracy on the pilot holdout improves against the untuned control with a paired bootstrap CI95 whose lower bound is above 0 (B = 2000, seed fixed, the same rows scored twice)",
+    "no_go_if": "it does not. Then the volume is not the bottleneck and the backbone is: it is written in this gate and handed to #T-backbone-ladder without waiting for the loop (docs/bucle-infinito.md §4, r = 3)",
+    "not_the_decision": "the development battery by family and by language is published beside it, but dev is 400 rows shared with every other arm and this task's own question is the in-distribution holdout",
+    "bootstrap": {
+      "B": 2000,
+      "seed": 20260927,
+      "unit": "paired row"
+    },
+    "pass": null,
+    "status": "written-before-measuring"
+  },
+  "pass": false,
+  "generator": {
+    "measured_utc": "2026-09-27T18:35:04Z",
+    "dir": "artifacts/episodes-rule/batch-0001",
+    "variety_version": "rule-variety-v1",
+    "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+    "command": "python3 -m data.rule_variety publish --batch 1 --n 50000 --variety 16",
+    "checks": {
+      "validator_pass_100pc": {
+        "pass": true,
+        "n": 50000,
+        "n_invalid": 0,
+        "duplicate_ids": []
+      },
+      "variety": {
+        "n_attributes": 15,
+        "attributes": [
+          "battery_min",
+          "capacity_seats",
+          "consumption_wh",
+          "distance_m",
+          "duration_min",
+          "lead_days",
+          "mass_g",
+          "noise_db",
+          "power_w",
+          "price_eur",
+          "rating_pt",
+          "storage_gb",
+          "wait_min",
+          "warranty_mo",
+          "weight_kg"
+        ],
+        "n_number_styles": 49,
+        "n_question_forms": 7,
+        "question_forms": [
+          "attribute_comparison/ordinal",
+          "attribute_comparison/superlative",
+          "attribute_comparison/threshold",
+          "attribute_comparison/tie",
+          "priority_decision/chain2",
+          "priority_decision/chain3",
+          "priority_decision/threshold_chain"
+        ],
+        "n_entity_nouns": 27,
+        "ks": [
+          2,
+          3,
+          8
+        ],
+        "langs": [
+          "en",
+          "es"
+        ],
+        "min_attributes_required": 12,
+        "pass": true
+      },
+      "gold_position_chi2": {
+        "rule": {
+          "written_utc": "2026-09-27",
+          "test": "Pearson chi-square goodness-of-fit against the uniform over the K candidate positions, one test per K",
+          "df": "K - 1",
+          "alpha": 0.01,
+          "critical_values": {
+            "1": 6.635,
+            "2": 9.21,
+            "7": 18.475
+          },
+          "reject_if": "statistic > critical value for its df",
+          "why_uniform": "attribute values are drawn without replacement per criterion, so positions are exchangeable and the index tiebreak of rule_gold never fires",
+          "min_n_per_k": 200
+        },
+        "by_k": {
+          "2": {
+            "n": 16664,
+            "counts": [
+              8332,
+              8332
+            ],
+            "expected_per_cell": 8332.0,
+            "statistic": 0.0,
+            "df": 1,
+            "critical_0.01": 6.635,
+            "uniform": true,
+            "status": "measured"
+          },
+          "3": {
+            "n": 16668,
+            "counts": [
+              5672,
+              5447,
+              5549
+            ],
+            "expected_per_cell": 5556.0,
+            "statistic": 4.5691,
+            "df": 2,
+            "critical_0.01": 9.21,
+            "uniform": true,
+            "status": "measured"
+          },
+          "8": {
+            "n": 16668,
+            "counts": [
+              1977,
+              2100,
+              2059,
+              2153,
+              2103,
+              2081,
+              2147,
+              2048
+            ],
+            "expected_per_cell": 2083.5,
+            "statistic": 10.9066,
+            "df": 7,
+            "critical_0.01": 18.475,
+            "uniform": true,
+            "status": "measured"
+          }
+        },
+        "pass": true
+      },
+      "counterfactuals": {
+        "n_groups": 12500,
+        "gold_recomputes_from_rule": {
+          "pass": true,
+          "n_checked": 50000,
+          "mismatched": []
+        },
+        "by_variant": {
+          "number": {
+            "n": 12500,
+            "ok": 12500,
+            "expected_move": true
+          },
+          "rule": {
+            "n": 12500,
+            "ok": 12500,
+            "expected_move": true
+          },
+          "paraphrase": {
+            "n": 12500,
+            "ok": 12500,
+            "expected_move": false
+          }
+        },
+        "failures": [],
+        "pass": true
+      },
+      "leakage": {
+        "n_vocabulary_terms": 51,
+        "layers": {
+          "battery_dev": {
+            "present": true,
+            "n_blocked_texts": 2440,
+            "vocabulary_hits": [],
+            "n_sampled_texts": 800,
+            "sample_seed": 20260927,
+            "paraphrase_hits": [],
+            "n_paraphrase_hits": 0,
+            "pass": true
+          },
+          "battery_sealed": {
+            "present": true,
+            "n_blocked_texts": 3660,
+            "vocabulary_hits": [],
+            "n_sampled_texts": 800,
+            "sample_seed": 20260927,
+            "paraphrase_hits": [],
+            "n_paraphrase_hits": 0,
+            "pass": true
+          }
+        },
+        "sim_threshold": 0.5,
+        "pass": true
+      },
+      "volume": {
+        "pass": true,
+        "n_published": 50000,
+        "required": 50000,
+        "dir": "artifacts/episodes-rule/batch-0001",
+        "seed": 1,
+        "episodes_sha256": "5a4226988de090f8ed18a0ffd740b53ea2096c43a30b854383bf61aa9e6127b8",
+        "manifest_sha256": "28094c69809c1c7f0f4380bd0111092e6c87123ea271435363a749727621cff3"
+      }
+    },
+    "pass": true
+  },
+  "value_proof": {
+    "measured_utc": "2026-09-27T19:25:06Z",
+    "prediction": "value_proof_prediction (this gate, written first)",
+    "rule": {
+      "go_if": "attribute_comparison forced accuracy on the pilot holdout improves against the untuned control with a paired bootstrap CI95 whose lower bound is above 0 (B = 2000, seed fixed, the same rows scored twice)",
+      "no_go_if": "it does not. Then the volume is not the bottleneck and the backbone is: it is written in this gate and handed to #T-backbone-ladder without waiting for the loop (docs/bucle-infinito.md §4, r = 3)"
+    },
+    "run": "artifacts/checkpoints/ce/numeric-5k",
+    "mix": "artifacts/episodes-rule/mix-smoke",
+    "budget_decisions": 5000,
+    "decisions_consumed": 5000,
+    "dev": {
+      "source": "artifacts/gates/T-numeric-gen/smoke.json",
+      "verdict": "NO-GO",
+      "forced": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.0075,
+          0.0975
+        ],
+        "control": 0.6225,
+        "n": 400,
+        "point": 0.0525,
+        "tuned": 0.675
+      },
+      "counterfactual_joint": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260928,
+          "unit": "paired"
+        },
+        "ci95": [
+          0.078571,
+          0.221429
+        ],
+        "control": 0.342857,
+        "n": 140,
+        "point": 0.15,
+        "tuned": 0.492857
+      },
+      "by_family": {
+        "attribute_comparison": {
+          "below_control": true,
+          "control": 0.4125,
+          "delta": -0.075,
+          "n": 80,
+          "tuned": 0.3375
+        },
+        "description_classification": {
+          "below_control": false,
+          "control": 0.5875,
+          "delta": 0.4,
+          "n": 80,
+          "tuned": 0.9875
+        },
+        "extraction_paraphrase": {
+          "below_control": false,
+          "control": 0.9375,
+          "delta": 0.025,
+          "n": 80,
+          "tuned": 0.9625
+        },
+        "priority_decision": {
+          "below_control": true,
+          "control": 0.375,
+          "delta": -0.05,
+          "n": 80,
+          "tuned": 0.325
+        },
+        "textual_inference_negation": {
+          "below_control": true,
+          "control": 0.8,
+          "delta": -0.0375,
+          "n": 80,
+          "tuned": 0.7625
+        }
+      },
+      "by_lang": {
+        "en": {
+          "below_control": false,
+          "control": 0.64,
+          "delta": 0.08,
+          "n": 200,
+          "tuned": 0.72
+        },
+        "es": {
+          "below_control": false,
+          "control": 0.605,
+          "delta": 0.025,
+          "n": 200,
+          "tuned": 0.63
+        }
+      }
+    },
+    "pilot_holdout": {
+      "source": "artifacts/gates/T-numeric-gen/holdout.json",
+      "n": 370,
+      "by_family": {
+        "attribute_comparison": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260928,
+            "unit": "paired"
+          },
+          "ci95": [
+            -0.171875,
+            0.171875
+          ],
+          "control": 0.5625,
+          "moves": false,
+          "n": 64,
+          "point": 0.0,
+          "tuned": 0.5625
+        },
+        "description_classification": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260928,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.337662,
+            0.558442
+          ],
+          "control": 0.558442,
+          "moves": true,
+          "n": 77,
+          "point": 0.441558,
+          "tuned": 1.0
+        },
+        "extraction_paraphrase": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260928,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.15942,
+            0.376812
+          ],
+          "control": 0.73913,
+          "moves": true,
+          "n": 69,
+          "point": 0.26087,
+          "tuned": 1.0
+        },
+        "priority_decision": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260928,
+            "unit": "paired"
+          },
+          "ci95": [
+            -0.105882,
+            0.105882
+          ],
+          "control": 0.611765,
+          "moves": false,
+          "n": 85,
+          "point": 0.0,
+          "tuned": 0.611765
+        },
+        "textual_inference_negation": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260928,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "control": 1.0,
+          "moves": false,
+          "n": 75,
+          "point": 0.0,
+          "tuned": 1.0
+        }
+      },
+      "by_lang": {
+        "en": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260930,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.094444,
+            0.227778
+          ],
+          "control": 0.677778,
+          "moves": true,
+          "n": 180,
+          "point": 0.161111,
+          "tuned": 0.838889
+        },
+        "es": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260930,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.042105,
+            0.2
+          ],
+          "control": 0.710526,
+          "moves": true,
+          "n": 190,
+          "point": 0.121053,
+          "tuned": 0.831579
+        }
+      }
+    },
+    "whole_holdout": {
+      "by_family": {
+        "attribute_comparison": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260927,
+            "unit": "paired"
+          },
+          "ci95": [
+            -0.014184,
+            0.079787
+          ],
+          "control": 0.370567,
+          "moves": false,
+          "n": 564,
+          "point": 0.031915,
+          "tuned": 0.402482
+        },
+        "description_classification": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260927,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.324675,
+            0.558442
+          ],
+          "control": 0.558442,
+          "moves": true,
+          "n": 77,
+          "point": 0.441558,
+          "tuned": 1.0
+        },
+        "extraction_paraphrase": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260927,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.15942,
+            0.362319
+          ],
+          "control": 0.73913,
+          "moves": true,
+          "n": 69,
+          "point": 0.26087,
+          "tuned": 1.0
+        },
+        "priority_decision": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260927,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.001653,
+            0.082645
+          ],
+          "control": 0.366942,
+          "moves": true,
+          "n": 605,
+          "point": 0.041322,
+          "tuned": 0.408264
+        },
+        "textual_inference_negation": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260927,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "control": 1.0,
+          "moves": false,
+          "n": 75,
+          "point": 0.0,
+          "tuned": 1.0
+        }
+      },
+      "by_source": {
+        "pilot": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260929,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.089189,
+            0.191892
+          ],
+          "control": 0.694595,
+          "moves": true,
+          "n": 370,
+          "point": 0.140541,
+          "tuned": 0.835135
+        },
+        "rule": {
+          "bootstrap": {
+            "B": 2000,
+            "ci": "percentile",
+            "seed": 20260929,
+            "unit": "paired"
+          },
+          "ci95": [
+            0.008824,
+            0.07451
+          ],
+          "control": 0.336275,
+          "moves": true,
+          "n": 1020,
+          "point": 0.042157,
+          "tuned": 0.378431
+        }
+      }
+    },
+    "target_family": "attribute_comparison",
+    "target_moves": false,
+    "power": {
+      "n_target_rows": 64,
+      "what_it_can_see": "a paired CI95 clear of 0 on n rows needs roughly a 2/sqrt(n) shift, so this many in-distribution rows of one family cannot resolve a small move",
+      "higher_powered_reading": {
+        "bootstrap": {
+          "B": 2000,
+          "ci": "percentile",
+          "seed": 20260927,
+          "unit": "paired"
+        },
+        "ci95": [
+          -0.014184,
+          0.079787
+        ],
+        "control": 0.370567,
+        "moves": false,
+        "n": 564,
+        "point": 0.031915,
+        "tuned": 0.402482
+      },
+      "why_it_does_not_decide": "the whole holdout mixes the rule batch's own rows with the pilot's; the pre-registered rule names the PILOT holdout, and it is not rewritten after seeing a figure"
+    },
+    "verdict": "NO-GO",
+    "pass": false,
+    "bottleneck": {
+      "is": "backbone",
+      "why": "attribute_comparison did not move on its OWN holdout with 5000 decisions: 64 in-distribution pilot rows went 0.5625 -> 0.5625 (paired delta 0.0 ci[-0.171875, 0.171875]), and the whole holdout's 564 rows of the family — eight times the power — went 0.370567 -> 0.402482 (delta 0.031915 ci[-0.014184, 0.079787]), still not clear of 0. Five times the volume of exactly this family is not what is missing",
+      "hand_to": "#T-backbone-ladder",
+      "not_touched_here": "this task does not change the backbone; it records the measurement and hands it over (docs/bucle-infinito.md §4, r = 3)"
+    }
+  }
+}

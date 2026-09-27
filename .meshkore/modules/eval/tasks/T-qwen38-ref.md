@@ -1,13 +1,14 @@
 ---
 id: T-qwen38-ref
 title: Qwen 3.8 sobre la batería de desarrollo — el profesor nuevo, medido antes de que genere
-status: active
+status: done
 priority: high
 owner: architect-master
 category: eval
 initiative: daily-learning-loop
 created: 2026-09-27
 updated: 2026-09-27
+completed_at: 2026-09-27
 ---
 
 # Qwen 3.8 sobre la batería de desarrollo — el profesor nuevo, medido antes de que genere
@@ -70,5 +71,31 @@ PYTHONPATH=. python3 -m eval.qwen38_ref gate    # gate sobre lo medido
 env PYTHONPATH=. QWEN_MODEL=qwen3.8:27b-mlx python3 -u -m eval.qwen38_ref measure
 ```
 
-Falta: que el job termine las 400 filas, `gate` firmado y la decisión de
-productor escrita en `artifacts/gates/T-qwen38-ref/gate.json`.
+## Resolution
+
+**done · 2026-09-27 · A001** — medido entero (400/400 filas) y firmado en
+`artifacts/gates/T-qwen38-ref/gate.json`.
+
+**Veredicto: GO — el profesor nuevo no es peor.** El productor y el verificador
+se quedan en `QWEN_MODEL=qwen3.8:27b-mlx`, que ya es el defecto de
+`data.episode_gen.MODEL`: no hay nada que cambiar.
+
+| columna | forzada | con abstención | contrafactual (n=140) | permutación |
+|---|---|---|---|---|
+| qwen3.6 (reutilizada de `#T-preflight-refs`) | 0,9650 [0,9421 – 0,9790] | 0,9450 | 0,8786 | **falla** (flip 0,125 a T=0,7) |
+| qwen3.8 (medida aquí) | **0,9825** [0,9643 – 0,9915] | 0,9725 | 0,9429 | pasa a 0,7 y a 0 (flip 0,0) |
+
+- Diferencia **pareada** (3.8 − 3.6, B=2 000, semilla 20260927) sobre las mismas
+  400 filas: **+0,0175, IC95 % [0,0000 – 0,0375]**. El extremo superior no está
+  por debajo de 0 → GO por la regla escrita antes (`1d62a3b`).
+- «Mejor» se publica aparte y **no decide nada**: `ci95[0] = 0,0` → `better: false`.
+  Lo honesto es «no es peor», no «es mejor».
+- Ninguna de las cinco familias cae (`families_below_baseline: []`); ES +0,010,
+  EN +0,025.
+- El control de permutación que el 3.6 **fallaba** (3 vuelcos de 24 a T=0,7) el
+  3.8 lo pasa limpio a las dos temperaturas, greedy incluido.
+- Sellado no leído (`sealed_cut_read: false`); la columna del 3.6 se reutilizó,
+  no se reescribió.
+- 400 picks + 24 + 24 controles versionados en
+  `artifacts/gates/T-qwen38-ref/columns/`. Coste real: ~2 h, no los 15 min que
+  estimaba la task.

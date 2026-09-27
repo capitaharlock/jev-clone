@@ -143,6 +143,52 @@ problema es la tarea o el formato, no el modelo · un gate cuya lectura contradi
 sus propios números falla.
 
 
+## Fase 4 (desde 2026-09-27): el bucle infinito, y dónde está el techo
+
+El manual de operación es `bucle-infinito.md`: un productor que no para (Qwen
+genera episodios, un verificador los filtra; en paralelo un generador por regla
+produce miles por minuto) y un bucle de entreno que mezcla, entrena desde el
+mejor modelo, mide y promueve. Escalera de volumen 2 k → 5 k → 10 k → 20 k →
+50 k → 100 k; escalera de brazos cuando un ciclo no mejora.
+
+**Tamaño del modelo, medido, no estimado:** cross-encoder **MiniLMv2-L6,
+~107 M parámetros, todos ajustables** (`artifacts/checkpoints/ce/numeric-5k`).
+Historia del tamaño: fase 1–2 = ModernBERT-base 149 M **congelado** + cabeza
+pointer 2,9 M entrenables → fase 3–4 = 107 M **enteros** ajustables. El modelo
+no ha crecido; ha pasado de tener una cabeza pequeña sobre algo congelado a
+entrenarse entero, que es lo que cambió el resultado.
+
+**Los dos primeros pasos del bucle están medidos (2026-09-27):**
+
+- **El profesor nuevo no es peor** (`#T-qwen38-ref`, GO). Qwen 3.8 sobre las
+  mismas 400 filas de dev que el 3.6: forzada 0,9825 [0,9643 · 0,9915] contra
+  0,9650; diferencia pareada +0,0175 IC95 % [0,0000 · 0,0375]. «No peor», no
+  «mejor»: `ci95[0] = 0`. Además pasa el control de permutación a 0,7 y en
+  greedy, que el 3.6 fallaba. El productor se queda en `qwen3.8:27b-mlx`.
+- **El volumen no es el cuello; el backbone sí** (`#T-numeric-gen`, NO-GO con
+  la predicción escrita antes). 50 000 episodios por regla generados en 6,7 s
+  (7 441 ep/s en CPU, 0 inválidos, χ² de posición limpio, 0 fuga contra dev y
+  sellado) y un smoke de 5 000 decisiones de exactamente la familia que falla.
+  `attribute_comparison`: 0,5625 → **0,5625** en el holdout del piloto (Δ
+  pareado 0,000 [−0,172 · 0,172]); 0,3706 → 0,4025 en las 564 filas del
+  holdout entero ([−0,014 · 0,080]). En la misma corrida
+  `description_classification` 0,558 → **1,000** y `extraction_paraphrase`
+  0,739 → **1,000**, y dev forzada 0,6225 → 0,6750 (+0,0525 [0,0075 · 0,0975]).
+
+**Lo que esto significa, dicho sin adornos:** el sistema aprende a clasificar y
+a seguir contrafactuales, y no aprende a comparar dos números dentro de una
+secuencia. Cinco veces el volumen de esa familia no lo arregla. La siguiente
+palanca es el encoder, y es `#T-backbone-ladder` (activa): mDeBERTa-v3-base
+(≈ 280 M) y XLM-R-large / ModernBERT-large (≈ 400 M) contra los 107 M de hoy,
+cada peldaño con su control sin ajustar publicado antes de entrenar.
+
+**Regla que fase 4 añade:** un brazo dirigido se predice antes de mezclarlo, y
+un NO-GO con la predicción acertada vale más que un GO sin predicción — ese
+NO-GO es el que identificó el cuello sin gastar la escalera entera.
+
+**Estado del hardware (2026-09-27):** todo parado para migrar de Mac a un M5.
+Ningún job vivo, árbol limpio, publicado en `origin/main`.
+
 ## Sources
 
 - `tmp/jev_like_system_one_plan_2026-09-19.md` (plan maestro, 180 §)

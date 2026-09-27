@@ -1,0 +1,585 @@
+{
+  "format": "jev.metrics.v1",
+  "artifact": "metrics-suite",
+  "task": "T-qwen38-ref",
+  "generated_utc": "2026-09-27T18:24:52Z",
+  "model_version": "qwen-local:qwen3.8:27b-mlx",
+  "cut": {
+    "name": "battery-dev",
+    "reserved": false,
+    "split": "development",
+    "task": "T-battery-dev",
+    "file": "data/battery_dev.jsonl",
+    "manifest": "data/battery_dev_manifest.json",
+    "manifest_sha256": "567729de1661693047c5ea45a21750edb8e4baaf410ddca218cd05a96054c9d1",
+    "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
+    "sealed_cut_read": false,
+    "sealed_files_present": [
+      "data/battery_sealed.jsonl"
+    ],
+    "rule": "the development cut, read as often as needed. The sealed cut is opened once by #T-battery-sealed with the arm already chosen, and nothing here reads it",
+    "n": 400,
+    "rows_scored": 400
+  },
+  "chance": {
+    "by_k": {
+      "2": {
+        "k": 2,
+        "rows": 160,
+        "chance": 0.5,
+        "chance_including_unknown": 0.333333
+      },
+      "3": {
+        "k": 3,
+        "rows": 120,
+        "chance": 0.333333,
+        "chance_including_unknown": 0.25
+      },
+      "8": {
+        "k": 8,
+        "rows": 120,
+        "chance": 0.125,
+        "chance_including_unknown": 0.111111
+      }
+    },
+    "chance": 0.3375,
+    "chance_including_unknown": 0.241667,
+    "mean_k": 4.1,
+    "k_min": 2,
+    "k_max": 8,
+    "how": "chance is the uniform guesser over the offered candidates, averaged per row; a mixed-K cut has no single K, so mean_k and the by_k table are published together"
+  },
+  "ranking": {
+    "what": "forced accuracy: argmax over the offered candidates, `unknown` taken out of the race",
+    "n": 400,
+    "hits": 393,
+    "cardinality": 4.1,
+    "chance": 0.3375,
+    "accuracy": 0.9825,
+    "accuracy_ci95": [
+      0.964323,
+      0.991498
+    ],
+    "beats_chance": true,
+    "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+    "measured_on": "the answerable rows only — a row whose gold was withheld has no correct option to rank",
+    "excluded_unanswerable_rows": 0,
+    "measurable": true
+  },
+  "abstention": {
+    "what": "accuracy including abstention: the published decision over [K + 1], an abstention on an answerable row counted as wrong",
+    "n": 400,
+    "hits": 389,
+    "cardinality": 4.1,
+    "chance": 0.3375,
+    "accuracy": 0.9725,
+    "accuracy_ci95": [
+      0.951435,
+      0.984576
+    ],
+    "beats_chance": true,
+    "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+    "abstain_rate": 0.0225,
+    "coverage": {
+      "what": "share of rows the head answered",
+      "n": 400,
+      "answered": 391,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "coverage": 0.9775,
+      "coverage_ci95": [
+        0.957797,
+        0.988118
+      ]
+    },
+    "precision_among_answered": {
+      "what": "accuracy restricted to the rows the head answered",
+      "n": 391,
+      "hits": 389,
+      "cardinality": 4.1458,
+      "chance": 0.334186,
+      "accuracy": 0.994885,
+      "accuracy_ci95": [
+        0.981544,
+        0.998596
+      ],
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "why_not_alone": "precision among the answered rises by answering less; it is only readable beside coverage"
+    },
+    "unanswerable_rows": {
+      "n": 0,
+      "correctly_abstained": 0
+    }
+  },
+  "reported_apart": "ranking and abstention are two measurements and are published side by side: neither is the headline on its own",
+  "by_family": {
+    "attribute_comparison": {
+      "ranking": {
+        "what": "forced accuracy, family attribute_comparison",
+        "n": 80,
+        "hits": 80,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 1.0,
+        "accuracy_ci95": [
+          0.954182,
+          1.0
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      },
+      "abstention": {
+        "what": "accuracy including abstention, family attribute_comparison",
+        "n": 80,
+        "hits": 80,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 1.0,
+        "accuracy_ci95": [
+          0.954182,
+          1.0
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      }
+    },
+    "description_classification": {
+      "ranking": {
+        "what": "forced accuracy, family description_classification",
+        "n": 80,
+        "hits": 75,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9375,
+        "accuracy_ci95": [
+          0.861899,
+          0.973011
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      },
+      "abstention": {
+        "what": "accuracy including abstention, family description_classification",
+        "n": 80,
+        "hits": 71,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.8875,
+        "accuracy_ci95": [
+          0.799818,
+          0.939673
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      }
+    },
+    "extraction_paraphrase": {
+      "ranking": {
+        "what": "forced accuracy, family extraction_paraphrase",
+        "n": 80,
+        "hits": 80,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 1.0,
+        "accuracy_ci95": [
+          0.954182,
+          1.0
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      },
+      "abstention": {
+        "what": "accuracy including abstention, family extraction_paraphrase",
+        "n": 80,
+        "hits": 80,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 1.0,
+        "accuracy_ci95": [
+          0.954182,
+          1.0
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      }
+    },
+    "priority_decision": {
+      "ranking": {
+        "what": "forced accuracy, family priority_decision",
+        "n": 80,
+        "hits": 79,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9875,
+        "accuracy_ci95": [
+          0.932537,
+          0.99779
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      },
+      "abstention": {
+        "what": "accuracy including abstention, family priority_decision",
+        "n": 80,
+        "hits": 79,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9875,
+        "accuracy_ci95": [
+          0.932537,
+          0.99779
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      }
+    },
+    "textual_inference_negation": {
+      "ranking": {
+        "what": "forced accuracy, family textual_inference_negation",
+        "n": 80,
+        "hits": 79,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9875,
+        "accuracy_ci95": [
+          0.932537,
+          0.99779
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      },
+      "abstention": {
+        "what": "accuracy including abstention, family textual_inference_negation",
+        "n": 80,
+        "hits": 79,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "accuracy": 0.9875,
+        "accuracy_ci95": [
+          0.932537,
+          0.99779
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance"
+      }
+    }
+  },
+  "macro": {
+    "what": "unweighted mean over families — every family one vote",
+    "n_families": 5,
+    "n": 400,
+    "cardinality": 4.1,
+    "chance": 0.3375,
+    "accuracy": 0.9725,
+    "accuracy_ranking": 0.9825,
+    "chance_ranking": 0.3375,
+    "worst_family": "description_classification",
+    "accuracy_ci95": null,
+    "ci95_why_absent": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here"
+  },
+  "counterfactual": {
+    "what": "joint success by variant_group: every member of the group right, or the group scores 0",
+    "n": 140,
+    "hits": 132,
+    "groups_with_one_half_only": 8,
+    "cardinality": 4.1,
+    "chance": 0.082569,
+    "chance_how": "product of the per-member uniform rates, averaged over groups — guessing both halves of a pair",
+    "accuracy": 0.942857,
+    "accuracy_ci95": [
+      0.891297,
+      0.970764
+    ],
+    "beats_chance": true,
+    "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+    "measurable": true,
+    "why_unmeasurable": null,
+    "unpaired_groups": 0,
+    "unpaired_group_ids": [],
+    "rule": "a group with exactly one half right scores 0: half of a counterfactual pair is what a prior gets for free"
+  },
+  "permutation_invariance": {
+    "what": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+    "measured": true,
+    "distinct_from": "changing the decisive fact in the state, or the question asked of it, changes the answer",
+    "max_abs_prob_delta": 0.0,
+    "tolerance": 1e-05,
+    "n_rows": 24,
+    "n_perms": 24,
+    "flipped": 0,
+    "flip_rate": 0.0,
+    "pass": true,
+    "how": "the options are offered in reverse order and the pick is compared by id; a flip moves that id's indicator weight by 1.0, which is what `max_abs_prob_delta` reports",
+    "sample": "24 rows of 400, taken in sha256('preflight-refs-qwen-perm-v1' + row_id) order — fixed before measuring, not chosen after seeing a flip",
+    "temperature": 0.7,
+    "caveat": "the chooser samples at temperature 0.7, so a flip is order sensitivity OR sampling noise and this control cannot separate the two: it is the upper bound on order stability, not a decomposition of it",
+    "source": "T-preflight-refs — measured in this run, same model, same protocol, same rows",
+    "pairs": [
+      {
+        "row_id": "dev-pri-es-3k-t01c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-cmp-en-3k-t02c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-pri-es-2k-p01a",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-dsc-en-3k-t04b",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-dsc-en-8k-t03c",
+        "first": "c3",
+        "reversed": "c3",
+        "moved": false
+      },
+      {
+        "row_id": "dev-pri-en-2k-t04c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      },
+      {
+        "row_id": "dev-inf-en-3k-t02c",
+        "first": "c1",
+        "reversed": "c1",
+        "moved": false
+      },
+      {
+        "row_id": "dev-inf-en-2k-t01c",
+        "first": "c2",
+        "reversed": "c2",
+        "moved": false
+      }
+    ]
+  },
+  "tracking": {
+    "what": "changing the decisive fact in the state, or the question asked of it, changes the answer",
+    "measured": true,
+    "distinct_from": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+    "n": 140,
+    "followed": 136,
+    "rate": 0.971429,
+    "same_slot": 4,
+    "same_slot_rate": 0.028571,
+    "pass": true,
+    "source": "T-qwen38-ref on battery-dev 662d5a71a2ef",
+    "how": "per counterfactual group: the members share the question and the candidate texts and differ only in the decisive fact of the state, so the gold slot moves; `followed` counts the groups whose forced pick moved with it and `same_slot` the groups where it did not",
+    "pairs": [
+      {
+        "variant_group": "dev-cmp-en-2k-p01",
+        "moved": true,
+        "orig_pick": 0,
+        "decisive_pick": 1,
+        "orig_gold": 0,
+        "decisive_gold": 1
+      },
+      {
+        "variant_group": "dev-cmp-en-2k-p02",
+        "moved": true,
+        "orig_pick": 0,
+        "decisive_pick": 1,
+        "orig_gold": 0,
+        "decisive_gold": 1
+      },
+      {
+        "variant_group": "dev-cmp-en-2k-t01",
+        "moved": true,
+        "orig_pick": 0,
+        "decisive_pick": 1,
+        "orig_gold": 0,
+        "decisive_gold": 1
+      },
+      {
+        "variant_group": "dev-cmp-en-2k-t02",
+        "moved": true,
+        "orig_pick": 1,
+        "decisive_pick": 0,
+        "orig_gold": 1,
+        "decisive_gold": 0
+      },
+      {
+        "variant_group": "dev-cmp-en-2k-t03",
+        "moved": true,
+        "orig_pick": 1,
+        "decisive_pick": 0,
+        "orig_gold": 1,
+        "decisive_gold": 0
+      },
+      {
+        "variant_group": "dev-cmp-en-2k-t04",
+        "moved": true,
+        "orig_pick": 0,
+        "decisive_pick": 1,
+        "orig_gold": 0,
+        "decisive_gold": 1
+      },
+      {
+        "variant_group": "dev-cmp-en-3k-t01",
+        "moved": true,
+        "orig_pick": 2,
+        "decisive_pick": 0,
+        "orig_gold": 2,
+        "decisive_gold": 0
+      },
+      {
+        "variant_group": "dev-cmp-en-3k-t02",
+        "moved": true,
+        "orig_pick": 1,
+        "decisive_pick": 0,
+        "orig_gold": 1,
+        "decisive_gold": 0
+      }
+    ]
+  },
+  "controls_are_distinct": "these are TWO properties and the 2026-09-24 measurement separates them: the scores follow the option text under permutation and the model still misses the decisive change. A green permutation check is not evidence of tracking and never stands in for one",
+  "calibration": {
+    "what": "NLL, Brier and ECE over the offered candidates",
+    "n": 400,
+    "cardinality": 4.1,
+    "chance": 0.3375,
+    "temperature": 4.135185542000139,
+    "nll": 0.05386,
+    "brier": 0.021665,
+    "nll_at_chance": 1.08619,
+    "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+    "ece": 0.002005,
+    "reliability_bins": [
+      {
+        "lo": 0.0,
+        "hi": 0.06666666666666667,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.06666666666666667,
+        "hi": 0.13333333333333333,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.13333333333333333,
+        "hi": 0.2,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.26666666666666666,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.26666666666666666,
+        "hi": 0.3333333333333333,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.3333333333333333,
+        "hi": 0.4,
+        "n": 1,
+        "acc": 0.0,
+        "conf": 0.3333333333333333
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.4666666666666667,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.4666666666666667,
+        "hi": 0.5333333333333333,
+        "n": 8,
+        "acc": 0.5,
+        "conf": 0.5
+      },
+      {
+        "lo": 0.5333333333333333,
+        "hi": 0.6,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.6,
+        "hi": 0.6666666666666666,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.6666666666666666,
+        "hi": 0.7333333333333333,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.7333333333333333,
+        "hi": 0.8,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.8666666666666667,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.8666666666666667,
+        "hi": 0.9333333333333333,
+        "n": 0,
+        "acc": 0.0,
+        "conf": 0.0
+      },
+      {
+        "lo": 0.9333333333333333,
+        "hi": 1.0,
+        "n": 391,
+        "acc": 0.9948849104859335,
+        "conf": 0.9960831522562964
+      }
+    ],
+    "fitted_on": "battery-dev fit half (191 rows, 67 groups)",
+    "verified_on": "battery-dev verify half (209 rows, 73 groups)",
+    "threshold": null,
+    "threshold_strategy": "argmax over [K + 1]; no abstention threshold is fitted here — that is #T-battery-calib"
+  },
+  "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+  "notes": [
+    "teacher measured because the operator changed `data.episode_gen.MODEL` to qwen3.8:27b-mlx: the whole volume of the loop is generated and verified by it",
+    "the 3.6 column is reused from #T-preflight-refs (artifacts/gates/T-preflight-refs/refs-qwen-local.json) and was not re-measured",
+    "the permutation control at temperature 0 (the verifier's) is published in the gate and in the column document, apart from this report's control, which is at the generator's temperature so it compares with the 3.6 figure",
+    "reference: qwen-local — capacity reference — the practical ceiling available here",
+    "protocol: structured choice among the valid candidate ids (one JSON object, `choice` + `evidence` copied from the state); free text is never parsed for an answer",
+    "weights: INDICATOR, not a distribution: a structured choice yields a chosen id and nothing else, so the row's weights are 1 on the pick and 0 elsewhere. NLL, Brier and ECE of this column read that indicator and are published only because the suite is whole-or-nothing",
+    "abstention: yes — a reply that is not one of the offered ids, or whose evidence is not a span of the state, is recorded as `unknown`, never as a guess",
+    "format id: b215e3003cc60c0f",
+    "the sealed cut was not read: data/battery_dev.jsonl, data/battery_dev_manifest.json, .meshkore/docs/evidence/probe-mechanism-2026-09-24.json"
+  ],
+  "column": "qwen-local-3.8"
+}

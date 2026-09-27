@@ -1,0 +1,224 @@
+{
+  "task": "T-numeric-gen",
+  "generator_version": "episode-gen-v1",
+  "contract_task": "T-episode-contract",
+  "schema_version": "episode-v1",
+  "schema_sha": "6bfa3d5497f80e68bfb5e009c7be048abeac9da71a1485736158e07b16d10422",
+  "seed": 1,
+  "n": 50000,
+  "command": "python3 -m data.rule_variety publish --batch 1 --n 50000 --variety 16",
+  "status": "published",
+  "planned_split": {
+    "attribute_comparison/en": 12500,
+    "attribute_comparison/es": 12500,
+    "priority_decision/en": 12500,
+    "priority_decision/es": 12500
+  },
+  "qwen_model": "qwen3.8:27b-mlx",
+  "prose_backend": "local",
+  "teacher_backend": "stub",
+  "families": [
+    "attribute_comparison",
+    "priority_decision"
+  ],
+  "variety": 16,
+  "variety_version": "rule-variety-v1",
+  "variants": [
+    "base",
+    "number",
+    "rule",
+    "paraphrase"
+  ],
+  "planned_ks": {
+    "2": 4167,
+    "3": 4167,
+    "8": 4167
+  },
+  "group_prefix": "rule0001-",
+  "n_episodes": 50000,
+  "n_rejects": 0,
+  "splits": {
+    "attribute_comparison/en": 12500,
+    "attribute_comparison/es": 12500,
+    "priority_decision/en": 12500,
+    "priority_decision/es": 12500
+  },
+  "concurrency": 1,
+  "batch": 1,
+  "prose_origins": {
+    "local-fallback": 50000
+  },
+  "elapsed_s": 6.7,
+  "built_utc": "2026-09-27T18:34:54Z",
+  "ks": [
+    2,
+    3,
+    8
+  ],
+  "seed_is_batch_number": true,
+  "episodes_sha256": "5a4226988de090f8ed18a0ffd740b53ea2096c43a30b854383bf61aa9e6127b8",
+  "episodes_versioned": false,
+  "rebuild": "python3 -m data.rule_variety publish --batch 1 --n 50000 --variety 16",
+  "variety_realised": {
+    "n_attributes": 15,
+    "attributes": [
+      "battery_min",
+      "capacity_seats",
+      "consumption_wh",
+      "distance_m",
+      "duration_min",
+      "lead_days",
+      "mass_g",
+      "noise_db",
+      "power_w",
+      "price_eur",
+      "rating_pt",
+      "storage_gb",
+      "wait_min",
+      "warranty_mo",
+      "weight_kg"
+    ],
+    "n_number_styles": 49,
+    "n_question_forms": 7,
+    "question_forms": [
+      "attribute_comparison/ordinal",
+      "attribute_comparison/superlative",
+      "attribute_comparison/threshold",
+      "attribute_comparison/tie",
+      "priority_decision/chain2",
+      "priority_decision/chain3",
+      "priority_decision/threshold_chain"
+    ],
+    "n_entity_nouns": 27,
+    "ks": [
+      2,
+      3,
+      8
+    ],
+    "langs": [
+      "en",
+      "es"
+    ],
+    "min_attributes_required": 12,
+    "pass": true
+  },
+  "gold_position_chi2": {
+    "rule": {
+      "written_utc": "2026-09-27",
+      "test": "Pearson chi-square goodness-of-fit against the uniform over the K candidate positions, one test per K",
+      "df": "K - 1",
+      "alpha": 0.01,
+      "critical_values": {
+        "1": 6.635,
+        "2": 9.21,
+        "7": 18.475
+      },
+      "reject_if": "statistic > critical value for its df",
+      "why_uniform": "attribute values are drawn without replacement per criterion, so positions are exchangeable and the index tiebreak of rule_gold never fires",
+      "min_n_per_k": 200
+    },
+    "by_k": {
+      "2": {
+        "n": 16664,
+        "counts": [
+          8332,
+          8332
+        ],
+        "expected_per_cell": 8332.0,
+        "statistic": 0.0,
+        "df": 1,
+        "critical_0.01": 6.635,
+        "uniform": true,
+        "status": "measured"
+      },
+      "3": {
+        "n": 16668,
+        "counts": [
+          5672,
+          5447,
+          5549
+        ],
+        "expected_per_cell": 5556.0,
+        "statistic": 4.5691,
+        "df": 2,
+        "critical_0.01": 9.21,
+        "uniform": true,
+        "status": "measured"
+      },
+      "8": {
+        "n": 16668,
+        "counts": [
+          1977,
+          2100,
+          2059,
+          2153,
+          2103,
+          2081,
+          2147,
+          2048
+        ],
+        "expected_per_cell": 2083.5,
+        "statistic": 10.9066,
+        "df": 7,
+        "critical_0.01": 18.475,
+        "uniform": true,
+        "status": "measured"
+      }
+    },
+    "pass": true
+  },
+  "counterfactuals": {
+    "n_groups": 12500,
+    "gold_recomputes_from_rule": {
+      "pass": true,
+      "n_checked": 50000,
+      "mismatched": []
+    },
+    "by_variant": {
+      "number": {
+        "n": 12500,
+        "ok": 12500,
+        "expected_move": true
+      },
+      "rule": {
+        "n": 12500,
+        "ok": 12500,
+        "expected_move": true
+      },
+      "paraphrase": {
+        "n": 12500,
+        "ok": 12500,
+        "expected_move": false
+      }
+    },
+    "failures": [],
+    "pass": true
+  },
+  "leakage": {
+    "n_vocabulary_terms": 51,
+    "layers": {
+      "battery_dev": {
+        "present": true,
+        "n_blocked_texts": 2440,
+        "vocabulary_hits": [],
+        "n_sampled_texts": 800,
+        "sample_seed": 20260927,
+        "paraphrase_hits": [],
+        "n_paraphrase_hits": 0,
+        "pass": true
+      },
+      "battery_sealed": {
+        "present": true,
+        "n_blocked_texts": 3660,
+        "vocabulary_hits": [],
+        "n_sampled_texts": 800,
+        "sample_seed": 20260927,
+        "paraphrase_hits": [],
+        "n_paraphrase_hits": 0,
+        "pass": true
+      }
+    },
+    "sim_threshold": 0.5,
+    "pass": true
+  }
+}

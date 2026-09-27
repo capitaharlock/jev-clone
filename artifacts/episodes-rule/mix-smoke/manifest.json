@@ -1,0 +1,56 @@
+{
+  "task": "T-numeric-gen",
+  "format": "jev.numeric-value.v1",
+  "generated_utc": "2026-09-27T18:37:36Z",
+  "command": "python -m eval.numeric_value mix --rule artifacts/episodes-rule/batch-0001 --pilot artifacts/episodes-qwen/pilot-2k/verified.jsonl --n-rule 5000 --out artifacts/episodes-rule/mix-smoke",
+  "sample_seed": 20260927,
+  "sources": {
+    "rule": {
+      "dir": "artifacts/episodes-rule/batch-0001",
+      "file": "artifacts/episodes-rule/batch-0001/episodes.jsonl",
+      "sha256": "5a4226988de090f8ed18a0ffd740b53ea2096c43a30b854383bf61aa9e6127b8",
+      "n_available": 50000,
+      "n_taken": 5000,
+      "taken_by": "whole variant groups, round-robin over the four family/lang cells, group order seeded",
+      "by_cell": {
+        "attribute_comparison/en": 1252,
+        "attribute_comparison/es": 1252,
+        "priority_decision/en": 1248,
+        "priority_decision/es": 1248
+      }
+    },
+    "pilot": {
+      "file": "artifacts/episodes-qwen/pilot-2k/verified.jsonl",
+      "sha256": "40d1810cf7035b19e7db7a6f8f12f8da76bc89905b6cc0887f7c7d02fe3d21b8",
+      "n_taken": 1840,
+      "by_cell": {
+        "attribute_comparison/en": 183,
+        "attribute_comparison/es": 207,
+        "description_classification/en": 207,
+        "description_classification/es": 190,
+        "extraction_paraphrase/en": 150,
+        "extraction_paraphrase/es": 156,
+        "priority_decision/en": 168,
+        "priority_decision/es": 202,
+        "textual_inference_negation/en": 179,
+        "textual_inference_negation/es": 198
+      }
+    }
+  },
+  "n_episodes": 6840,
+  "episodes_sha256": "27b59cceba01bd1e6f4088484494fd3f5cd1e24dc3e3680438a64fe2c52d9961",
+  "episodes_versioned": false,
+  "by_cell": {
+    "attribute_comparison/en": 1435,
+    "attribute_comparison/es": 1459,
+    "description_classification/en": 207,
+    "description_classification/es": 190,
+    "extraction_paraphrase/en": 150,
+    "extraction_paraphrase/es": 156,
+    "priority_decision/en": 1416,
+    "priority_decision/es": 1450,
+    "textual_inference_negation/en": 179,
+    "textual_inference_negation/es": 198
+  },
+  "groups": 2244
+}

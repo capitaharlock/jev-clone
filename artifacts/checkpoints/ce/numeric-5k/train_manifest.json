@@ -1,0 +1,639 @@
+{
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune train --batch-size 16 --battery /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/data/battery_dev.jsonl --budget 5000 --decisions-per-batch 8 --device mps --episodes artifacts/episodes-rule/mix-smoke --epochs 4 --eval-every 1250 --holdout 0.2 --init none --lr-encoder 2e-05 --lr-head 0.0001 --out artifacts/checkpoints/ce/numeric-5k --seed 20260926 --split-seed 20260927 --weights minilmv2-l6-mnli-xnli",
+  "consumed": {
+    "by_family_lang": {
+      "attribute_comparison/en": {
+        "groups": 329,
+        "n": 1127,
+        "sha256": "545915eed6106c06bd356bdb0ea3e78b2e31b130bbb9634b448ced9430f1ad6d"
+      },
+      "attribute_comparison/es": {
+        "groups": 347,
+        "n": 1203,
+        "sha256": "bc0e875b1bc8f91658bf0302aee014dbd0515f07b50bcfa78341f1204eab4b1b"
+      },
+      "description_classification/en": {
+        "groups": 82,
+        "n": 162,
+        "sha256": "8a5333a1863ac87126ba6a6ceee69c8599fbe0cd9b6ae53f6b75f6b5b3c4e49c"
+      },
+      "description_classification/es": {
+        "groups": 86,
+        "n": 158,
+        "sha256": "5d6c6726a0a08a596c0a5a3b49865da57dc710e83889f758a86fd4194626c490"
+      },
+      "extraction_paraphrase/en": {
+        "groups": 60,
+        "n": 120,
+        "sha256": "89e4dffaef09038ac87a4e19fd08e31f927178fe521236727a39d007e52d7ac3"
+      },
+      "extraction_paraphrase/es": {
+        "groups": 61,
+        "n": 117,
+        "sha256": "9486871a66d3c9c473854ab97cecbd2800972f6065b7a45e3885a7a23a1ce3da"
+      },
+      "priority_decision/en": {
+        "groups": 340,
+        "n": 1157,
+        "sha256": "3badff28d4a7a261f10ffb161fb0b456a7afdb515768988984988a3fc51c774e"
+      },
+      "priority_decision/es": {
+        "groups": 315,
+        "n": 1104,
+        "sha256": "f2dc429c03cdc357050a42f3f4d055d6e4bb4bd4e3d142b5f968683d0b0c2275"
+      },
+      "textual_inference_negation/en": {
+        "groups": 85,
+        "n": 145,
+        "sha256": "e6917fd0b66e6e3fec3cdbba06ae1047210b3bb6e756dea959218f8d2a5d9769"
+      },
+      "textual_inference_negation/es": {
+        "groups": 83,
+        "n": 157,
+        "sha256": "1967a00017279ba55e92e1aa74a6886c63b9e56bf5a1f72006073a68de378113"
+      }
+    },
+    "groups": 1788,
+    "how": "per family/lang bucket, episodes sorted by id and dumped with sort_keys; the total is the sha of the bucket shas",
+    "n": 5450,
+    "sha256": "4910c9020920b578dafd9a633471f30b21c626a93d499ed444369043e6b3cd45"
+  },
+  "curve": "artifacts/checkpoints/ce/numeric-5k/curve.jsonl",
+  "decisions_consumed": 5000,
+  "device": "mps",
+  "episodes": {
+    "n_read": 6840,
+    "n_rejected": 0,
+    "n_valid": 6840,
+    "rejected": [],
+    "sha256": "27b59cceba01bd1e6f4088484494fd3f5cd1e24dc3e3680438a64fe2c52d9961",
+    "source": "artifacts/episodes-rule/mix-smoke/episodes.jsonl"
+  },
+  "epochs_run": 1,
+  "eval_dev": "artifacts/checkpoints/ce/numeric-5k/eval-dev.json",
+  "eval_seconds": 578.93,
+  "final_figures": {
+    "abstention": {
+      "accuracy": 0.5675,
+      "accuracy_ci95": [
+        0.518535,
+        0.615181
+      ],
+      "answered": 288,
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "coverage": 0.72,
+      "hits": 227,
+      "n": 400,
+      "rule": "abstain when max(softmax over K) < threshold",
+      "threshold": 0.5,
+      "what": "accuracy with abstention at a fixed threshold on the max softmax weight; an abstention counts as wrong"
+    },
+    "by_k": {
+      "2": {
+        "accuracy": 0.75,
+        "accuracy_ci95": [
+          0.677576,
+          0.810701
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 2,
+        "chance": 0.5,
+        "hits": 120,
+        "n": 160,
+        "what": "forced accuracy, K=2"
+      },
+      "3": {
+        "accuracy": 0.658333,
+        "accuracy_ci95": [
+          0.569748,
+          0.737096
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 3,
+        "chance": 0.333333,
+        "hits": 79,
+        "n": 120,
+        "what": "forced accuracy, K=3"
+      },
+      "8": {
+        "accuracy": 0.591667,
+        "accuracy_ci95": [
+          0.502208,
+          0.675439
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 8,
+        "chance": 0.125,
+        "hits": 71,
+        "n": 120,
+        "what": "forced accuracy, K=8"
+      }
+    },
+    "by_lang": {
+      "en": {
+        "accuracy": 0.72,
+        "accuracy_ci95": [
+          0.654077,
+          0.777631
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 144,
+        "n": 200,
+        "what": "forced accuracy, lang en"
+      },
+      "es": {
+        "accuracy": 0.63,
+        "accuracy_ci95": [
+          0.561226,
+          0.693874
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 126,
+        "n": 200,
+        "what": "forced accuracy, lang es"
+      }
+    },
+    "counterfactual_joint": {
+      "accuracy": 0.492857,
+      "accuracy_ci95": [
+        0.411346,
+        0.57475
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.082569,
+      "hits": 69,
+      "n": 140
+    },
+    "forced": {
+      "accuracy": 0.675,
+      "accuracy_ci95": [
+        0.627624,
+        0.719047
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "hits": 270,
+      "n": 400
+    },
+    "macro_by_family": {
+      "accuracy_ranking": 0.675,
+      "by_family": {
+        "attribute_comparison": {
+          "accuracy": 0.3375,
+          "accuracy_ci95": [
+            0.243456,
+            0.446435
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 27,
+          "n": 80
+        },
+        "description_classification": {
+          "accuracy": 0.9875,
+          "accuracy_ci95": [
+            0.932537,
+            0.99779
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 79,
+          "n": 80
+        },
+        "extraction_paraphrase": {
+          "accuracy": 0.9625,
+          "accuracy_ci95": [
+            0.895453,
+            0.987165
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 77,
+          "n": 80
+        },
+        "priority_decision": {
+          "accuracy": 0.325,
+          "accuracy_ci95": [
+            0.232442,
+            0.433595
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 26,
+          "n": 80
+        },
+        "textual_inference_negation": {
+          "accuracy": 0.7625,
+          "accuracy_ci95": [
+            0.658592,
+            0.842353
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 61,
+          "n": 80
+        }
+      },
+      "chance_ranking": 0.3375,
+      "worst_family": "priority_decision"
+    }
+  },
+  "generated_utc": "2026-09-27T19:17:43Z",
+  "holdout": {
+    "by_family_lang": {
+      "attribute_comparison/en": {
+        "groups": 88,
+        "n": 308,
+        "sha256": "d8be9a61e14ccb745fee5adebebd79af9c809f20b37bc0564d74915fe68249af"
+      },
+      "attribute_comparison/es": {
+        "groups": 71,
+        "n": 256,
+        "sha256": "194e563ebda94bca1337da144d147fb01ec4e42d67a123221e9782291ebe0d3c"
+      },
+      "description_classification/en": {
+        "groups": 23,
+        "n": 45,
+        "sha256": "fa7f647770e192767aed816c9bbed5009321f681fc51190bc72b75cf233f5b6f"
+      },
+      "description_classification/es": {
+        "groups": 18,
+        "n": 32,
+        "sha256": "82abc3c37f852d09473fe21bf4c6779bfee898f6fc1ad949a24bbe0e8ebfc247"
+      },
+      "extraction_paraphrase/en": {
+        "groups": 15,
+        "n": 30,
+        "sha256": "6ac790a9e7bd6bc0e8214543bfd2a0f90696b7dd0267df25eaae1bdbb32b77f4"
+      },
+      "extraction_paraphrase/es": {
+        "groups": 20,
+        "n": 39,
+        "sha256": "b9fc63ac832f5fba2b2a348db8d7c0c6a22a001c5852d27036d3265615925ca7"
+      },
+      "priority_decision/en": {
+        "groups": 77,
+        "n": 259,
+        "sha256": "73a33e09c1a35af5d1e230fae0ffd6b6760a0211869a9a3696016dc2ed698458"
+      },
+      "priority_decision/es": {
+        "groups": 102,
+        "n": 346,
+        "sha256": "5cd4def83b774c00c79f2903af1c583b1d2b52377dcf85ad812a0ba15450bd26"
+      },
+      "textual_inference_negation/en": {
+        "groups": 20,
+        "n": 34,
+        "sha256": "db318de13121830d5ccbff86af416251c3326e00b7817f9f6bf37442dd4171dc"
+      },
+      "textual_inference_negation/es": {
+        "groups": 22,
+        "n": 41,
+        "sha256": "9a4e0a3154fe9b6f286b7438113aee5976c62dff55a9e1a57be0dde7340aeb12"
+      }
+    },
+    "groups": 456,
+    "how": "per family/lang bucket, episodes sorted by id and dumped with sort_keys; the total is the sha of the bucket shas",
+    "n": 1390,
+    "sha256": "97a181327d3c1bb8452bc106a308dced2da13dda17f6123d15ffff3bc1cc8895"
+  },
+  "hyperparams": {
+    "budget_decisions": 5000,
+    "candidate_shuffle": "every pass, per decision",
+    "decisions_per_batch": 8,
+    "epochs_max": 4,
+    "eval_every_decisions": 1250,
+    "grad_clip": 1.0,
+    "loss": "listwise cross-entropy over the row's K masked candidate scores (-log sum of positive weights)",
+    "lr_encoder": 2e-05,
+    "lr_head": 0.0001,
+    "max_length": 512,
+    "optimizer": "AdamW (two groups: encoder, classifier head)",
+    "score_mode": "entail_logit",
+    "weight_decay": 0.01
+  },
+  "hypothesis_format": {
+    "fingerprint": "b215e3003cc60c0f",
+    "frozen_id": "b215e3003cc60c0f"
+  },
+  "init": {
+    "id": "minilmv2-l6-mnli-xnli",
+    "kind": "weights",
+    "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+    "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca"
+  },
+  "length_report": {
+    "max_length": 512,
+    "max_tokens": 482,
+    "n_pairs": 20732,
+    "n_truncated": 0,
+    "pass": true,
+    "truncated_indices": [],
+    "truncation": "only_first"
+  },
+  "model_version": "T-ce-finetune:numeric-5k",
+  "rendered_examples": [
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-rule0001-attr-en-c0173-692",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "The answer to this question is: The loudspeaker Olivine, 1290 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Cinnabar, 570 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c3",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Topaz, 750 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c4",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Garnet, 1110 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c5",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Fluorite, 210 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c6",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Pyrite, 8 hours.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c7",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Tourmaline, 11 hours.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c8",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Obsidian, 870 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c8",
+      "id": "ep-rule0001-attr-en-c0173-693",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Olivine, 1290 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Cinnabar, 570 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c3",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Topaz, 750 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c4",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Garnet, 1110 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c5",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Fluorite, 210 minutes.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c6",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Pyrite, 8 hours.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c7",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Tourmaline, 11 hours.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        },
+        {
+          "candidate": "c8",
+          "gold": true,
+          "hypothesis": "The answer to this question is: The loudspeaker Obsidian, 22 hours.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 22 hours on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 22 hours\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 8 hours\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 11 hours"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c4",
+      "id": "ep-rule0001-attr-en-c0173-694",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Olivine, 29 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Cinnabar, 50 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c3",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Topaz, 41 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c4",
+          "gold": true,
+          "hypothesis": "The answer to this question is: The loudspeaker Garnet, 28 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c5",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Fluorite, 79 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c6",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Pyrite, 55 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c7",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Tourmaline, 52 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        },
+        {
+          "candidate": "c8",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Obsidian, 37 decibels.",
+          "premise": "State: From the workshop inventory: The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50 decibels. The loudspeaker Pyrite lasts 8 hours on battery and runs at 55 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 28 decibels. The loudspeaker Tourmaline lasts 11 hours on battery and runs at 52 decibels. The loudspeaker Topaz lasts 750 minutes on battery and runs at 41 decibels.\nQuestion: Which loudspeaker is the quietest?\nOptions under comparison:\n- The loudspeaker Cinnabar, 50 decibels\n- The loudspeaker Fluorite, 79 decibels\n- The loudspeaker Garnet, 28 decibels\n- The loudspeaker Obsidian, 37 decibels\n- The loudspeaker Olivine, 29 decibels\n- The loudspeaker Pyrite, 55 decibels\n- The loudspeaker Topaz, 41 decibels\n- The loudspeaker Tourmaline, 52 decibels"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-rule0001-attr-en-c0173-695",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "The answer to this question is: The loudspeaker Olivine, 1290 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Cinnabar, 570 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c3",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Topaz, 750 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c4",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Garnet, 1110 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c5",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Fluorite, 210 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c6",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Pyrite, 480 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c7",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Tourmaline, 660 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        },
+        {
+          "candidate": "c8",
+          "gold": false,
+          "hypothesis": "The answer to this question is: The loudspeaker Obsidian, 870 minutes.",
+          "premise": "State: Noted on the purchase sheet: The loudspeaker Topaz lasts 750 minutes on battery and runs at 41.0 decibels. The loudspeaker Tourmaline lasts 660 minutes on battery and runs at 52.0 decibels. The loudspeaker Garnet lasts 1110 minutes on battery and runs at 32.0 decibels. The loudspeaker Pyrite lasts 480 minutes on battery and runs at 55.0 decibels. The loudspeaker Cinnabar lasts 570 minutes on battery and runs at 50.0 decibels. The loudspeaker Olivine lasts 1290 minutes on battery and runs at 29.0 decibels. The loudspeaker Fluorite lasts 210 minutes on battery and runs at 79.0 decibels. The loudspeaker Obsidian lasts 870 minutes on battery and runs at 37.0 decibels.\nQuestion: Which loudspeaker lasts longest on battery?\nOptions under comparison:\n- The loudspeaker Cinnabar, 570 minutes\n- The loudspeaker Fluorite, 210 minutes\n- The loudspeaker Garnet, 1110 minutes\n- The loudspeaker Obsidian, 870 minutes\n- The loudspeaker Olivine, 1290 minutes\n- The loudspeaker Pyrite, 480 minutes\n- The loudspeaker Topaz, 750 minutes\n- The loudspeaker Tourmaline, 660 minutes"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-rule0001-attr-es-c3686-14744",
+      "lang": "es",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "La respuesta a esta pregunta es: El criostato Cuarzo, 165 minutos.",
+          "premise": "Estado: El criostato Cuarzo tarda 165 minutos y pesa 1.980 gramos. El criostato Olivino tarda 375 minutos y pesa 2.980 gramos. El criostato Azurita tarda 480 minutos y pesa 3.000 gramos.\nPregunta: ¿Qué criostato es el más rápido?\nOpciones en comparación:\n- El criostato Azurita, 480 minutos\n- El criostato Cuarzo, 165 minutos\n- El criostato Olivino, 375 minutos"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "La respuesta a esta pregunta es: El criostato Olivino, 375 minutos.",
+          "premise": "Estado: El criostato Cuarzo tarda 165 minutos y pesa 1.980 gramos. El criostato Olivino tarda 375 minutos y pesa 2.980 gramos. El criostato Azurita tarda 480 minutos y pesa 3.000 gramos.\nPregunta: ¿Qué criostato es el más rápido?\nOpciones en comparación:\n- El criostato Azurita, 480 minutos\n- El criostato Cuarzo, 165 minutos\n- El criostato Olivino, 375 minutos"
+        },
+        {
+          "candidate": "c3",
+          "gold": false,
+          "hypothesis": "La respuesta a esta pregunta es: El criostato Azurita, 480 minutos.",
+          "premise": "Estado: El criostato Cuarzo tarda 165 minutos y pesa 1.980 gramos. El criostato Olivino tarda 375 minutos y pesa 2.980 gramos. El criostato Azurita tarda 480 minutos y pesa 3.000 gramos.\nPregunta: ¿Qué criostato es el más rápido?\nOpciones en comparación:\n- El criostato Azurita, 480 minutos\n- El criostato Cuarzo, 165 minutos\n- El criostato Olivino, 375 minutos"
+        }
+      ]
+    }
+  ],
+  "run": "numeric-5k",
+  "seed": 20260926,
+  "selection": "the FINAL checkpoint at the budget is what is saved and gated; the dev curve is published for reading, nothing was chosen by dev",
+  "split": {
+    "by": "variant_group (data.episode_contract.assign_split)",
+    "counts": {
+      "holdout": 1390,
+      "train": 5450
+    },
+    "cuts": [
+      [
+        "train",
+        0.8
+      ],
+      [
+        "holdout",
+        0.2
+      ]
+    ],
+    "groups": {
+      "holdout": 456,
+      "train": 1788
+    },
+    "seed": 20260927
+  },
+  "status": "measured",
+  "steps": 625,
+  "task": "T-ce-finetune",
+  "train_seconds": 1806.17,
+  "training_cut_guard": "no dev-/sealed- variant_group in train (guard_training_cut)",
+  "wall_seconds": 2396.49,
+  "weights": "minilmv2-l6-mnli-xnli"
+}
