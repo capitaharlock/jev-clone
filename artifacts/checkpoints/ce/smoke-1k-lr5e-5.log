@@ -1,0 +1,29 @@
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 16329.93it/s]
+[train] example ep-attr-en-c0000-00 (attribute_comparison/en) gold=c2: 'The answer to this question is: southern route, 48 euros.'
+[train] example ep-attr-en-c0000-01 (attribute_comparison/en) gold=c1: 'The answer to this question is: flight A, 18 euros.'
+[train] example ep-attr-en-c0001-02 (attribute_comparison/en) gold=c1: 'The answer to this question is: northern route, 17 euros.'
+[train] example ep-attr-en-c0001-03 (attribute_comparison/en) gold=c1: 'The answer to this question is: flight A, 17 euros.'
+[train] example ep-attr-en-c0002-04 (attribute_comparison/en) gold=c2: 'The answer to this question is: Friday course, 30 seats.'
+[train] step 10 consumed 80 loss 0.5375 (3s)
+[train] step 20 consumed 160 loss 0.4848 (5s)
+[train] step 30 consumed 240 loss 0.4987 (8s)
+[train] eval@256 (scheduled): forced 250/400=0.6250 ci[0.576579, 0.671043] | abst@0.5 0.5325 cov 0.7025 | macro 0.6250 | joint 56/140=0.4000 ci[0.322567, 0.482774] | holdout 0.8103
+[train] step 40 consumed 320 loss 0.3809 (13s)
+[train] step 50 consumed 400 loss 0.3299 (15s)
+[train] step 60 consumed 480 loss 0.3697 (18s)
+[train] eval@504 (scheduled): forced 265/400=0.6625 ci[0.61481, 0.707098] | abst@0.5 0.5725 cov 0.7475 | macro 0.6625 | joint 65/140=0.4643 ci[0.383732, 0.546747] | holdout 0.8126
+[train] step 70 consumed 560 loss 0.2071 (23s)
+[train] step 80 consumed 640 loss 0.2397 (25s)
+[train] step 90 consumed 720 loss 0.2581 (27s)
+[train] eval@752 (scheduled): forced 271/400=0.6775 ci[0.630191, 0.721432] | abst@0.5 0.5875 cov 0.79 | macro 0.6775 | joint 66/140=0.4714 ci[0.390611, 0.553772] | holdout 0.8220
+[train] step 100 consumed 800 loss 0.3706 (33s)
+[train] step 110 consumed 880 loss 0.3387 (35s)
+[train] step 120 consumed 960 loss 0.3032 (37s)
+[train] eval@1000 (final): forced 266/400=0.6650 ci[0.61737, 0.709491] | abst@0.5 0.5950 cov 0.745 | macro 0.6650 | joint 66/140=0.4714 ci[0.390611, 0.553772] | holdout 0.8665
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  7.00it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  6.99it/s]
+[train] done: 125 steps, 1000 decisions, 29.3s train + 11.9s eval; wrote artifacts/checkpoints/ce/smoke-1k-lr5e-5/train_manifest.json
+[gate] forced 0.6225 -> 0.665 delta 0.0425 ci[-0.0025, 0.09]
+[gate] joint  0.342857 -> 0.471429 delta 0.128571 ci[0.05, 0.207143]
+[gate] drops ['family:attribute_comparison', 'family:priority_decision', 'family:textual_inference_negation']
+[gate] NO-GO: no improvement with a CI95 clear of 0 (forced [-0.0025, 0.09], joint [0.05, 0.207143])
+[gate] wrote artifacts/gates/T-ce-finetune/smoke-lr5e-5.json

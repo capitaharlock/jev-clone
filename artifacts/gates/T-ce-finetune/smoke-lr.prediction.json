@@ -1,0 +1,7 @@
+{
+  "written_utc": "2026-09-27T17:05:00Z",
+  "what": "smoke B, revision 3 of the task's list (encoder LR): identical to smoke.json (all 2 092 pilot episodes, seed 20260926, split-seed 20260927, budget 1000) with --lr-encoder 5e-5 and 1e-5",
+  "diagnosis_before": "on the pilot's own holdout (427 rows, same provisional split) smoke-1k leaves attribute_comparison at 39/68 = 0.574, exactly the untuned figure, while priority goes 0.622 -> 0.776 and description/extraction reach 1.000: the family is not learned even in distribution",
+  "expect": "5e-5 moves attribute_comparison on dev above control (0.4125); 1e-5 does not. Forced and joint keep improving with CI clear of 0",
+  "decides": "same pre-written rule; if neither LR stops the family drops, NO-GO for this backbone and the cause recorded as: the 6-layer NLI scorer does not learn numeric comparison at this budget"
+}

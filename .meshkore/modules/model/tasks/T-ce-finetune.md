@@ -1,7 +1,8 @@
 ---
 id: T-ce-finetune
 title: Aprender de verdad — ajustar con 5.000 decisiones verificadas, ampliar a 20.000 si mejora
-status: next
+blocked_reason: smoke NO-GO en cuatro variantes; decisión del operador sobre el siguiente brazo (backbone mayor o datos dirigidos a comparación numérica)
+status: blocked
 priority: high
 owner: unassigned
 category: model
@@ -133,3 +134,26 @@ exactos, tiempos medidos y las cuatro cifras contra el control.
   que la justifica.
 - Ninguna familia ni idioma cae por debajo de su nivel sin ajustar sin quedar
   registrado como limitación; si es NO-GO, el gate lo dice con su causa.
+
+## Resolution parcial (2026-09-27) — sección A hecha, sección B medida: **NO-GO, no se escala**
+
+**A. Trainer.** `training/python/ce_finetune.py` (`train` / `eval` / `gate`) + `test_ce_finetune.py` (24 tests). `eval --checkpoint none` reproduce el listón de preflight **exacto**: 249/400 = 0,6225, contrafactual 48/140, mismo `rows_sha256` `8e8ccea5…` (`artifacts/gates/T-ce-finetune/eval-none.json`).
+
+**B. Smoke.** 1 000 decisiones del piloto, split provisional 80/20 por `variant_group` (semilla 20260927), MiniLMv2-L6 NLI, MPS. **Tarda ≈ 40 s, no 20 min.** Predicciones escritas antes (`smoke.json#prediction`, `smoke-verified.prediction.json`, `smoke-lr.prediction.json`). Cuatro variantes, mismo control, mismas 400 filas de dev:
+
+| Variante | Forzada (Δ, IC95 % pareado) | Contrafactual conjunto (Δ, IC) | Familias bajo control | Veredicto |
+|---|---|---|---|---|
+| todos (2 092), lr 2e-5 | 0,6775 (+0,055 [0,015 · 0,098]) | 0,464 (+0,121 [0,043 · 0,200]) | atributos −0,038, prioridad −0,025, inferencia −0,05 | NO-GO |
+| verificados (1 840), lr 2e-5 | 0,660 (+0,038 [−0,005 · 0,08]) | 0,443 ([0,029 · 0,171]) | atributos −0,05, extracción −0,063, prioridad −0,038 | NO-GO |
+| todos, lr 5e-5 | 0,665 ([−0,003 · 0,09]) | 0,471 ([0,05 · 0,207]) | atributos −0,05, prioridad −0,025, inferencia −0,138 | NO-GO |
+| todos, lr 1e-5 | 0,660 ([0,003 · 0,075]) | 0,429 ([0,021 · 0,157]) | atributos −0,05, prioridad −0,037, extracción −0,025 | NO-GO |
+
+**Lo que dicen los números.**
+1. **La técnica aprende**: en las cuatro variantes el contrafactual conjunto sube con IC que no toca 0, y en la primera también la forzada. Ambos idiomas suben siempre. La ganancia está casi toda en clasificación por descripción (0,59 → 0,91–0,96).
+2. **La comparación de atributos no se aprende ni en su propia distribución**: en el holdout del piloto (427 filas) queda 39/68 = 0,574 antes y después; prioridad sí sube ahí (0,622 → 0,776) pero no transfiere a dev. Laya sin ajustar falla en esas mismas dos familias (0,325 y 0,363).
+3. Causa candidata: un cross-encoder NLI de 6 capas que puntúa cada opción por separado no hace comparación numérica entre opciones con este presupuesto. Revisados formato (`eval none` idéntico), gold (regla), LR (1e-5, 5e-5) y mezcla (verificados): ninguno lo mueve.
+
+**Decisión pendiente del operador** (la regla prohíbe elegir el brazo mirando el resultado). Opciones medibles, cada una ≈ minutos en esta máquina:
+- **Datos dirigidos**: comparación de atributos y prioridad tienen gold por regla, así que el volumen es ilimitado sin Qwen (generación programática + prosa opcional); 5 000 de esas dos familias.
+- **Backbone mayor**: NLI multilingüe base/large (mDeBERTa-v3-base-xnli, ModernBERT-large NLI) con el mismo trainer.
+- **Formato listwise**: todas las opciones en la misma secuencia (D1 de `#T-laya-archdiff`), que permite comparar entre opciones.

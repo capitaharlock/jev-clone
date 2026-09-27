@@ -1,0 +1,6795 @@
+{
+  "abstain_threshold": 0.5,
+  "battery": {
+    "file": "data/battery_dev.jsonl",
+    "n": 400,
+    "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+    "sealed_cut_read": false,
+    "sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80"
+  },
+  "checkpoint": {
+    "device": "cpu",
+    "id": "minilmv2-l6-mnli-xnli",
+    "kind": "weights",
+    "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+    "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "scorer": {
+      "batch_size": 16,
+      "device": "cpu",
+      "entail_index": 0,
+      "hypothesis_format_id": "b215e3003cc60c0f",
+      "id": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+      "max_length": 512,
+      "mode": "entail_logit",
+      "n_classes": 3,
+      "truncation": "only_first"
+    }
+  },
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune eval --batch-size 16 --battery data/battery_dev.jsonl --checkpoint none --device cpu --out /private/tmp/claude-501/-Users-ricartjuncadella-Documents-Prj-asimovia-jev-clone/267c745a-2997-47cb-8797-3768b2e1ae76/scratchpad/eval-none-cpu.json --weights minilmv2-l6-mnli-xnli",
+  "figures": {
+    "abstention": {
+      "accuracy": 0.4225,
+      "accuracy_ci95": [
+        0.375055,
+        0.471419
+      ],
+      "answered": 239,
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "coverage": 0.5975,
+      "hits": 169,
+      "n": 400,
+      "rule": "abstain when max(softmax over K) < threshold",
+      "threshold": 0.5,
+      "what": "accuracy with abstention at a fixed threshold on the max softmax weight; an abstention counts as wrong"
+    },
+    "by_k": {
+      "2": {
+        "accuracy": 0.675,
+        "accuracy_ci95": [
+          0.599061,
+          0.742732
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 2,
+        "chance": 0.5,
+        "hits": 108,
+        "n": 160,
+        "what": "forced accuracy, K=2"
+      },
+      "3": {
+        "accuracy": 0.591667,
+        "accuracy_ci95": [
+          0.502208,
+          0.675439
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 3,
+        "chance": 0.333333,
+        "hits": 71,
+        "n": 120,
+        "what": "forced accuracy, K=3"
+      },
+      "8": {
+        "accuracy": 0.583333,
+        "accuracy_ci95": [
+          0.49388,
+          0.667616
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 8,
+        "chance": 0.125,
+        "hits": 70,
+        "n": 120,
+        "what": "forced accuracy, K=8"
+      }
+    },
+    "by_lang": {
+      "en": {
+        "accuracy": 0.64,
+        "accuracy_ci95": [
+          0.571415,
+          0.703308
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 128,
+        "n": 200,
+        "what": "forced accuracy, lang en"
+      },
+      "es": {
+        "accuracy": 0.605,
+        "accuracy_ci95": [
+          0.535883,
+          0.670159
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 121,
+        "n": 200,
+        "what": "forced accuracy, lang es"
+      }
+    },
+    "counterfactual_joint": {
+      "accuracy": 0.342857,
+      "accuracy_ci95": [
+        0.269371,
+        0.424737
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.082569,
+      "hits": 48,
+      "n": 140
+    },
+    "forced": {
+      "accuracy": 0.6225,
+      "accuracy_ci95": [
+        0.574041,
+        0.668628
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "hits": 249,
+      "n": 400
+    },
+    "macro_by_family": {
+      "accuracy_ranking": 0.6225,
+      "by_family": {
+        "attribute_comparison": {
+          "accuracy": 0.4125,
+          "accuracy_ci95": [
+            0.311059,
+            0.52196
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 33,
+          "n": 80
+        },
+        "description_classification": {
+          "accuracy": 0.5875,
+          "accuracy_ci95": [
+            0.47804,
+            0.688941
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 47,
+          "n": 80
+        },
+        "extraction_paraphrase": {
+          "accuracy": 0.9375,
+          "accuracy_ci95": [
+            0.861899,
+            0.973011
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 75,
+          "n": 80
+        },
+        "priority_decision": {
+          "accuracy": 0.375,
+          "accuracy_ci95": [
+            0.276942,
+            0.484513
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 30,
+          "n": 80
+        },
+        "textual_inference_negation": {
+          "accuracy": 0.8,
+          "accuracy_ci95": [
+            0.699538,
+            0.872972
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 64,
+          "n": 80
+        }
+      },
+      "chance_ranking": 0.3375,
+      "worst_family": "priority_decision"
+    }
+  },
+  "format": "jev.ce-finetune.eval.v1",
+  "generated_utc": "2026-09-27T11:50:44Z",
+  "hypothesis_format": {
+    "fingerprint": "b215e3003cc60c0f",
+    "frozen_id": "b215e3003cc60c0f",
+    "same": true
+  },
+  "pairs_scored": 1640,
+  "report": {
+    "abstention": {
+      "abstain_rate": 0.0,
+      "accuracy": 0.6225,
+      "accuracy_ci95": [
+        0.574041,
+        0.668628
+      ],
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "coverage": {
+        "answered": 400,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "coverage": 1.0,
+        "coverage_ci95": [
+          0.990488,
+          1.0
+        ],
+        "n": 400,
+        "what": "share of rows the head answered"
+      },
+      "hits": 249,
+      "n": 400,
+      "precision_among_answered": {
+        "accuracy": 0.6225,
+        "accuracy_ci95": [
+          0.574041,
+          0.668628
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 249,
+        "n": 400,
+        "what": "accuracy restricted to the rows the head answered",
+        "why_not_alone": "precision among the answered rises by answering less; it is only readable beside coverage"
+      },
+      "unanswerable_rows": {
+        "correctly_abstained": 0,
+        "n": 0
+      },
+      "what": "accuracy including abstention: the published decision over [K + 1], an abstention on an answerable row counted as wrong"
+    },
+    "artifact": "metrics-suite",
+    "by_family": {
+      "attribute_comparison": {
+        "abstention": {
+          "accuracy": 0.4125,
+          "accuracy_ci95": [
+            0.311059,
+            0.52196
+          ],
+          "beats_chance": false,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 33,
+          "n": 80,
+          "what": "accuracy including abstention, family attribute_comparison"
+        },
+        "ranking": {
+          "accuracy": 0.4125,
+          "accuracy_ci95": [
+            0.311059,
+            0.52196
+          ],
+          "beats_chance": false,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 33,
+          "n": 80,
+          "what": "forced accuracy, family attribute_comparison"
+        }
+      },
+      "description_classification": {
+        "abstention": {
+          "accuracy": 0.5875,
+          "accuracy_ci95": [
+            0.47804,
+            0.688941
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 47,
+          "n": 80,
+          "what": "accuracy including abstention, family description_classification"
+        },
+        "ranking": {
+          "accuracy": 0.5875,
+          "accuracy_ci95": [
+            0.47804,
+            0.688941
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 47,
+          "n": 80,
+          "what": "forced accuracy, family description_classification"
+        }
+      },
+      "extraction_paraphrase": {
+        "abstention": {
+          "accuracy": 0.9375,
+          "accuracy_ci95": [
+            0.861899,
+            0.973011
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 75,
+          "n": 80,
+          "what": "accuracy including abstention, family extraction_paraphrase"
+        },
+        "ranking": {
+          "accuracy": 0.9375,
+          "accuracy_ci95": [
+            0.861899,
+            0.973011
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 75,
+          "n": 80,
+          "what": "forced accuracy, family extraction_paraphrase"
+        }
+      },
+      "priority_decision": {
+        "abstention": {
+          "accuracy": 0.375,
+          "accuracy_ci95": [
+            0.276942,
+            0.484513
+          ],
+          "beats_chance": false,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 30,
+          "n": 80,
+          "what": "accuracy including abstention, family priority_decision"
+        },
+        "ranking": {
+          "accuracy": 0.375,
+          "accuracy_ci95": [
+            0.276942,
+            0.484513
+          ],
+          "beats_chance": false,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 30,
+          "n": 80,
+          "what": "forced accuracy, family priority_decision"
+        }
+      },
+      "textual_inference_negation": {
+        "abstention": {
+          "accuracy": 0.8,
+          "accuracy_ci95": [
+            0.699538,
+            0.872972
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 64,
+          "n": 80,
+          "what": "accuracy including abstention, family textual_inference_negation"
+        },
+        "ranking": {
+          "accuracy": 0.8,
+          "accuracy_ci95": [
+            0.699538,
+            0.872972
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 64,
+          "n": 80,
+          "what": "forced accuracy, family textual_inference_negation"
+        }
+      }
+    },
+    "calibration": {
+      "brier": 0.529021,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "ece": 0.115798,
+      "fitted_on": "battery-dev fit half (191 rows, 67 groups)",
+      "n": 400,
+      "nll": 0.978144,
+      "nll_at_chance": 1.08619,
+      "reliability_bins": [
+        {
+          "acc": 0.0,
+          "conf": 0.0,
+          "hi": 0.06666666666666667,
+          "lo": 0.0,
+          "n": 0
+        },
+        {
+          "acc": 0.0,
+          "conf": 0.0,
+          "hi": 0.13333333333333333,
+          "lo": 0.06666666666666667,
+          "n": 0
+        },
+        {
+          "acc": 0.30434782608695654,
+          "conf": 0.1608130284782454,
+          "hi": 0.2,
+          "lo": 0.13333333333333333,
+          "n": 46
+        },
+        {
+          "acc": 0.375,
+          "conf": 0.22317688050680956,
+          "hi": 0.26666666666666666,
+          "lo": 0.2,
+          "n": 8
+        },
+        {
+          "acc": 0.5833333333333334,
+          "conf": 0.30476560266457936,
+          "hi": 0.3333333333333333,
+          "lo": 0.26666666666666666,
+          "n": 12
+        },
+        {
+          "acc": 0.4838709677419355,
+          "conf": 0.36945199498247744,
+          "hi": 0.4,
+          "lo": 0.3333333333333333,
+          "n": 31
+        },
+        {
+          "acc": 0.782608695652174,
+          "conf": 0.4299779128232184,
+          "hi": 0.4666666666666667,
+          "lo": 0.4,
+          "n": 23
+        },
+        {
+          "acc": 0.6031746031746031,
+          "conf": 0.507444939078159,
+          "hi": 0.5333333333333333,
+          "lo": 0.4666666666666667,
+          "n": 63
+        },
+        {
+          "acc": 0.5660377358490566,
+          "conf": 0.56050940073774,
+          "hi": 0.6,
+          "lo": 0.5333333333333333,
+          "n": 53
+        },
+        {
+          "acc": 0.7586206896551724,
+          "conf": 0.6366644310404482,
+          "hi": 0.6666666666666666,
+          "lo": 0.6,
+          "n": 29
+        },
+        {
+          "acc": 0.5384615384615384,
+          "conf": 0.697683179166482,
+          "hi": 0.7333333333333333,
+          "lo": 0.6666666666666666,
+          "n": 26
+        },
+        {
+          "acc": 0.7619047619047619,
+          "conf": 0.7664913562396465,
+          "hi": 0.8,
+          "lo": 0.7333333333333333,
+          "n": 21
+        },
+        {
+          "acc": 0.8,
+          "conf": 0.8377942714343785,
+          "hi": 0.8666666666666667,
+          "lo": 0.8,
+          "n": 25
+        },
+        {
+          "acc": 0.6875,
+          "conf": 0.9045181961719784,
+          "hi": 0.9333333333333333,
+          "lo": 0.8666666666666667,
+          "n": 16
+        },
+        {
+          "acc": 0.8723404255319149,
+          "conf": 0.9784671405121587,
+          "hi": 1.0,
+          "lo": 0.9333333333333333,
+          "n": 47
+        }
+      ],
+      "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+      "temperature": 0.7723879719643796,
+      "threshold": null,
+      "threshold_strategy": "argmax over [K + 1]; no abstention threshold is fitted here — that is #T-battery-calib",
+      "verified_on": "battery-dev verify half (209 rows, 73 groups)",
+      "what": "NLL, Brier and ECE over the offered candidates"
+    },
+    "chance": {
+      "by_k": {
+        "2": {
+          "chance": 0.5,
+          "chance_including_unknown": 0.333333,
+          "k": 2,
+          "rows": 160
+        },
+        "3": {
+          "chance": 0.333333,
+          "chance_including_unknown": 0.25,
+          "k": 3,
+          "rows": 120
+        },
+        "8": {
+          "chance": 0.125,
+          "chance_including_unknown": 0.111111,
+          "k": 8,
+          "rows": 120
+        }
+      },
+      "chance": 0.3375,
+      "chance_including_unknown": 0.241667,
+      "how": "chance is the uniform guesser over the offered candidates, averaged per row; a mixed-K cut has no single K, so mean_k and the by_k table are published together",
+      "k_max": 8,
+      "k_min": 2,
+      "mean_k": 4.1
+    },
+    "column": "T-ce-finetune:minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "controls_are_distinct": "these are TWO properties and the 2026-09-24 measurement separates them: the scores follow the option text under permutation and the model still misses the decisive change. A green permutation check is not evidence of tracking and never stands in for one",
+    "counterfactual": {
+      "accuracy": 0.342857,
+      "accuracy_ci95": [
+        0.269371,
+        0.424737
+      ],
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.082569,
+      "chance_how": "product of the per-member uniform rates, averaged over groups — guessing both halves of a pair",
+      "groups_with_one_half_only": 77,
+      "hits": 48,
+      "measurable": true,
+      "n": 140,
+      "rule": "a group with exactly one half right scores 0: half of a counterfactual pair is what a prior gets for free",
+      "unpaired_group_ids": [],
+      "unpaired_groups": 0,
+      "what": "joint success by variant_group: every member of the group right, or the group scores 0",
+      "why_unmeasurable": null
+    },
+    "cut": {
+      "file": "data/battery_dev.jsonl",
+      "manifest": "data/battery_dev_manifest.json",
+      "manifest_sha256": "567729de1661693047c5ea45a21750edb8e4baaf410ddca218cd05a96054c9d1",
+      "n": 400,
+      "name": "battery-dev",
+      "reserved": false,
+      "rows_scored": 400,
+      "rule": "the development cut, read as often as needed. The sealed cut is opened once by #T-battery-sealed with the arm already chosen, and nothing here reads it",
+      "sealed_cut_read": false,
+      "sealed_files_present": [
+        "data/battery_sealed.jsonl"
+      ],
+      "split": "development",
+      "split_sha256": "662d5a71a2efcdab5fd39947d653addbdf3c5f916061a9dcc4eb1a716d593e80",
+      "task": "T-battery-dev"
+    },
+    "format": "jev.metrics.v1",
+    "generated_utc": "2026-09-27T11:50:44Z",
+    "macro": {
+      "accuracy": 0.6225,
+      "accuracy_ci95": null,
+      "accuracy_ranking": 0.6225,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "chance_ranking": 0.3375,
+      "ci95_why_absent": "a macro mean over families is not a binomial proportion: its interval is each family's own, published in by_family, not a Wilson bound here",
+      "n": 400,
+      "n_families": 5,
+      "what": "unweighted mean over families — every family one vote",
+      "worst_family": "priority_decision"
+    },
+    "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "notes": [
+      "T-ce-finetune: weights minilmv2-l6-mnli-xnli",
+      "abstention at fixed threshold 0.5 is published in `figures.abstention`; the suite's abstention section is the forced figure because the K weights carry no `unknown` column",
+      "reference: nli-nograd — untuned starting point — kept for #T-ce-finetune if it answers reasonably; a NLI head is not assumed to solve arithmetic or complex preferences without adaptation",
+      "protocol: entailment with the explicit hypotheses of `model.ce_scorer` (HYPOTHESIS), one pair per candidate, reduced to a scalar by `entail_logit`",
+      "weights: softmax over the K candidate scores — relative to the offered candidates, as the suite stamps",
+      "abstention: no — the untuned scorer carries no threshold, so its K weights have no `unknown` column and its abstention figure equals its forced figure by construction",
+      "format id: b215e3003cc60c0f",
+      "the sealed cut was not read: data/battery_dev.jsonl, data/battery_dev_manifest.json, .meshkore/docs/evidence/probe-mechanism-2026-09-24.json"
+    ],
+    "permutation_invariance": {
+      "distinct_from": "changing the decisive fact in the state, or the question asked of it, changes the answer",
+      "max_abs_prob_delta": 1.6047837814170407e-07,
+      "measured": true,
+      "n_perms": 6,
+      "pass": true,
+      "source": "T-ce-finetune — model.ce_scorer.check_permutation_invariance on the contract case, same weights, same run",
+      "tolerance": 1e-05,
+      "what": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control"
+    },
+    "ranking": {
+      "accuracy": 0.6225,
+      "accuracy_ci95": [
+        0.574041,
+        0.668628
+      ],
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "excluded_unanswerable_rows": 0,
+      "hits": 249,
+      "measurable": true,
+      "measured_on": "the answerable rows only — a row whose gold was withheld has no correct option to rank",
+      "n": 400,
+      "what": "forced accuracy: argmax over the offered candidates, `unknown` taken out of the race"
+    },
+    "reported_apart": "ranking and abstention are two measurements and are published side by side: neither is the headline on its own",
+    "softmax_semantics": "softmax weights are RELATIVE to the candidates offered on that row: they redistribute over the K columns that were shown and say nothing about the probability that an answer is true in the world. Offering a different candidate set moves every weight",
+    "task": "T-preflight-refs",
+    "tracking": {
+      "distinct_from": "permuting the offered candidates leaves each candidate's weight where it was, realigned by id — the #T-option-text control",
+      "followed": 58,
+      "how": "per counterfactual group: the members share the question and the candidate texts and differ only in the decisive fact of the state, so the gold slot moves; `followed` counts the groups whose forced pick moved with it and `same_slot` the groups where it did not",
+      "measured": true,
+      "n": 140,
+      "pairs": [
+        {
+          "decisive_gold": 1,
+          "decisive_pick": 1,
+          "moved": false,
+          "orig_gold": 0,
+          "orig_pick": 1,
+          "variant_group": "dev-cmp-en-2k-p01"
+        },
+        {
+          "decisive_gold": 1,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 0,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-2k-p02"
+        },
+        {
+          "decisive_gold": 1,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 0,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-2k-t01"
+        },
+        {
+          "decisive_gold": 0,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 1,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-2k-t02"
+        },
+        {
+          "decisive_gold": 0,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 1,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-2k-t03"
+        },
+        {
+          "decisive_gold": 1,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 0,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-2k-t04"
+        },
+        {
+          "decisive_gold": 0,
+          "decisive_pick": 2,
+          "moved": false,
+          "orig_gold": 2,
+          "orig_pick": 2,
+          "variant_group": "dev-cmp-en-3k-t01"
+        },
+        {
+          "decisive_gold": 0,
+          "decisive_pick": 0,
+          "moved": false,
+          "orig_gold": 1,
+          "orig_pick": 0,
+          "variant_group": "dev-cmp-en-3k-t02"
+        }
+      ],
+      "pass": false,
+      "rate": 0.414286,
+      "same_slot": 82,
+      "same_slot_rate": 0.585714,
+      "source": "T-preflight-refs on battery-dev 662d5a71a2ef",
+      "what": "changing the decisive fact in the state, or the question asked of it, changes the answer"
+    }
+  },
+  "rows": [
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5270060081437853,
+        0.47299399185621466
+      ],
+      "row_id": "dev-ext-es-2k-t01a",
+      "variant_group": "dev-ext-es-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4790492610677822,
+        0.5209507389322179
+      ],
+      "row_id": "dev-ext-es-2k-t01b",
+      "variant_group": "dev-ext-es-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5277911993297523,
+        0.4722088006702477
+      ],
+      "row_id": "dev-ext-es-2k-t01c",
+      "variant_group": "dev-ext-es-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4874210084149016,
+        0.5125789915850983
+      ],
+      "row_id": "dev-ext-es-2k-t02a",
+      "variant_group": "dev-ext-es-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.47346970003297423,
+        0.5265302999670258
+      ],
+      "row_id": "dev-ext-es-2k-t02b",
+      "variant_group": "dev-ext-es-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4624993625804439,
+        0.5375006374195561
+      ],
+      "row_id": "dev-ext-es-2k-t02c",
+      "variant_group": "dev-ext-es-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.576448257043554,
+        0.423551742956446
+      ],
+      "row_id": "dev-ext-es-2k-t03a",
+      "variant_group": "dev-ext-es-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4800172844320001,
+        0.5199827155679999
+      ],
+      "row_id": "dev-ext-es-2k-t03b",
+      "variant_group": "dev-ext-es-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5714118683908623,
+        0.42858813160913756
+      ],
+      "row_id": "dev-ext-es-2k-t03c",
+      "variant_group": "dev-ext-es-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4993087057703769,
+        0.5006912942296231
+      ],
+      "row_id": "dev-ext-es-2k-t04a",
+      "variant_group": "dev-ext-es-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.49867219044972794,
+        0.5013278095502721
+      ],
+      "row_id": "dev-ext-es-2k-t04b",
+      "variant_group": "dev-ext-es-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.482232663691756,
+        0.517767336308244
+      ],
+      "row_id": "dev-ext-es-2k-t04c",
+      "variant_group": "dev-ext-es-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.366089359803002,
+        0.6339106401969979
+      ],
+      "row_id": "dev-ext-es-2k-p01a",
+      "variant_group": "dev-ext-es-2k-p01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5785234650287578,
+        0.4214765349712422
+      ],
+      "row_id": "dev-ext-es-2k-p01b",
+      "variant_group": "dev-ext-es-2k-p01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.48088469390990424,
+        0.5191153060900958
+      ],
+      "row_id": "dev-ext-es-2k-p02a",
+      "variant_group": "dev-ext-es-2k-p02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5245042076642894,
+        0.4754957923357106
+      ],
+      "row_id": "dev-ext-es-2k-p02b",
+      "variant_group": "dev-ext-es-2k-p02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.3800224931394126,
+        0.597481259792877,
+        0.022496247067710286
+      ],
+      "row_id": "dev-ext-es-3k-t01a",
+      "variant_group": "dev-ext-es-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.43001416631440254,
+        0.0060629663755920275,
+        0.5639228673100054
+      ],
+      "row_id": "dev-ext-es-3k-t01b",
+      "variant_group": "dev-ext-es-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.37584019955319814,
+        0.608857795045077,
+        0.015302005401724867
+      ],
+      "row_id": "dev-ext-es-3k-t01c",
+      "variant_group": "dev-ext-es-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4477556069813716,
+        0.26037609544085577,
+        0.2918682975777726
+      ],
+      "row_id": "dev-ext-es-3k-t02a",
+      "variant_group": "dev-ext-es-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.3218363544614132,
+        0.399389425961555,
+        0.2787742195770318
+      ],
+      "row_id": "dev-ext-es-3k-t02b",
+      "variant_group": "dev-ext-es-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4392259972386365,
+        0.26347691729439754,
+        0.297297085466966
+      ],
+      "row_id": "dev-ext-es-3k-t02c",
+      "variant_group": "dev-ext-es-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.3383276308354699,
+        0.3068679810054475,
+        0.35480438815908266
+      ],
+      "row_id": "dev-ext-es-3k-t03a",
+      "variant_group": "dev-ext-es-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.317536998244608,
+        0.4171179509501039,
+        0.26534505080528814
+      ],
+      "row_id": "dev-ext-es-3k-t03b",
+      "variant_group": "dev-ext-es-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.3416032307266375,
+        0.26405096095667263,
+        0.3943458083166898
+      ],
+      "row_id": "dev-ext-es-3k-t03c",
+      "variant_group": "dev-ext-es-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.19629093023816324,
+        0.41750774177733757,
+        0.38620132798449924
+      ],
+      "row_id": "dev-ext-es-3k-t04a",
+      "variant_group": "dev-ext-es-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.22383923508928708,
+        0.3625770336300264,
+        0.41358373128068654
+      ],
+      "row_id": "dev-ext-es-3k-t04b",
+      "variant_group": "dev-ext-es-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.2429703746882174,
+        0.3967674440475317,
+        0.3602621812642509
+      ],
+      "row_id": "dev-ext-es-3k-t04c",
+      "variant_group": "dev-ext-es-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.08010479807939001,
+        0.869501087254252,
+        0.02501897357196718,
+        0.006662479353605109,
+        0.005589728624336206,
+        0.0038440501886654065,
+        0.003957510963061092,
+        0.005321371964723046
+      ],
+      "row_id": "dev-ext-es-8k-t01a",
+      "variant_group": "dev-ext-es-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.016676485303946234,
+        0.004868305806380867,
+        0.0044950931695812105,
+        0.005138097280138761,
+        0.009073538710235354,
+        0.022702021681245493,
+        0.5352315992027085,
+        0.4018148588457636
+      ],
+      "row_id": "dev-ext-es-8k-t01b",
+      "variant_group": "dev-ext-es-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.07552218818356099,
+        0.8766397996954924,
+        0.022901542619615238,
+        0.006721062299309164,
+        0.005397518957660205,
+        0.004031452518287196,
+        0.0038514163711942983,
+        0.004935019354880557
+      ],
+      "row_id": "dev-ext-es-8k-t01c",
+      "variant_group": "dev-ext-es-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.0221506916105926,
+        0.05580775744258953,
+        0.32930249114687066,
+        0.3419197565324468,
+        0.2231558133977792,
+        0.010041708178664828,
+        0.007161656485397328,
+        0.010460125205659115
+      ],
+      "row_id": "dev-ext-es-8k-t02a",
+      "variant_group": "dev-ext-es-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.17902567772099123,
+        0.40070815259975545,
+        0.36410516425963446,
+        0.03627052922191454,
+        0.008618930827574268,
+        0.0038900827341436213,
+        0.0033641143284177362,
+        0.004017348307568644
+      ],
+      "row_id": "dev-ext-es-8k-t02b",
+      "variant_group": "dev-ext-es-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.017082406000048782,
+        0.0394930737574516,
+        0.3539831576277934,
+        0.38251643226407733,
+        0.17581486851786934,
+        0.011213039625308242,
+        0.008274269069780378,
+        0.01162275313767089
+      ],
+      "row_id": "dev-ext-es-8k-t02c",
+      "variant_group": "dev-ext-es-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 7,
+      "probs": [
+        0.027601756915888523,
+        0.006089169786832562,
+        0.007445012367918328,
+        0.017396137581596114,
+        0.010303595135781858,
+        0.026069492209867574,
+        0.3934268786320889,
+        0.5116679573700261
+      ],
+      "row_id": "dev-ext-es-8k-t03a",
+      "variant_group": "dev-ext-es-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.032913143760527126,
+        0.012610274297301665,
+        0.34238576675950017,
+        0.5426760033105458,
+        0.019223300778919063,
+        0.013004048684578875,
+        0.013348364477737636,
+        0.0238390979308897
+      ],
+      "row_id": "dev-ext-es-8k-t03b",
+      "variant_group": "dev-ext-es-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 7,
+      "probs": [
+        0.02400387058333117,
+        0.00654265010610779,
+        0.008679643796578715,
+        0.01995641178839164,
+        0.012906866179254283,
+        0.02674894843628294,
+        0.28620242132855583,
+        0.6149591877814976
+      ],
+      "row_id": "dev-ext-es-8k-t03c",
+      "variant_group": "dev-ext-es-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.006253874808084353,
+        0.0034276328363591164,
+        0.006692208946008373,
+        0.010869830502491898,
+        0.17694798631817235,
+        0.24990585336295995,
+        0.2772117899680149,
+        0.26869082325790905
+      ],
+      "row_id": "dev-ext-es-8k-t04a",
+      "variant_group": "dev-ext-es-8k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.009093612326506283,
+        0.0050813668185341315,
+        0.01526892500364969,
+        0.047745787058986904,
+        0.2780415702133837,
+        0.29197832923093237,
+        0.2860201714630515,
+        0.06677023788495548
+      ],
+      "row_id": "dev-ext-es-8k-t04b",
+      "variant_group": "dev-ext-es-8k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.005316855521260717,
+        0.0034464606179795748,
+        0.006488952458881195,
+        0.011431299617208847,
+        0.1853651059969043,
+        0.24764227301508485,
+        0.2715580045727455,
+        0.26875104819993506
+      ],
+      "row_id": "dev-ext-es-8k-t04c",
+      "variant_group": "dev-ext-es-8k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6973442520232245,
+        0.30265574797677564
+      ],
+      "row_id": "dev-ext-en-2k-t01a",
+      "variant_group": "dev-ext-en-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.27938887992878786,
+        0.7206111200712122
+      ],
+      "row_id": "dev-ext-en-2k-t01b",
+      "variant_group": "dev-ext-en-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6652418185107266,
+        0.33475818148927333
+      ],
+      "row_id": "dev-ext-en-2k-t01c",
+      "variant_group": "dev-ext-en-2k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3750788746267119,
+        0.6249211253732881
+      ],
+      "row_id": "dev-ext-en-2k-t02a",
+      "variant_group": "dev-ext-en-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6334079938656905,
+        0.3665920061343096
+      ],
+      "row_id": "dev-ext-en-2k-t02b",
+      "variant_group": "dev-ext-en-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.33584311225018093,
+        0.6641568877498191
+      ],
+      "row_id": "dev-ext-en-2k-t02c",
+      "variant_group": "dev-ext-en-2k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.29344534874233374,
+        0.7065546512576663
+      ],
+      "row_id": "dev-ext-en-2k-t03a",
+      "variant_group": "dev-ext-en-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.7176047283133375,
+        0.2823952716866625
+      ],
+      "row_id": "dev-ext-en-2k-t03b",
+      "variant_group": "dev-ext-en-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3456916069481116,
+        0.6543083930518884
+      ],
+      "row_id": "dev-ext-en-2k-t03c",
+      "variant_group": "dev-ext-en-2k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.37033949694044155,
+        0.6296605030595585
+      ],
+      "row_id": "dev-ext-en-2k-t04a",
+      "variant_group": "dev-ext-en-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6140323263864913,
+        0.38596767361350875
+      ],
+      "row_id": "dev-ext-en-2k-t04b",
+      "variant_group": "dev-ext-en-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3648055958851894,
+        0.6351944041148107
+      ],
+      "row_id": "dev-ext-en-2k-t04c",
+      "variant_group": "dev-ext-en-2k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3825488044007071,
+        0.617451195599293
+      ],
+      "row_id": "dev-ext-en-2k-p01a",
+      "variant_group": "dev-ext-en-2k-p01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5758539845856041,
+        0.42414601541439584
+      ],
+      "row_id": "dev-ext-en-2k-p01b",
+      "variant_group": "dev-ext-en-2k-p01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.29339489299525884,
+        0.7066051070047412
+      ],
+      "row_id": "dev-ext-en-2k-p02a",
+      "variant_group": "dev-ext-en-2k-p02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6806294371045625,
+        0.3193705628954375
+      ],
+      "row_id": "dev-ext-en-2k-p02b",
+      "variant_group": "dev-ext-en-2k-p02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.37812748135296625,
+        0.43278839147112663,
+        0.1890841271759072
+      ],
+      "row_id": "dev-ext-en-3k-t01a",
+      "variant_group": "dev-ext-en-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4970554428530271,
+        0.4740112261619104,
+        0.028933330985062566
+      ],
+      "row_id": "dev-ext-en-3k-t01b",
+      "variant_group": "dev-ext-en-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.39983262664793,
+        0.5412107573631016,
+        0.0589566159889683
+      ],
+      "row_id": "dev-ext-en-3k-t01c",
+      "variant_group": "dev-ext-en-3k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.42285938754409247,
+        0.2874375888451298,
+        0.28970302361077765
+      ],
+      "row_id": "dev-ext-en-3k-t02a",
+      "variant_group": "dev-ext-en-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3126174886449477,
+        0.4493870813082567,
+        0.23799543004679563
+      ],
+      "row_id": "dev-ext-en-3k-t02b",
+      "variant_group": "dev-ext-en-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4354781327963422,
+        0.2789784966514436,
+        0.2855433705522143
+      ],
+      "row_id": "dev-ext-en-3k-t02c",
+      "variant_group": "dev-ext-en-3k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.24697591482689268,
+        0.2711142505682974,
+        0.48190983460480996
+      ],
+      "row_id": "dev-ext-en-3k-t03a",
+      "variant_group": "dev-ext-en-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.23366240765091567,
+        0.5047472932938227,
+        0.2615902990552616
+      ],
+      "row_id": "dev-ext-en-3k-t03b",
+      "variant_group": "dev-ext-en-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.24910728914542773,
+        0.2676261042064098,
+        0.4832666066481624
+      ],
+      "row_id": "dev-ext-en-3k-t03c",
+      "variant_group": "dev-ext-en-3k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.09975600415005723,
+        0.788810910767267,
+        0.11143308508267578
+      ],
+      "row_id": "dev-ext-en-3k-t04a",
+      "variant_group": "dev-ext-en-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.27599474189899786,
+        0.5196778014759431,
+        0.204327456625059
+      ],
+      "row_id": "dev-ext-en-3k-t04b",
+      "variant_group": "dev-ext-en-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.09475085858860806,
+        0.7860231131006776,
+        0.11922602831071434
+      ],
+      "row_id": "dev-ext-en-3k-t04c",
+      "variant_group": "dev-ext-en-3k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.09381655648668429,
+        0.06510718694163146,
+        0.6500957751768697,
+        0.060023758846901316,
+        0.035389524582154226,
+        0.030964868750474363,
+        0.03155782320159034,
+        0.033044506013694304
+      ],
+      "row_id": "dev-ext-en-8k-t01a",
+      "variant_group": "dev-ext-en-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.7061160284222558,
+        0.06180287878519246,
+        0.0512046221346388,
+        0.044693768653694274,
+        0.03685150451340812,
+        0.0335967954034,
+        0.031688125490780816,
+        0.034046276596629656
+      ],
+      "row_id": "dev-ext-en-8k-t01b",
+      "variant_group": "dev-ext-en-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.08378537233610413,
+        0.0703420177891066,
+        0.6612726109840574,
+        0.06117036105564459,
+        0.03313818785447233,
+        0.028332635216462485,
+        0.030250798309384135,
+        0.031708016454768194
+      ],
+      "row_id": "dev-ext-en-8k-t01c",
+      "variant_group": "dev-ext-en-8k-t01"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "en",
+      "pred": 6,
+      "probs": [
+        0.03121982464945068,
+        0.01611663070995163,
+        0.012524294166518799,
+        0.012977871065190485,
+        0.040887077664267565,
+        0.1363605096192738,
+        0.4177362560198979,
+        0.33217753610544914
+      ],
+      "row_id": "dev-ext-en-8k-t02a",
+      "variant_group": "dev-ext-en-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "en",
+      "pred": 4,
+      "probs": [
+        0.061168445603968516,
+        0.03745037319634801,
+        0.03337312343441077,
+        0.27734695946731786,
+        0.42494616261735313,
+        0.10097455669055433,
+        0.04130167818423902,
+        0.02343870080580842
+      ],
+      "row_id": "dev-ext-en-8k-t02b",
+      "variant_group": "dev-ext-en-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "en",
+      "pred": 6,
+      "probs": [
+        0.04789965163350755,
+        0.02698630695105551,
+        0.020895041375195888,
+        0.021053350822427715,
+        0.09298328611263446,
+        0.20284761155062234,
+        0.31410451337110507,
+        0.27323023818345143
+      ],
+      "row_id": "dev-ext-en-8k-t02c",
+      "variant_group": "dev-ext-en-8k-t02"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.10553847459254488,
+        0.0639337321397562,
+        0.6529304019524178,
+        0.07805862466183845,
+        0.028299282640580386,
+        0.022572622977226328,
+        0.024235327700517364,
+        0.02443153333511859
+      ],
+      "row_id": "dev-ext-en-8k-t03a",
+      "variant_group": "dev-ext-en-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.10031279495736901,
+        0.04392935643350181,
+        0.0392243798499731,
+        0.03286461907667862,
+        0.03334061592670232,
+        0.6904143349627577,
+        0.03054521571185683,
+        0.02936868308116056
+      ],
+      "row_id": "dev-ext-en-8k-t03b",
+      "variant_group": "dev-ext-en-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.1020544239818665,
+        0.07112423530894281,
+        0.6040007217382567,
+        0.074560899120069,
+        0.04091557061990441,
+        0.03421193319029052,
+        0.0349021440627587,
+        0.038230071977911416
+      ],
+      "row_id": "dev-ext-en-8k-t03c",
+      "variant_group": "dev-ext-en-8k-t03"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.042675657012398324,
+        0.21208628708368737,
+        0.23124817093888927,
+        0.23442837630012886,
+        0.21454585387964353,
+        0.020903896914965497,
+        0.016939998315794482,
+        0.027171759554492587
+      ],
+      "row_id": "dev-ext-en-8k-t04a",
+      "variant_group": "dev-ext-en-8k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "en",
+      "pred": 6,
+      "probs": [
+        0.02614250596601852,
+        0.018060480992872305,
+        0.01492396766665898,
+        0.019717567589145474,
+        0.1432856833150615,
+        0.2486715529817756,
+        0.27850025633363296,
+        0.25069798515483466
+      ],
+      "row_id": "dev-ext-en-8k-t04b",
+      "variant_group": "dev-ext-en-8k-t04"
+    },
+    {
+      "family": "extraction_paraphrase",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.06275653743919116,
+        0.1571773209362694,
+        0.2653562567650248,
+        0.26877566733413516,
+        0.16888529802261362,
+        0.02389120018312694,
+        0.023725571716568368,
+        0.029432147603070537
+      ],
+      "row_id": "dev-ext-en-8k-t04c",
+      "variant_group": "dev-ext-en-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.48011166711922665,
+        0.5198883328807733
+      ],
+      "row_id": "dev-cmp-es-2k-t01a",
+      "variant_group": "dev-cmp-es-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.48014433838051246,
+        0.5198556616194876
+      ],
+      "row_id": "dev-cmp-es-2k-t01b",
+      "variant_group": "dev-cmp-es-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4792271092002677,
+        0.5207728907997323
+      ],
+      "row_id": "dev-cmp-es-2k-t01c",
+      "variant_group": "dev-cmp-es-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5447029489933364,
+        0.4552970510066636
+      ],
+      "row_id": "dev-cmp-es-2k-t02a",
+      "variant_group": "dev-cmp-es-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5683101802262401,
+        0.43168981977375986
+      ],
+      "row_id": "dev-cmp-es-2k-t02b",
+      "variant_group": "dev-cmp-es-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.4834169792521636,
+        0.5165830207478364
+      ],
+      "row_id": "dev-cmp-es-2k-t02c",
+      "variant_group": "dev-cmp-es-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5484680866497719,
+        0.45153191335022813
+      ],
+      "row_id": "dev-cmp-es-2k-t03a",
+      "variant_group": "dev-cmp-es-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5663656790908634,
+        0.43363432090913656
+      ],
+      "row_id": "dev-cmp-es-2k-t03b",
+      "variant_group": "dev-cmp-es-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5301618485690901,
+        0.4698381514309099
+      ],
+      "row_id": "dev-cmp-es-2k-t03c",
+      "variant_group": "dev-cmp-es-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6198492198686618,
+        0.38015078013133813
+      ],
+      "row_id": "dev-cmp-es-2k-t04a",
+      "variant_group": "dev-cmp-es-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6194043981918278,
+        0.3805956018081722
+      ],
+      "row_id": "dev-cmp-es-2k-t04b",
+      "variant_group": "dev-cmp-es-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6220745012645161,
+        0.3779254987354839
+      ],
+      "row_id": "dev-cmp-es-2k-t04c",
+      "variant_group": "dev-cmp-es-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5325104828979046,
+        0.4674895171020954
+      ],
+      "row_id": "dev-cmp-es-2k-p01a",
+      "variant_group": "dev-cmp-es-2k-p01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5319278331944344,
+        0.4680721668055656
+      ],
+      "row_id": "dev-cmp-es-2k-p01b",
+      "variant_group": "dev-cmp-es-2k-p01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5973807120135222,
+        0.4026192879864779
+      ],
+      "row_id": "dev-cmp-es-2k-p02a",
+      "variant_group": "dev-cmp-es-2k-p02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5968314666696205,
+        0.4031685333303795
+      ],
+      "row_id": "dev-cmp-es-2k-p02b",
+      "variant_group": "dev-cmp-es-2k-p02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.45305459560341194,
+        0.3317766564822507,
+        0.21516874791433746
+      ],
+      "row_id": "dev-cmp-es-3k-t01a",
+      "variant_group": "dev-cmp-es-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.45788441832964843,
+        0.32968510689418523,
+        0.21243047477616636
+      ],
+      "row_id": "dev-cmp-es-3k-t01b",
+      "variant_group": "dev-cmp-es-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4381406948649119,
+        0.3453572071788532,
+        0.21650209795623487
+      ],
+      "row_id": "dev-cmp-es-3k-t01c",
+      "variant_group": "dev-cmp-es-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.39733113362120515,
+        0.3428310629866047,
+        0.25983780339219015
+      ],
+      "row_id": "dev-cmp-es-3k-t02a",
+      "variant_group": "dev-cmp-es-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.40061748155241,
+        0.3426288752377109,
+        0.25675364320987903
+      ],
+      "row_id": "dev-cmp-es-3k-t02b",
+      "variant_group": "dev-cmp-es-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4187444581899348,
+        0.32394142658918806,
+        0.2573141152208772
+      ],
+      "row_id": "dev-cmp-es-3k-t02c",
+      "variant_group": "dev-cmp-es-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.49159419011477334,
+        0.3247889591450573,
+        0.18361685074016926
+      ],
+      "row_id": "dev-cmp-es-3k-t03a",
+      "variant_group": "dev-cmp-es-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5033746871193409,
+        0.3202581760675858,
+        0.17636713681307337
+      ],
+      "row_id": "dev-cmp-es-3k-t03b",
+      "variant_group": "dev-cmp-es-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.49899787307750787,
+        0.2677044540444767,
+        0.23329767287801537
+      ],
+      "row_id": "dev-cmp-es-3k-t03c",
+      "variant_group": "dev-cmp-es-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.34098698712911635,
+        0.38036020171715734,
+        0.27865281115372625
+      ],
+      "row_id": "dev-cmp-es-3k-t04a",
+      "variant_group": "dev-cmp-es-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.34280762562803196,
+        0.37887186682741336,
+        0.2783205075445548
+      ],
+      "row_id": "dev-cmp-es-3k-t04b",
+      "variant_group": "dev-cmp-es-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.3550038561978739,
+        0.33153599143543006,
+        0.313460152366696
+      ],
+      "row_id": "dev-cmp-es-3k-t04c",
+      "variant_group": "dev-cmp-es-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.14196558959587785,
+        0.0712591183744917,
+        0.0976460310459309,
+        0.129064365401843,
+        0.1104734818377394,
+        0.16080921852278032,
+        0.14058724899997824,
+        0.14819494622135865
+      ],
+      "row_id": "dev-cmp-es-8k-t01a",
+      "variant_group": "dev-cmp-es-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.14443732192012804,
+        0.07039461928723402,
+        0.09630123628940235,
+        0.12814890676945437,
+        0.1105800148700617,
+        0.16116557002395074,
+        0.14095219905058742,
+        0.14802013178918141
+      ],
+      "row_id": "dev-cmp-es-8k-t01b",
+      "variant_group": "dev-cmp-es-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.1517454078615464,
+        0.07239919124154467,
+        0.11683154260359019,
+        0.15147000632801938,
+        0.11972313903926284,
+        0.1586096422352566,
+        0.10916559293288915,
+        0.12005547775789085
+      ],
+      "row_id": "dev-cmp-es-8k-t01c",
+      "variant_group": "dev-cmp-es-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.12472775591483466,
+        0.09657992335537885,
+        0.10907288165965466,
+        0.16184577633721697,
+        0.106162593814178,
+        0.1535634129161835,
+        0.11446451270003133,
+        0.13358314330252205
+      ],
+      "row_id": "dev-cmp-es-8k-t02a",
+      "variant_group": "dev-cmp-es-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.12438883370990471,
+        0.09678609237598255,
+        0.11183404074494266,
+        0.16148218214817817,
+        0.10605692050585803,
+        0.15308998918119177,
+        0.11362153410374182,
+        0.13274040723020034
+      ],
+      "row_id": "dev-cmp-es-8k-t02b",
+      "variant_group": "dev-cmp-es-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.1864326339433201,
+        0.06995634881571274,
+        0.11319232540459011,
+        0.13816199346761157,
+        0.12237515359699826,
+        0.13943935282696857,
+        0.10816624930401708,
+        0.12227594264078155
+      ],
+      "row_id": "dev-cmp-es-8k-t02c",
+      "variant_group": "dev-cmp-es-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.07976459149039876,
+        0.07756949128583383,
+        0.1460249001621444,
+        0.11581591766853061,
+        0.13602836418448444,
+        0.18108704347308963,
+        0.13702411900023234,
+        0.12668557273528594
+      ],
+      "row_id": "dev-cmp-es-8k-t03a",
+      "variant_group": "dev-cmp-es-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.08316526211491061,
+        0.080176715455702,
+        0.1533534862716694,
+        0.1197422935554223,
+        0.100258289894968,
+        0.1877347085019683,
+        0.14267227241289449,
+        0.13289697179246496
+      ],
+      "row_id": "dev-cmp-es-8k-t03b",
+      "variant_group": "dev-cmp-es-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.13881631655799037,
+        0.13888682149105583,
+        0.11231798867664244,
+        0.08725633695299856,
+        0.13235558663960983,
+        0.15201810479945654,
+        0.12167953779020468,
+        0.11666930709204175
+      ],
+      "row_id": "dev-cmp-es-8k-t03c",
+      "variant_group": "dev-cmp-es-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.10704507898310853,
+        0.10697691034495091,
+        0.16344866434798513,
+        0.09870813287212396,
+        0.14348345301055532,
+        0.14466649991969965,
+        0.11505694921534146,
+        0.12061431130623496
+      ],
+      "row_id": "dev-cmp-es-8k-t04a",
+      "variant_group": "dev-cmp-es-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.10785660593068212,
+        0.10465897047306172,
+        0.15783083638686152,
+        0.09822311735291736,
+        0.14488786297244663,
+        0.1460641445869613,
+        0.11707102408922368,
+        0.1234074382078457
+      ],
+      "row_id": "dev-cmp-es-8k-t04b",
+      "variant_group": "dev-cmp-es-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.10870277736286318,
+        0.0915049946163074,
+        0.15485136131186775,
+        0.09469829839844544,
+        0.14875358629596067,
+        0.1476723755462374,
+        0.12026536757221376,
+        0.13355123889610443
+      ],
+      "row_id": "dev-cmp-es-8k-t04c",
+      "variant_group": "dev-cmp-es-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5390759335721107,
+        0.4609240664278893
+      ],
+      "row_id": "dev-cmp-en-2k-t01a",
+      "variant_group": "dev-cmp-en-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5382342214369297,
+        0.4617657785630704
+      ],
+      "row_id": "dev-cmp-en-2k-t01b",
+      "variant_group": "dev-cmp-en-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5298057888915316,
+        0.4701942111084684
+      ],
+      "row_id": "dev-cmp-en-2k-t01c",
+      "variant_group": "dev-cmp-en-2k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5299921891453372,
+        0.47000781085466287
+      ],
+      "row_id": "dev-cmp-en-2k-t02a",
+      "variant_group": "dev-cmp-en-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.53048900265724,
+        0.46951099734276003
+      ],
+      "row_id": "dev-cmp-en-2k-t02b",
+      "variant_group": "dev-cmp-en-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5022443978244969,
+        0.4977556021755031
+      ],
+      "row_id": "dev-cmp-en-2k-t02c",
+      "variant_group": "dev-cmp-en-2k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5461061606720238,
+        0.4538938393279762
+      ],
+      "row_id": "dev-cmp-en-2k-t03a",
+      "variant_group": "dev-cmp-en-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5455639575864388,
+        0.45443604241356117
+      ],
+      "row_id": "dev-cmp-en-2k-t03b",
+      "variant_group": "dev-cmp-en-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5448003314282854,
+        0.4551996685717145
+      ],
+      "row_id": "dev-cmp-en-2k-t03c",
+      "variant_group": "dev-cmp-en-2k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5114888886434704,
+        0.48851111135652964
+      ],
+      "row_id": "dev-cmp-en-2k-t04a",
+      "variant_group": "dev-cmp-en-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5110761281621002,
+        0.48892387183789976
+      ],
+      "row_id": "dev-cmp-en-2k-t04b",
+      "variant_group": "dev-cmp-en-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5163727853320754,
+        0.4836272146679246
+      ],
+      "row_id": "dev-cmp-en-2k-t04c",
+      "variant_group": "dev-cmp-en-2k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4815419786698429,
+        0.5184580213301571
+      ],
+      "row_id": "dev-cmp-en-2k-p01a",
+      "variant_group": "dev-cmp-en-2k-p01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.48053096112402155,
+        0.5194690388759784
+      ],
+      "row_id": "dev-cmp-en-2k-p01b",
+      "variant_group": "dev-cmp-en-2k-p01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5252518208949565,
+        0.4747481791050436
+      ],
+      "row_id": "dev-cmp-en-2k-p02a",
+      "variant_group": "dev-cmp-en-2k-p02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5229644623441649,
+        0.4770355376558351
+      ],
+      "row_id": "dev-cmp-en-2k-p02b",
+      "variant_group": "dev-cmp-en-2k-p02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.3140860283385319,
+        0.30669495347050557,
+        0.3792190181909625
+      ],
+      "row_id": "dev-cmp-en-3k-t01a",
+      "variant_group": "dev-cmp-en-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.31531358193989034,
+        0.3072042153745504,
+        0.37748220268555926
+      ],
+      "row_id": "dev-cmp-en-3k-t01b",
+      "variant_group": "dev-cmp-en-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.31633054398622035,
+        0.30875627300851705,
+        0.37491318300526266
+      ],
+      "row_id": "dev-cmp-en-3k-t01c",
+      "variant_group": "dev-cmp-en-3k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.3455114628453557,
+        0.34028089622594504,
+        0.3142076409286992
+      ],
+      "row_id": "dev-cmp-en-3k-t02a",
+      "variant_group": "dev-cmp-en-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.3445502073309057,
+        0.3406713654477394,
+        0.3147784272213549
+      ],
+      "row_id": "dev-cmp-en-3k-t02b",
+      "variant_group": "dev-cmp-en-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.34398960883655955,
+        0.3389972045545791,
+        0.3170131866088614
+      ],
+      "row_id": "dev-cmp-en-3k-t02c",
+      "variant_group": "dev-cmp-en-3k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.3534675125214929,
+        0.340657951503441,
+        0.3058745359750662
+      ],
+      "row_id": "dev-cmp-en-3k-t03a",
+      "variant_group": "dev-cmp-en-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.3526923429576032,
+        0.34013944596855994,
+        0.3071682110738369
+      ],
+      "row_id": "dev-cmp-en-3k-t03b",
+      "variant_group": "dev-cmp-en-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.32551887720441147,
+        0.35571556898275464,
+        0.318765553812834
+      ],
+      "row_id": "dev-cmp-en-3k-t03c",
+      "variant_group": "dev-cmp-en-3k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.36920171621777764,
+        0.3222068545296455,
+        0.30859142925257677
+      ],
+      "row_id": "dev-cmp-en-3k-t04a",
+      "variant_group": "dev-cmp-en-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.364411076603022,
+        0.32484686899557114,
+        0.3107420544014069
+      ],
+      "row_id": "dev-cmp-en-3k-t04b",
+      "variant_group": "dev-cmp-en-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.3651215544923623,
+        0.31690064121529554,
+        0.3179778042923421
+      ],
+      "row_id": "dev-cmp-en-3k-t04c",
+      "variant_group": "dev-cmp-en-3k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.15077492165007914,
+        0.1340386050231536,
+        0.11724295167523156,
+        0.12190752851032027,
+        0.11180971951299419,
+        0.1126278930006722,
+        0.13153632804207757,
+        0.12006205258547148
+      ],
+      "row_id": "dev-cmp-en-8k-t01a",
+      "variant_group": "dev-cmp-en-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.15120648517687135,
+        0.13335002837751972,
+        0.11660706674848507,
+        0.12172382405462384,
+        0.11171608969580271,
+        0.1125428492704141,
+        0.13224315024410144,
+        0.1206105064321817
+      ],
+      "row_id": "dev-cmp-en-8k-t01b",
+      "variant_group": "dev-cmp-en-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.15419822263681832,
+        0.1607513301745612,
+        0.13287131589853,
+        0.10125025279871977,
+        0.08993418560380564,
+        0.09001131598163638,
+        0.12210141787518163,
+        0.14888195903074705
+      ],
+      "row_id": "dev-cmp-en-8k-t01c",
+      "variant_group": "dev-cmp-en-8k-t01"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.1502489528128395,
+        0.14821623335858045,
+        0.12410282846191206,
+        0.12847603535961696,
+        0.10372003390568507,
+        0.1078388756105167,
+        0.11342785378893776,
+        0.12396918670191151
+      ],
+      "row_id": "dev-cmp-en-8k-t02a",
+      "variant_group": "dev-cmp-en-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.14937641093961354,
+        0.14846843538887838,
+        0.12595277203293923,
+        0.12851178329577873,
+        0.10427407022526107,
+        0.10738199191373014,
+        0.11276228085211519,
+        0.12327225535168379
+      ],
+      "row_id": "dev-cmp-en-8k-t02b",
+      "variant_group": "dev-cmp-en-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.1545449714701456,
+        0.147317890098574,
+        0.11911115348462534,
+        0.12387812204955174,
+        0.10417416376395819,
+        0.10754590997074089,
+        0.11542244833007934,
+        0.12800534083232498
+      ],
+      "row_id": "dev-cmp-en-8k-t02c",
+      "variant_group": "dev-cmp-en-8k-t02"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.14158886546200902,
+        0.11329436161557811,
+        0.12419496806829466,
+        0.12925000615055215,
+        0.1065831208703895,
+        0.12063223757698105,
+        0.12750692002051137,
+        0.13694952023568413
+      ],
+      "row_id": "dev-cmp-en-8k-t03a",
+      "variant_group": "dev-cmp-en-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.14365279343049217,
+        0.11583910093495935,
+        0.12656345484442988,
+        0.13066326788441898,
+        0.1060307328941598,
+        0.11969802711160905,
+        0.1214524277560459,
+        0.1361001951438848
+      ],
+      "row_id": "dev-cmp-en-8k-t03b",
+      "variant_group": "dev-cmp-en-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.1264294055580904,
+        0.09497301826090636,
+        0.1265683266847735,
+        0.1321004196248655,
+        0.11781739437256399,
+        0.13393506349466971,
+        0.12782346899747166,
+        0.14035290300665895
+      ],
+      "row_id": "dev-cmp-en-8k-t03c",
+      "variant_group": "dev-cmp-en-8k-t03"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.14773921698421363,
+        0.1187948874480717,
+        0.0981456116726416,
+        0.10726406989190496,
+        0.1365382805539245,
+        0.1554863932401737,
+        0.11639705157251,
+        0.11963448863655986
+      ],
+      "row_id": "dev-cmp-en-8k-t04a",
+      "variant_group": "dev-cmp-en-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.1479520534477311,
+        0.11861573508393583,
+        0.09768612817619836,
+        0.10684977811073207,
+        0.13564518561017178,
+        0.1549378157274178,
+        0.115250446778812,
+        0.12306285706500109
+      ],
+      "row_id": "dev-cmp-en-8k-t04b",
+      "variant_group": "dev-cmp-en-8k-t04"
+    },
+    {
+      "family": "attribute_comparison",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.14178456762609098,
+        0.1124569461231003,
+        0.12739994905238486,
+        0.108461207409834,
+        0.11497264849451103,
+        0.14055616414695518,
+        0.13303176363948885,
+        0.1213367535076348
+      ],
+      "row_id": "dev-cmp-en-8k-t04c",
+      "variant_group": "dev-cmp-en-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.40102948826797197,
+        0.598970511732028
+      ],
+      "row_id": "dev-dsc-es-2k-t01a",
+      "variant_group": "dev-dsc-es-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9316898049247867,
+        0.06831019507521337
+      ],
+      "row_id": "dev-dsc-es-2k-t01b",
+      "variant_group": "dev-dsc-es-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.3927820986547481,
+        0.6072179013452519
+      ],
+      "row_id": "dev-dsc-es-2k-t01c",
+      "variant_group": "dev-dsc-es-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.2682472171962142,
+        0.7317527828037859
+      ],
+      "row_id": "dev-dsc-es-2k-t02a",
+      "variant_group": "dev-dsc-es-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.14648941140960697,
+        0.853510588590393
+      ],
+      "row_id": "dev-dsc-es-2k-t02b",
+      "variant_group": "dev-dsc-es-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.29852852541294583,
+        0.7014714745870542
+      ],
+      "row_id": "dev-dsc-es-2k-t02c",
+      "variant_group": "dev-dsc-es-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.03861197358410107,
+        0.9613880264158989
+      ],
+      "row_id": "dev-dsc-es-2k-t03a",
+      "variant_group": "dev-dsc-es-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.35887671068127297,
+        0.6411232893187271
+      ],
+      "row_id": "dev-dsc-es-2k-t03b",
+      "variant_group": "dev-dsc-es-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.08796042087410845,
+        0.9120395791258916
+      ],
+      "row_id": "dev-dsc-es-2k-t03c",
+      "variant_group": "dev-dsc-es-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9800346281986545,
+        0.019965371801345475
+      ],
+      "row_id": "dev-dsc-es-2k-t04a",
+      "variant_group": "dev-dsc-es-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.0959249386268418,
+        0.9040750613731582
+      ],
+      "row_id": "dev-dsc-es-2k-t04b",
+      "variant_group": "dev-dsc-es-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9910488200973101,
+        0.008951179902689918
+      ],
+      "row_id": "dev-dsc-es-2k-t04c",
+      "variant_group": "dev-dsc-es-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.2400124987291394,
+        0.7599875012708606
+      ],
+      "row_id": "dev-dsc-es-2k-p01a",
+      "variant_group": "dev-dsc-es-2k-p01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.10920117891161454,
+        0.8907988210883855
+      ],
+      "row_id": "dev-dsc-es-2k-p01b",
+      "variant_group": "dev-dsc-es-2k-p01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9197042427003119,
+        0.08029575729968798
+      ],
+      "row_id": "dev-dsc-es-2k-p02a",
+      "variant_group": "dev-dsc-es-2k-p02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.20092546718526982,
+        0.7990745328147302
+      ],
+      "row_id": "dev-dsc-es-2k-p02b",
+      "variant_group": "dev-dsc-es-2k-p02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.3888740429834881,
+        0.22832406465868665,
+        0.3828018923578253
+      ],
+      "row_id": "dev-dsc-es-3k-t01a",
+      "variant_group": "dev-dsc-es-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5632663074184963,
+        0.12787239740952772,
+        0.30886129517197597
+      ],
+      "row_id": "dev-dsc-es-3k-t01b",
+      "variant_group": "dev-dsc-es-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.7432913372558563,
+        0.17100597875763376,
+        0.08570268398650992
+      ],
+      "row_id": "dev-dsc-es-3k-t01c",
+      "variant_group": "dev-dsc-es-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.33043216143564114,
+        0.448321674371656,
+        0.2212461641927028
+      ],
+      "row_id": "dev-dsc-es-3k-t02a",
+      "variant_group": "dev-dsc-es-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.37002882757871275,
+        0.15607212835247433,
+        0.47389904406881284
+      ],
+      "row_id": "dev-dsc-es-3k-t02b",
+      "variant_group": "dev-dsc-es-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.09247924682380512,
+        0.8440818738513273,
+        0.06343887932486769
+      ],
+      "row_id": "dev-dsc-es-3k-t02c",
+      "variant_group": "dev-dsc-es-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.38145377605588343,
+        0.5943626896494905,
+        0.024183534294626143
+      ],
+      "row_id": "dev-dsc-es-3k-t03a",
+      "variant_group": "dev-dsc-es-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.25404791972053076,
+        0.48135560236177216,
+        0.2645964779176971
+      ],
+      "row_id": "dev-dsc-es-3k-t03b",
+      "variant_group": "dev-dsc-es-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.3599396609941265,
+        0.6132957193298123,
+        0.02676461967606125
+      ],
+      "row_id": "dev-dsc-es-3k-t03c",
+      "variant_group": "dev-dsc-es-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9756086768283886,
+        0.01814219353220895,
+        0.006249129639402531
+      ],
+      "row_id": "dev-dsc-es-3k-t04a",
+      "variant_group": "dev-dsc-es-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.8697195497074885,
+        0.09328714804341728,
+        0.036993302249094154
+      ],
+      "row_id": "dev-dsc-es-3k-t04b",
+      "variant_group": "dev-dsc-es-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9713474925695358,
+        0.023732008136355693,
+        0.004920499294108524
+      ],
+      "row_id": "dev-dsc-es-3k-t04c",
+      "variant_group": "dev-dsc-es-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.22931168215033002,
+        0.06343794988583897,
+        0.4869228252396061,
+        0.08550905564537649,
+        0.056407210910963734,
+        0.02284178366987948,
+        0.03517259219175742,
+        0.020396900306247703
+      ],
+      "row_id": "dev-dsc-es-8k-t01a",
+      "variant_group": "dev-dsc-es-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.17438252116825315,
+        0.07880139505491089,
+        0.08304519134156756,
+        0.1353702260791851,
+        0.0342944036406956,
+        0.027396839032720537,
+        0.4492271374930773,
+        0.017482286189589854
+      ],
+      "row_id": "dev-dsc-es-8k-t01b",
+      "variant_group": "dev-dsc-es-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.2162584103157267,
+        0.06508827517489525,
+        0.2788552897845012,
+        0.16633229737613758,
+        0.07502539397099535,
+        0.06453982505295586,
+        0.054837311136295565,
+        0.07906319718849249
+      ],
+      "row_id": "dev-dsc-es-8k-t01c",
+      "variant_group": "dev-dsc-es-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "es",
+      "pred": 4,
+      "probs": [
+        0.003661000945910927,
+        0.021101959120361335,
+        0.0011013475090855846,
+        0.0039331616863283935,
+        0.9564057560855778,
+        0.002795641440853122,
+        0.0034160692187372057,
+        0.0075850639931455376
+      ],
+      "row_id": "dev-dsc-es-8k-t02a",
+      "variant_group": "dev-dsc-es-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.03513643381480696,
+        0.18113755192825115,
+        0.03295041510716551,
+        0.06939348468578076,
+        0.223845789697632,
+        0.14964756148126152,
+        0.2509647131008879,
+        0.0569240501842142
+      ],
+      "row_id": "dev-dsc-es-8k-t02b",
+      "variant_group": "dev-dsc-es-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "es",
+      "pred": 4,
+      "probs": [
+        0.006538352233464514,
+        0.013769400765508637,
+        0.007378818044102853,
+        0.005048860989053195,
+        0.9306446612392991,
+        0.007291836849842019,
+        0.005924827373266677,
+        0.023403242505463037
+      ],
+      "row_id": "dev-dsc-es-8k-t02c",
+      "variant_group": "dev-dsc-es-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.10290741895719814,
+        0.06171990831328783,
+        0.11015044382282042,
+        0.2707218117131384,
+        0.04324496354363023,
+        0.23845792599053395,
+        0.025908052324441835,
+        0.14688947533494914
+      ],
+      "row_id": "dev-dsc-es-8k-t03a",
+      "variant_group": "dev-dsc-es-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.03403841629082765,
+        0.6245240130936346,
+        0.07709616585904651,
+        0.10349251621354363,
+        0.03943845610920461,
+        0.06519631633922494,
+        0.01315685345010691,
+        0.04305726264441111
+      ],
+      "row_id": "dev-dsc-es-8k-t03b",
+      "variant_group": "dev-dsc-es-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.08354557731488409,
+        0.07898402194383751,
+        0.1067674297710319,
+        0.1279285557515857,
+        0.027177322006160413,
+        0.5164170012129308,
+        0.01644148896397132,
+        0.04273860303559834
+      ],
+      "row_id": "dev-dsc-es-8k-t03c",
+      "variant_group": "dev-dsc-es-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.21666962679495777,
+        0.020428086148373055,
+        0.006571502245861161,
+        0.5828272839818964,
+        0.005228245097294527,
+        0.006081526327828535,
+        0.008583676714279837,
+        0.15361005268950867
+      ],
+      "row_id": "dev-dsc-es-8k-t04a",
+      "variant_group": "dev-dsc-es-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.03767044407370353,
+        0.0204520217928042,
+        0.015393017172083088,
+        0.8002960024415845,
+        0.010023281119679171,
+        0.011103263099035664,
+        0.019120337792827253,
+        0.08594163250828257
+      ],
+      "row_id": "dev-dsc-es-8k-t04b",
+      "variant_group": "dev-dsc-es-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6139296578704917,
+        0.025712087284495706,
+        0.01017968802186,
+        0.1331260625888172,
+        0.008044790042026526,
+        0.012177964790136208,
+        0.01187761429303196,
+        0.18495213510914063
+      ],
+      "row_id": "dev-dsc-es-8k-t04c",
+      "variant_group": "dev-dsc-es-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4745868867976612,
+        0.5254131132023389
+      ],
+      "row_id": "dev-dsc-en-2k-t01a",
+      "variant_group": "dev-dsc-en-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6346090565970756,
+        0.36539094340292455
+      ],
+      "row_id": "dev-dsc-en-2k-t01b",
+      "variant_group": "dev-dsc-en-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.31369644359451654,
+        0.6863035564054836
+      ],
+      "row_id": "dev-dsc-en-2k-t01c",
+      "variant_group": "dev-dsc-en-2k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6574426688032672,
+        0.34255733119673293
+      ],
+      "row_id": "dev-dsc-en-2k-t02a",
+      "variant_group": "dev-dsc-en-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8191203993708368,
+        0.18087960062916322
+      ],
+      "row_id": "dev-dsc-en-2k-t02b",
+      "variant_group": "dev-dsc-en-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.6051553139852323,
+        0.3948446860147677
+      ],
+      "row_id": "dev-dsc-en-2k-t02c",
+      "variant_group": "dev-dsc-en-2k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3041342702597392,
+        0.6958657297402607
+      ],
+      "row_id": "dev-dsc-en-2k-t03a",
+      "variant_group": "dev-dsc-en-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3216945860374608,
+        0.6783054139625393
+      ],
+      "row_id": "dev-dsc-en-2k-t03b",
+      "variant_group": "dev-dsc-en-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.20821130022221415,
+        0.7917886997777858
+      ],
+      "row_id": "dev-dsc-en-2k-t03c",
+      "variant_group": "dev-dsc-en-2k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3246707550452753,
+        0.6753292449547248
+      ],
+      "row_id": "dev-dsc-en-2k-t04a",
+      "variant_group": "dev-dsc-en-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.44875864919777747,
+        0.5512413508022226
+      ],
+      "row_id": "dev-dsc-en-2k-t04b",
+      "variant_group": "dev-dsc-en-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.20492351949463783,
+        0.7950764805053622
+      ],
+      "row_id": "dev-dsc-en-2k-t04c",
+      "variant_group": "dev-dsc-en-2k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.17975938123947793,
+        0.8202406187605221
+      ],
+      "row_id": "dev-dsc-en-2k-p01a",
+      "variant_group": "dev-dsc-en-2k-p01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8093194403340437,
+        0.19068055966595637
+      ],
+      "row_id": "dev-dsc-en-2k-p01b",
+      "variant_group": "dev-dsc-en-2k-p01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.22754073745037395,
+        0.772459262549626
+      ],
+      "row_id": "dev-dsc-en-2k-p02a",
+      "variant_group": "dev-dsc-en-2k-p02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3223108155512931,
+        0.677689184448707
+      ],
+      "row_id": "dev-dsc-en-2k-p02b",
+      "variant_group": "dev-dsc-en-2k-p02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3289540125941433,
+        0.549382417628985,
+        0.12166356977687173
+      ],
+      "row_id": "dev-dsc-en-3k-t01a",
+      "variant_group": "dev-dsc-en-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.07901275772577673,
+        0.8655899150422195,
+        0.055397327232003774
+      ],
+      "row_id": "dev-dsc-en-3k-t01b",
+      "variant_group": "dev-dsc-en-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.42779053552469776,
+        0.4496141018042646,
+        0.1225953626710376
+      ],
+      "row_id": "dev-dsc-en-3k-t01c",
+      "variant_group": "dev-dsc-en-3k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4164037587479371,
+        0.332513114258677,
+        0.25108312699338586
+      ],
+      "row_id": "dev-dsc-en-3k-t02a",
+      "variant_group": "dev-dsc-en-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.09794817686894303,
+        0.1546104400365202,
+        0.7474413830945369
+      ],
+      "row_id": "dev-dsc-en-3k-t02b",
+      "variant_group": "dev-dsc-en-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.46358725523410077,
+        0.2840876956384457,
+        0.25232504912745357
+      ],
+      "row_id": "dev-dsc-en-3k-t02c",
+      "variant_group": "dev-dsc-en-3k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.20009043807710092,
+        0.7604456752489086,
+        0.039463886673990464
+      ],
+      "row_id": "dev-dsc-en-3k-t03a",
+      "variant_group": "dev-dsc-en-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.18464625809692656,
+        0.7860283148882303,
+        0.029325427014843093
+      ],
+      "row_id": "dev-dsc-en-3k-t03b",
+      "variant_group": "dev-dsc-en-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.16802110880728519,
+        0.7762692272131034,
+        0.05570966397961146
+      ],
+      "row_id": "dev-dsc-en-3k-t03c",
+      "variant_group": "dev-dsc-en-3k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.2078891547788471,
+        0.10089273343472453,
+        0.6912181117864284
+      ],
+      "row_id": "dev-dsc-en-3k-t04a",
+      "variant_group": "dev-dsc-en-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.28316552709102494,
+        0.10257843867327672,
+        0.6142560342356984
+      ],
+      "row_id": "dev-dsc-en-3k-t04b",
+      "variant_group": "dev-dsc-en-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.14638169810102084,
+        0.07618969568181386,
+        0.7774286062171654
+      ],
+      "row_id": "dev-dsc-en-3k-t04c",
+      "variant_group": "dev-dsc-en-3k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.09588750359798284,
+        0.18331851161812296,
+        0.09222635779017756,
+        0.07868561723237504,
+        0.08647872763400824,
+        0.06916836769982444,
+        0.0430549372038381,
+        0.35117997722367084
+      ],
+      "row_id": "dev-dsc-en-8k-t01a",
+      "variant_group": "dev-dsc-en-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.07162300427461667,
+        0.2876839030053551,
+        0.2690745315877919,
+        0.07374242228037807,
+        0.12985642963510188,
+        0.090707713078909,
+        0.04379952256704895,
+        0.033512473570798444
+      ],
+      "row_id": "dev-dsc-en-8k-t01b",
+      "variant_group": "dev-dsc-en-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.0930900684918583,
+        0.18642856952023848,
+        0.1039016327296483,
+        0.08183674442997839,
+        0.08209344795540663,
+        0.08840058553820905,
+        0.044225739151717174,
+        0.32002321218294366
+      ],
+      "row_id": "dev-dsc-en-8k-t01c",
+      "variant_group": "dev-dsc-en-8k-t01"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.08666546567645429,
+        0.27379191545177156,
+        0.06429045531900962,
+        0.09113453040394923,
+        0.1813635153457482,
+        0.05486025611141241,
+        0.12360851075877911,
+        0.12428535093287557
+      ],
+      "row_id": "dev-dsc-en-8k-t02a",
+      "variant_group": "dev-dsc-en-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 0,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.16546967594633064,
+        0.1278507125662852,
+        0.11070177310009119,
+        0.08023082393241307,
+        0.1233664873146411,
+        0.17352783752130116,
+        0.1041269291719685,
+        0.1147257604469691
+      ],
+      "row_id": "dev-dsc-en-8k-t02b",
+      "variant_group": "dev-dsc-en-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.08514105575620487,
+        0.27618011006226884,
+        0.0580858148850822,
+        0.10210938470423962,
+        0.14584820125430337,
+        0.05084197378912316,
+        0.11103250753181382,
+        0.17076095201696415
+      ],
+      "row_id": "dev-dsc-en-8k-t02c",
+      "variant_group": "dev-dsc-en-8k-t02"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.017857719217817872,
+        0.07012213334965677,
+        0.6803044347641153,
+        0.06255558583172441,
+        0.09481059833443704,
+        0.006052831671374825,
+        0.02565536498031169,
+        0.042641331850562035
+      ],
+      "row_id": "dev-dsc-en-8k-t03a",
+      "variant_group": "dev-dsc-en-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.03575074609325102,
+        0.08197310253195751,
+        0.04198174923498436,
+        0.7459163817901545,
+        0.031092735278797214,
+        0.009247815115058745,
+        0.03371915523155874,
+        0.02031831472423787
+      ],
+      "row_id": "dev-dsc-en-8k-t03b",
+      "variant_group": "dev-dsc-en-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.016603654532409005,
+        0.06974143008953934,
+        0.6878743776989507,
+        0.06025005048594354,
+        0.09068775363933412,
+        0.006297536477616322,
+        0.022240224060482955,
+        0.04630497301572411
+      ],
+      "row_id": "dev-dsc-en-8k-t03c",
+      "variant_group": "dev-dsc-en-8k-t03"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 6,
+      "probs": [
+        0.032092116315896126,
+        0.022698591775428177,
+        0.16816068943259818,
+        0.14125936098158015,
+        0.08219940745443449,
+        0.07816371471290111,
+        0.395723575908763,
+        0.07970254341839879
+      ],
+      "row_id": "dev-dsc-en-8k-t04a",
+      "variant_group": "dev-dsc-en-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.14298334996231443,
+        0.033874432990208814,
+        0.1606348722324451,
+        0.04416779317092755,
+        0.08112998697530362,
+        0.11446273632409935,
+        0.20747758938436284,
+        0.21526923896033826
+      ],
+      "row_id": "dev-dsc-en-8k-t04b",
+      "variant_group": "dev-dsc-en-8k-t04"
+    },
+    {
+      "family": "description_classification",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 6,
+      "probs": [
+        0.043929471307215855,
+        0.024626072160069467,
+        0.13350581733901512,
+        0.12692389787393482,
+        0.10993457420755826,
+        0.10171194400398269,
+        0.3660478283105744,
+        0.09332039479764932
+      ],
+      "row_id": "dev-dsc-en-8k-t04c",
+      "variant_group": "dev-dsc-en-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9675941124516757,
+        0.032405887548324415
+      ],
+      "row_id": "dev-inf-es-2k-t01a",
+      "variant_group": "dev-inf-es-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6574953279206257,
+        0.3425046720793744
+      ],
+      "row_id": "dev-inf-es-2k-t01b",
+      "variant_group": "dev-inf-es-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9821238943978837,
+        0.017876105602116357
+      ],
+      "row_id": "dev-inf-es-2k-t01c",
+      "variant_group": "dev-inf-es-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9978023182885171,
+        0.002197681711482955
+      ],
+      "row_id": "dev-inf-es-2k-t02a",
+      "variant_group": "dev-inf-es-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9903319056404642,
+        0.009668094359535646
+      ],
+      "row_id": "dev-inf-es-2k-t02b",
+      "variant_group": "dev-inf-es-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.990859437323412,
+        0.009140562676588016
+      ],
+      "row_id": "dev-inf-es-2k-t02c",
+      "variant_group": "dev-inf-es-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9633891992394243,
+        0.036610800760575615
+      ],
+      "row_id": "dev-inf-es-2k-t03a",
+      "variant_group": "dev-inf-es-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6533002222326145,
+        0.3466997777673855
+      ],
+      "row_id": "dev-inf-es-2k-t03b",
+      "variant_group": "dev-inf-es-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9575371399631459,
+        0.04246286003685413
+      ],
+      "row_id": "dev-inf-es-2k-t03c",
+      "variant_group": "dev-inf-es-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9319219128751627,
+        0.06807808712483729
+      ],
+      "row_id": "dev-inf-es-2k-t04a",
+      "variant_group": "dev-inf-es-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9872076865099612,
+        0.012792313490038896
+      ],
+      "row_id": "dev-inf-es-2k-t04b",
+      "variant_group": "dev-inf-es-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.8791634282686153,
+        0.12083657173138464
+      ],
+      "row_id": "dev-inf-es-2k-t04c",
+      "variant_group": "dev-inf-es-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9837818185739662,
+        0.016218181426033866
+      ],
+      "row_id": "dev-inf-es-2k-p01a",
+      "variant_group": "dev-inf-es-2k-p01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.7418745136410951,
+        0.258125486358905
+      ],
+      "row_id": "dev-inf-es-2k-p01b",
+      "variant_group": "dev-inf-es-2k-p01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9542058320805249,
+        0.04579416791947517
+      ],
+      "row_id": "dev-inf-es-2k-p02a",
+      "variant_group": "dev-inf-es-2k-p02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9566363178273811,
+        0.04336368217261884
+      ],
+      "row_id": "dev-inf-es-2k-p02b",
+      "variant_group": "dev-inf-es-2k-p02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9933595123793058,
+        0.004562470367153649,
+        0.0020780172535405403
+      ],
+      "row_id": "dev-inf-es-3k-t01a",
+      "variant_group": "dev-inf-es-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.004779383723491553,
+        0.006982103982928245,
+        0.9882385122935803
+      ],
+      "row_id": "dev-inf-es-3k-t01b",
+      "variant_group": "dev-inf-es-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9921612251541936,
+        0.0050960409223312995,
+        0.0027427339234750827
+      ],
+      "row_id": "dev-inf-es-3k-t01c",
+      "variant_group": "dev-inf-es-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9854201213051064,
+        0.006555668399500626,
+        0.008024210295393028
+      ],
+      "row_id": "dev-inf-es-3k-t02a",
+      "variant_group": "dev-inf-es-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.00558280256683492,
+        0.006019871197496559,
+        0.9883973262356686
+      ],
+      "row_id": "dev-inf-es-3k-t02b",
+      "variant_group": "dev-inf-es-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9687023915411273,
+        0.011216233621317939,
+        0.0200813748375548
+      ],
+      "row_id": "dev-inf-es-3k-t02c",
+      "variant_group": "dev-inf-es-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.976953491826943,
+        0.021409234031518037,
+        0.0016372741415388201
+      ],
+      "row_id": "dev-inf-es-3k-t03a",
+      "variant_group": "dev-inf-es-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9770718368798662,
+        0.021262297612278824,
+        0.0016658655078550133
+      ],
+      "row_id": "dev-inf-es-3k-t03b",
+      "variant_group": "dev-inf-es-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9685157100956661,
+        0.029366036064733744,
+        0.00211825383960022
+      ],
+      "row_id": "dev-inf-es-3k-t03c",
+      "variant_group": "dev-inf-es-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.7509333216024138,
+        0.24374214117417706,
+        0.005324537223409143
+      ],
+      "row_id": "dev-inf-es-3k-t04a",
+      "variant_group": "dev-inf-es-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.9332177958953992,
+        0.06424111579501326,
+        0.00254108830958746
+      ],
+      "row_id": "dev-inf-es-3k-t04b",
+      "variant_group": "dev-inf-es-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5235922630021498,
+        0.4439904530785431,
+        0.03241728391930706
+      ],
+      "row_id": "dev-inf-es-3k-t04c",
+      "variant_group": "dev-inf-es-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 7,
+      "probs": [
+        0.1427119313458039,
+        0.15442980789510785,
+        0.13157326897250915,
+        0.058479573463280164,
+        0.07543947712537391,
+        0.08335764727245566,
+        0.11334464955032142,
+        0.24066364437514787
+      ],
+      "row_id": "dev-inf-es-8k-t01a",
+      "variant_group": "dev-inf-es-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "es",
+      "pred": 4,
+      "probs": [
+        0.1381553086346492,
+        0.15020598847580474,
+        0.13646186568776195,
+        0.07062597284260395,
+        0.18798209822486284,
+        0.10197439781424038,
+        0.12176702086381197,
+        0.09282734745626503
+      ],
+      "row_id": "dev-inf-es-8k-t01b",
+      "variant_group": "dev-inf-es-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 7,
+      "probs": [
+        0.04895781460036592,
+        0.04435321877997702,
+        0.08282869894014157,
+        0.030988824147427606,
+        0.02952223221773087,
+        0.06731000168353184,
+        0.08422689374157792,
+        0.6118123158892472
+      ],
+      "row_id": "dev-inf-es-8k-t01c",
+      "variant_group": "dev-inf-es-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.0362198158057312,
+        0.05801646530983275,
+        0.03630639005234668,
+        0.03315520378623936,
+        0.04368654228566728,
+        0.3328646806068047,
+        0.2560656565730062,
+        0.20368524558037193
+      ],
+      "row_id": "dev-inf-es-8k-t02a",
+      "variant_group": "dev-inf-es-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.033340576525623014,
+        0.024981545007818615,
+        0.41197110241771834,
+        0.04491558548819031,
+        0.04445211154627232,
+        0.014407991971493802,
+        0.27265938652024446,
+        0.1532717005226391
+      ],
+      "row_id": "dev-inf-es-8k-t02b",
+      "variant_group": "dev-inf-es-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 6,
+      "probs": [
+        0.05003723860732377,
+        0.09476491030238256,
+        0.040931280161970215,
+        0.013954768086144103,
+        0.05881839583309838,
+        0.2868516363776402,
+        0.3732445982344923,
+        0.08139717239694845
+      ],
+      "row_id": "dev-inf-es-8k-t02c",
+      "variant_group": "dev-inf-es-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.07963050326481705,
+        0.03637978165883068,
+        0.15902335432547116,
+        0.11188273080528399,
+        0.04919895733993574,
+        0.4101087905993268,
+        0.14341500288506984,
+        0.010360879121264707
+      ],
+      "row_id": "dev-inf-es-8k-t03a",
+      "variant_group": "dev-inf-es-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.07291965001147009,
+        0.37981329863489277,
+        0.16992990037591268,
+        0.10689220110495667,
+        0.06466077027686419,
+        0.051691642768022,
+        0.14278031766764585,
+        0.011312219160235736
+      ],
+      "row_id": "dev-inf-es-8k-t03b",
+      "variant_group": "dev-inf-es-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.1429862378487533,
+        0.049975730946829035,
+        0.1389150099644008,
+        0.1257072140353385,
+        0.055262844568941746,
+        0.3197421813452001,
+        0.1316758364408808,
+        0.0357349448496557
+      ],
+      "row_id": "dev-inf-es-8k-t03c",
+      "variant_group": "dev-inf-es-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.03858096744509386,
+        0.03482274012856506,
+        0.7819807008877692,
+        0.01848284253657904,
+        0.009136606974395044,
+        0.04924088807199831,
+        0.05311557989212834,
+        0.014639674063471279
+      ],
+      "row_id": "dev-inf-es-8k-t04a",
+      "variant_group": "dev-inf-es-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "es",
+      "pred": 3,
+      "probs": [
+        0.028843355196314032,
+        0.0478321063280429,
+        0.029145162279883067,
+        0.8065394692469604,
+        0.008550150490606204,
+        0.01937587687848266,
+        0.04977249607260149,
+        0.009941383507109292
+      ],
+      "row_id": "dev-inf-es-8k-t04b",
+      "variant_group": "dev-inf-es-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.05647774448942547,
+        0.11264198730070929,
+        0.391190211748529,
+        0.03605711712748036,
+        0.028165219406145345,
+        0.16008803262773566,
+        0.1547160323375743,
+        0.06066365496240048
+      ],
+      "row_id": "dev-inf-es-8k-t04c",
+      "variant_group": "dev-inf-es-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.22314446779043848,
+        0.7768555322095616
+      ],
+      "row_id": "dev-inf-en-2k-t01a",
+      "variant_group": "dev-inf-en-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.9308484511440205,
+        0.06915154885597966
+      ],
+      "row_id": "dev-inf-en-2k-t01b",
+      "variant_group": "dev-inf-en-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.9115585161813402,
+        0.08844148381865972
+      ],
+      "row_id": "dev-inf-en-2k-t01c",
+      "variant_group": "dev-inf-en-2k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8675730181123734,
+        0.1324269818876267
+      ],
+      "row_id": "dev-inf-en-2k-t02a",
+      "variant_group": "dev-inf-en-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3673214373018249,
+        0.6326785626981751
+      ],
+      "row_id": "dev-inf-en-2k-t02b",
+      "variant_group": "dev-inf-en-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.714169823559304,
+        0.2858301764406961
+      ],
+      "row_id": "dev-inf-en-2k-t02c",
+      "variant_group": "dev-inf-en-2k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.9198256854573515,
+        0.08017431454264841
+      ],
+      "row_id": "dev-inf-en-2k-t03a",
+      "variant_group": "dev-inf-en-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.7698475087634701,
+        0.23015249123652995
+      ],
+      "row_id": "dev-inf-en-2k-t03b",
+      "variant_group": "dev-inf-en-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.965122475873669,
+        0.034877524126330973
+      ],
+      "row_id": "dev-inf-en-2k-t03c",
+      "variant_group": "dev-inf-en-2k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8002739743377378,
+        0.1997260256622622
+      ],
+      "row_id": "dev-inf-en-2k-t04a",
+      "variant_group": "dev-inf-en-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.7980381457081706,
+        0.20196185429182942
+      ],
+      "row_id": "dev-inf-en-2k-t04b",
+      "variant_group": "dev-inf-en-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8878746372265343,
+        0.11212536277346569
+      ],
+      "row_id": "dev-inf-en-2k-t04c",
+      "variant_group": "dev-inf-en-2k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.9222309329661034,
+        0.0777690670338967
+      ],
+      "row_id": "dev-inf-en-2k-p01a",
+      "variant_group": "dev-inf-en-2k-p01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.26923272495327566,
+        0.7307672750467242
+      ],
+      "row_id": "dev-inf-en-2k-p01b",
+      "variant_group": "dev-inf-en-2k-p01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8727927875056855,
+        0.12720721249431466
+      ],
+      "row_id": "dev-inf-en-2k-p02a",
+      "variant_group": "dev-inf-en-2k-p02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.2966808353613465,
+        0.7033191646386536
+      ],
+      "row_id": "dev-inf-en-2k-p02b",
+      "variant_group": "dev-inf-en-2k-p02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.03096307506031729,
+        0.9526487054497781,
+        0.016388219489904682
+      ],
+      "row_id": "dev-inf-en-3k-t01a",
+      "variant_group": "dev-inf-en-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.031819391879682433,
+        0.027935084093440567,
+        0.940245524026877
+      ],
+      "row_id": "dev-inf-en-3k-t01b",
+      "variant_group": "dev-inf-en-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.038167328260474156,
+        0.9386635283546855,
+        0.023169143384840333
+      ],
+      "row_id": "dev-inf-en-3k-t01c",
+      "variant_group": "dev-inf-en-3k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.7203746896550134,
+        0.03163817241004898,
+        0.2479871379349377
+      ],
+      "row_id": "dev-inf-en-3k-t02a",
+      "variant_group": "dev-inf-en-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.18828114021665385,
+        0.038837391846357074,
+        0.772881467936989
+      ],
+      "row_id": "dev-inf-en-3k-t02b",
+      "variant_group": "dev-inf-en-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.531634138851517,
+        0.01855804136495741,
+        0.4498078197835256
+      ],
+      "row_id": "dev-inf-en-3k-t02c",
+      "variant_group": "dev-inf-en-3k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4700428453222476,
+        0.37301892142505383,
+        0.1569382332526986
+      ],
+      "row_id": "dev-inf-en-3k-t03a",
+      "variant_group": "dev-inf-en-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.09700093445797678,
+        0.12789120586514352,
+        0.7751078596768798
+      ],
+      "row_id": "dev-inf-en-3k-t03b",
+      "variant_group": "dev-inf-en-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4518657838045158,
+        0.33514483923031996,
+        0.2129893769651642
+      ],
+      "row_id": "dev-inf-en-3k-t03c",
+      "variant_group": "dev-inf-en-3k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.9151226486163223,
+        0.05459831806942624,
+        0.030279033314251358
+      ],
+      "row_id": "dev-inf-en-3k-t04a",
+      "variant_group": "dev-inf-en-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.06821151945057567,
+        0.031099329042957754,
+        0.9006891515064666
+      ],
+      "row_id": "dev-inf-en-3k-t04b",
+      "variant_group": "dev-inf-en-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.8677005003314421,
+        0.07928642285084177,
+        0.05301307681771623
+      ],
+      "row_id": "dev-inf-en-3k-t04c",
+      "variant_group": "dev-inf-en-3k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.13892963137952488,
+        0.13546127248961742,
+        0.1209881355667576,
+        0.16082920484254354,
+        0.10598954407066682,
+        0.11380366904542824,
+        0.11557057196173781,
+        0.10842797064372366
+      ],
+      "row_id": "dev-inf-en-8k-t01a",
+      "variant_group": "dev-inf-en-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.1415413080852705,
+        0.13745431964502441,
+        0.12389667500792587,
+        0.09243837481593509,
+        0.09764706908833966,
+        0.12315045053865448,
+        0.12042127038958438,
+        0.1634505324292656
+      ],
+      "row_id": "dev-inf-en-8k-t01b",
+      "variant_group": "dev-inf-en-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.10645346318351283,
+        0.10380863554094387,
+        0.136207003431385,
+        0.2916975212992119,
+        0.06252386709454703,
+        0.11504651637051688,
+        0.11722793773365861,
+        0.0670350553462239
+      ],
+      "row_id": "dev-inf-en-8k-t01c",
+      "variant_group": "dev-inf-en-8k-t01"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.02863342948839592,
+        0.2525197970997379,
+        0.054387479050435825,
+        0.07644951758365352,
+        0.2226234933376382,
+        0.05173554950887522,
+        0.05146392378634435,
+        0.26218681014491907
+      ],
+      "row_id": "dev-inf-en-8k-t02a",
+      "variant_group": "dev-inf-en-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "en",
+      "pred": 4,
+      "probs": [
+        0.006783332580715987,
+        0.08346620336903267,
+        0.014534059444793808,
+        0.13105217680698036,
+        0.6934805802033391,
+        0.03561977623875189,
+        0.012980715920518925,
+        0.0220831554358671
+      ],
+      "row_id": "dev-inf-en-8k-t02b",
+      "variant_group": "dev-inf-en-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.033935644597930276,
+        0.2674374882562619,
+        0.06456723937427288,
+        0.08360291979597884,
+        0.0952112275807406,
+        0.060962650342697426,
+        0.05608545199077514,
+        0.338197378061343
+      ],
+      "row_id": "dev-inf-en-8k-t02c",
+      "variant_group": "dev-inf-en-8k-t02"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.08954227480352848,
+        0.1236755910734326,
+        0.05715797810051644,
+        0.07243701329031366,
+        0.06781178595313846,
+        0.41239582103183436,
+        0.05709450910356205,
+        0.11988502664367394
+      ],
+      "row_id": "dev-inf-en-8k-t03a",
+      "variant_group": "dev-inf-en-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.06163307725664809,
+        0.08728110604514305,
+        0.043848992647812716,
+        0.044673461724558314,
+        0.03901777225477114,
+        0.06842495603629088,
+        0.039489195397759656,
+        0.6156314386370161
+      ],
+      "row_id": "dev-inf-en-8k-t03b",
+      "variant_group": "dev-inf-en-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.0937189514409318,
+        0.1356600998307146,
+        0.060223021945296704,
+        0.08069164753103236,
+        0.08037512513192199,
+        0.3594528423397931,
+        0.0649350838210708,
+        0.12494322795923869
+      ],
+      "row_id": "dev-inf-en-8k-t03c",
+      "variant_group": "dev-inf-en-8k-t03"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.07324019250281431,
+        0.11016763976274026,
+        0.08684953635375879,
+        0.5205140352905108,
+        0.03657948723600481,
+        0.05814556919836733,
+        0.06196411736702655,
+        0.05253942228877727
+      ],
+      "row_id": "dev-inf-en-8k-t04a",
+      "variant_group": "dev-inf-en-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "en",
+      "pred": 4,
+      "probs": [
+        0.1205911415322376,
+        0.06636943720445392,
+        0.08246738752311963,
+        0.05540764404852653,
+        0.5115918079617672,
+        0.05177750788339712,
+        0.05656807165705569,
+        0.05522700218944232
+      ],
+      "row_id": "dev-inf-en-8k-t04b",
+      "variant_group": "dev-inf-en-8k-t04"
+    },
+    {
+      "family": "textual_inference_negation",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 3,
+      "probs": [
+        0.07786261002068644,
+        0.12066042159468043,
+        0.09270983406456887,
+        0.48430009330140056,
+        0.03911209833927615,
+        0.06431833253174722,
+        0.07197198037402702,
+        0.04906462977361333
+      ],
+      "row_id": "dev-inf-en-8k-t04c",
+      "variant_group": "dev-inf-en-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6643556184082721,
+        0.3356443815917279
+      ],
+      "row_id": "dev-pri-es-2k-t01a",
+      "variant_group": "dev-pri-es-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6636576381546819,
+        0.33634236184531807
+      ],
+      "row_id": "dev-pri-es-2k-t01b",
+      "variant_group": "dev-pri-es-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5609345590812924,
+        0.43906544091870764
+      ],
+      "row_id": "dev-pri-es-2k-t01c",
+      "variant_group": "dev-pri-es-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6062058914336041,
+        0.3937941085663958
+      ],
+      "row_id": "dev-pri-es-2k-t02a",
+      "variant_group": "dev-pri-es-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6042773792677367,
+        0.3957226207322632
+      ],
+      "row_id": "dev-pri-es-2k-t02b",
+      "variant_group": "dev-pri-es-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5694774766313533,
+        0.4305225233686467
+      ],
+      "row_id": "dev-pri-es-2k-t02c",
+      "variant_group": "dev-pri-es-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5937413253868876,
+        0.4062586746131125
+      ],
+      "row_id": "dev-pri-es-2k-t03a",
+      "variant_group": "dev-pri-es-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5951303472789804,
+        0.40486965272101966
+      ],
+      "row_id": "dev-pri-es-2k-t03b",
+      "variant_group": "dev-pri-es-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6053432938063844,
+        0.3946567061936156
+      ],
+      "row_id": "dev-pri-es-2k-t03c",
+      "variant_group": "dev-pri-es-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6636576381546819,
+        0.33634236184531807
+      ],
+      "row_id": "dev-pri-es-2k-t04a",
+      "variant_group": "dev-pri-es-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6624868856846832,
+        0.3375131143153168
+      ],
+      "row_id": "dev-pri-es-2k-t04b",
+      "variant_group": "dev-pri-es-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5602669271833216,
+        0.4397330728166784
+      ],
+      "row_id": "dev-pri-es-2k-t04c",
+      "variant_group": "dev-pri-es-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6598224292572131,
+        0.34017757074278676
+      ],
+      "row_id": "dev-pri-es-2k-p01a",
+      "variant_group": "dev-pri-es-2k-p01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.6577668037526686,
+        0.34223319624733145
+      ],
+      "row_id": "dev-pri-es-2k-p01b",
+      "variant_group": "dev-pri-es-2k-p01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5394027470988065,
+        0.46059725290119347
+      ],
+      "row_id": "dev-pri-es-2k-p02a",
+      "variant_group": "dev-pri-es-2k-p02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5398500540490525,
+        0.46014994595094755
+      ],
+      "row_id": "dev-pri-es-2k-p02b",
+      "variant_group": "dev-pri-es-2k-p02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.48647981577390764,
+        0.33071090943565457,
+        0.18280927479043782
+      ],
+      "row_id": "dev-pri-es-3k-t01a",
+      "variant_group": "dev-pri-es-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4874744186696916,
+        0.3310713571017184,
+        0.18145422422858992
+      ],
+      "row_id": "dev-pri-es-3k-t01b",
+      "variant_group": "dev-pri-es-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4789778282628828,
+        0.32949329603214494,
+        0.19152887570497215
+      ],
+      "row_id": "dev-pri-es-3k-t01c",
+      "variant_group": "dev-pri-es-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.509194363785671,
+        0.2983830354949993,
+        0.1924226007193298
+      ],
+      "row_id": "dev-pri-es-3k-t02a",
+      "variant_group": "dev-pri-es-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.5334272688162017,
+        0.2842068110355779,
+        0.1823659201482204
+      ],
+      "row_id": "dev-pri-es-3k-t02b",
+      "variant_group": "dev-pri-es-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4979847883552059,
+        0.3155728487276388,
+        0.1864423629171553
+      ],
+      "row_id": "dev-pri-es-3k-t02c",
+      "variant_group": "dev-pri-es-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.39645593001667234,
+        0.3379865945382795,
+        0.2655574754450482
+      ],
+      "row_id": "dev-pri-es-3k-t03a",
+      "variant_group": "dev-pri-es-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.3962422160055747,
+        0.336028650844417,
+        0.26772913315000824
+      ],
+      "row_id": "dev-pri-es-3k-t03b",
+      "variant_group": "dev-pri-es-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.45293979673753715,
+        0.32313206693637436,
+        0.22392813632608843
+      ],
+      "row_id": "dev-pri-es-3k-t03c",
+      "variant_group": "dev-pri-es-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.4629210030139385,
+        0.2889440780884202,
+        0.24813491889764136
+      ],
+      "row_id": "dev-pri-es-3k-t04a",
+      "variant_group": "dev-pri-es-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.46044820008892856,
+        0.2900079013857686,
+        0.24954389852530293
+      ],
+      "row_id": "dev-pri-es-3k-t04b",
+      "variant_group": "dev-pri-es-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.47898809513606005,
+        0.2859166991355789,
+        0.23509520572836115
+      ],
+      "row_id": "dev-pri-es-3k-t04c",
+      "variant_group": "dev-pri-es-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.13124132245403838,
+        0.08908419765750641,
+        0.10309206286290913,
+        0.1403411440126285,
+        0.12973198505070233,
+        0.16940894708255333,
+        0.13045893267678568,
+        0.10664140820287626
+      ],
+      "row_id": "dev-pri-es-8k-t01a",
+      "variant_group": "dev-pri-es-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.13211354404213607,
+        0.08919655783845282,
+        0.10268381288299391,
+        0.14015139099787874,
+        0.1289036572440554,
+        0.16954661703801396,
+        0.13077068072862064,
+        0.10663373922784855
+      ],
+      "row_id": "dev-pri-es-8k-t01b",
+      "variant_group": "dev-pri-es-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "es",
+      "pred": 2,
+      "probs": [
+        0.09828172277773449,
+        0.08709375042353612,
+        0.16249372341339344,
+        0.15803390673651696,
+        0.11928146331270252,
+        0.142930942959339,
+        0.12155497908240458,
+        0.11032951129437295
+      ],
+      "row_id": "dev-pri-es-8k-t01c",
+      "variant_group": "dev-pri-es-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.13527482493141232,
+        0.12435556261679126,
+        0.09884026033180845,
+        0.11642557252700649,
+        0.1353556888080532,
+        0.1449093395925739,
+        0.1224564066692826,
+        0.12238234452307181
+      ],
+      "row_id": "dev-pri-es-8k-t02a",
+      "variant_group": "dev-pri-es-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.1347590892456914,
+        0.1244662501227059,
+        0.09846950014229208,
+        0.11639095351308447,
+        0.13561689094455873,
+        0.14541720560272048,
+        0.1225671424711319,
+        0.12231296795781502
+      ],
+      "row_id": "dev-pri-es-8k-t02b",
+      "variant_group": "dev-pri-es-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.1485219095920003,
+        0.13066605198192296,
+        0.0951821814035846,
+        0.11322157027875931,
+        0.13219504973690255,
+        0.13632903160170345,
+        0.11939532092445906,
+        0.12448888448066775
+      ],
+      "row_id": "dev-pri-es-8k-t02c",
+      "variant_group": "dev-pri-es-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.12788163147232096,
+        0.10814583154429037,
+        0.10238314092431762,
+        0.09883172983549135,
+        0.1369848049565981,
+        0.14876919746880649,
+        0.13603401514051017,
+        0.14096964865766498
+      ],
+      "row_id": "dev-pri-es-8k-t03a",
+      "variant_group": "dev-pri-es-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "es",
+      "pred": 5,
+      "probs": [
+        0.12790912728037745,
+        0.10804251862971807,
+        0.10210311955113888,
+        0.09847874035488928,
+        0.13670223810887416,
+        0.14908486212083807,
+        0.13645856695841185,
+        0.14122082699575225
+      ],
+      "row_id": "dev-pri-es-8k-t03b",
+      "variant_group": "dev-pri-es-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 1,
+      "probs": [
+        0.13238954257048985,
+        0.14769891897413495,
+        0.11764178866453548,
+        0.12161476810450562,
+        0.12504997395270362,
+        0.12388767502938164,
+        0.1098156814958336,
+        0.12190165120841526
+      ],
+      "row_id": "dev-pri-es-8k-t03c",
+      "variant_group": "dev-pri-es-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.18455354222767467,
+        0.157485655105137,
+        0.10458090088344217,
+        0.08012926169246756,
+        0.11594090890751159,
+        0.10774702477878466,
+        0.11961390184712418,
+        0.12994880455785818
+      ],
+      "row_id": "dev-pri-es-8k-t04a",
+      "variant_group": "dev-pri-es-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.19786567946385583,
+        0.1528740736348853,
+        0.10232099132889176,
+        0.07763949768225162,
+        0.12162924594123287,
+        0.10786973936576358,
+        0.10863012220698648,
+        0.13117065037613254
+      ],
+      "row_id": "dev-pri-es-8k-t04b",
+      "variant_group": "dev-pri-es-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "es",
+      "pred": 0,
+      "probs": [
+        0.21181441277087493,
+        0.15581439553695067,
+        0.09690084816412,
+        0.07543367877483448,
+        0.11133898617356824,
+        0.09590174868715146,
+        0.10632482374428567,
+        0.14647110614821462
+      ],
+      "row_id": "dev-pri-es-8k-t04c",
+      "variant_group": "dev-pri-es-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4811527365721907,
+        0.5188472634278093
+      ],
+      "row_id": "dev-pri-en-2k-t01a",
+      "variant_group": "dev-pri-en-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4823700290781596,
+        0.5176299709218404
+      ],
+      "row_id": "dev-pri-en-2k-t01b",
+      "variant_group": "dev-pri-en-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4778587874169765,
+        0.5221412125830235
+      ],
+      "row_id": "dev-pri-en-2k-t01c",
+      "variant_group": "dev-pri-en-2k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.42943082968505625,
+        0.5705691703149437
+      ],
+      "row_id": "dev-pri-en-2k-t02a",
+      "variant_group": "dev-pri-en-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.42912986058114866,
+        0.5708701394188515
+      ],
+      "row_id": "dev-pri-en-2k-t02b",
+      "variant_group": "dev-pri-en-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5108657952799547,
+        0.4891342047200452
+      ],
+      "row_id": "dev-pri-en-2k-t02c",
+      "variant_group": "dev-pri-en-2k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5470348838789272,
+        0.4529651161210729
+      ],
+      "row_id": "dev-pri-en-2k-t03a",
+      "variant_group": "dev-pri-en-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5474682974958296,
+        0.45253170250417046
+      ],
+      "row_id": "dev-pri-en-2k-t03b",
+      "variant_group": "dev-pri-en-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5552716492211843,
+        0.4447283507788157
+      ],
+      "row_id": "dev-pri-en-2k-t03c",
+      "variant_group": "dev-pri-en-2k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4711914305472947,
+        0.5288085694527054
+      ],
+      "row_id": "dev-pri-en-2k-t04a",
+      "variant_group": "dev-pri-en-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5335133209887635,
+        0.4664866790112366
+      ],
+      "row_id": "dev-pri-en-2k-t04b",
+      "variant_group": "dev-pri-en-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4713182361609582,
+        0.5286817638390419
+      ],
+      "row_id": "dev-pri-en-2k-t04c",
+      "variant_group": "dev-pri-en-2k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.49039327128219323,
+        0.5096067287178068
+      ],
+      "row_id": "dev-pri-en-2k-p01a",
+      "variant_group": "dev-pri-en-2k-p01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.4891727731185974,
+        0.5108272268814026
+      ],
+      "row_id": "dev-pri-en-2k-p01b",
+      "variant_group": "dev-pri-en-2k-p01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5158237406973277,
+        0.48417625930267216
+      ],
+      "row_id": "dev-pri-en-2k-p02a",
+      "variant_group": "dev-pri-en-2k-p02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 2,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.5273080847748781,
+        0.4726919152251219
+      ],
+      "row_id": "dev-pri-en-2k-p02b",
+      "variant_group": "dev-pri-en-2k-p02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.3177967040676403,
+        0.2897276708850759,
+        0.39247562504728384
+      ],
+      "row_id": "dev-pri-en-3k-t01a",
+      "variant_group": "dev-pri-en-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.29586907316615196,
+        0.32719837271376684,
+        0.3769325541200812
+      ],
+      "row_id": "dev-pri-en-3k-t01b",
+      "variant_group": "dev-pri-en-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.2895123579590593,
+        0.33204176903926313,
+        0.37844587300167754
+      ],
+      "row_id": "dev-pri-en-3k-t01c",
+      "variant_group": "dev-pri-en-3k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3325874778300172,
+        0.34236437779737344,
+        0.3250481443726095
+      ],
+      "row_id": "dev-pri-en-3k-t02a",
+      "variant_group": "dev-pri-en-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.3322502348706247,
+        0.34259205355757827,
+        0.32515771157179707
+      ],
+      "row_id": "dev-pri-en-3k-t02b",
+      "variant_group": "dev-pri-en-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.33152585490644054,
+        0.3483813866761453,
+        0.320092758417414
+      ],
+      "row_id": "dev-pri-en-3k-t02c",
+      "variant_group": "dev-pri-en-3k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.44417502006071014,
+        0.2682293136627044,
+        0.2875956662765854
+      ],
+      "row_id": "dev-pri-en-3k-t03a",
+      "variant_group": "dev-pri-en-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 1,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4475755268155636,
+        0.26516875057898276,
+        0.2872557226054537
+      ],
+      "row_id": "dev-pri-en-3k-t03b",
+      "variant_group": "dev-pri-en-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.4412067288893457,
+        0.2547841005803941,
+        0.3040091705302603
+      ],
+      "row_id": "dev-pri-en-3k-t03c",
+      "variant_group": "dev-pri-en-3k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.304436689464915,
+        0.3327297024015954,
+        0.36283360813348975
+      ],
+      "row_id": "dev-pri-en-3k-t04a",
+      "variant_group": "dev-pri-en-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 0,
+      "k": 3,
+      "lang": "en",
+      "pred": 2,
+      "probs": [
+        0.2956695011854427,
+        0.3362005354831465,
+        0.36812996333141074
+      ],
+      "row_id": "dev-pri-en-3k-t04b",
+      "variant_group": "dev-pri-en-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 3,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.34617357222830525,
+        0.3084603760887675,
+        0.3453660516829272
+      ],
+      "row_id": "dev-pri-en-3k-t04c",
+      "variant_group": "dev-pri-en-3k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.1294739619222875,
+        0.11130900216303405,
+        0.1309814294387996,
+        0.1282823334004948,
+        0.12506234367619423,
+        0.13954873842488344,
+        0.12528477619183445,
+        0.11005741478247194
+      ],
+      "row_id": "dev-pri-en-8k-t01a",
+      "variant_group": "dev-pri-en-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.12922511626740446,
+        0.11098872785227544,
+        0.13084476401866196,
+        0.1281773141834065,
+        0.12545892542330042,
+        0.1395397022381669,
+        0.12525925910468705,
+        0.11050619091209732
+      ],
+      "row_id": "dev-pri-en-8k-t01b",
+      "variant_group": "dev-pri-en-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.1496019582279824,
+        0.09850038204400632,
+        0.11713725746600966,
+        0.1244340258969036,
+        0.1278565902316162,
+        0.14129212835962704,
+        0.12823233078094629,
+        0.11294532699290849
+      ],
+      "row_id": "dev-pri-en-8k-t01c",
+      "variant_group": "dev-pri-en-8k-t01"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.12484584437060868,
+        0.13601181857267897,
+        0.12667730708856498,
+        0.12336607072156713,
+        0.12479148939503736,
+        0.13171479945006387,
+        0.11410678753594256,
+        0.11848588286553646
+      ],
+      "row_id": "dev-pri-en-8k-t02a",
+      "variant_group": "dev-pri-en-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 6,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.12448744314522175,
+        0.1360096847623684,
+        0.12677745222438808,
+        0.12352754605091278,
+        0.12498914760480159,
+        0.13141497351729264,
+        0.1142974239319387,
+        0.118496328763076
+      ],
+      "row_id": "dev-pri-en-8k-t02b",
+      "variant_group": "dev-pri-en-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 7,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.12499618617246588,
+        0.13409722654136605,
+        0.12279837847781504,
+        0.11828972502991342,
+        0.1301776198174857,
+        0.13827408742705027,
+        0.11305252867899489,
+        0.11831424785490875
+      ],
+      "row_id": "dev-pri-en-8k-t02c",
+      "variant_group": "dev-pri-en-8k-t02"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.13207840009558972,
+        0.13933896628694903,
+        0.12470376079295843,
+        0.10770081225912721,
+        0.12875547441631052,
+        0.14235082154256085,
+        0.11579309130676761,
+        0.10927867329973669
+      ],
+      "row_id": "dev-pri-en-8k-t03a",
+      "variant_group": "dev-pri-en-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 2,
+      "k": 8,
+      "lang": "en",
+      "pred": 5,
+      "probs": [
+        0.13237296083886269,
+        0.1392089777276846,
+        0.12474737977379693,
+        0.10772391084070239,
+        0.12849057537680794,
+        0.1420599372960158,
+        0.11592940500024539,
+        0.1094668531458843
+      ],
+      "row_id": "dev-pri-en-8k-t03b",
+      "variant_group": "dev-pri-en-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 5,
+      "k": 8,
+      "lang": "en",
+      "pred": 1,
+      "probs": [
+        0.12386877602287495,
+        0.1477514420822654,
+        0.12681634516531654,
+        0.10516075756752334,
+        0.12699529463684028,
+        0.14277932342977734,
+        0.11364266782812345,
+        0.11298539326727862
+      ],
+      "row_id": "dev-pri-en-8k-t03c",
+      "variant_group": "dev-pri-en-8k-t03"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.1462040265752995,
+        0.1312737763241263,
+        0.10810824360901168,
+        0.11233617754206564,
+        0.11926504942185343,
+        0.1278432722991253,
+        0.12141069746996387,
+        0.13355875675855425
+      ],
+      "row_id": "dev-pri-en-8k-t04a",
+      "variant_group": "dev-pri-en-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 4,
+      "k": 8,
+      "lang": "en",
+      "pred": 0,
+      "probs": [
+        0.1469548434034124,
+        0.1321778367069187,
+        0.10957564399111831,
+        0.1075216858533993,
+        0.11702341781293894,
+        0.1334816580814781,
+        0.13012049648401888,
+        0.12314441766671536
+      ],
+      "row_id": "dev-pri-en-8k-t04b",
+      "variant_group": "dev-pri-en-8k-t04"
+    },
+    {
+      "family": "priority_decision",
+      "gold_index": 3,
+      "k": 8,
+      "lang": "en",
+      "pred": 7,
+      "probs": [
+        0.1322460799584869,
+        0.1260020129380384,
+        0.10372293815481749,
+        0.12010777409707293,
+        0.12207402343131812,
+        0.11492662501532724,
+        0.13293227410221173,
+        0.1479882723027273
+      ],
+      "row_id": "dev-pri-en-8k-t04c",
+      "variant_group": "dev-pri-en-8k-t04"
+    }
+  ],
+  "score_mode": "entail_logit",
+  "seconds": 6.58,
+  "task": "T-ce-finetune"
+}

@@ -1,0 +1,8 @@
+{
+  "written_utc": "2026-09-27T16:45:00Z",
+  "what": "smoke B, revision 1 of the task's list (mix): identical to smoke.json (seed 20260926, split-seed 20260927, holdout 0.2, budget 1000, lr 2e-5/1e-4, 4 epochs max) except --episodes = artifacts/episodes-qwen/pilot-2k/verified.jsonl (1 840 verified by T-episode-verify; the 252 quarantined, 118 of them carrying the 'KEEP:' prompt leak, are out)",
+  "why": "smoke.json is NO-GO: forced +0.055 CI[0.015,0.0975] and joint +0.121 CI[0.043,0.2] improve, but attribute_comparison (-0.0375), priority_decision (-0.025) and textual_inference_negation (-0.05) fall below the untuned control; those are the families with the lowest generator-verifier agreement",
+  "expect": "forced and joint still improve with paired CI95 clear of 0, and the three families stop falling below control (delta >= 0)",
+  "decides": "the same pre-written rule of T-ce-finetune: GO only if both improve and no family/language falls below its untuned figure; otherwise NO-GO recorded and the next revision (LR) from the list, no scaling",
+  "control": "artifacts/gates/T-ce-finetune/eval-none.json (forced 249/400 = 0.6225, joint 48/140)"
+}

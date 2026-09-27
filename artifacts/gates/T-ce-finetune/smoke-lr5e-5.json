@@ -1,0 +1,648 @@
+{
+  "artifact": "artifacts/gates/T-ce-finetune/smoke-lr5e-5.json",
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune gate --bootstrap 2000 --bootstrap-seed 20260927 --control artifacts/gates/T-ce-finetune/eval-none.json --out artifacts/gates/T-ce-finetune/smoke-lr5e-5.json --run artifacts/checkpoints/ce/smoke-1k-lr5e-5",
+  "comparison": {
+    "by_family": {
+      "attribute_comparison": {
+        "below_control": true,
+        "control": 0.4125,
+        "delta": -0.05,
+        "n": 80,
+        "tuned": 0.3625
+      },
+      "description_classification": {
+        "below_control": false,
+        "control": 0.5875,
+        "delta": 0.4125,
+        "n": 80,
+        "tuned": 1.0
+      },
+      "extraction_paraphrase": {
+        "below_control": false,
+        "control": 0.9375,
+        "delta": 0.0125,
+        "n": 80,
+        "tuned": 0.95
+      },
+      "priority_decision": {
+        "below_control": true,
+        "control": 0.375,
+        "delta": -0.025,
+        "n": 80,
+        "tuned": 0.35
+      },
+      "textual_inference_negation": {
+        "below_control": true,
+        "control": 0.8,
+        "delta": -0.1375,
+        "n": 80,
+        "tuned": 0.6625
+      }
+    },
+    "by_lang": {
+      "en": {
+        "below_control": false,
+        "control": 0.64,
+        "delta": 0.05,
+        "n": 200,
+        "tuned": 0.69
+      },
+      "es": {
+        "below_control": false,
+        "control": 0.605,
+        "delta": 0.035,
+        "n": 200,
+        "tuned": 0.64
+      }
+    },
+    "counterfactual_joint": {
+      "bootstrap": {
+        "B": 2000,
+        "ci": "percentile",
+        "seed": 20260928,
+        "unit": "paired"
+      },
+      "ci95": [
+        0.05,
+        0.207143
+      ],
+      "control": 0.342857,
+      "n": 140,
+      "point": 0.128571,
+      "tuned": 0.471429
+    },
+    "drops": [
+      "family:attribute_comparison",
+      "family:priority_decision",
+      "family:textual_inference_negation"
+    ],
+    "forced": {
+      "bootstrap": {
+        "B": 2000,
+        "ci": "percentile",
+        "seed": 20260927,
+        "unit": "paired"
+      },
+      "ci95": [
+        -0.0025,
+        0.09
+      ],
+      "control": 0.6225,
+      "n": 400,
+      "point": 0.0425,
+      "tuned": 0.665
+    },
+    "identical_picks": false,
+    "improves": false,
+    "n": 400,
+    "pass": false,
+    "reason": "no improvement with a CI95 clear of 0 (forced [-0.0025, 0.09], joint [0.05, 0.207143])",
+    "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+    "same_rows": {
+      "columns": [
+        "control",
+        "tuned"
+      ],
+      "compared_on": "row_id, family, variant_group, K and the gold slot — identity, not size: two columns of 400 rows each can still be two different cuts",
+      "n": 400,
+      "pass": true,
+      "rows_sha256": "8e8ccea5a9916eeb31d63aa8f79c247a02d5e3cbbce23b21c75dacc18535c3fb",
+      "rule": "the runner FAILS if the n of the columns do not match"
+    },
+    "verdict": "NO-GO"
+  },
+  "control": {
+    "checkpoint": {
+      "device": "mps",
+      "id": "minilmv2-l6-mnli-xnli",
+      "kind": "weights",
+      "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+      "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+      "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+      "scorer": {
+        "batch_size": 16,
+        "device": "mps",
+        "entail_index": 0,
+        "hypothesis_format_id": "b215e3003cc60c0f",
+        "id": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+        "max_length": 512,
+        "mode": "entail_logit",
+        "n_classes": 3,
+        "truncation": "only_first"
+      }
+    },
+    "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune eval --batch-size 16 --battery data/battery_dev.jsonl --checkpoint none --device mps --out artifacts/gates/T-ce-finetune/eval-none.json --weights minilmv2-l6-mnli-xnli",
+    "figures": {
+      "abstention": {
+        "accuracy": 0.4225,
+        "accuracy_ci95": [
+          0.375055,
+          0.471419
+        ],
+        "answered": 239,
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "coverage": 0.5975,
+        "hits": 169,
+        "n": 400,
+        "rule": "abstain when max(softmax over K) < threshold",
+        "threshold": 0.5,
+        "what": "accuracy with abstention at a fixed threshold on the max softmax weight; an abstention counts as wrong"
+      },
+      "by_k": {
+        "2": {
+          "accuracy": 0.675,
+          "accuracy_ci95": [
+            0.599061,
+            0.742732
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 2,
+          "chance": 0.5,
+          "hits": 108,
+          "n": 160,
+          "what": "forced accuracy, K=2"
+        },
+        "3": {
+          "accuracy": 0.591667,
+          "accuracy_ci95": [
+            0.502208,
+            0.675439
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3,
+          "chance": 0.333333,
+          "hits": 71,
+          "n": 120,
+          "what": "forced accuracy, K=3"
+        },
+        "8": {
+          "accuracy": 0.583333,
+          "accuracy_ci95": [
+            0.49388,
+            0.667616
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 8,
+          "chance": 0.125,
+          "hits": 70,
+          "n": 120,
+          "what": "forced accuracy, K=8"
+        }
+      },
+      "by_lang": {
+        "en": {
+          "accuracy": 0.64,
+          "accuracy_ci95": [
+            0.571415,
+            0.703308
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 128,
+          "n": 200,
+          "what": "forced accuracy, lang en"
+        },
+        "es": {
+          "accuracy": 0.605,
+          "accuracy_ci95": [
+            0.535883,
+            0.670159
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 121,
+          "n": 200,
+          "what": "forced accuracy, lang es"
+        }
+      },
+      "counterfactual_joint": {
+        "accuracy": 0.342857,
+        "accuracy_ci95": [
+          0.269371,
+          0.424737
+        ],
+        "beats_chance": true,
+        "cardinality": 4.1,
+        "chance": 0.082569,
+        "hits": 48,
+        "n": 140
+      },
+      "forced": {
+        "accuracy": 0.6225,
+        "accuracy_ci95": [
+          0.574041,
+          0.668628
+        ],
+        "beats_chance": true,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 249,
+        "n": 400
+      },
+      "macro_by_family": {
+        "accuracy_ranking": 0.6225,
+        "by_family": {
+          "attribute_comparison": {
+            "accuracy": 0.4125,
+            "accuracy_ci95": [
+              0.311059,
+              0.52196
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 33,
+            "n": 80
+          },
+          "description_classification": {
+            "accuracy": 0.5875,
+            "accuracy_ci95": [
+              0.47804,
+              0.688941
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 47,
+            "n": 80
+          },
+          "extraction_paraphrase": {
+            "accuracy": 0.9375,
+            "accuracy_ci95": [
+              0.861899,
+              0.973011
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 75,
+            "n": 80
+          },
+          "priority_decision": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.276942,
+              0.484513
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 30,
+            "n": 80
+          },
+          "textual_inference_negation": {
+            "accuracy": 0.8,
+            "accuracy_ci95": [
+              0.699538,
+              0.872972
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 64,
+            "n": 80
+          }
+        },
+        "chance_ranking": 0.3375,
+        "worst_family": "priority_decision"
+      }
+    },
+    "file": "artifacts/gates/T-ce-finetune/eval-none.json"
+  },
+  "generated_utc": "2026-09-27T16:41:42Z",
+  "honesty": [
+    "every figure here is copied from the two evaluation documents or computed by compare() over their rows; nothing was typed",
+    "the control is the same untuned checkpoint on the same rows (rows_sha256 and row identity checked before comparing)",
+    "the checkpoint gated is the final one at the budget; the dev curve was not used to pick it"
+  ],
+  "hypothesis_format": {
+    "control": {
+      "fingerprint": "b215e3003cc60c0f",
+      "frozen_id": "b215e3003cc60c0f",
+      "same": true
+    },
+    "same": true,
+    "tuned": {
+      "fingerprint": "b215e3003cc60c0f",
+      "frozen_id": "b215e3003cc60c0f",
+      "same": true
+    }
+  },
+  "pass": false,
+  "prediction": null,
+  "reason": "no improvement with a CI95 clear of 0 (forced [-0.0025, 0.09], joint [0.05, 0.207143])",
+  "rule": {
+    "control": "the same untuned checkpoint (`--checkpoint none`) on the same rows, checked by rows_sha256 and by row identity (eval.preflight_refs.same_rows)",
+    "go_if": "it improves AND no family and no language has a forced accuracy below its untuned figure",
+    "improves_if": "the paired difference in forced accuracy AND in joint counterfactual success both have a bootstrap CI95 whose lower bound is above 0",
+    "no_difference_if": "every forced pick of every row is the same in both columns",
+    "no_go_if": "it does not improve — or it improves on average while a family or a language falls below its untuned figure: that is not scaled, it is recorded as a limitation",
+    "why_paired": "the two columns score the SAME rows, so the interval is on the difference row by row, not on two independent proportions"
+  },
+  "run": {
+    "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune train --batch-size 16 --battery /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/data/battery_dev.jsonl --budget 1000 --decisions-per-batch 8 --device mps --episodes artifacts/episodes-qwen/pilot-2k --epochs 4 --eval-every 250 --holdout 0.2 --init none --lr-encoder 5e-05 --lr-head 0.0001 --out artifacts/checkpoints/ce/smoke-1k-lr5e-5 --seed 20260926 --split-seed 20260927 --weights minilmv2-l6-mnli-xnli",
+    "consumed": {
+      "by_family_lang": {
+        "attribute_comparison/en": {
+          "groups": 85,
+          "n": 170,
+          "sha256": "698fb29861fb2ece6969c5de203579796a613f29cbeaed4773f87a43048919ca"
+        },
+        "attribute_comparison/es": {
+          "groups": 91,
+          "n": 182,
+          "sha256": "167a77a4d751fab28171b58d0738a0281daf9cf7c35dae600bf50ec254c158f4"
+        },
+        "description_classification/en": {
+          "groups": 82,
+          "n": 162,
+          "sha256": "74dc2b3ff666833d87b2e4a9340d77ccccae78e346bc29c54637aa3e4f07410b"
+        },
+        "description_classification/es": {
+          "groups": 87,
+          "n": 171,
+          "sha256": "5df0ce9db8914efcd92518f3713639e9b32fe19f28b46175c9d6f7be8b3fea3b"
+        },
+        "extraction_paraphrase/en": {
+          "groups": 83,
+          "n": 166,
+          "sha256": "93c7df29683553985e4fd97648fd3f8ec74aea7182b522dce255c5aa09233033"
+        },
+        "extraction_paraphrase/es": {
+          "groups": 79,
+          "n": 158,
+          "sha256": "65828341e34651db0302ab65cbe1f2c80ca1e9c322c330b1d14f97a358856360"
+        },
+        "priority_decision/en": {
+          "groups": 84,
+          "n": 168,
+          "sha256": "7b733b4b2a4048347331cd8e3eaaf245870628839b79104f4dff3b0d15247a2f"
+        },
+        "priority_decision/es": {
+          "groups": 77,
+          "n": 154,
+          "sha256": "ef894be9c52e611f329652881f504e6dda74de3aad5c625cb296972c0db48bd8"
+        },
+        "textual_inference_negation/en": {
+          "groups": 85,
+          "n": 168,
+          "sha256": "9b2f30fec8f4074ffd4f4c1f90872f3cad24c2aac46bddb9386d3d55152413f1"
+        },
+        "textual_inference_negation/es": {
+          "groups": 83,
+          "n": 166,
+          "sha256": "af2a7e80fb1ec8b6c3be2c91797effee7a863de4263c67233a4f8314e67f104d"
+        }
+      },
+      "groups": 836,
+      "how": "per family/lang bucket, episodes sorted by id and dumped with sort_keys; the total is the sha of the bucket shas",
+      "n": 1665,
+      "sha256": "4e553686c5417e25aef813c243ee394ab68901ff93c24345a02c87a752e1bad7"
+    },
+    "curve": "artifacts/checkpoints/ce/smoke-1k-lr5e-5/curve.jsonl",
+    "decisions_consumed": 1000,
+    "dir": "artifacts/checkpoints/ce/smoke-1k-lr5e-5",
+    "figures": {
+      "abstention": {
+        "accuracy": 0.595,
+        "accuracy_ci95": [
+          0.546211,
+          0.641982
+        ],
+        "answered": 298,
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "coverage": 0.745,
+        "hits": 238,
+        "n": 400,
+        "rule": "abstain when max(softmax over K) < threshold",
+        "threshold": 0.5,
+        "what": "accuracy with abstention at a fixed threshold on the max softmax weight; an abstention counts as wrong"
+      },
+      "by_k": {
+        "2": {
+          "accuracy": 0.75625,
+          "accuracy_ci95": [
+            0.684226,
+            0.816258
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 2,
+          "chance": 0.5,
+          "hits": 121,
+          "n": 160,
+          "what": "forced accuracy, K=2"
+        },
+        "3": {
+          "accuracy": 0.658333,
+          "accuracy_ci95": [
+            0.569748,
+            0.737096
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 3,
+          "chance": 0.333333,
+          "hits": 79,
+          "n": 120,
+          "what": "forced accuracy, K=3"
+        },
+        "8": {
+          "accuracy": 0.55,
+          "accuracy_ci95": [
+            0.460815,
+            0.636083
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 8,
+          "chance": 0.125,
+          "hits": 66,
+          "n": 120,
+          "what": "forced accuracy, K=8"
+        }
+      },
+      "by_lang": {
+        "en": {
+          "accuracy": 0.69,
+          "accuracy_ci95": [
+            0.622828,
+            0.750011
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 138,
+          "n": 200,
+          "what": "forced accuracy, lang en"
+        },
+        "es": {
+          "accuracy": 0.64,
+          "accuracy_ci95": [
+            0.571415,
+            0.703308
+          ],
+          "beats_chance": true,
+          "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 128,
+          "n": 200,
+          "what": "forced accuracy, lang es"
+        }
+      },
+      "counterfactual_joint": {
+        "accuracy": 0.471429,
+        "accuracy_ci95": [
+          0.390611,
+          0.553772
+        ],
+        "beats_chance": true,
+        "cardinality": 4.1,
+        "chance": 0.082569,
+        "hits": 66,
+        "n": 140
+      },
+      "forced": {
+        "accuracy": 0.665,
+        "accuracy_ci95": [
+          0.61737,
+          0.709491
+        ],
+        "beats_chance": true,
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 266,
+        "n": 400
+      },
+      "macro_by_family": {
+        "accuracy_ranking": 0.665,
+        "by_family": {
+          "attribute_comparison": {
+            "accuracy": 0.3625,
+            "accuracy_ci95": [
+              0.265708,
+              0.471892
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 29,
+            "n": 80
+          },
+          "description_classification": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              0.954182,
+              1.0
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 80,
+            "n": 80
+          },
+          "extraction_paraphrase": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.878377,
+              0.980386
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 76,
+            "n": 80
+          },
+          "priority_decision": {
+            "accuracy": 0.35,
+            "accuracy_ci95": [
+              0.254546,
+              0.4592
+            ],
+            "beats_chance": false,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 28,
+            "n": 80
+          },
+          "textual_inference_negation": {
+            "accuracy": 0.6625,
+            "accuracy_ci95": [
+              0.553565,
+              0.756544
+            ],
+            "beats_chance": true,
+            "cardinality": 4.1,
+            "chance": 0.3375,
+            "hits": 53,
+            "n": 80
+          }
+        },
+        "chance_ranking": 0.3375,
+        "worst_family": "priority_decision"
+      }
+    },
+    "hyperparams": {
+      "budget_decisions": 1000,
+      "candidate_shuffle": "every pass, per decision",
+      "decisions_per_batch": 8,
+      "epochs_max": 4,
+      "eval_every_decisions": 250,
+      "grad_clip": 1.0,
+      "loss": "listwise cross-entropy over the row's K masked candidate scores (-log sum of positive weights)",
+      "lr_encoder": 5e-05,
+      "lr_head": 0.0001,
+      "max_length": 512,
+      "optimizer": "AdamW (two groups: encoder, classifier head)",
+      "score_mode": "entail_logit",
+      "weight_decay": 0.01
+    },
+    "manifest": "artifacts/checkpoints/ce/smoke-1k-lr5e-5/train_manifest.json",
+    "split": {
+      "by": "variant_group (data.episode_contract.assign_split)",
+      "counts": {
+        "holdout": 427,
+        "train": 1665
+      },
+      "cuts": [
+        [
+          "train",
+          0.8
+        ],
+        [
+          "holdout",
+          0.2
+        ]
+      ],
+      "groups": {
+        "holdout": 214,
+        "train": 836
+      },
+      "seed": 20260927
+    },
+    "train_seconds": 29.3,
+    "wall_seconds": 45.75
+  },
+  "status": "measured",
+  "suite_reports": {
+    "control": "artifacts/gates/T-ce-finetune/smoke-lr5e-5.control.report.json",
+    "tuned": "artifacts/gates/T-ce-finetune/smoke-lr5e-5.tuned.report.json"
+  },
+  "task": "T-ce-finetune",
+  "verdict": "NO-GO"
+}

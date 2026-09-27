@@ -1,0 +1,489 @@
+{
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_finetune train --batch-size 16 --battery /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/data/battery_dev.jsonl --budget 1000 --decisions-per-batch 8 --device mps --episodes artifacts/episodes-qwen/pilot-2k --epochs 4 --eval-every 250 --holdout 0.2 --init none --lr-encoder 1e-05 --lr-head 0.0001 --out artifacts/checkpoints/ce/smoke-1k-lr1e-5 --seed 20260926 --split-seed 20260927 --weights minilmv2-l6-mnli-xnli",
+  "consumed": {
+    "by_family_lang": {
+      "attribute_comparison/en": {
+        "groups": 85,
+        "n": 170,
+        "sha256": "698fb29861fb2ece6969c5de203579796a613f29cbeaed4773f87a43048919ca"
+      },
+      "attribute_comparison/es": {
+        "groups": 91,
+        "n": 182,
+        "sha256": "167a77a4d751fab28171b58d0738a0281daf9cf7c35dae600bf50ec254c158f4"
+      },
+      "description_classification/en": {
+        "groups": 82,
+        "n": 162,
+        "sha256": "74dc2b3ff666833d87b2e4a9340d77ccccae78e346bc29c54637aa3e4f07410b"
+      },
+      "description_classification/es": {
+        "groups": 87,
+        "n": 171,
+        "sha256": "5df0ce9db8914efcd92518f3713639e9b32fe19f28b46175c9d6f7be8b3fea3b"
+      },
+      "extraction_paraphrase/en": {
+        "groups": 83,
+        "n": 166,
+        "sha256": "93c7df29683553985e4fd97648fd3f8ec74aea7182b522dce255c5aa09233033"
+      },
+      "extraction_paraphrase/es": {
+        "groups": 79,
+        "n": 158,
+        "sha256": "65828341e34651db0302ab65cbe1f2c80ca1e9c322c330b1d14f97a358856360"
+      },
+      "priority_decision/en": {
+        "groups": 84,
+        "n": 168,
+        "sha256": "7b733b4b2a4048347331cd8e3eaaf245870628839b79104f4dff3b0d15247a2f"
+      },
+      "priority_decision/es": {
+        "groups": 77,
+        "n": 154,
+        "sha256": "ef894be9c52e611f329652881f504e6dda74de3aad5c625cb296972c0db48bd8"
+      },
+      "textual_inference_negation/en": {
+        "groups": 85,
+        "n": 168,
+        "sha256": "9b2f30fec8f4074ffd4f4c1f90872f3cad24c2aac46bddb9386d3d55152413f1"
+      },
+      "textual_inference_negation/es": {
+        "groups": 83,
+        "n": 166,
+        "sha256": "af2a7e80fb1ec8b6c3be2c91797effee7a863de4263c67233a4f8314e67f104d"
+      }
+    },
+    "groups": 836,
+    "how": "per family/lang bucket, episodes sorted by id and dumped with sort_keys; the total is the sha of the bucket shas",
+    "n": 1665,
+    "sha256": "4e553686c5417e25aef813c243ee394ab68901ff93c24345a02c87a752e1bad7"
+  },
+  "curve": "artifacts/checkpoints/ce/smoke-1k-lr1e-5/curve.jsonl",
+  "decisions_consumed": 1000,
+  "device": "mps",
+  "episodes": {
+    "n_read": 2092,
+    "n_rejected": 0,
+    "n_valid": 2092,
+    "rejected": [],
+    "sha256": "5b115bc1ad8a5c2c42773811bbbe08e5cd765fa75333f7f73d7d6d039b13131c",
+    "source": "artifacts/episodes-qwen/pilot-2k/episodes.jsonl"
+  },
+  "epochs_run": 1,
+  "eval_dev": "artifacts/checkpoints/ce/smoke-1k-lr1e-5/eval-dev.json",
+  "eval_seconds": 12.23,
+  "final_figures": {
+    "abstention": {
+      "accuracy": 0.56,
+      "accuracy_ci95": [
+        0.511013,
+        0.607846
+      ],
+      "answered": 297,
+      "beats_chance": true,
+      "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "coverage": 0.7425,
+      "hits": 224,
+      "n": 400,
+      "rule": "abstain when max(softmax over K) < threshold",
+      "threshold": 0.5,
+      "what": "accuracy with abstention at a fixed threshold on the max softmax weight; an abstention counts as wrong"
+    },
+    "by_k": {
+      "2": {
+        "accuracy": 0.73125,
+        "accuracy_ci95": [
+          0.657732,
+          0.793925
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 2,
+        "chance": 0.5,
+        "hits": 117,
+        "n": 160,
+        "what": "forced accuracy, K=2"
+      },
+      "3": {
+        "accuracy": 0.625,
+        "accuracy_ci95": [
+          0.53577,
+          0.706476
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 3,
+        "chance": 0.333333,
+        "hits": 75,
+        "n": 120,
+        "what": "forced accuracy, K=3"
+      },
+      "8": {
+        "accuracy": 0.6,
+        "accuracy_ci95": [
+          0.51056,
+          0.683236
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 8,
+        "chance": 0.125,
+        "hits": 72,
+        "n": 120,
+        "what": "forced accuracy, K=8"
+      }
+    },
+    "by_lang": {
+      "en": {
+        "accuracy": 0.685,
+        "accuracy_ci95": [
+          0.61765,
+          0.745377
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 137,
+        "n": 200,
+        "what": "forced accuracy, lang en"
+      },
+      "es": {
+        "accuracy": 0.635,
+        "accuracy_ci95": [
+          0.566317,
+          0.698595
+        ],
+        "beats_chance": true,
+        "beats_chance_decided_by": "accuracy_ci95[0] > chance",
+        "cardinality": 4.1,
+        "chance": 0.3375,
+        "hits": 127,
+        "n": 200,
+        "what": "forced accuracy, lang es"
+      }
+    },
+    "counterfactual_joint": {
+      "accuracy": 0.428571,
+      "accuracy_ci95": [
+        0.349584,
+        0.511374
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.082569,
+      "hits": 60,
+      "n": 140
+    },
+    "forced": {
+      "accuracy": 0.66,
+      "accuracy_ci95": [
+        0.612252,
+        0.704704
+      ],
+      "beats_chance": true,
+      "cardinality": 4.1,
+      "chance": 0.3375,
+      "hits": 264,
+      "n": 400
+    },
+    "macro_by_family": {
+      "accuracy_ranking": 0.66,
+      "by_family": {
+        "attribute_comparison": {
+          "accuracy": 0.3625,
+          "accuracy_ci95": [
+            0.265708,
+            0.471892
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 29,
+          "n": 80
+        },
+        "description_classification": {
+          "accuracy": 0.9,
+          "accuracy_ci95": [
+            0.814893,
+            0.948452
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 72,
+          "n": 80
+        },
+        "extraction_paraphrase": {
+          "accuracy": 0.9125,
+          "accuracy_ci95": [
+            0.830232,
+            0.956968
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 73,
+          "n": 80
+        },
+        "priority_decision": {
+          "accuracy": 0.3375,
+          "accuracy_ci95": [
+            0.243456,
+            0.446435
+          ],
+          "beats_chance": false,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 27,
+          "n": 80
+        },
+        "textual_inference_negation": {
+          "accuracy": 0.7875,
+          "accuracy_ci95": [
+            0.685778,
+            0.862876
+          ],
+          "beats_chance": true,
+          "cardinality": 4.1,
+          "chance": 0.3375,
+          "hits": 63,
+          "n": 80
+        }
+      },
+      "chance_ranking": 0.3375,
+      "worst_family": "priority_decision"
+    }
+  },
+  "generated_utc": "2026-09-27T16:37:45Z",
+  "holdout": {
+    "by_family_lang": {
+      "attribute_comparison/en": {
+        "groups": 20,
+        "n": 40,
+        "sha256": "746212b32724db52831a35265ffa138776dcc67f31608074d02f7438f1db0f9a"
+      },
+      "attribute_comparison/es": {
+        "groups": 14,
+        "n": 28,
+        "sha256": "a761813d6289feb58477256a715bf8842d1512c1747f670ecff71506a41b892c"
+      },
+      "description_classification/en": {
+        "groups": 23,
+        "n": 45,
+        "sha256": "72f907be2cb5fb3f409028f1533bb5e58a7e2cb9202d74b3bc7a45727bff98f2"
+      },
+      "description_classification/es": {
+        "groups": 18,
+        "n": 36,
+        "sha256": "40884cf13107dbe6d8d6dd40ca129403702783e63ee38d7cddc10fb6c72ef85c"
+      },
+      "extraction_paraphrase/en": {
+        "groups": 22,
+        "n": 44,
+        "sha256": "d4a61bafd7eafaa76a46da7df69672b3994f6c8d884271faf78999e6080067fd"
+      },
+      "extraction_paraphrase/es": {
+        "groups": 26,
+        "n": 52,
+        "sha256": "651e9d02b050612769f77df5e24dd428af1153d4b02f619b95f63bdd995d064f"
+      },
+      "priority_decision/en": {
+        "groups": 21,
+        "n": 42,
+        "sha256": "c7fe9df15858fca17816d5a8f526a96f6e8484efd17115b37af5dcd495ff6fde"
+      },
+      "priority_decision/es": {
+        "groups": 28,
+        "n": 56,
+        "sha256": "aa8c7e5f00fe983a190a4a0e64d9ccee37e8bc9274c21d9134019d703bc38312"
+      },
+      "textual_inference_negation/en": {
+        "groups": 20,
+        "n": 40,
+        "sha256": "4df2711f6a0b93f18cf749ef7405a6270c84433ffadc57cb41f187719196f864"
+      },
+      "textual_inference_negation/es": {
+        "groups": 22,
+        "n": 44,
+        "sha256": "0e9436dbb23dcb77212f7ba3f0e3947f8c805264f37bfb963d6c98440f02a687"
+      }
+    },
+    "groups": 214,
+    "how": "per family/lang bucket, episodes sorted by id and dumped with sort_keys; the total is the sha of the bucket shas",
+    "n": 427,
+    "sha256": "b6178fe7fe88ed7587f2986810199e97b9b90606121dfe588585cb4b716ccd62"
+  },
+  "hyperparams": {
+    "budget_decisions": 1000,
+    "candidate_shuffle": "every pass, per decision",
+    "decisions_per_batch": 8,
+    "epochs_max": 4,
+    "eval_every_decisions": 250,
+    "grad_clip": 1.0,
+    "loss": "listwise cross-entropy over the row's K masked candidate scores (-log sum of positive weights)",
+    "lr_encoder": 1e-05,
+    "lr_head": 0.0001,
+    "max_length": 512,
+    "optimizer": "AdamW (two groups: encoder, classifier head)",
+    "score_mode": "entail_logit",
+    "weight_decay": 0.01
+  },
+  "hypothesis_format": {
+    "fingerprint": "b215e3003cc60c0f",
+    "frozen_id": "b215e3003cc60c0f"
+  },
+  "init": {
+    "id": "minilmv2-l6-mnli-xnli",
+    "kind": "weights",
+    "model_version": "minilmv2-l6-mnli-xnli@0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+    "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+    "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca"
+  },
+  "length_report": {
+    "max_length": 512,
+    "max_tokens": 123,
+    "n_pairs": 3663,
+    "n_truncated": 0,
+    "pass": true,
+    "truncated_indices": [],
+    "truncation": "only_first"
+  },
+  "model_version": "T-ce-finetune:smoke-1k-lr1e-5",
+  "rendered_examples": [
+    {
+      "family": "attribute_comparison",
+      "gold": "c2",
+      "id": "ep-attr-en-c0000-00",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": false,
+          "hypothesis": "The answer to this question is: northern route, 27 euros.",
+          "premise": "State: The northern route costs 27 euros and takes 4 minutes. The southern route costs 48 euros and takes 3 minutes. Both leave every hour.\nQuestion: Which option is the fastest way to travel?\nOptions under comparison:\n- northern route, 27 euros\n- southern route, 48 euros"
+        },
+        {
+          "candidate": "c2",
+          "gold": true,
+          "hypothesis": "The answer to this question is: southern route, 48 euros.",
+          "premise": "State: The northern route costs 27 euros and takes 4 minutes. The southern route costs 48 euros and takes 3 minutes. Both leave every hour.\nQuestion: Which option is the fastest way to travel?\nOptions under comparison:\n- northern route, 27 euros\n- southern route, 48 euros"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-attr-en-c0000-01",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "The answer to this question is: flight A, 18 euros.",
+          "premise": "State: The flight A costs 18 euros and takes 2 hours. The flight B costs 21 euros and takes 6 hours. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- flight A, 18 euros\n- flight B, 21 euros"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: flight B, 21 euros.",
+          "premise": "State: The flight A costs 18 euros and takes 2 hours. The flight B costs 21 euros and takes 6 hours. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- flight A, 18 euros\n- flight B, 21 euros"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-attr-en-c0001-02",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "The answer to this question is: northern route, 17 euros.",
+          "premise": "State: The northern route costs 17 euros and takes 3 minutes. The southern route costs 56 euros and takes 1 minutes. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- northern route, 17 euros\n- southern route, 56 euros"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: southern route, 56 euros.",
+          "premise": "State: The northern route costs 17 euros and takes 3 minutes. The southern route costs 56 euros and takes 1 minutes. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- northern route, 17 euros\n- southern route, 56 euros"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c1",
+      "id": "ep-attr-en-c0001-03",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": true,
+          "hypothesis": "The answer to this question is: flight A, 17 euros.",
+          "premise": "State: The flight A costs 17 euros and takes 6 hours. The flight B costs 20 euros and takes 1 hours. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- flight A, 17 euros\n- flight B, 20 euros"
+        },
+        {
+          "candidate": "c2",
+          "gold": false,
+          "hypothesis": "The answer to this question is: flight B, 20 euros.",
+          "premise": "State: The flight A costs 17 euros and takes 6 hours. The flight B costs 20 euros and takes 1 hours. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- flight A, 17 euros\n- flight B, 20 euros"
+        }
+      ]
+    },
+    {
+      "family": "attribute_comparison",
+      "gold": "c2",
+      "id": "ep-attr-en-c0002-04",
+      "lang": "en",
+      "pairs": [
+        {
+          "candidate": "c1",
+          "gold": false,
+          "hypothesis": "The answer to this question is: morning course, 53 seats.",
+          "premise": "State: The morning course costs 53 seats and takes 1 euros. The Friday course costs 30 seats and takes 3 euros. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- Friday course, 30 seats\n- morning course, 53 seats"
+        },
+        {
+          "candidate": "c2",
+          "gold": true,
+          "hypothesis": "The answer to this question is: Friday course, 30 seats.",
+          "premise": "State: The morning course costs 53 seats and takes 1 euros. The Friday course costs 30 seats and takes 3 euros. Both leave every hour.\nQuestion: Which option is the cheapest way to travel?\nOptions under comparison:\n- Friday course, 30 seats\n- morning course, 53 seats"
+        }
+      ]
+    }
+  ],
+  "run": "smoke-1k-lr1e-5",
+  "seed": 20260926,
+  "selection": "the FINAL checkpoint at the budget is what is saved and gated; the dev curve is published for reading, nothing was chosen by dev",
+  "split": {
+    "by": "variant_group (data.episode_contract.assign_split)",
+    "counts": {
+      "holdout": 427,
+      "train": 1665
+    },
+    "cuts": [
+      [
+        "train",
+        0.8
+      ],
+      [
+        "holdout",
+        0.2
+      ]
+    ],
+    "groups": {
+      "holdout": 214,
+      "train": 836
+    },
+    "seed": 20260927
+  },
+  "status": "measured",
+  "steps": 125,
+  "task": "T-ce-finetune",
+  "train_seconds": 31.07,
+  "training_cut_guard": "no dev-/sealed- variant_group in train (guard_training_cut)",
+  "wall_seconds": 48.28,
+  "weights": "minilmv2-l6-mnli-xnli"
+}
