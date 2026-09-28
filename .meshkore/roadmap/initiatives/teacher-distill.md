@@ -1,14 +1,21 @@
 ---
 id: teacher-distill
-title: Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
-status: next
+title: Profesor externo, distancia medida y datos propios para cerrarla
+status: active
 owner: architect-master
 modules:
   - eval
   - data
 created: 2026-09-23
-updated: 2026-09-27
+updated: 2026-09-28
 ---
+
+> **Ejecución remota acordada el 2026-09-28.** El proxy de esta máquina
+> bloquea TypeSafe. `#T-teacher-probe` contiene el procedimiento que el
+> operador ejecutará en otro ordenador y la lista exacta de artefactos que
+> devolverá por Git. El repositorio lleva código, batería, tarea y gate; la
+> key y la caché se quedan fuera. La iniciativa está activa, bloqueada solo
+> hasta que vuelva `battery.json` con las 400 filas.
 
 > **Reactivada el 2026-09-27** con otro papel: Jev deja de ser «evidencia del
 > release gate» y pasa a ser **la vara de medir y el profesor** del objetivo
@@ -29,7 +36,7 @@ updated: 2026-09-27
 > para lo único que no puede hacer Qwen: situar la distancia contra el
 > sistema publicado.
 
-# Profesor externo — cuánto nos falta, medido, y datos propios para cerrarlo
+# Profesor externo, distancia medida y datos propios para cerrarla
 
 El operador ha aportado (2026-09-23) una **API key con saldo** contra un modelo
 profesor. Eso desbloquea dos cosas que el proyecto lleva desde el principio sin
@@ -42,7 +49,7 @@ poder hacer, y que no son la misma:
    profesor, y la distancia deja de ser una opinión.
 2. **La evidencia ausente del release gate.** `teacher_cohen_kappa_min = 0,60` es
    uno de los 9 criterios fallados de `#T-release-gate`, y falla por la regla de
-   §2 —evidencia ausente = criterio fallado—, no por desacuerdo medido: *no
+   §2 (evidencia ausente = criterio fallado), no por desacuerdo medido: *no
    existe ningún artefacto que mida el acuerdo del checkpoint contra el
    profesor*. Con la key, existe.
 
@@ -74,7 +81,7 @@ consumió, y ningún experimento re-puntúa lo ya puntuado.
   `#T-labelspace-div` delante: GO y se generan espacios de etiquetas, NO-GO y se
   archiva sin gastar saldo.
 
-## Estado 2026-09-24 — endpoint identificado, credencial rechazada
+## Estado 2026-09-24: endpoint identificado, credencial rechazada
 
 El proveedor es **TypeSafe**: `https://api.typesafe.ai` responde, el esquema es
 `Authorization: Bearer`, y con esa cabecera la key aportada devuelve **401
