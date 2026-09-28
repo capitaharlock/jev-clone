@@ -1,6 +1,6 @@
 ---
 title: El bucle infinito — entrenar, probar, promover, escalar
-updated: 2026-09-27
+updated: 2026-09-28
 owner: architect-master
 status: stable
 ---
@@ -24,6 +24,7 @@ status: stable
 | Profesor local | `qwen3.8:27b-mlx` (desde 2026-09-27; el piloto usó 3.6) | `data/episode_gen.py::MODEL` |
 | Coste de Qwen | ≈ 13 s por episodio (lote 10, concurrencia 2): **≈ 2 700 episodios por 10 h** | T-episode-gen |
 | Metas | Jev 0,727 y Laya 0,766 en typed-decisions test; ≥ 0,70 macro con IC inferior ≥ 0,70 en la batería | guía §1 |
+| **Jev en NUESTRA batería (2026-09-28)** | **1,000** forzada (400/400) y **1,000** contrafactual (140/140); las cinco familias 80/80; $0,0071 | `artifacts/gates/T-teacher-probe/battery.json` |
 
 **Consecuencia de diseño.** Qwen es el cuello de botella de volumen, y el
 backbone pequeño es el techo de la comparación numérica. El bucle ataca las dos
@@ -31,6 +32,37 @@ cosas a la vez. Escala el volumen con fuentes baratas: episodios numéricos
 generados por regla (instantáneos), typed-decisions (6 000) y datasets
 públicos. Y sube por una **escalera de brazos** (datos dirigidos, backbone
 mayor, formato listwise) cuando el volumen deja de mover una familia.
+
+## 0.1 Conclusiones tras medir a Jev (2026-09-28) — léelas antes de planificar
+
+1. **La distancia real es grande.** Nuestro mejor ajuste queda a **0,32** de Jev
+   en forzada (0,6775 frente a 1,000) y a **0,54** en contrafactuales (0,464 frente
+   a 1,000). Jev resuelve perfectas las dos familias que nosotros y Laya no
+   aprendemos: comparación de atributos y prioridad.
+2. **Lo que hay basta para subir, no para llegar.** Primero se exprime lo que
+   tenemos: el bucle con MiniLM, datos por regla, typed-decisions y el productor.
+   Pero el smoke indica que el límite de la comparación numérica es la
+   **capacidad del modelo**, no el volumen ni las horas: la familia no se mueve ni
+   en su propia distribución. No se espera cerrar la distancia con MiniLM y más
+   datos. El salto lo tienen que dar la **escalera de backbones** y el **formato
+   listwise** (§4). Por eso `#T-backbone-ladder` sube a P0 en cuanto el bucle
+   lleve 3 ciclos seguidos sin mover atributos o prioridad, sin esperar a la
+   racha completa.
+3. **Datos y cómputo no son el cuello, hoy.** Los datos por regla son
+   ilimitados y 1 000 decisiones cuestan unos 40 s en MPS con L6 (unos 4 min con
+   un backbone base). Si un peldaño grande (≥ 400 M) deja de caber en tiempo o en
+   memoria, eso sí se escala al operador como petición de cómputo, con la cifra
+   medida.
+4. **La batería actual se satura.** Si Jev saca 1,0, la batería no distingue
+   nada por encima de unos 0,95: sirve para subir desde 0,68, no para comparar
+   con Jev en la parte alta. `#T-dev-rotation` pasa a P0 y el dev nuevo tiene que
+   ser **más difícil**: más opciones (K hasta 20), distractores cercanos, cadenas
+   de 3 criterios, negaciones dobles, estados largos con ruido. Se valida
+   midiendo a Jev encima: **si Jev vuelve a sacar 1,0, el dev no vale.** Cuesta
+   céntimos (`eval/jev_battery.py`, con la key en `.meshkore/credentials/`).
+5. **Jev es también la referencia de cada hito.** Cada fila del marcador
+   publica la distancia a Jev en el dev vigente. H3 y H4 (§5) se leen junto a
+   esa distancia, no sólo contra el 0,70.
 
 ## 1. Las piezas (dos procesos que no se paran)
 

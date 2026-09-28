@@ -10,8 +10,14 @@ depends_on:
   - T-ce-finetune
   - T-numeric-gen
 created: 2026-09-27
-updated: 2026-09-27
+updated: 2026-09-28
 ---
+
+> **2026-09-28:** Jev resuelve atributos y prioridad al 100 % en nuestro dev; MiniLM no
+> las aprende ni en su propia distribución. Esta task es **el salto esperado**, no un
+> plan B: pasa a P0 en cuanto el bucle lleve 3 ciclos seguidos sin mover esas familias
+> (`docs/bucle-infinito.md` §0.1). Si un peldaño no cabe en tiempo o memoria, se pide
+> cómputo al operador con la cifra medida.
 
 # La escalera de backbones — mismo trainer, encoder más grande, control sin ajustar medido en cada peldaño
 
