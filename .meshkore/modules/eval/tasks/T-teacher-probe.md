@@ -1,8 +1,7 @@
 ---
 id: T-teacher-probe
 title: Cablear el profesor y medir la distancia real, mismo corte y mismas filas
-status: blocked
-blocked_reason: el proxy de esta máquina bloquea api.typesafe.ai; ejecución remota pendiente
+status: done
 priority: high
 owner: unassigned
 category: eval
@@ -178,3 +177,36 @@ git diff --cached --check
 ```
 
 No subir `jev-api-key`, `jev.env`, `.secrets/` ni `artifacts/cache/`.
+
+## Resolution — batería de desarrollo medida con Jev (2026-09-28)
+
+**done.** `artifacts/gates/T-teacher-probe/battery.json`, `jev-latest` en
+`https://api.typesafe.ai/v1/systemone`, las 400 filas (`rows_sha256`
+`8e8ccea5…35c3fb`, validado con el script de arriba).
+
+| Métrica | Jev | Qwen local | nli-nograd sin ajustar | smoke ajustado | Laya sin ajustar |
+|---|---|---|---|---|---|
+| Forzada, 400 filas | **1,000** (400/400), IC95 % [0,990 · 1,000] | 0,965 | 0,6225 | 0,6775 | 0,595 |
+| Contrafactual conjunto, 140 grupos | **1,000** (140/140), IC95 % [0,973 · 1,000] | 0,879 | 0,343 | 0,464 | 0,357 |
+
+Por familia, Jev acierta todo en las cinco (80/80 cada una, IC95 % [0,954 · 1,000]),
+incluidas comparación de atributos y prioridad, que es donde fallamos nosotros y Laya.
+Errores de parseo: **0**. Control de permutación, 24 filas con las opciones al revés:
+**0 cambios** (pass).
+
+**Coste real:** 424 llamadas (1 ping + 400 + 24 de permutación), 168 681 tokens de
+entrada, **$0,0071**. La primera ejecución hizo las 400 llamadas y falló al escribir el gate
+porque la suite exige la calibración y el control de permutación con su procedencia
+(regla C5). Se añadió en `eval/jev_battery.py` lo mismo que usan las demás columnas:
+`P.dev_temperature(rows)` y `P.qwen_permutation` sobre 24 filas, con su propio tope de 24
+llamadas y $0,01. La reejecución leyó las elecciones de `battery.picks.jsonl` (0 llamadas),
+así que el `budget` del gate marca 0. El coste de arriba se calculó sumando `input_tokens`
+de `artifacts/cache/teacher/` × 0,042 $/Mtok.
+
+Comprobado que el 100 % no es una fuga: el payload sólo lleva `state`, `instructions` y
+`criteria` (id → texto), sin gold ni evidencia (`eval/teacher.py::build_payload`).
+
+**Lo que significa:** en nuestra batería el techo real es 1,0 y Jev lo alcanza. Nuestro mejor
+modelo está a **0,32 puntos** en forzada y **0,54** en contrafactual conjunto. La batería no
+discrimina en la parte alta: si nos acercamos a Jev hará falta una más difícil
+(`#T-dev-rotation`).

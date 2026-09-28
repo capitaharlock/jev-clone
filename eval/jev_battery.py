@@ -32,6 +32,9 @@ TASK = "T-teacher-probe"
 GATE_DIR = ROOT / "artifacts" / "gates" / TASK
 GATE_PATH = GATE_DIR / "battery.json"
 PICKS_PATH = GATE_DIR / "battery.picks.jsonl"
+PERM_PATH = GATE_DIR / "battery.reversed.jsonl"
+PERM_SAMPLE = 24
+PERM_MAX_USD = 0.01
 DEFAULT_ENDPOINT = "https://api.typesafe.ai/v1/systemone"
 
 
@@ -122,15 +125,34 @@ def run(budget_usd: float, max_calls: int, limit: int | None) -> dict:
         rows,
         source=f"{TASK} Jev battery-dev {P.CUT_NAME}")
     scored_eps = [ep for ep in episodes if ep["id"] in done]
+    # The suite will not publish without the permutation control. Same
+    # protocol as the Qwen column: a fixed 24-row sample (sha256 order,
+    # chosen before measuring), options offered in reverse, pick compared by
+    # id. Its own hard budget, separate from the 400 main calls.
+    perm_client = TE.TeacherClient(
+        TE.Budget(max_calls=PERM_SAMPLE, max_usd=PERM_MAX_USD))
+
+    def choose(state, question, candidates):
+        return perm_client.decide(state, question, candidates,
+                                  question_id="q")
+
+    picks = {rid: v.get("choice") for rid, v in done.items()}
+    permutation = P.qwen_permutation(scored_eps, picks, choose=choose,
+                                     sample=PERM_SAMPLE, log=PERM_PATH,
+                                     temperature=None)
+    permutation["budget"] = perm_client.budget.card()
     doc = MS.report(
         rows,
         cut={**P.cut_descriptor(scored_eps), "subset": "whole cut"},
         model_version=f"jev:{TE.model()}",
         task=TASK,
         tracking=tracking,
+        permutation=permutation,
+        calibration=P.dev_temperature(rows),
         notes=[
             "Jev teacher scored on battery-dev, same rows as Qwen/Laya/MiniLM",
-            "permutation control skipped to keep the test balance intact",
+            f"permutation control on a fixed {PERM_SAMPLE}-row sample, own "
+            f"budget ({PERM_SAMPLE} calls, ${PERM_MAX_USD}), as for Qwen",
             f"key_fingerprint {TE.fingerprint()}",
         ])
     gate = {
@@ -143,6 +165,7 @@ def run(budget_usd: float, max_calls: int, limit: int | None) -> dict:
         "n_cut": len(episodes),
         "rows_sha256": P.rows_sha(scored_eps),
         "parse_errors": errors,
+        "permutation_budget": permutation["budget"],
         "report": MS.require(doc),
     }
     GATE_PATH.write_text(json.dumps(gate, indent=2, ensure_ascii=False) + "\n")
