@@ -116,3 +116,16 @@ artifacts/labelspace-qwen/cache/
 # manifest y el gate; los 50 000 episodios de cada lote, no.
 artifacts/episodes-rule/*/episodes.jsonl
 artifacts/episodes-rule/*/rejects.jsonl
+
+# Runtime from continuous training. The audit report carries the measured
+# result; candidates, local state and temporary evaluations stay per-machine.
+artifacts/audit/
+artifacts/checkpoints/ce/loop-*/
+artifacts/checkpoints/ce/mps-probe*/
+artifacts/checkpoints/ce/untuned-eval-*
+artifacts/checkpoints/listwise/
+artifacts/episodes-qwen/stream/
+artifacts/experiments/
+artifacts/gates/T-backbone-ladder/
+artifacts/listwise-loop/
+artifacts/loop/
