@@ -34,7 +34,12 @@ ROOT = Path(__file__).resolve().parent.parent
 SESS_DIR = ROOT / "artifacts" / "tester" / "sessions"
 MINE_DIR = ROOT / "artifacts" / "tester" / "mined"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.environ.get("TESTER_JUDGE_MODEL", "qwen3.8:27b-mlx")
+try:
+    from data.local_models import teacher_model as _teacher_model
+    _JUDGE_DEFAULT = _teacher_model()
+except Exception:
+    _JUDGE_DEFAULT = "qwen3.8:27b-mlx"
+OLLAMA_MODEL = os.environ.get("TESTER_JUDGE_MODEL", _JUDGE_DEFAULT)
 
 
 def load_pack(run: str, task: str):

@@ -21,8 +21,9 @@ status: stable
 | El ajuste aprende | contrafactual +0,121 [0,043 · 0,200], forzada +0,055 [0,015 · 0,098] con 1 000 decisiones | `smoke.json` |
 | Coste del ajuste | ≈ 40 s por 1 000 decisiones en MPS con L6 | `artifacts/checkpoints/ce/smoke-1k.log` |
 | Lo que NO aprende | comparación de atributos 0,574 → 0,574 **en el holdout del propio piloto**; prioridad sube en distribución (0,62 → 0,78) pero no transfiere a dev | T-ce-finetune `## Resolution parcial` |
-| Profesor local | `qwen3.8:27b-mlx` (desde 2026-09-27; el piloto usó 3.6) | `data/episode_gen.py::MODEL` |
-| Coste de Qwen | ≈ 13 s por episodio (lote 10, concurrencia 2): **≈ 2 700 episodios por 10 h** | T-episode-gen |
+| Profesor local | `qwen3.8:27b-mlx` (desde 2026-09-27; el piloto uso 3.6). En este clon, si el tag no esta, `data.local_models` cae a lo instalado | `data/episode_gen.py::MODEL` + `#T-host-qwen-ladder` |
+| Volumen de prosa | `qwen3:8b` via `QWEN_VOLUME_MODEL` cuando existe; el 27B no parafrasea cada fila | `data.local_models.volume_model` |
+| Coste de Qwen 27B | ≈ 13 s por episodio (lote 10, concurrencia 2): **≈ 2 700 episodios por 10 h** | T-episode-gen |
 | Metas | Jev 0,727 y Laya 0,766 en typed-decisions test; ≥ 0,70 macro con IC inferior ≥ 0,70 en la batería | guía §1 |
 | **Jev en NUESTRA batería (2026-09-28)** | **1,000** forzada (400/400) y **1,000** contrafactual (140/140); las cinco familias 80/80; $0,0071 | `artifacts/gates/T-teacher-probe/battery.json` |
 
@@ -200,10 +201,13 @@ PYTHONPATH=. .venv-train/bin/python -m training.python.loop status
 tail -5 artifacts/scoreboard/history.jsonl
 ```
 
-- Los dos procesos corren a la vez: Qwen en MLX con `nice -n 10` y el entreno
-  en MPS. Si el entreno se ralentiza más de ×2 por la contención, el productor
-  hace pausa durante la etapa TRAIN (el bucle escribe `artifacts/loop/TRAINING`
-  y el productor espera mientras exista).
+- Los dos procesos corren a la vez: Qwen (MLX o GGUF) con `nice -n 10` y el
+  entreno del encoder en **MPS** en este M5 Pro. `--device cpu` no es el
+  camino de producto aqui. Si el 27B esta cargado, `ollama stop` antes de
+  un smoke largo. Para datasets chicos el productor usa el 8B
+  (`QWEN_VOLUME_MODEL`). Si el entreno se ralentiza mas de ×2 por la
+  contencion, el productor hace pausa durante TRAIN (el bucle escribe
+  `artifacts/loop/TRAINING` y el productor espera mientras exista).
 - Se lanzan con `nohup` y log a `artifacts/loop/*.log` si el daemon no acepta
   llamadas. `jobs.yaml` lleva siempre el command real.
 - **Vigilancia** (cualquier agente, en cada turno): ¿viven los dos procesos?
@@ -214,8 +218,12 @@ tail -5 artifacts/scoreboard/history.jsonl
 
 Todo P0 salvo lo marcado. Lo que no depende de otra cosa, en paralelo.
 
-1. `#T-qwen38-ref`: Qwen 3.8 sobre dev (400 filas, 15 min). Confirma que el
-   profesor nuevo no es peor que el 3.6 (0,965) antes de que genere datos.
+0. `#T-host-qwen-ladder` (esta maquina): tags reales, probe de latencia
+   8B vs 27B, cwd de los jobs. Sin esto el productor pide un mlx que no
+   esta.
+1. `#T-qwen38-ref`: Qwen 3.8 sobre dev (400 filas; ~2 h fila a fila). Ya
+   GO en el repo original. En este clon no se re-mide hasta tener
+   `qwen3.8:27b-mlx` instalado.
 2. `#T-numeric-gen`: generador por regla de atributos y prioridad con volumen
    ilimitado. Es el primer brazo dirigido.
 3. `#T-loop-trainer`: mezcla multi-fuente con manifest + continuación desde

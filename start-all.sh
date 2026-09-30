@@ -3,7 +3,7 @@
 # trabajando indefinidamente, desacoplado de esta terminal (puedes cerrarla).
 #
 # Uso:
-#   /Users/ricartjuncadella/Documents/Prj/asimovia/jev-clone/start-all.sh [PORT]
+#   /Users/rjuncadell001/Prj/asimovia/jev.clone/start-all.sh [PORT]
 #
 # Arranca:
 #   monitor de entrenamiento (tools/training_monitor.py): reentreno completo
@@ -61,9 +61,11 @@ if "$VENV_PY" -c "import urllib.request; assert urllib.request.urlopen('http://1
 else
   echo "FAIL dashboard no responde en :$PORT"; FAIL=1
 fi
-curl -s -m 5 http://127.0.0.1:11434/api/tags | grep -q "qwen3.6:27b-mlx" \
-  && echo "OK Q-W-E-N (qwen3.6:27b-mlx) en Ollama" \
-  || { echo "AVISO Ollama sin qwen3.6:27b-mlx: el generador tira solo con plantillas programaticas"; }
+if curl -s -m 5 http://127.0.0.1:11434/api/tags | grep -Eq "qwen3.8:27b-mlx|qwen3:8b|qwen3.6:27b"; then
+  echo "OK Ollama con al menos un Qwen (ver python3 -m data.local_models resolve)"
+else
+  echo "AVISO Ollama sin Qwen: el generador tira solo con plantillas programaticas"
+fi
 echo "synth-loop: congelado en artifacts/data-prefetch/quarantine/ (#T-halt-contam)"
 echo "puedes cerrar esta terminal. Logs: tail -f $GENLOG | tail -f $MONLOG"
 exit $FAIL
