@@ -89,7 +89,12 @@ def model() -> str:
 
 def key_file() -> Path:
     raw = os.environ.get(KEY_FILE_ENV, "").strip()
-    return Path(raw) if raw else DEFAULT_KEY_FILE
+    if raw:
+        return Path(raw)
+    mesh = ROOT / ".meshkore" / "credentials" / "jev-api-key"
+    if mesh.is_file():
+        return mesh
+    return DEFAULT_KEY_FILE
 
 
 def api_key() -> str:

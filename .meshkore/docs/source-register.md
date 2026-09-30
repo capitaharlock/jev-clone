@@ -148,6 +148,21 @@ LFM2.5-230M y NeoBERT-250M siguen SIN descargar: el primero por licencia
 condicionada, el segundo por `trust_remote_code` sin auditar. Ninguno de los
 dos entra en un Pareto hasta que se resuelva eso (#T-bakeoff-real).
 
+## Escalera de scorers NLI (#T-backbone-ladder)
+
+Peldaño 2, en disco el 2026-09-28. El sha256 del tar y el `SHA256SUMS`
+interno coinciden con el snapshot de Hugging Face en la revisión de abajo.
+El directorio de carga tiene config, tokenizador, `spm.model` y
+`model.safetensors`. `pytorch_model.bin` y los dos ONNX no se copian.
+
+| Modelo | Repo @ revisión | Licencia | Fichero de pesos · sha256 | tokenizer.json · sha256 |
+|---|---|---|---|---|
+| mdeberta-v3-base-xnli (279 M params, fp16) | `MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7` @ `b5113eb38ab63efdd7f280f8c144ea8b13f978ce` | MIT | `model.safetensors` · `7c8e29f1115986d032e92b0fbaa0bdef1062a46f658b08705f237c05014a8541` (557 652 046 bytes) | `e23095eb61ba944c7be3a5d3e8ec19e37ce7ced0daa03550bde03e83c21b3f8a` |
+
+`spm.model` · `13c8d666d62a7bc4ac8f040aab68e942c861f93303156cc28f5c7e885d86d6e3`.
+`id2label` pone `entailment` en el índice 0. El control sin ajustar se mide
+antes de entrenar (`ce_finetune eval --checkpoint none --weights mdeberta-v3-base-xnli`).
+
 ## Veredicto de adecuación
 
 La mezcla es adecuada como punto de partida para un modelo de decisión porque

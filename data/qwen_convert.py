@@ -19,11 +19,15 @@ import sys
 import time
 import urllib.request
 
+from data.local_models import TEACHER_PREF
+
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IN_DIR = os.path.join(BASE, "artifacts", "data-prefetch")
 OUT_DIR = os.path.join(BASE, "artifacts", "data-qwen")
 OFFSETS = os.path.join(OUT_DIR, "_offsets.json")
-MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
+MODEL = (os.environ.get("QWEN_VOLUME_MODEL")
+         or os.environ.get("QWEN_MODEL")
+         or "").strip() or TEACHER_PREF[0]
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 POLL_SECS = int(os.environ.get("QWEN_POLL_SECS", "30"))
 

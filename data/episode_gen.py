@@ -49,6 +49,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from data import episode_contract as EC  # noqa: E402
+from data import local_models as LM  # noqa: E402
 from data import rule_variety as RV  # noqa: E402
 
 GENERATOR_VERSION = "episode-gen-v1"
@@ -261,13 +262,31 @@ _Q_TPL = {
 
 
 # -- Qwen: prose only -------------------------------------------------------
+def _active_volume_model() -> str:
+    """Paraphrase / small datasets: 8B if present, else the teacher."""
+    pinned = os.environ.get("QWEN_VOLUME_MODEL", "").strip()
+    if pinned:
+        return pinned
+    return LM.volume_model()
+
+
+def _with_teacher_system(messages: list[dict]) -> list[dict]:
+    if messages and messages[0].get("role") == "system":
+        return messages
+    return [{"role": "system", "content": LM.TEACHER_SYSTEM}, *messages]
+
+
 def _ollama_chat(messages: list[dict], num_predict: int,
                  timeout: int,
-                 temperature: float = TEMPERATURE) -> str | None:
+                 temperature: float = TEMPERATURE,
+                 model: str | None = None) -> str | None:
     """One sequential Ollama call; None on any failure (fallback path)."""
     body = json.dumps({
-        "model": MODEL, "stream": False, "think": False,
-        "messages": messages,
+        "model": (model
+                  or os.environ.get("QWEN_MODEL", "").strip()
+                  or LM.teacher_model()),
+        "stream": False, "think": False,
+        "messages": _with_teacher_system(messages),
         "options": {"temperature": float(temperature),
                     "num_predict": num_predict},
     }).encode()
@@ -324,7 +343,8 @@ def qwen_paraphrase(facts: str, lang: str, timeout: int = 120,
         f"Reply with ONLY the rewritten sentences.\n{facts}"
         + (f"\nKEEP: {keep}" if keep else ""))
     return _ollama_chat([{"role": "user", "content": prompt}],
-                        num_predict=220, timeout=timeout)
+                        num_predict=220, timeout=timeout,
+                        model=_active_volume_model())
 
 
 def teacher_structured(state: str, question: str,
@@ -768,7 +788,8 @@ def _work_items(queue: list[tuple[str, str]], n: int,
 
 
 def _build_episode(item: tuple, seed: int, prose: str,
-                   sink: list | None = None, variety: int = 0) -> dict:
+                   sink: list | None = None, variety: int = 0,
+                   layout: str = "in_option") -> dict:
     """Build ONE episode. Pure in ``(seed, idx, variant)``.
 
     With ``sink`` the Qwen paraphrase is deferred (see ``_maybe_qwen``);
@@ -785,7 +806,8 @@ def _build_episode(item: tuple, seed: int, prose: str,
     if variety and family in RV.FAMILIES:
         return RV.build(family, lang, seed, idx, group, _rng(seed, idx),
                         variant, prose, sink, k=k or RV.KS[0],
-                        variety=variety, prose_hook=_maybe_qwen)
+                        variety=variety, prose_hook=_maybe_qwen,
+                        layout=layout)
     return BUILDERS[family](lang, seed, idx, group, _rng(seed, idx),
                             variant, prose, sink)
 
@@ -914,7 +936,8 @@ def _read_jsonl(path: str) -> list[dict]:
 def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         out_dir: str = "", command: str = "", concurrency: int = 1,
         batch: int = 1, resume: bool = False, families=None,
-        variety: int = 0, group_prefix: str = "") -> dict:
+        variety: int = 0, group_prefix: str = "",
+        layout: str = "in_option") -> dict:
     """Generate ``n`` episodes. Manifest is written BEFORE generating.
 
     Cases come in base+counterfactual pairs sharing a ``variant_group``.
@@ -1025,7 +1048,7 @@ def run(n: int, seed: int, prose: str = "local", teacher: str = "stub",
         for start in range(start_at, len(items), PUBLISH_CHUNK):
             part = items[start:start + PUBLISH_CHUNK]
             sinks = [[] for _ in part]
-            eps = [_build_episode(it, seed, prose, sk, variety)
+            eps = [_build_episode(it, seed, prose, sk, variety, layout)
                    for it, sk in zip(part, sinks)]
             if prose == "qwen":
                 _fill_prose(eps, sinks, batch, concurrency)

@@ -541,5 +541,35 @@ class PublishTest(unittest.TestCase):
         self.assertTrue(RV.batch_dir(42).endswith("episodes-rule/batch-0042"))
 
 
+class BatteryLayoutTest(unittest.TestCase):
+    def test_asked_numbers_stay_in_the_state(self):
+        ep = RV.build(EC.COMPARISON, "es", 7, 0, "g", random.Random(0),
+                      "base", k=2, variety=16, layout="battery")
+        rt = ep["rule_trace"]
+        asked = rt["criteria"][0][0]
+        attr = RV.ATTR_BY_KEY[asked]
+        rendered = [RV.render_value(attr, row[asked], "es", rt["styles"][asked])
+                    for row in rt["attrs"]]
+        self.assertTrue(all(bit in ep["state"] for bit in rendered))
+        for bit in rendered:
+            for cand in ep["candidates"]:
+                self.assertNotIn(bit, cand["text"])
+        self.assertEqual(rt["layout"], "battery")
+
+    def test_relayout_strips_asked_numbers_from_a_published_episode(self):
+        ep = RV.build(EC.PRIORITY, "en", 9, 1, "g2", random.Random(1),
+                      "base", k=2, variety=16, layout="in_option")
+        asked = ep["rule_trace"]["criteria"][0][0]
+        attr = RV.ATTR_BY_KEY[asked]
+        rendered = RV.render_value(
+            attr, ep["rule_trace"]["attrs"][0][asked], "en",
+            ep["rule_trace"]["styles"][asked])
+        self.assertIn(rendered, ep["candidates"][0]["text"])
+        out = RV.relayout_battery(ep)
+        for cand in out["candidates"]:
+            self.assertNotIn(rendered, cand["text"])
+        self.assertIn(rendered, out["state"])
+
+
 if __name__ == "__main__":
     unittest.main()

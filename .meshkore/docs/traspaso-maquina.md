@@ -1,9 +1,11 @@
 # Traspaso de máquina — qué viaja en git y qué hay que rehacer
 
 Escrito el 2026-09-27 al mover el proyecto del MacBook Pro (M-anterior) a un M5.
-Vale para cualquier máquina nueva. La conclusión primero: **lo caro e
-irrepetible SÍ está en git**; lo que no viaja son bytes derivados, y cada uno
-tiene su comando.
+Actualizado el mismo dia en el clon
+`/Users/rjuncadell001/Prj/asimovia/jev.clone` (M5 Pro, 48 GB). Vale para
+cualquier maquina nueva. La conclusion primero: **lo caro e irrepetible SÍ
+esta en git**; lo que no viaja son bytes derivados, y cada uno tiene su
+comando.
 
 ## 1. Lo que ya viaja (no hay nada que hacer)
 
@@ -12,12 +14,12 @@ tiene su comando.
 - Código entero (`data/`, `eval/`, `training/`, `model/`, `tools/`) y sus tests.
 - `.meshkore/` versionado: `modules/*/tasks`, `roadmap/initiatives`, `docs/`,
   `public/jobs.yaml` (los seis jobs canónicos con su `command` exacto).
-- **Los episodios del piloto verificados con Qwen** —
+- **Los episodios del piloto verificados con Qwen**:
   `artifacts/episodes-qwen/pilot-2k/verified.jsonl` (4,8 MB, trackeado). Son
   2 100 episodios que costaron horas de profesor: no se regeneran gratis y por
   eso están en git.
 - **La columna del profesor** `artifacts/gates/T-qwen38-ref/columns/*.picks.jsonl`
-  (244 KB) — las 400 filas medidas fila a fila. Sin esto la comparación 3.6 vs
+  (244 KB): las 400 filas medidas fila a fila. Sin esto la comparación 3.6 vs
   3.8 habría que pagarla otra vez.
 - `data/battery_dev.jsonl` (la batería de desarrollo) y los manifests de los
   cortes sellados en `artifacts/splits/`.
@@ -45,10 +47,16 @@ tiene su comando.
 1. `git clone` y `git checkout main`.
 2. `python3 -m venv .venv-train` → `make torch-env` → `make torch-weights` →
    `.venv-train/bin/python -m data.prefetch`. Comprueba el stack con `make torch-smoke`.
-3. `ollama pull qwen3.8:27b-mlx` (el productor; es el profesor decidido en
-   `#T-qwen38-ref`). Ojo al hábito de `ollama`: deja el modelo cargado en GPU
-   después de terminar y mete la máquina en swap — `ollama ps` antes de
-   entrenar, `ollama stop <modelo>` para descargarlo.
+3. Qwen en **dos tallas** (`#T-host-qwen-ladder`), no una:
+   `ollama pull qwen3.8:27b-mlx` (profesor / juez / verificador, 18 GB) y
+   `ollama pull qwen3:8b` (prosa y datasets chicos). El tag que ya estaba
+   en este host (`qwen3.6:27b-q8_0`) es Q8 de 28 GB con Modelfile Atlas:
+   sirve de reserva, no de defecto. **En red PwC `ollama pull` esta
+   bloqueado (503 Access Denied)**; el pull del 8B y del 3.8 mlx hay que
+   hacerlo fuera de esa red. Llama no esta instalado. Entrenar el encoder
+   con `--device mps`. CPU solo en tests. Ojo al habito de `ollama`: deja
+   el modelo cargado y mete swap. Revisar `ollama ps` antes de entrenar,
+   `ollama stop <modelo>` para descargarlo.
 4. Registrar los seis jobs de `.meshkore/public/jobs.yaml` con `POST /jobs`
    (crea en `running`: encadena `POST /jobs/<id>/stop` si los quieres parados).
 5. `pytest data/ eval/` — el verde esperado son 566 de `data/`. Hay **tres

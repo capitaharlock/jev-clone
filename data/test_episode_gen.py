@@ -144,7 +144,7 @@ if __name__ == "__main__":
 # qwen3.6:27b-mlx (medido 2026-09-27), así que el piloto sólo es viable
 # agrupando. Lo que NO puede cambiar al agrupar es qué se acepta.
 def _fake_ollama(messages, num_predict, timeout,
-                 temperature=EG.TEMPERATURE):
+                 temperature=EG.TEMPERATURE, **_kw):
     """Qwen de mentira, determinista: parafrasea copiando, elige el 1.er id."""
     prompt = messages[0]["content"]
     if "Rewrite EACH numbered fact-set" in prompt:
@@ -254,7 +254,7 @@ class BatchingChangesNothingTest(unittest.TestCase):
         self.assertEqual(a["prose_origins"], b["prose_origins"])
 
     def test_lost_rule_token_keeps_the_local_prose(self):
-        def drops_the_numbers(messages, num_predict, timeout):
+        def drops_the_numbers(messages, num_predict, timeout, **_kw):
             out = _fake_ollama(messages, num_predict, timeout)
             return re.sub(r"\d+", "N", out) \
                 if "Rewrite EACH" in messages[0]["content"] else out
@@ -296,7 +296,7 @@ class EvidenceSurvivesTheParaphraseTest(unittest.TestCase):
     """
 
     def test_prose_that_drops_the_span_falls_back_instead_of_rejecting(self):
-        def eats_the_span(messages, num_predict, timeout):
+        def eats_the_span(messages, num_predict, timeout, **_kw):
             out = _fake_ollama(messages, num_predict, timeout)
             if "Rewrite" not in messages[0]["content"]:
                 return out
@@ -314,7 +314,7 @@ class EvidenceSurvivesTheParaphraseTest(unittest.TestCase):
     def test_the_span_is_asked_for_in_the_prompt(self):
         seen = {}
 
-        def capture(messages, num_predict, timeout):
+        def capture(messages, num_predict, timeout, **_kw):
             seen.setdefault("prompt", messages[0]["content"])
             return _fake_ollama(messages, num_predict, timeout)
 

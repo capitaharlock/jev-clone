@@ -599,7 +599,16 @@ def train(args, load=load_model) -> dict:
               f"gold={ex['gold']}: {gold['hypothesis']!r}", flush=True)
 
     groups = param_groups(model, args.lr_encoder, args.lr_head)
-    opt = torch.optim.AdamW(groups, weight_decay=WEIGHT_DECAY)
+    # A batch of 8 decisions on this backbone peaked at 51 GB and the next
+    # MPS copy never finished. One decision per step stays inside the machine.
+    n_params = sum(p.numel() for p in model.parameters())
+    if (args.device == "mps" and n_params > 200_000_000
+            and args.decisions_per_batch > 1):
+        print(f"[train] decisions_per_batch {args.decisions_per_batch} -> 1 "
+              f"({n_params} params on mps)", flush=True)
+        args.decisions_per_batch = 1
+    # The multi-tensor Adam graph is what waited once memory was already full.
+    opt = torch.optim.AdamW(groups, weight_decay=WEIGHT_DECAY, foreach=False)
     model_version = f"{TASK}:{out.name}"
     scorer = LoadedPairScorer(tokenizer, model, entail_index, device,
                               model_version, batch_size=args.batch_size)

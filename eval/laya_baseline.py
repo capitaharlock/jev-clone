@@ -100,12 +100,22 @@ CHECKPOINTS = {
         "repo": "convaiinnovations/laya",
         "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
         "encoder": "ModernBERT-large (English, ~421 M)",
+        "weights_sha256":
+            "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
     },
     "laya-multilingual": {
         "repo": "convaiinnovations/laya-multilingual",
         "revision": "e4e9ddf21a7b1903b7acffd8814ad4307bf63a67",
         "encoder": "mmBERT-base (100+ languages, ~300 M)",
+        "weights_sha256":
+            "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
     },
+}
+#: Copia local ya verificada (sha256 del tar y SHA256SUMS). Si los dos
+#: ficheros están, no se llama al Hub.
+LOCAL_SNAPSHOTS = {
+    "laya": ROOT / "artifacts" / "weights" / "laya-english",
+    "laya-multilingual": ROOT / "artifacts" / "weights" / "laya-multilingual",
 }
 #: Qué checkpoint responde cada idioma DECLARADO de la fila.
 ROUTE = {"en": "laya", "es": "laya-multilingual"}
@@ -868,12 +878,20 @@ class LayaPredictor:
     def agent(self, name: str):
         if name in self.agents:
             return self.agents[name]
-        from huggingface_hub import snapshot_download
         spec = CHECKPOINTS[name]
         started = time.perf_counter()
-        local = snapshot_download(spec["repo"], revision=spec["revision"],
-                                  allow_patterns=list(SNAPSHOT_PATTERNS))
-        agent = self._laya.load(local, device=self.device)
+        pin = LOCAL_SNAPSHOTS[name]
+        if ((pin / "model.safetensors").is_file()
+                and (pin / "rl_agent_config.json").is_file()):
+            local = str(pin)
+        else:
+            from huggingface_hub import snapshot_download
+            local = snapshot_download(
+                spec["repo"], revision=spec["revision"],
+                allow_patterns=list(SNAPSHOT_PATTERNS))
+        agent = self._laya.load(
+            local, device=self.device,
+            expected_sha256={"model.safetensors": spec["weights_sha256"]})
         weights = Path(local) / "model.safetensors"
         self.checkpoints[name] = {
             **spec,

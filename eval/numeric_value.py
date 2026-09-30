@@ -187,7 +187,8 @@ def mix(rule_dir, pilot, n_rule: int, out, seed: int = 20260927) -> dict:
     """Escribe `<out>/episodes.jsonl` = muestra por regla + piloto entero."""
     rule_path = Path(rule_dir) / "episodes.jsonl"
     pilot_path = Path(pilot)
-    rule_eps = [ep for ep in _read_jsonl(rule_path) if is_rule(ep)]
+    rule_eps = [RV.relayout_battery(ep)
+                for ep in _read_jsonl(rule_path) if is_rule(ep)]
     pilot_eps = _read_jsonl(pilot_path)
     taken = sample_by_group(rule_eps, n_rule, seed)
     episodes = taken + pilot_eps

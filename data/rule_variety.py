@@ -836,23 +836,62 @@ def question_of(spec: dict) -> str:
     return f"{head}{body} Which {noun} comes out chosen{tail}?"
 
 
-def candidates_of(spec: dict) -> list:
-    """Las K opciones, en el orden de `attrs`, con los valores decisivos.
+def relayout_battery(ep: dict) -> dict:
+    """Mueve los numeros que la pregunta pide fuera del texto de la opcion.
 
-    El contrato marca `COMPARATIVE_CONTEXT` True en las dos familias: la
-    información decisiva vive DENTRO de las opciones, así que cada una
-    lleva sus valores de los criterios y del umbral.
+    battery-dev los deja en el estado. Un lote `in_option` se puede
+    reescribir desde `rule_trace` sin volver a sortear el caso.
+    """
+    rt = ep.get("rule_trace") or {}
+    entities = rt.get("entities")
+    if not entities or "criteria" not in rt or "attrs" not in rt:
+        return ep
+    lang = ep["lang"]
+    asked = {c[0] for c in rt["criteria"]}
+    shown = [k for k in rt["keys"] if k not in asked][:1]
+    cands = []
+    for i, name in enumerate(entities):
+        head = ("El " if lang == "es" else "The ") + name
+        if shown:
+            vals = [render_value(ATTR_BY_KEY[k], rt["attrs"][i][k], lang,
+                                 rt["styles"][k]) for k in shown]
+            text = f"{head}, {_join(vals, lang)}"
+        else:
+            text = head
+        cands.append({"id": f"c{i + 1}", "text": text})
+    out = dict(ep)
+    out["candidates"] = cands
+    traced = dict(rt)
+    traced["layout"] = "battery"
+    out["rule_trace"] = traced
+    return out
+
+
+def candidates_of(spec: dict) -> list:
+    """Las K opciones, en el orden de `attrs`.
+
+    `layout=in_option` (el lote publicado) mete en cada opcion los
+    criterios y el umbral. `layout=battery` deja esos numeros en el
+    estado, como battery-dev: la opcion lleva como mucho un atributo
+    que la pregunta no pide, o solo el nombre.
     """
     lang = spec["lang"]
-    shown = [k for k, _ in spec["criteria"]]
-    shown += [f[0] for f in spec["filters"] if f[0] not in shown]
+    if spec.get("layout") == "battery":
+        asked = {k for k, _ in spec["criteria"]}
+        shown = [k for k in spec["keys"] if k not in asked][:1]
+    else:
+        shown = [k for k, _ in spec["criteria"]]
+        shown += [f[0] for f in spec["filters"] if f[0] not in shown]
     out = []
     for i in range(spec["k"]):
-        vals = [render_value(ATTR_BY_KEY[k], spec["attrs"][i][k], lang,
-                             spec["styles"][k]) for k in shown]
         head = ("El" if lang == "es" else "The") + f" {entity(spec, i)}"
-        out.append({"id": f"c{i + 1}",
-                    "text": f"{head}, {_join(vals, lang)}"})
+        if shown:
+            vals = [render_value(ATTR_BY_KEY[k], spec["attrs"][i][k], lang,
+                                 spec["styles"][k]) for k in shown]
+            text = f"{head}, {_join(vals, lang)}"
+        else:
+            text = head
+        out.append({"id": f"c{i + 1}", "text": text})
     return out
 
 
@@ -864,6 +903,7 @@ def rule_trace_of(spec: dict) -> dict:
         "filters": [list(f) for f in spec["filters"]], "rank": spec["rank"],
         "form": spec["form"], "k": spec["k"], "cf_kind": spec["cf_kind"],
         "keys": list(spec["keys"]), "styles": dict(spec["styles"]),
+        "layout": spec.get("layout", "in_option"),
         "gold_index": spec["gold"],
         "entities": [entity(spec, i) for i in range(spec["k"])],
     }
@@ -891,7 +931,8 @@ def case_rngs(seed: int, group: str, variant: str) -> tuple:
 def build(family: str, lang: str, seed: int, idx: int, group: str,
           rng: random.Random, variant, prose: str = "local",
           sink: list | None = None, k: int = 2,
-          variety: int = MIN_VARIETY, prose_hook=None) -> dict:
+          variety: int = MIN_VARIETY, prose_hook=None,
+          layout: str = "in_option") -> dict:
     """Un episodio de la familia numérica, con variedad y contrafactual.
 
     Firma compatible con los `build_*` de `data.episode_gen`; `rng` se
@@ -903,6 +944,7 @@ def build(family: str, lang: str, seed: int, idx: int, group: str,
     base_rng, var_rng = case_rngs(seed, group, kind)
     base = base_case(family, lang, k, base_rng, variety)
     spec = apply_variant(base, kind, var_rng)
+    spec["layout"] = layout
     local = state_of(spec)
     question = question_of(spec)
     cands = candidates_of(spec)

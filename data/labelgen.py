@@ -63,6 +63,7 @@ sys.path.insert(0, ROOT)
 from data import hardneg  # noqa: E402
 from data import mix as mixmod  # noqa: E402
 from data.firewall import reject_train_rows  # noqa: E402
+from data.local_models import TEACHER_PREF as _TEACHER_PREF  # noqa: E402
 from data.registry import DatasetCard, Registry  # noqa: E402
 
 #: bump when the prompt, the template or the recipe change: spaces from an
@@ -77,7 +78,7 @@ REGISTRY_PATH = os.path.join(OUT_DIR, "registry.json")
 NEIGHBORHOOD_PATH = os.path.join(OUT_DIR, "neighborhood.json")
 MIX_PATH = os.path.join(OUT_DIR, "factory-mix.json")
 
-MODEL = os.environ.get("QWEN_MODEL", "qwen3.8:27b-mlx")
+MODEL = os.environ.get("QWEN_MODEL", _TEACHER_PREF[0])
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
 #: spaces the task asks for; rows are template-cheap, LLM calls are not.

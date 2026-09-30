@@ -85,6 +85,19 @@ SCORERS = {
         "files": ("config.json", "tokenizer.json", "tokenizer_config.json",
                   "special_tokens_map.json", "model.safetensors"),
     },
+    # Peldaño 2 de #T-backbone-ladder. El tar verificado también trae
+    # pytorch_model.bin y dos ONNX; no están en `files`, así que fetch
+    # no los pide y require_verified no deja cargarlos.
+    "mdeberta-v3-base-xnli": {
+        "repo": "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
+        "revision": "b5113eb38ab63efdd7f280f8c144ea8b13f978ce",
+        "license": "MIT",
+        "params_m": 279,
+        "gated": False,
+        "files": ("config.json", "tokenizer.json", "tokenizer_config.json",
+                  "special_tokens_map.json", "added_tokens.json", "spm.model",
+                  "model.safetensors"),
+    },
 }
 
 MANIFEST = "manifest.json"
