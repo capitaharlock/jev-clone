@@ -1,6 +1,6 @@
 ---
 title: El bucle infinito — entrenar, probar, promover, escalar
-updated: 2026-09-28
+updated: 2026-09-30
 owner: architect-master
 status: stable
 ---
@@ -63,6 +63,18 @@ mayor, formato listwise) cuando el volumen deja de mover una familia.
 5. **Jev es también la referencia de cada hito.** Cada fila del marcador
    publica la distancia a Jev en el dev vigente. H3 y H4 (§5) se leen junto a
    esa distancia, no sólo contra el 0,70.
+
+## 0.2 Corrección de la auditoría (2026-09-30) — el punto 2 de §0.1 es prematuro
+
+El «límite de capacidad» salió de un smoke de 625 pasos, 1 época, LR constante, con la
+pérdida de entreno en 1,07 → 1,02: el modelo no ajustó ni su propio entreno. Una sonda
+de sobreajuste interrumpida en la época 8 (`#T-capacity-probe`) ya lleva el fit de las
+familias numéricas de 0,34 a **0,76** y subiendo; unseen 0,31 → 0,42. **Antes de subir
+de backbone**, `#T-capacity-probe` (terminar la sonda + entreno largo con los 50 000 por
+regla y warmup/decay). Si el fit llega a ~1 y unseen no sigue, el siguiente brazo es
+`#T-listwise-format` (el formato pairwise no deja comparar opciones), y después
+`#T-backbone-ladder`. Con tres familias ya en 0,76–0,99, llevar las dos numéricas a
+~0,75 pone la macro por encima de 0,80.
 
 ## 1. Las piezas (dos procesos que no se paran)
 

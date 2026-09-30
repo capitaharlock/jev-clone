@@ -86,6 +86,9 @@ DEFAULT_LR_HEAD = 1e-4
 DEFAULT_DECISIONS_PER_BATCH = OF.DEFAULT_DECISIONS_PER_BATCH
 DEFAULT_EVAL_EVERY = 250
 DEFAULT_BUDGET = 1000
+#: `warmup-linear`: sube el LR en el primer 6 % de los pasos y lo baja
+#: linealmente a 0. `constant` es lo que usaron el smoke y #T-numeric-gen.
+WARMUP_FRACTION = 0.06
 DEFAULT_BATTERY = Path(BD.BATTERY)
 WEIGHT_DECAY = 0.01
 GRAD_CLIP = 1.0
@@ -600,6 +603,15 @@ def train(args, load=load_model) -> dict:
 
     groups = param_groups(model, args.lr_encoder, args.lr_head)
     opt = torch.optim.AdamW(groups, weight_decay=WEIGHT_DECAY)
+    sched = None
+    schedule = getattr(args, "schedule", "constant")
+    if schedule == "warmup-linear":
+        total = max(1, math.ceil(min(args.budget, len(decisions) * args.epochs)
+                                 / args.decisions_per_batch))
+        warm = max(1, int(total * WARMUP_FRACTION))
+        sched = torch.optim.lr_scheduler.LambdaLR(
+            opt, lambda s: min((s + 1) / warm,
+                               max(0.0, (total - s) / max(1, total - warm))))
     model_version = f"{TASK}:{out.name}"
     scorer = LoadedPairScorer(tokenizer, model, entail_index, device,
                               model_version, batch_size=args.batch_size)
@@ -677,6 +689,8 @@ def train(args, load=load_model) -> dict:
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), GRAD_CLIP)
             opt.step()
+            if sched is not None:
+                sched.step()
             opt.zero_grad(set_to_none=True)
             steps += 1
             consumed += len(chunk)
@@ -715,6 +729,7 @@ def train(args, load=load_model) -> dict:
             "decisions_per_batch": args.decisions_per_batch,
             "budget_decisions": args.budget, "epochs_max": args.epochs,
             "eval_every_decisions": args.eval_every,
+            "schedule": schedule,
             "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "optimizer": "AdamW (two groups: encoder, classifier head)",
             "max_length": CE.DEFAULT_MAX_LENGTH,
@@ -1003,6 +1018,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="dev evaluation every N decisions consumed")
     t.add_argument("--budget", type=int, default=DEFAULT_BUDGET,
                    help="decisions to consume, then stop")
+    t.add_argument("--schedule", choices=["constant", "warmup-linear"],
+                   default="constant")
     t.add_argument("--battery", default=str(DEFAULT_BATTERY))
     t.add_argument("--holdout", type=float, default=0.0,
                    help="provisional by-group holdout share (smoke only)")
