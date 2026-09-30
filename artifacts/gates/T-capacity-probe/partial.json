@@ -1,0 +1,15 @@
+{
+  "task": "T-capacity-probe",
+  "status": "partial-interrupted",
+  "note": "Run stopped by the operator at epoch 8 of 20 (no training on this machine). Figures copied verbatim from fit.log. It is NOT a verdict; the full run belongs to the training machine.",
+  "command": "PYTHONPATH=. .venv-train/bin/python -m training.python.ce_capacity run --device mps",
+  "model": "minilmv2-l6-mnli-xnli (untuned start)",
+  "setup": {"fit": 512, "unseen": 1024, "families": ["attribute_comparison", "priority_decision"], "source": "artifacts/episodes-rule/batch-0001", "lr_encoder": 3e-5, "decisions_per_batch": 8, "schedule": "constant"},
+  "curve": [
+    {"epoch": 0, "train_loss": null, "fit": 0.3418, "unseen": 0.3145},
+    {"epoch": 2, "train_loss": 1.3411, "fit": 0.4473, "unseen": 0.3467},
+    {"epoch": 4, "train_loss": 1.2032, "fit": 0.5508, "unseen": 0.3896},
+    {"epoch": 6, "train_loss": 1.0128, "fit": 0.6797, "unseen": 0.4316},
+    {"epoch": 8, "train_loss": 0.8635, "fit": 0.7559, "unseen": 0.4219}
+  ]
+}

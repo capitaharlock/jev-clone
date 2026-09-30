@@ -17,7 +17,11 @@ updated: 2026-09-30
 > gate pareado. El siguiente brazo es `#T-aligned-ranking-v2`: corpus numérico
 > alineado, limpieza del piloto, paráfrasis verificadas y pérdida auxiliar
 > pareada. `#T-dev-rotation` debe terminar antes de afirmar un resultado por
-> encima de 0,80. El manual de operación es `docs/bucle-infinito.md`.
+> encima de 0,80. El pull del 2026-09-30 añade `#T-capacity-probe`: el diagnóstico
+> de capacidad salió de un smoke cuya pérdida apenas bajó de 1,07 a 1,02, y una
+> sonda parcial ya lleva el fit numérico de MiniLM de 0,34 a 0,76. Hay que
+> terminar esa sonda antes de subir de backbone. El manual de operación es
+> `docs/bucle-infinito.md` §0.2.
 
 # El bucle diario — que mañana el modelo sea mejor que hoy, medido
 

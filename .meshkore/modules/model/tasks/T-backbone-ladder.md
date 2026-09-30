@@ -13,6 +13,11 @@ created: 2026-09-27
 updated: 2026-09-30
 ---
 
+> **2026-09-30:** en espera de `#T-capacity-probe`. La premisa «MiniLM no las aprende ni en
+> su propia distribución» salió de un smoke sub-entrenado (pérdida 1,07 a 1,02); la sonda
+> parcial ya ajusta el 0,76 del fit. Se sube de peldaño sólo si la sonda da capacidad < 0,70.
+> Listwise ya está medido y no basta para tratar el encoder como el cuello actual.
+
 > **2026-09-28:** Jev resuelve atributos y prioridad al 100 % en nuestro dev; MiniLM no
 > las aprende ni en su propia distribución. Esta task es **el salto esperado**, no un
 > plan B: pasa a P0 en cuanto el bucle lleve 3 ciclos seguidos sin mover esas familias

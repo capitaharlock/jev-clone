@@ -1,0 +1,8 @@
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 9819.66it/s]
+[capacity] epoch 0 loss None fit 0.3418 unseen 0.3145 (18.9s)
+[capacity] epoch 2 loss 1.3411 fit 0.4473 unseen 0.3467 (129.3s)
+[capacity] epoch 4 loss 1.2032 fit 0.5508 unseen 0.3896 (243.7s)
+[capacity] epoch 6 loss 1.0128 fit 0.6797 unseen 0.4316 (404.5s)
+[capacity] epoch 8 loss 0.8635 fit 0.7559 unseen 0.4219 (628.0s)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-77624-at9ren6d'}
+  warnings.warn(
