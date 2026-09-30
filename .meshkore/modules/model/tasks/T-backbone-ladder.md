@@ -10,7 +10,7 @@ depends_on:
   - T-ce-finetune
   - T-numeric-gen
 created: 2026-09-27
-updated: 2026-09-28
+updated: 2026-09-30
 ---
 
 > **2026-09-28:** Jev resuelve atributos y prioridad al 100 % en nuestro dev; MiniLM no
@@ -35,6 +35,32 @@ filas, IC95 % [−0,014, 0,080], sin despegarse de 0. En la misma corrida
 1,000, así que el trainer y los datos funcionan. **El volumen no es el cuello;
 el encoder sí lo es**, y esta task es la que lo prueba o lo desmiente
 (`artifacts/gates/T-numeric-gen/gate.json`, sección `value_proof.bottleneck`).
+
+**2026-09-28.** Peldaño 2 en disco, revisión
+`b5113eb38ab63efdd7f280f8c144ea8b13f978ce`, fila en `source-register.md`.
+El directorio de carga no contiene `pytorch_model.bin`. Control sin ajustar
+en dev, CPU, 157 s, `artifacts/gates/T-backbone-ladder/eval-untuned.json`:
+forzada 248/400 = 0,6200, IC95 % [0,572, 0,666]. Por familia:
+`attribute_comparison` 28/80 = 0,3500, `priority_decision` 30/80 = 0,3750,
+`description_classification` 68/80 = 0,8500, `extraction_paraphrase`
+72/80 = 0,9000, `textual_inference_negation` 50/80 = 0,6250.
+`format_fingerprint()` = `b215e3003cc60c0f`, el mismo del peldaño 1.
+
+**Primer smoke, 2026-09-28.** La ruta MPS completó 10 pasos (80 decisiones)
+en 48 s y quedó detenida más de 10 minutos dentro de
+`torch.optim.AdamW.addcdiv_`, esperando un grafo MPS. El muestreo del proceso
+confirma que no estaba en carga de datos ni evaluación. El bucle conserva MPS
+para MiniLM y ejecuta este peldaño en CPU hasta aislar una combinación de
+optimizador y PyTorch que no se detenga. Esta caída no cuenta como resultado
+del smoke ni como NO-GO de capacidad.
+
+**Resultado listwise, 2026-09-30.** mDeBERTa con una secuencia por decisión
+subió el pico de investigación a 0,7500 y dejó una base activa de 0,7325.
+Seis ciclos con lotes no consumidos mantuvieron el rango entre 0,72 y 0,75.
+La mezcla nueva alcanza 0,8086 en su propio holdout y 0,7175 en la batería
+objetivo. El cuello actual es la alineación semántica entre el corpus y la
+batería, no la capacidad bruta del encoder. El peldaño 3 queda aplazado hasta
+medir `#T-aligned-ranking-v2`.
 
 **Peldaños** (cada uno con fila en `source-register.md`, revisión fijada y sha
 verificado por `model/weights.py`):

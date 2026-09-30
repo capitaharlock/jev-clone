@@ -1,7 +1,8 @@
 # docs/ — map
 
 - [bucle-infinito.md](bucle-infinito.md) — **manual de operación del bucle sin fin** (productor + entreno/prueba/promoción, escaleras, hitos). Léelo antes de tocar el entreno.
-- [traspaso-maquina.md](traspaso-maquina.md) — **cambio de máquina**: qué viaja en git (los episodios verificados con Qwen y la columna del profesor SÍ), qué se rehace y con qué comando, los tres rojos preexistentes y dónde se retoma el hilo (`#T-backbone-ladder`).
+- [traspaso-maquina.md](traspaso-maquina.md): **cambio de maquina**: que viaja en git, que se rehace, Qwen en dos tallas en este M5 Pro (`#T-host-qwen-ladder`), y donde se retoma (`#T-backbone-ladder`).
+- [audit-2026-09-30-route-80.md](audit-2026-09-30-route-80.md): auditoría listwise, diagnóstico del techo en 0,75 y siguiente brazo hacia 0,80.
 - [guia-un-solo-objetivo.md](guia-un-solo-objetivo.md) — **léela primero**: el único objetivo (2026-09-27), el orden de ejecución, las reglas y el bucle diario.
 - [context.md](context.md) — product, architecture and execution constraints.
 - [coverage.md](coverage.md) — source requirements mapped to roadmap tasks.

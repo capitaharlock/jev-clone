@@ -8,10 +8,16 @@ modules:
   - eval
   - data
 created: 2026-09-27
-updated: 2026-09-27
+updated: 2026-09-30
 ---
 
-> **Activa desde el 2026-09-27** (decisión del operador: el entreno funciona, se escala a la máxima potencia de la máquina y no se para). El manual de operación es `docs/bucle-infinito.md`: dos procesos sin fin (productor de datos y bucle), la escalera de volumen, la regla de promoción, la escalera de brazos y los hitos. Tasks nuevas: `#T-qwen38-ref`, `#T-numeric-gen`, `#T-backbone-ladder`, `#T-listwise-format`, `#T-dev-rotation`. Lo de abajo es el diseño original «diario»; donde choque, manda el manual.
+> **Estado del 2026-09-30.** El pase listwise terminó en el ciclo 34 y el
+> entreno quedó pausado. Pico de investigación: 0,7500 en `loop-0030`. Base
+> activa: 0,7325 en `loop-0024`. Repetir la mezcla actual no ha superado el
+> gate pareado. El siguiente brazo es `#T-aligned-ranking-v2`: corpus numérico
+> alineado, limpieza del piloto, paráfrasis verificadas y pérdida auxiliar
+> pareada. `#T-dev-rotation` debe terminar antes de afirmar un resultado por
+> encima de 0,80. El manual de operación es `docs/bucle-infinito.md`.
 
 # El bucle diario — que mañana el modelo sea mejor que hoy, medido
 

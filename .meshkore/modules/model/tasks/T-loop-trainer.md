@@ -1,7 +1,7 @@
 ---
 id: T-loop-trainer
 title: El trainer que continúa — mezcla multi-fuente declarada y checkpoint que no empieza de cero
-status: next
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -9,7 +9,7 @@ initiative: daily-learning-loop
 depends_on:
   - T-ce-finetune
 created: 2026-09-27
-updated: 2026-09-27
+updated: 2026-09-30
 ---
 
 > **2026-09-27:** P0 del bucle (`docs/bucle-infinito.md` §1, §2, §8.3). Añade a lo de abajo: **tope de repetición** (ningún episodio se ve más de 4 veces en total), fuentes = `artifacts/episodes-qwen/{pilot-2k/verified.jsonl,stream/*}` + `artifacts/episodes-rule/*` + `artifacts/episodes-external/typed-decisions/train`, y `--weights` de cualquier peldaño de `#T-backbone-ladder`. Escribe `consumed_ids` en `train_manifest.json`: cierra la casilla «consumido» del embudo de `#T-episode-verify`.
@@ -58,3 +58,17 @@ acotado. El bucle diario necesita tres cosas más, y ninguna es «más épocas»
 - Una mezcla con fuga o con un corte `eval-only` no entrena (test).
 - Dos días consecutivos de continuación están medidos en dev contra el día
   anterior y contra el checkpoint sin ajustar.
+
+## Resolution
+
+El supervisor rota los lotes por regla no consumidos, añade repaso fresco de
+las cinco familias y escribe los IDs consumidos, su hash, el número de IDs
+únicos y la exposición máxima. El mejor checkpoint dentro de cada ciclo se
+conserva; el resto se poda sin tocar la base activa.
+
+La promoción compara candidato y base activa con bootstrap pareado para el
+acierto forzado y la consistencia conjunta. El ciclo 34 terminó en 0,7475 y
+0,6071, pero no promovió: los IC95 de mejora fueron
+`[-0,0100, 0,0425]` y `[-0,0286, 0,0714]`. El supervisor quedó pausado tras
+ese ciclo. El siguiente arranque depende de `#T-aligned-ranking-v2`, no de
+repetir la mezcla actual.
