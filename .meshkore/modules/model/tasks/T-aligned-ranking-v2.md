@@ -1,7 +1,7 @@
 ---
 id: T-aligned-ranking-v2
 title: Alinear el corpus numérico y añadir ranking pareado al scorer listwise
-status: next
+status: active
 priority: high
 owner: unassigned
 category: model
@@ -11,10 +11,19 @@ depends_on:
   - T-loop-trainer
   - T-dev-rotation
 created: 2026-09-30
-updated: 2026-09-30
+updated: 2026-10-02
 ---
 
 # Alinear el corpus numérico y añadir ranking pareado al scorer listwise
+
+**Activado el 2026-10-02.** Los ciclos 35 a 60 de la receta anterior dieron
+una media de 0,7320, mínimo 0,7075 y máximo aislado 0,7725. El holdout llegó a
+0,87 sin transferencia estable a dev. La mezcla v3 sustituye esa receta:
+12.000 filas numéricas en grupos completos, sólo `superlative` para
+comparación y `chain2` para prioridad, balance 50/50 por familia e idioma y
+K=2/3/8 en proporción 40/30/30 dentro de cada celda. Añade 3.000 filas frescas
+de las tres familias fuertes. Cada candidato ve una pasada completa de las
+12.000 filas de train antes del gate pareado.
 
 ## Por qué
 
