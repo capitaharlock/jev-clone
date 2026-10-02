@@ -276,6 +276,9 @@ def train(args) -> dict:
                 model, tokenizer, chunk, device, canonical_order=False)
             positives = CF.positive_mask(chunk, scores.shape[1])
             loss = CF.listwise_loss(scores, positives)
+            if args.pairwise_weight:
+                loss = loss + args.pairwise_weight * CF.pairwise_loss(
+                    scores, positives)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), GRAD_CLIP)
             optimizer.step()
@@ -329,7 +332,11 @@ def train(args) -> dict:
             "eval_batch_size": args.eval_batch_size,
             "budget": args.budget,
             "patience": args.patience,
-            "loss": "listwise cross-entropy over marker logits",
+            "loss": ("listwise cross-entropy over marker logits"
+                     + (f" + {args.pairwise_weight} * pairwise logistic, "
+                        "gold against each negative, mean per decision"
+                        if args.pairwise_weight else "")),
+            "pairwise_weight": args.pairwise_weight,
             "candidate_shuffle": "every pass; canonical text order in eval",
         },
         "retained": {
@@ -387,6 +394,8 @@ def build_parser():
                               help="stop after N evals with no new best")
     train_parser.add_argument("--warmup", type=float, default=0.1)
     train_parser.add_argument("--lr-floor", type=float, default=0.1)
+    train_parser.add_argument("--pairwise-weight", type=float, default=0.0,
+                              help="weight of the auxiliary pairwise loss")
     train_parser.add_argument("--battery", default=str(DEFAULT_BATTERY))
     train_parser.add_argument("--holdout", type=float, default=0.2)
     train_parser.add_argument("--split-seed", type=int, default=20260927)

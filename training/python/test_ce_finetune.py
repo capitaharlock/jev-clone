@@ -178,6 +178,23 @@ def test_listwise_loss_equals_cross_entropy_with_one_positive():
     assert float(FT.listwise_loss(scores, mask)) < float(want)
 
 
+def test_pairwise_loss_averages_negatives_inside_each_decision():
+    scores = torch.tensor([[0.3, -1.2, 2.0, FT.NEG_INF],
+                           [1.5, 0.1, FT.NEG_INF, FT.NEG_INF]],
+                          requires_grad=True)
+    mask = torch.zeros((2, 4), dtype=torch.bool)
+    mask[0, 2] = mask[1, 0] = True
+    sp = torch.nn.functional.softplus
+    row0 = (sp(torch.tensor(0.3 - 2.0)) + sp(torch.tensor(-1.2 - 2.0))) / 2
+    row1 = sp(torch.tensor(0.1 - 1.5))
+    loss = FT.pairwise_loss(scores, mask)
+    assert math.isclose(float(loss), float((row0 + row1) / 2), rel_tol=1e-6)
+    loss.backward()
+    assert torch.isfinite(scores.grad).all()
+    assert scores.grad[0, 3] == 0 and scores.grad[1, 2] == 0
+    assert scores.grad[0, 2] < 0 and scores.grad[0, 0] > 0
+
+
 def test_the_positive_mask_follows_the_candidate_id():
     dec = FT.decision_of(_fixture()[0])
     order = list(dec.candidates)[::-1]

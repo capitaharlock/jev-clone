@@ -17,6 +17,9 @@ STATE = RUN_ROOT / "state.json"
 LOG = ROOT / "artifacts" / "logs" / "listwise-loop.log"
 TRAINING = ROOT / "artifacts" / "loop" / "TRAINING"
 PYTHON = ROOT / ".venv-train" / "bin" / "python"
+# Middle arm of the 0.1 / 0.3 / 1.0 ablation in T-aligned-ranking-v2;
+# state.json "pairwise_weight" overrides it per arm.
+PAIRWISE_WEIGHT = 0.3
 
 
 def load_state() -> dict:
@@ -52,8 +55,14 @@ def result_of(checkpoint: Path) -> dict:
     manifest = checkpoint / "train_manifest.json"
     retained = {}
     if manifest.exists():
-        retained = json.loads(manifest.read_text()).get("retained") or {}
+        trained = json.loads(manifest.read_text())
+        retained = trained.get("retained") or {}
+        pairwise = (trained.get("hyperparams") or {}).get(
+            "pairwise_weight", 0.0)
+    else:
+        pairwise = None
     return {
+        "pairwise_weight": pairwise,
         "forced": figures["forced"]["accuracy"],
         "counterfactual_joint":
             figures["counterfactual_joint"]["accuracy"],
@@ -145,7 +154,7 @@ def build_mix(cycle: int, run: Path) -> None:
 
 
 def train(cycle: int, run: Path, checkpoint: Path,
-          initial: str | None) -> None:
+          initial: str | None, pairwise_weight: float) -> None:
     command = [
         str(PYTHON), "-u", "-m",
         "training.python.listwise_finetune", "train",
@@ -161,6 +170,7 @@ def train(cycle: int, run: Path, checkpoint: Path,
         "--eval-batch-size", "4",
         "--patience", "4",
         "--seed", str(20260929 + cycle),
+        "--pairwise-weight", str(pairwise_weight),
     ]
     with LOG.open("a") as log:
         subprocess.run(command, cwd=ROOT, env=command_env(), check=True,
@@ -184,7 +194,9 @@ def main() -> int:
             if not (checkpoint / "train_manifest.json").exists():
                 train(cycle, run, checkpoint,
                       state.get("active_checkpoint")
-                      or state.get("best_checkpoint"))
+                      or state.get("best_checkpoint"),
+                      float(state.get("pairwise_weight",
+                                      PAIRWISE_WEIGHT)))
             register(state, cycle, checkpoint)
             failures = 0
         except Exception as error:

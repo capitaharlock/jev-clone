@@ -25,6 +25,14 @@ K=2/3/8 en proporción 40/30/30 dentro de cada celda. Añade 3.000 filas frescas
 de las tres familias fuertes. Cada candidato ve una pasada completa de las
 12.000 filas de train antes del gate pareado.
 
+El ciclo 62 es el control: mezcla v3 con CE listwise puro. Desde el ciclo 63
+el bucle entrena con `--pairwise-weight 0.3`, el brazo central del paso 4: una
+pérdida logística del mejor positivo contra cada negativo, promediada dentro
+de cada decisión para que K=8 no pese más que K=2. El peso queda en el
+manifiesto de cada checkpoint y `state.json` puede cambiarlo por brazo. El
+bucle varía semilla y ronda de mezcla por ciclo, así que la comparación con el
+control es por el gate pareado contra el activo, no una ablación de semilla fija.
+
 ## Por qué
 
 El scorer listwise llega a 0,8086 en el holdout de una mezcla fresca, pero se

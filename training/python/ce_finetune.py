@@ -522,6 +522,22 @@ def listwise_loss(scores, positives):
             - torch.logsumexp(pos, dim=-1)).mean()
 
 
+def pairwise_loss(scores, positives):
+    """Logistic loss of the best positive against every negative.
+
+    Each decision weighs the same whatever its K: the K-1 pairs are averaged
+    inside the row before the batch mean, so K=8 rows do not dominate.
+    """
+    import torch
+    positives = positives.to(scores.device)
+    valid = torch.isfinite(scores)
+    best = scores.masked_fill(~positives, NEG_INF).max(dim=-1).values
+    negatives = valid & ~positives
+    margins = torch.nn.functional.softplus(scores - best.unsqueeze(-1))
+    per_row = (margins * negatives).sum(-1) / negatives.sum(-1).clamp(min=1)
+    return per_row.mean()
+
+
 def param_groups(model, lr_encoder: float, lr_head: float) -> list[dict]:
     """Dos LR: encoder y cabeza (`classifier.*`), como Laya."""
     head = [p for n, p in model.named_parameters() if HEAD_MARKER in n]
