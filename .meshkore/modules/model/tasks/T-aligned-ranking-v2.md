@@ -33,6 +33,13 @@ manifiesto de cada checkpoint y `state.json` puede cambiarlo por brazo. El
 bucle varía semilla y ronda de mezcla por ciclo, así que la comparación con el
 control es por el gate pareado contra el activo, no una ablación de semilla fija.
 
+El relevo llegó tarde y los ciclos 62 a 67 corrieron todos con listwise puro
+sobre la mezcla v3, todos desde `loop-0024`. Forced: 0,6975, 0,7300, 0,7475,
+0,7550, 0,7675 y 0,7575, media 0,7425 frente a 0,7320 de la receta anterior.
+Joint entre 0,52 y 0,64. Ninguno pasó el gate pareado (ciclo 67: +0,025,
+CI95 de -0,0075 a 0,0575), así que el activo sigue en 0,7325. El brazo
+híbrido empieza en el ciclo 68.
+
 ## Por qué
 
 El scorer listwise llega a 0,8086 en el holdout de una mezcla fresca, pero se
