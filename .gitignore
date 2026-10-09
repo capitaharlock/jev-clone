@@ -124,6 +124,7 @@ artifacts/checkpoints/ce/loop-*/
 artifacts/checkpoints/ce/mps-probe*/
 artifacts/checkpoints/ce/untuned-eval-*
 artifacts/checkpoints/listwise/
+artifacts/checkpoints/pointer/
 artifacts/episodes-qwen/stream/
 artifacts/experiments/
 artifacts/gates/T-backbone-ladder/
