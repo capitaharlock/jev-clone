@@ -656,8 +656,25 @@ def _cpu_stats():
     return {"util": util, "spark": list(_CPU_HIST)}
 
 
+_ARENA_CACHE = {"t": 0.0, "rows": []}
+
+
+def _arena_rows():
+    now = time.time()
+    if now - _ARENA_CACHE["t"] < 60:
+        return _ARENA_CACHE["rows"]
+    from eval.arena_board import build_board
+    rows = build_board()
+    _ARENA_CACHE["t"] = now
+    _ARENA_CACHE["rows"] = rows
+    return rows
+
+
 def _research_benchmarks():
     """Read comparison figures from their gate artifacts, never from UI constants."""
+    open_model = _read_json(
+        ROOT / "artifacts" / "gates" / "T-open-decision-backbone" /
+        "gate.json")
     qwen = _read_json(
         ROOT / "artifacts" / "gates" / "T-qwen38-ref" / "gate.json")
     laya = _read_json(
@@ -680,6 +697,8 @@ def _research_benchmarks():
     refs = bank.get("references") or parity.get("references") or []
     jev = next((r for r in refs if str(r.get("who", "")).lower()
                 .startswith("jev")), {})
+    open_candidate = (open_model.get("candidate") or {}
+                      if open_model.get("pass") else {})
     return {
         "battery": {
             "n": ((laya.get("cut") or {}).get("n") or 400),
@@ -695,6 +714,8 @@ def _research_benchmarks():
             "jev": ((jev_report.get("ranking") or {}).get("accuracy")
                     if jev_gate.get("n_scored") == 400 else None),
             "jev_n": jev_gate.get("n_scored"),
+            "open_model": open_candidate.get("forced"),
+            "open_model_name": open_candidate.get("model"),
         },
         "banking77": {
             "n": ((bank_laya.get("table") or {}).get("banking77") or {})
@@ -704,6 +725,7 @@ def _research_benchmarks():
             "pointer": (parity.get("ours") or {}).get("accuracy"),
             "jev_is_citation": bool(jev.get("citation")),
         },
+        "arenas": _arena_rows(),
     }
 
 
@@ -875,6 +897,40 @@ def _history_24h(producer):
     return payload
 
 
+def _add_open_gate_history(history, gate_path, forced):
+    """Add the measured TinyJev battery result without relabeling holdout."""
+    if forced is None or not gate_path.is_file():
+        return history
+    ts = gate_path.stat().st_mtime
+    if ts < time.time() - WINDOW_S:
+        return history
+    result = dict(history)
+    points = list(history.get("acc") or [])
+    points.append({
+        "t": ts,
+        "y": round(float(forced), 4),
+        "cycle": "open-gate",
+        "source": "battery-dev",
+    })
+    points.sort(key=lambda point: point["t"])
+    best = None
+    best_line = []
+    for point in points:
+        best = point["y"] if best is None else max(best, point["y"])
+        best_line.append({**point, "y": best})
+    result["acc"] = points
+    result["best"] = best_line
+    return result
+
+
+def process_alive(pid) -> bool:
+    try:
+        os.kill(int(pid), 0)
+    except (OSError, TypeError, ValueError):
+        return False
+    return True
+
+
 def live_snapshot():
     """One-second payload: live occupancy + 24 h history that survives a cycle reset."""
     loop_root = ROOT / "artifacts" / "loop"
@@ -899,6 +955,7 @@ def live_snapshot():
         }
         checkpoint_root = listwise_root
     producer = _read_json(loop_root / "producer.json")
+    qwen_stream = _read_json(loop_root / "qwen.json")
     training_flag = loop_root / "TRAINING"
     active_runs = sorted(
         (p for p in checkpoint_root.glob("loop-*") if p.is_dir()),
@@ -935,6 +992,53 @@ def live_snapshot():
     active_run = Path(active_run).name if active_run else None
     if active_forced is None:
         active_forced = headline_forced
+    pointer_state = _read_json(
+        ROOT / "artifacts" / "checkpoints" / "pointer" / "loop" / "state.json")
+    pointer_live = (
+        pointer_state.get("status") in {"starting", "training"}
+        and process_alive(pointer_state.get("pid"))
+    )
+    flag_kind = (training_flag.read_text(encoding="utf-8").strip()
+                 if training_flag.exists() else "")
+    training_on = bool(flag_kind) and (
+        flag_kind != "pointer" or pointer_live)
+    open_gate_path = (ROOT / "artifacts" / "gates" /
+                      "T-open-decision-backbone" / "gate.json")
+    open_gate = _read_json(open_gate_path)
+    open_candidate = (open_gate.get("candidate") or {}
+                      if open_gate.get("pass") else {})
+    open_forced = open_candidate.get("forced")
+    open_is_active = (open_forced is not None
+                      and (active_forced is None
+                           or open_forced > active_forced))
+    if open_is_active:
+        active_forced = open_forced
+        active_run = open_candidate.get("model")
+    regression_path = (ROOT / "artifacts" / "checkpoints" / "pointer" /
+                       "loop" / "battery_regression.json")
+    regression = _read_json(regression_path)
+    regression_forced = regression.get("forced")
+    family_scores = (open_candidate.get("by_family") if open_is_active
+                     else (curve.get("by_family")
+                           or last.get("by_family") or {}))
+    candidate_metric = "battery-dev · 400 rows"
+    if regression_forced is not None:
+        active_forced = regression_forced
+        open_forced = regression_forced
+        active_run = f"pointer step {regression.get('adapter_step')}"
+        family_scores = {
+            name: cell.get("forced")
+            for name, cell in (regression.get("by_family") or {}).items()
+            if isinstance(cell, dict)
+        }
+        candidate_metric = (
+            f"battery-dev · step {regression.get('adapter_step')} · "
+            "written order")
+    hist = _add_open_gate_history(hist, regression_path if regression_forced
+                                  is not None else open_gate_path,
+                                  regression_forced if regression_forced
+                                  is not None else open_gate.get("candidate",
+                                                                 {}).get("forced"))
     span = GOAL_ACC - START_ACC
     toward = 0.0
     if active_forced is not None and span > 0:
@@ -942,37 +1046,47 @@ def live_snapshot():
     return {
         "ts": utcnow(),
         "now": time.time(),
-        "training": training_flag.exists(),
+        "training": training_on,
         "cycle": (int(state.get("cycle") or 0) +
                   (1 if training_flag.exists() else 0)),
         "completed_cycle": state.get("cycle"),
-        "step": state.get("step"),
+        "step": pointer_state.get("step") if pointer_live else state.get("step"),
         "streak_no_promote": state.get("streak_no_promote"),
         "current": state.get("current"),
-        "last_decision": state.get("last_decision"),
+        "last_decision": (pointer_state.get("note")
+                          if pointer_live else state.get("last_decision")),
         "run": active.name if active else None,
         "elapsed_s": elapsed,
-        "decisions_consumed": consumed,
+        "decisions_consumed": (pointer_state.get("decisions")
+                             if pointer_live else consumed),
         "budget": budget,
         "steps": curve.get("steps") or 0,
-        "loss": curve.get("train_loss"),
+        "loss": (pointer_state.get("train_loss")
+                 if pointer_live else curve.get("train_loss")),
         "forced": headline_forced,
         "forced_live": live_forced,
         "active_forced": active_forced,
         "active_run": active_run,
-        "candidate_forced": live_forced,
+        "candidate_forced": open_forced,
+        "legacy_forced": live_forced,
+        "candidate_metric": candidate_metric,
         "last_promoted": listwise_state.get("last_promoted"),
-        "counterfactual": headline_joint,
-        "holdout": curve.get("holdout_forced"),
-        "by_family": (curve.get("by_family")
-                      or last.get("by_family") or {}),
+        "counterfactual": (open_candidate.get("counterfactual_joint")
+                           if open_is_active else headline_joint),
+        "holdout": pointer_state.get("holdout_forced"),
+        "by_family": family_scores,
         "producer": producer,
+        "qwen_stream": qwen_stream,
         "rule_batches": producer.get("n_rule_batches") or 0,
-        "model": ("mDeBERTa listwise"
-                  if checkpoint_root == listwise_root
-                  else (weights.get("id") or weight_id)),
-        "params_m": weights.get("params_m") or 107,
-        "device": state.get("active_device") or "mps",
+        "model": ("TinyJev-4B-v1 pointer" if pointer_live
+                  else (open_candidate.get("model") if open_is_active
+                        else ("mDeBERTa listwise"
+                              if checkpoint_root == listwise_root
+                              else (weights.get("id") or weight_id)))),
+        "params_m": (4000 if open_is_active
+                     else (weights.get("params_m") or 107)),
+        "device": "mlx" if pointer_live else (
+            state.get("active_device") or "mps"),
         "gpu": gpu,
         "cpu": _cpu_stats(),
         "chance_acc": CHANCE_ACC,
@@ -1083,11 +1197,11 @@ pre{{background:var(--panel2);border:1px solid var(--line);border-radius:8px;pad
 <div class="card"><div class="k">Research corpus</div><div class="v" id="live-episodes">-</div><div class="s" id="live-ep-rate">verified episodes</div></div>
 <div class="card"><div class="k">Training · 12 h</div><div class="v" id="live-12h">-</div><div class="s" id="live-12h-s">decisions processed</div></div>
 <div class="card"><div class="k">Active cycle</div><div class="v" id="live-cycle">-</div><div class="s" id="live-consumed">batch progress</div></div>
-<div class="card"><div class="k">Candidate in training</div><div class="v" id="live-current">-</div><div class="s" id="live-streak">candidate under test</div></div>
+<div class="card"><div class="k">Current battery</div><div class="v" id="live-current">-</div><div class="s" id="live-streak">measured on 400 rows</div></div>
 <div class="card"><div class="k">Counterfactual</div><div class="v" id="live-counter">-</div><div class="s">joint consistency</div></div>
 </div>
 <div class="charts-main">
-<section class="panel"><h2>Decision accuracy · 24 hours · full 0-100% scale</h2>
+<section class="panel"><h2>Battery accuracy · 24 hours · full 0-100% scale</h2>
 <div class="chart tall with-axis"><div class="axis-y"><span class="y100">100%</span><span class="y75">75%</span><span class="y50">50%</span><span class="y25">25%</span><span class="y0">0%</span></div><svg id="svg-acc" viewBox="0 0 900 300" preserveAspectRatio="none">
 <line class="grid" x1="0" y1="75" x2="900" y2="75"/><line class="grid" x1="0" y1="150" x2="900" y2="150"/><line class="grid" x1="0" y1="225" x2="900" y2="225"/>
 <line class="mark" id="mark-chance" x1="0" y1="0" x2="900" y2="0" style="stroke:var(--bad)"/>
@@ -1111,7 +1225,7 @@ pre{{background:var(--panel2);border:1px solid var(--line);border-radius:8px;pad
 <div class="ref-list">
 <div class="ref-row"><span class="ref-name">Qwen 3.8</span><span class="ref-score" data-metric="ref-qwen">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-qwen-bar" style="width:{w_qwen}"></div></div></div>
 <div class="ref-row"><span class="ref-name">TypeSafe JEv</span><span class="ref-score" data-metric="ref-jev">-</span><div class="ref-track"><div class="ref-fill winner" data-metric="ref-jev-bar" style="width:{w_jev}"></div></div></div>
-<div class="ref-row" data-role="ours"><span class="ref-name">JEvClone</span><span class="ref-score" data-metric="ref-current">-</span><div class="ref-track"><div class="ref-fill ours" data-metric="ref-current-bar" style="width:{w_current}"></div></div></div>
+<div class="ref-row" data-role="ours"><span class="ref-name">Clone · active architecture</span><span class="ref-score" data-metric="ref-current">-</span><div class="ref-track"><div class="ref-fill ours" data-metric="ref-current-bar" style="width:{w_current}"></div></div></div>
 <div class="ref-row"><span class="ref-name">MiniLM base</span><span class="ref-score" data-metric="ref-base">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-base-bar" style="width:{w_base}"></div></div></div>
 <div class="ref-row"><span class="ref-name">Laya</span><span class="ref-score" data-metric="ref-laya">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-laya-bar" style="width:{w_laya}"></div></div></div>
 </div></div>
@@ -1134,7 +1248,7 @@ pre{{background:var(--panel2);border:1px solid var(--line);border-radius:8px;pad
 <div class="spec-row"><span class="spec-k">Parameters</span><span class="spec-v" id="spec-params">-</span></div>
 <div class="spec-row"><span class="spec-k">Teacher</span><span class="spec-v">Qwen 3.8 · 27B MLX</span></div>
 <div class="spec-row"><span class="spec-k">Cycles completed</span><span class="spec-v" id="spec-cycles">-</span></div>
-<div class="spec-row"><span class="spec-k">Holdout accuracy</span><span class="spec-v" id="spec-holdout">-</span></div>
+<div class="spec-row"><span class="spec-k">Rule holdout · same distribution</span><span class="spec-v" id="spec-holdout">-</span></div>
 <div class="spec-row"><span class="spec-k">Batch loss</span><span class="spec-v" id="spec-loss">-</span></div>
 <div class="spec-row"><span class="spec-k">Data producer</span><span class="spec-v" id="spec-producer">-</span></div>
 </div>
@@ -1160,7 +1274,7 @@ pre{{background:var(--panel2);border:1px solid var(--line);border-radius:8px;pad
 <div class="ref-row"><span class="ref-name">MiniLM base</span><span class="ref-score" data-metric="ref-base">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-base-bar" style="width:{w_base}"></div></div></div>
 <div class="ref-row"><span class="ref-name">Laya</span><span class="ref-score" data-metric="ref-laya">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-laya-bar" style="width:{w_laya}"></div></div></div>
 </div>
-<div class="ref-note">Identical battery-dev rows and candidate sets. TypeSafe JEv appears only after the complete 400-row gate has been returned. The candidate remains experimental while the promotion gate says NO-GO.</div>
+<div class="ref-note">Identical battery-dev rows and candidate sets. The rule holdout is reported separately because it is drawn from the training generator distribution.</div>
 </section>
 </div>
 </main>
@@ -1211,6 +1325,9 @@ its gate verdict is NO-GO.</p></section>
 </div>
 <p>JEv's 92.40% is cited from the public BANKING77 experiment. It is not a
 same-pipeline measurement and is never presented as one.</p></section>
+<section class="panel"><h2>Arena board <span class="tag">MEASURED + CITED</span></h2>
+<p id="arena-note">Same-protocol numbers are measured. A citation stays labelled as a citation. An empty JEv cell has no same-protocol score.</p>
+<div id="arena-board"></div></section>
 {unseen_sec}
 <section class="panel"><h2>Historical comparisons by task</h2>{invalid_sec}<table><tr><th>task</th><th class="num">n_train</th><th class="num">accuracy</th><th class="num">seconds</th></tr>{trows}</table></section>
 </main>
@@ -1252,7 +1369,7 @@ async function live(){{
   $('live-cycle').textContent=x.cycle||'-';
   $('live-consumed').textContent=`${{nfmt(x.decisions_consumed)}} / ${{nfmt(x.budget)}} decisions`;
   $('live-current').textContent=x.candidate_forced!=null?fmt(x.candidate_forced):'measuring';
-  $('live-streak').textContent=x.active_forced!=null?('candidate vs active '+fmt(x.active_forced)):'candidate under test';
+  $('live-streak').textContent=x.candidate_metric||'battery-dev · 400 rows';
   $('live-counter').textContent=fmt(x.counterfactual);
   const now=x.now||(Date.now()/1000);
   const ymin=0, ymax=1.0, ah=300, aw=900;
@@ -1298,6 +1415,15 @@ async function live(){{
       else if(row.dataset.role==='ours')fill.classList.add('ours');
     }});
   }});
+  const arenas=bm.arenas||[];
+  const arena=$('arena-board');
+  if(arena){{
+    const pct=v=>v==null?'':(Number(v)*100).toFixed(1)+'%';
+    const q=x.qwen_stream||{{}};
+    const note=$('arena-note');
+    if(note)note.textContent='Same-protocol numbers are measured. A citation stays labelled as a citation. Qwen stream: '+(q.action||'off')+(q.batch?(' · batch '+q.batch):'')+(q.model?(' · '+q.model):'');
+    arena.innerHTML='<table><tr><th>arena</th><th class="num">n</th><th class="num">chance</th><th class="num">clone</th><th class="num">JEv</th><th>JEv source</th><th>status</th></tr>'+arenas.map(a=>'<tr><td>'+a.title+'</td><td class="num">'+(a.n==null?'':nfmt(a.n))+'</td><td class="num">'+pct(a.chance)+'</td><td class="num">'+pct(a.clone)+'</td><td class="num">'+pct(a.jev)+'</td><td>'+(a.jev_kind||'')+'</td><td>'+(a.clone_kind||'')+'</td></tr>').join('')+'</table>';
+  }}
   const fam=x.by_family||{{}}; const famKeys=Object.keys(fam).sort();
   $('fam-list').innerHTML=famKeys.length?famKeys.map(k=>{{
     const v=Number(fam[k])||0; const pctv=(v*100);
