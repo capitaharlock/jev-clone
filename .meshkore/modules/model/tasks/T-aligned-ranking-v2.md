@@ -1,7 +1,7 @@
 ---
 id: T-aligned-ranking-v2
 title: Alinear el corpus numérico y añadir ranking pareado al scorer listwise
-status: active
+status: done
 priority: high
 owner: unassigned
 category: model
@@ -38,7 +38,16 @@ sobre la mezcla v3, todos desde `loop-0024`. Forced: 0,6975, 0,7300, 0,7475,
 0,7550, 0,7675 y 0,7575, media 0,7425 frente a 0,7320 de la receta anterior.
 Joint entre 0,52 y 0,64. Ninguno pasó el gate pareado (ciclo 67: +0,025,
 CI95 de -0,0075 a 0,0575), así que el activo sigue en 0,7325. El brazo
-híbrido empieza en el ciclo 68.
+híbrido empieza en el ciclo 68. Los ciclos 68 a 73 (peso 0,3) promediaron
+0,740, igual que el control puro, así que el paso 4 queda cerrado en ese
+peso. El estudio del 2 de octubre
+([estudio-2026-10-02-jev-abierto.md](../../../docs/estudio-2026-10-02-jev-abierto.md))
+cambia el brazo siguiente: puntuar Kev-0,8B y Jeff-0,8B en esta batería antes
+de seguir generando mezcla.
+
+**Cerrado el 2 de octubre.** El ciclo 74 retuvo 0,7225. TinyJev 4B v1 pasó la
+misma batería con 0,9250 y el gate pareado dio GO. La continuación está en
+`T-open-decision-backbone`; este brazo queda como control histórico.
 
 ## Por qué
 

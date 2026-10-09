@@ -8,20 +8,22 @@ modules:
   - eval
   - data
 created: 2026-09-27
-updated: 2026-09-30
+updated: 2026-10-03
 ---
 
-> **Estado del 2026-09-30.** El pase listwise terminó en el ciclo 34 y el
-> entreno quedó pausado. Pico de investigación: 0,7500 en `loop-0030`. Base
-> activa: 0,7325 en `loop-0024`. Repetir la mezcla actual no ha superado el
-> gate pareado. El siguiente brazo es `#T-aligned-ranking-v2`: corpus numérico
-> alineado, limpieza del piloto, paráfrasis verificadas y pérdida auxiliar
-> pareada. `#T-dev-rotation` debe terminar antes de afirmar un resultado por
-> encima de 0,80. El pull del 2026-09-30 añade `#T-capacity-probe`: el diagnóstico
-> de capacidad salió de un smoke cuya pérdida apenas bajó de 1,07 a 1,02, y una
-> sonda parcial ya lleva el fit numérico de MiniLM de 0,34 a 0,76. Hay que
-> terminar esa sonda antes de subir de backbone. El manual de operación es
+> **Estado del 2026-10-03.** El brazo activo sigue siendo
+> `#T-open-decision-backbone`. TinyJev 4B v1 midió 0,9250 forced en
+> `battery_dev`. Desde esta noche entrena un LoRA rango 16 encima de esos
+> pesos, con la receta publicada: una pasada, entropía cruzada, orden
+> barajado. Los episodios son los de regla (215906 train, 24094 holdout).
+> La batería de desarrollo y el corte sellado no entran. El bucle listwise
+> sigue parado en el ciclo 74. El manual de operación es
 > `docs/bucle-infinito.md` §0.2.
+>
+> El reinicio del 3 de octubre retomó el paso global 528 y llegó al 530 con un
+> checkpoint completo de adaptador, optimizador y contadores. El panel muestra
+> por separado batería actual, holdout de regla y resultado listwise legado.
+> El próximo veredicto sigue bloqueado por `#T-dev-rotation`.
 
 # El bucle diario — que mañana el modelo sea mejor que hoy, medido
 
