@@ -1322,6 +1322,30 @@ def reasons_histogram(rejects: list[dict]) -> dict[str, int]:
     return dict(sorted(out.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
+def deduplicate_episodes(episodes: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Keep the first episode for each stable publication id."""
+    seen: set[str] = set()
+    kept: list[dict] = []
+    rejects: list[dict] = []
+    for ep in episodes:
+        episode_id = ep["id"]
+        if episode_id not in seen:
+            seen.add(episode_id)
+            kept.append(ep)
+            continue
+        rejects.append({
+            "rejected": True,
+            "id": episode_id,
+            "dataset": ep["origin"],
+            "row_id": ep["source"]["row_id"],
+            "lang": ep["lang"],
+            "split": ep["split"],
+            "stage": "dedupe",
+            "reasons": ["duplicate stable publication id"],
+        })
+    return kept, rejects
+
+
 def convert_dataset(
     spec: DatasetSpec, seed: int = SEED, raw_dir: str = RAW_DIR, out_dir: str = OUT_DIR,
     index: TrigramIndex | None = None,
@@ -1362,6 +1386,8 @@ def convert_dataset(
             episodes, rejects = kept, rejects + leak_rj
         else:
             own_eval |= {LK.text_hash(ep["state"]) for ep in episodes}
+        episodes, duplicate_rj = deduplicate_episodes(episodes)
+        rejects.extend(duplicate_rj)
         base = os.path.join(out_dir, spec.key, split)
         os.makedirs(base, exist_ok=True)
         ep_path = os.path.join(base, "episodes.jsonl")

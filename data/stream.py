@@ -24,7 +24,8 @@ PILOT = ROOT / "artifacts" / "episodes-qwen" / "pilot-2k" / "verified.jsonl"
 
 DEFAULT_RULE_N = 5000
 DEFAULT_QWEN_N = 10
-MAX_RULE_BATCHES = 48
+# 48 halted the producer while the corpus was still the work.
+MAX_RULE_BATCHES = 10_000
 
 
 def utcnow() -> str:
@@ -109,9 +110,7 @@ def run_forever(rule_n: int, variety: int, qwen_n: int,
         n_have = len(list_rule_batches())
         action = "idle"
         detail: dict = {}
-        if paused:
-            action = "pause-training"
-        elif n_have >= max_batches:
+        if n_have >= max_batches:
             action = "cap"
         else:
             bid = next_rule_batch()
@@ -121,6 +120,8 @@ def run_forever(rule_n: int, variety: int, qwen_n: int,
             qwen = publish_qwen(bid, qwen_n)
             if qwen:
                 detail["qwen"] = qwen
+            elif paused:
+                detail["qwen"] = {"status": "pause-training"}
         beat = {
             "measured_utc": utcnow(),
             "action": action,
