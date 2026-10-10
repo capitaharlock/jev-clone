@@ -42,6 +42,7 @@ QWEN_OUT = LOOP / "qwen"
 STATE = LOOP / "state.json"
 HISTORY = LOOP / "history.jsonl"
 STOP = LOOP / "STOP"
+MODELS_FILE = LOOP / "models.json"
 PYTHON = ROOT / ".venv-train" / "bin" / "python"
 SEED_RUN = ROOT / "artifacts" / "checkpoints" / "pointer" / "loop"
 RULE_ROOT = ROOT / "artifacts" / "episodes-rule"
@@ -340,10 +341,45 @@ def build_mix(cycle: int, weak: list[str], out: Path) -> dict:
 
 # -- child processes ----------------------------------------------------------
 
-def child_env() -> dict:
+def qwen_models() -> dict:
+    """Generator and verifier, overridable per cycle through models.json.
+
+    A verifier from another model than the generator is the closer thing
+    to an independent check that this machine can run.
+    """
+    chosen = {"generate": QWEN_MODEL, "verify": QWEN_MODEL}
+    for role, model in read_json(MODELS_FILE).items():
+        if role in chosen and model:
+            chosen[role] = model
+    return chosen
+
+
+def ollama_call(path: str, payload: dict | None, timeout: int) -> dict:
+    data = json.dumps(payload).encode() if payload is not None else None
+    request = urllib.request.Request(
+        f"{OLLAMA}{path}", data=data,
+        headers={"content-type": "application/json"})
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read() or b"{}")
+
+
+def qwen_answers(model: str) -> bool:
+    try:
+        reply = ollama_call("/api/chat", {
+            "model": model, "stream": False, "think": False,
+            "messages": [{"role": "user",
+                          "content": "Reply with exactly: ok"}],
+            "options": {"num_predict": 8},
+        }, timeout=600)
+    except (OSError, ValueError):
+        return False
+    return "ok" in ((reply.get("message") or {}).get("content") or "").lower()
+
+
+def child_env(model: str = QWEN_MODEL) -> dict:
     env = dict(os.environ)
     env["PYTHONPATH"] = str(ROOT)
-    env["QWEN_MODEL"] = QWEN_MODEL
+    env["QWEN_MODEL"] = model
     env["EPISODE_GEN_BULK"] = "1"
     env.setdefault("TOKENIZERS_PARALLELISM", "true")
     return env
@@ -369,14 +405,15 @@ def stop_child(proc: subprocess.Popen, reason: str) -> None:
 
 
 def supervise(cmd: list[str], phase: str, log: Path,
-              progress: Path | None, state: dict) -> str:
+              progress: Path | None, state: dict,
+              model: str = QWEN_MODEL) -> str:
     """``ok``, ``stop``, ``stale``, ``timeout`` or ``exit <code>``."""
     log.parent.mkdir(parents=True, exist_ok=True)
     print(f"[{phase}] " + " ".join(cmd), flush=True)
     with log.open("a", encoding="utf-8") as handle:
-        handle.write(f"\n# {utcnow()} {' '.join(cmd)}\n")
+        handle.write(f"\n# {utcnow()} model={model} {' '.join(cmd)}\n")
         handle.flush()
-        proc = subprocess.Popen(cmd, cwd=ROOT, env=child_env(),
+        proc = subprocess.Popen(cmd, cwd=ROOT, env=child_env(model),
                                 stdout=handle, stderr=subprocess.STDOUT)
         started = last_progress = time.time()
         seen = _mtime(progress)
@@ -400,13 +437,12 @@ def supervise(cmd: list[str], phase: str, log: Path,
 
 
 def unload_qwen() -> None:
-    body = json.dumps({"model": QWEN_MODEL, "keep_alive": 0}).encode()
-    request = urllib.request.Request(
-        f"{OLLAMA}/api/generate", data=body,
-        headers={"content-type": "application/json"})
     try:
-        urllib.request.urlopen(request, timeout=60).read()
-    except OSError as exc:
+        loaded = ollama_call("/api/ps", None, timeout=30).get("models") or []
+        for entry in loaded:
+            ollama_call("/api/generate",
+                        {"model": entry["name"], "keep_alive": 0}, timeout=60)
+    except (OSError, ValueError) as exc:
         print(f"qwen unload skipped: {exc}", flush=True)
 
 
@@ -454,8 +490,14 @@ def phase_generate(cycle: int, state: dict) -> str:
            "--out", str(out)]
     if (out / "episodes.jsonl").is_file():
         cmd.append("--resume")
+    model = qwen_models()["generate"]
+    if model != QWEN_MODEL and not qwen_answers(model):
+        print(f"[generate] {model} does not answer; using {QWEN_MODEL}",
+              flush=True)
+        model = QWEN_MODEL
+    state["generate_model"] = model
     log = LOOP / "logs" / "generate.log"
-    outcome = supervise(cmd, "generate", log, log, state)
+    outcome = supervise(cmd, "generate", log, log, state, model)
     for name in ("episodes.jsonl", "rejects.jsonl"):
         drop_torn_tail(out / name)
     published = len(read_jsonl(out / "episodes.jsonl"))
@@ -476,8 +518,10 @@ def phase_verify(cycle: int, state: dict) -> str:
     cmd = [str(PYTHON), "-u", "-m", "data.episode_verify", "run",
            "--dir", str(out), "--concurrency", str(GEN_CONCURRENCY),
            "--job-id", "autoloop"]
+    model = qwen_models()["verify"]
+    state["verify_model"] = model
     log = LOOP / "logs" / "verify.log"
-    return supervise(cmd, "verify", log, log, state)
+    return supervise(cmd, "verify", log, log, state, model)
 
 
 def phase_mix(cycle: int, state: dict) -> str:

@@ -114,5 +114,20 @@ class TornTailTest(unittest.TestCase):
             self.assertEqual([r["id"] for r in AL.read_jsonl(path)], [1, 2])
 
 
+class ModelsTest(unittest.TestCase):
+
+    def test_override_is_per_role_and_ignores_unknown_keys(self):
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "models.json"
+            path.write_text('{"generate": "moe", "teacher": "x"}',
+                            encoding="utf-8")
+            with mock.patch.object(AL, "MODELS_FILE", path):
+                got = AL.qwen_models()
+        self.assertEqual(got, {"generate": "moe", "verify": AL.QWEN_MODEL})
+
+
 if __name__ == "__main__":
     unittest.main()
