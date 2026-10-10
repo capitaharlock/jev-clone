@@ -992,16 +992,22 @@ def live_snapshot():
     active_run = Path(active_run).name if active_run else None
     if active_forced is None:
         active_forced = headline_forced
-    pointer_state = _read_json(
-        ROOT / "artifacts" / "checkpoints" / "pointer" / "loop" / "state.json")
+    autoloop = _read_json(ROOT / "artifacts" / "autoloop" / "state.json")
+    autoloop_on = (autoloop.get("status") == "running"
+                   and process_alive(autoloop.get("pid")))
+    pointer_dir = ROOT / "artifacts" / "checkpoints" / "pointer" / "loop"
+    if autoloop_on and autoloop.get("run_dir"):
+        pointer_dir = ROOT / autoloop["run_dir"]
+    pointer_state = _read_json(pointer_dir / "state.json")
     pointer_live = (
         pointer_state.get("status") in {"starting", "training"}
         and process_alive(pointer_state.get("pid"))
     )
     flag_kind = (training_flag.read_text(encoding="utf-8").strip()
                  if training_flag.exists() else "")
-    training_on = bool(flag_kind) and (
-        flag_kind != "pointer" or pointer_live)
+    training_on = (bool(flag_kind) and (
+        flag_kind != "pointer" or pointer_live)) or (
+        autoloop_on and pointer_live)
     open_gate_path = (ROOT / "artifacts" / "gates" /
                       "T-open-decision-backbone" / "gate.json")
     open_gate = _read_json(open_gate_path)
@@ -1016,6 +1022,10 @@ def live_snapshot():
         active_run = open_candidate.get("model")
     regression_path = (ROOT / "artifacts" / "checkpoints" / "pointer" /
                        "loop" / "battery_regression.json")
+    champion_report = (ROOT / "artifacts" / "autoloop" / "champion" /
+                       "battery_regression.json")
+    if champion_report.is_file():
+        regression_path = champion_report
     regression = _read_json(regression_path)
     regression_forced = regression.get("forced")
     family_scores = (open_candidate.get("by_family") if open_is_active
@@ -1047,6 +1057,16 @@ def live_snapshot():
         "ts": utcnow(),
         "now": time.time(),
         "training": training_on,
+        "autoloop": {
+            "on": autoloop_on,
+            "cycle": autoloop.get("cycle"),
+            "phase": autoloop.get("phase"),
+            "weak_families": autoloop.get("weak_families"),
+            "champion": autoloop.get("champion"),
+            "last_decision": autoloop.get("last_decision"),
+            "streak_no_promote": autoloop.get("streak_no_promote"),
+            "updated_utc": autoloop.get("updated_utc"),
+        },
         "cycle": (int(state.get("cycle") or 0) +
                   (1 if training_flag.exists() else 0)),
         "completed_cycle": state.get("cycle"),

@@ -150,6 +150,21 @@ def load_rule_episodes(root: Path, limit: int) -> list[dict]:
     return episodes
 
 
+def load_episode_files(paths: list[Path]) -> list[dict]:
+    """A prepared mix, read whole. The guard still runs on every row."""
+    episodes = []
+    for path in paths:
+        with path.open(encoding="utf-8") as handle:
+            episodes.extend(json.loads(line) for line in handle if line.strip())
+    too_wide = [ep.get("id") for ep in episodes
+                if len(ep["candidates"]) > OPTION_PAD]
+    if too_wide:
+        raise RuntimeError(
+            f"{len(too_wide)} episodes exceed the option pad ({too_wide[:4]})")
+    guard_training_cut(episodes)
+    return episodes
+
+
 def resolve_weights() -> Path:
     ref = HUB / "refs" / "v1"
     if not ref.is_file():
@@ -592,7 +607,11 @@ def train(args: argparse.Namespace) -> None:
     cap = int(info.get("max_recommended_working_set_size") or 0)
     print(f"weights {weights}", flush=True)
     print(f"metal { {k: info.get(k) for k in ('device_name', 'architecture', 'max_recommended_working_set_size', 'memory_size')} }", flush=True)
-    episodes = load_rule_episodes(RULE_ROOT, args.limit)
+    sources = [Path(p) for p in args.episodes.split(",") if p.strip()]
+    if sources:
+        episodes = load_episode_files(sources)
+    else:
+        episodes = load_rule_episodes(RULE_ROOT, args.limit)
     parts = EC.split_by_group(episodes, SPLIT_SEED, HOLDOUT_CUTS)
     train_eps = parts["train"]
     hold_eps = parts["holdout"]
@@ -644,7 +663,8 @@ def train(args: argparse.Namespace) -> None:
         "resume_count": int(previous_manifest.get("resume_count") or 0) + 1,
         "resume_step": int(checkpoint.get("step") or 0),
         "optimizer_restored": optimizer_restored,
-        "init": "TinyJev-4B-v1",
+        "init": args.init or "TinyJev-4B-v1",
+        "sources": [str(p) for p in sources] or [str(RULE_ROOT)],
         "weights": str(weights),
         "loss": "listwise NLL over pointer logits (CE when one gold)",
         "lora_rank": LORA_RANK,
@@ -871,6 +891,12 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20261003)
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--orders", type=int, default=0)
+    parser.add_argument("--episodes", default="",
+                        help="comma-separated jsonl files instead of the "
+                             "rule stream")
+    parser.add_argument("--init", default="",
+                        help="label recorded for the adapter the run starts "
+                             "from")
     args = parser.parse_args()
     if args.command == "eval-battery":
         eval_battery(args)
