@@ -65,6 +65,7 @@ WEAK_BELOW = 0.99
 GEN_N = int(os.environ.get("AUTOLOOP_GEN_N", "800"))
 GEN_SECONDS = int(os.environ.get("AUTOLOOP_GEN_SECONDS", str(2 * 3600)))
 GEN_CONCURRENCY = int(os.environ.get("AUTOLOOP_GEN_CONCURRENCY", "4"))
+GEN_BATCH = int(os.environ.get("AUTOLOOP_GEN_BATCH", "12"))
 GEN_VARIETY = 16
 TRAIN_STEPS = int(os.environ.get("AUTOLOOP_TRAIN_STEPS", "200"))
 MIX_SIZE = int(os.environ.get("AUTOLOOP_MIX_SIZE", "12000"))
@@ -484,6 +485,7 @@ def phase_generate(cycle: int, state: dict) -> str:
            "--n", str(GEN_N), "--seed", str(30_000 + cycle),
            "--prose", "qwen", "--teacher", "qwen",
            "--concurrency", str(GEN_CONCURRENCY),
+           "--batch", str(GEN_BATCH),
            "--variety", str(GEN_VARIETY),
            "--families", ",".join(state["weak_families"]),
            "--group-prefix", f"al{cycle:04d}-",

@@ -325,6 +325,26 @@ _KEEP_RULE = ("Keep EVERY number, name and place exactly as written, "
               "sentences. ")
 
 
+_KEEP_MARK = re.compile(r"\s*\bKEEP\s*:\s*", re.IGNORECASE)
+
+
+def drop_keep_marker(text: str | None, keep: str = "") -> str | None:
+    """Remove the prompt's KEEP label when the model echoes it.
+
+    Some models write ``KEEP:`` inline or append ``KEEP: <span>`` after
+    the prose. The label goes; an appended copy of the span goes too when
+    the span is still present earlier in the text.
+    """
+    if not text or "keep" not in text.lower():
+        return text
+    parts = _KEEP_MARK.split(text)
+    if keep and len(parts) > 1 and parts[-1].strip().rstrip(".") \
+            == keep.strip().rstrip(".") and keep in " ".join(parts[:-1]):
+        parts = parts[:-1]
+    joined = " ".join(p.strip() for p in parts if p.strip())
+    return re.sub(r"\s+", " ", joined).strip()
+
+
 def _paraphrase_prompt(lang: str, body: str, tail: str) -> str:
     return (f"Rewrite {body} as 2-3 natural sentences in "
             f"{'Spanish' if lang == 'es' else 'English'}. {_KEEP_RULE}{tail}")
@@ -342,9 +362,11 @@ def qwen_paraphrase(facts: str, lang: str, timeout: int = 120,
         lang, "these facts",
         f"Reply with ONLY the rewritten sentences.\n{facts}"
         + (f"\nKEEP: {keep}" if keep else ""))
-    return _ollama_chat([{"role": "user", "content": prompt}],
-                        num_predict=220, timeout=timeout,
-                        model=_active_volume_model())
+    return drop_keep_marker(
+        _ollama_chat([{"role": "user", "content": prompt}],
+                     num_predict=220, timeout=timeout,
+                     model=_active_volume_model()),
+        keep)
 
 
 def teacher_structured(state: str, question: str,
@@ -455,10 +477,11 @@ def qwen_paraphrase_batch(facts: list, lang: str, timeout: int = 1800,
         f"Reply with ONLY one line per item, in the same order, each line "
         f"starting with its number and a period. "
         f"{len(facts)} lines, nothing else.\n{listing}")
-    return _numbered_lines(
+    lines = _numbered_lines(
         _ollama_chat([{"role": "user", "content": prompt}],
                      num_predict=140 * len(facts), timeout=timeout),
         len(facts))
+    return [drop_keep_marker(line, keep) for line, keep in zip(lines, keeps)]
 
 
 def teacher_structured_batch(cases: list, timeout: int = 1800) -> list:

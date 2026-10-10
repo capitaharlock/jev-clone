@@ -397,3 +397,27 @@ class ResumeTest(unittest.TestCase):
                        out_dir=out)
         self.assertEqual(again["n_episodes"], 4)
         self.assertEqual(len(EG.load_episodes(out)), 4)
+
+
+class KeepMarkerTest(unittest.TestCase):
+    """Un modelo que repite la etiqueta KEEP no deja la etiqueta en el estado."""
+
+    KEEP = "The carabiner Obsidian scores 9.7 points and takes 345 minutes"
+
+    def test_appended_copy_of_the_span_goes(self):
+        text = (f"{self.KEEP}, while the carabiner Olivine scores 9.6 points. "
+                f"KEEP: {self.KEEP}")
+        got = EG.drop_keep_marker(text, self.KEEP)
+        self.assertNotIn("KEEP", got)
+        self.assertEqual(got.count(self.KEEP), 1)
+
+    def test_inline_label_goes_and_span_stays(self):
+        text = f"Two carabiners were checked, and KEEP: {self.KEEP}."
+        got = EG.drop_keep_marker(text, self.KEEP)
+        self.assertNotIn("KEEP", got)
+        self.assertIn(self.KEEP, got)
+
+    def test_clean_prose_is_untouched(self):
+        text = f"{self.KEEP}, measured last week."
+        self.assertEqual(EG.drop_keep_marker(text, self.KEEP), text)
+        self.assertIsNone(EG.drop_keep_marker(None, self.KEEP))
