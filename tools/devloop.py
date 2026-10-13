@@ -52,7 +52,8 @@ LABELS = {
 }
 
 BASE = {"steps": 200, "lr": 2e-5, "warmup": 100,
-        "shares": {"qwen": 0.45, "public": 0.30, "rule": 0.25},
+        "shares": {"qwen": 0.35, "public": 0.20,
+                   "curriculum": 0.25, "rule": 0.20},
         "rule_weak_weight": 2, "families": []}
 ARMS = {
     "base": {"why": "recipe of cycles 1 to 9"},
@@ -65,7 +66,8 @@ ARMS = {
                                     "textual_inference_negation"],
                        "rule_weak_weight": 4,
                        "why": "priority_decision holds most of the errors"},
-    "rules-heavy": {"shares": {"qwen": 0.35, "public": 0.20, "rule": 0.45},
+    "rules-heavy": {"shares": {"qwen": 0.30, "public": 0.15,
+                              "curriculum": 0.20, "rule": 0.35},
                     "rule_weak_weight": 3,
                     "why": "rule gold is exact by construction"},
     "longer": {"steps": 400, "warmup": 40,

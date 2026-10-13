@@ -924,7 +924,8 @@ def _add_open_gate_history(history, gate_path, forced):
 
 
 AUTOLOOP = ROOT / "artifacts" / "autoloop"
-LOOP_PHASES = ("generate", "verify", "mix", "train", "eval", "decide")
+LOOP_PHASES = ("generate", "verify", "mix", "train", "eval", "decide",
+               "benchmark_refine", "benchmark")
 TARGET_ACC = 0.95
 _PIPE_CACHE = {"t": 0.0, "static": {}}
 _RE_PROGRESS = re.compile(
@@ -972,12 +973,18 @@ def _static_inputs():
         qwen_pool += _count_lines(path)
     audits = sorted((ROOT / ".meshkore" / "docs" / "audits").glob("*.md"))
     scans = sorted((ROOT / ".meshkore" / "docs" / "research").glob("*.md"))
+    curriculum = _read_json(
+        ROOT.parent / "decision-dataset-factory" / "work" /
+        "training-v2" / "public" / "manifest.json")
     static = {
         "public_sources": len(members),
         "public_rows": sum(int(m.get("n_under_cap") or 0) for m in members),
         "public_keys": [m.get("key") for m in members],
         "rule_batches": rule_batches,
         "qwen_pool": qwen_pool,
+        "curriculum_rows": int(curriculum.get("rows") or 0),
+        "curriculum_sources": list(
+            (curriculum.get("by_source") or {}).keys()),
         "last_audit": audits[-1].stem[:10] if audits else None,
         "last_scan": scans[-1].stem[:10] if scans else None,
     }
@@ -1181,6 +1188,10 @@ def pipeline_snapshot():
         "init": f"champion · cycle {champion.get('cycle', 0)}",
     }
     report = _read_json(run / "battery_regression.json")
+    benchmark_quick = _read_json(
+        AUTOLOOP / "champion" / "benchmark_v2_quick.json")
+    benchmark_full = _read_json(
+        AUTOLOOP / "champion" / "benchmark_v2_full.json")
     eval_detail = {
         "orders": 9,
         "running_s": phase_age if phase == "eval" else None,
@@ -1194,6 +1205,8 @@ def pipeline_snapshot():
         "verify": f"Qwen verifier · {state.get('verify_model') or '-'}",
         "train": "TinyJev trainer · MLX",
         "eval": "TinyJev battery eval · MLX",
+        "benchmark_refine": "Qwen benchmark prose · incremental",
+        "benchmark": "Benchmark v2 diagnostic · MLX",
         "mix": "CPU only · building the mix",
         "decide": "CPU only · promotion gate",
     }.get(phase, "idle")
@@ -1202,15 +1215,21 @@ def pipeline_snapshot():
         {"id": "public", "title": "Public datasets",
          "light": "paused",
          "now": (f"{static['public_sources']} sources on disk · "
-                 f"{static['public_rows']:,} train rows under the 25% cap"),
+                 f"{static['public_rows']:,} train rows under the cap"),
          "next": "new sources enter through the weekly research review",
-         "role": "30% of every mix"},
+         "role": "20% of every mix"},
+        {"id": "curriculum", "title": "V2 source curriculum",
+         "light": "paused",
+         "now": (f"{static['curriculum_rows']:,} pinned train rows · "
+                 f"{', '.join(static['curriculum_sources']) or 'no source'}"),
+         "next": "source-labelled math and science sampled every cycle",
+         "role": "25% of every mix"},
         {"id": "rules", "title": "Rule episodes",
          "light": "paused",
          "now": (f"producer stopped by design · {static['rule_batches']:,} "
                  "batches on disk"),
          "next": "sampled from 8 random batches per mix; no new volume needed",
-         "role": "25% of every mix"},
+         "role": "20% of every mix"},
         {"id": "generate", "title": "Qwen generation",
          "light": light("generate"), "detail": gen_detail,
          "role": "weakest families, 2 h GPU slot"},
@@ -1221,7 +1240,7 @@ def pipeline_snapshot():
          "light": light("mix"),
          "detail": {"n": mix.get("n"), "by_source": mix.get("by_source"),
                     "leak_removed": mix.get("leak_removed")},
-         "role": "45% Qwen · 30% public · 25% rules · leak filter"},
+         "role": "35% Qwen · 20% public · 25% v2 sources · 20% rules"},
         {"id": "train", "title": "Training",
          "light": light("train"), "detail": train_detail,
          "role": "short LoRA run from the champion"},
@@ -1233,6 +1252,14 @@ def pipeline_snapshot():
          "detail": {"last": state.get("last_decision"),
                     "streak": state.get("streak_no_promote")},
          "role": "mean up, worst order not down, no family -0.02"},
+        {"id": "benchmark_refine", "title": "Benchmark prose",
+         "light": light("benchmark_refine"),
+         "detail": state.get("benchmark_refine") or {},
+         "role": "Qwen rewrites; program gold and facts stay fixed"},
+        {"id": "benchmark", "title": "Benchmark v2",
+         "light": light("benchmark"),
+         "detail": state.get("benchmark_v2") or {},
+         "role": "10 capabilities x 10 domains; diagnostic only"},
     ]
     weakest = min(champ.get("by_family", {}).items(), key=lambda kv: kv[1],
                   default=(None, None))
@@ -1273,8 +1300,11 @@ def pipeline_snapshot():
             "public": _public_members(),
             "rule_batches": static["rule_batches"],
             "qwen_pool": static["qwen_pool"],
+            "curriculum_rows": static["curriculum_rows"],
+            "curriculum_sources": static["curriculum_sources"],
             "qwen_cycles": _qwen_cycles(),
-            "shares": {"qwen": 0.45, "public": 0.30, "rule": 0.25},
+            "shares": {"qwen": 0.35, "public": 0.20,
+                       "curriculum": 0.25, "rule": 0.20},
         },
         "training": {
             "run_dir": state.get("run_dir"),
@@ -1289,6 +1319,11 @@ def pipeline_snapshot():
                  for name in ("generate", "verify", "train", "eval")},
         "strategy": state.get("strategy"),
         "devloop": _read_json(ROOT / "artifacts" / "devloop" / "state.json"),
+        "benchmark_v2": {
+            "quick": benchmark_quick,
+            "full": benchmark_full,
+            "refine": state.get("benchmark_refine") or {},
+        },
     }
 
 
@@ -1631,9 +1666,10 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <main id="data" class="tab-page">
 <div class="cards">
 <div class="card"><div class="k">Qwen generation</div><div class="v" id="ds-gen">-</div><div class="s" id="ds-gen-s">-</div></div>
-<div class="card"><div class="k">Verified Qwen pool</div><div class="v" id="ds-pool">-</div><div class="s">45% of every mix, each episode repeated at most 4 times</div></div>
-<div class="card"><div class="k">Public datasets</div><div class="v" id="ds-pub">-</div><div class="s" id="ds-pub-s">30% of every mix</div></div>
-<div class="card"><div class="k">Rule episodes</div><div class="v" id="ds-rule">-</div><div class="s">25% of every mix · 8 random batches each time</div></div>
+<div class="card"><div class="k">Verified Qwen pool</div><div class="v" id="ds-pool">-</div><div class="s">35% of every mix, each episode repeated at most 4 times</div></div>
+<div class="card"><div class="k">Public datasets</div><div class="v" id="ds-pub">-</div><div class="s" id="ds-pub-s">20% of every mix</div></div>
+<div class="card"><div class="k">V2 source curriculum</div><div class="v" id="ds-cur">-</div><div class="s" id="ds-cur-s">25% of every mix</div></div>
+<div class="card"><div class="k">Rule episodes</div><div class="v" id="ds-rule">-</div><div class="s">20% of every mix · 8 random batches each time</div></div>
 </div>
 <section class="panel"><h2>Qwen episodes by cycle <span class="tag">GENERATE · VERIFY</span></h2>
 <div id="ds-qwen"></div>
@@ -1697,6 +1733,9 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <section class="panel"><h2>Promotion gate · battery-dev 400 rows · written order + 8 shuffles</h2>
 <div id="ev-gate"></div>
 <div class="ref-note">A candidate replaces the champion only when its mean over the 9 orders is strictly higher, its worst order is not lower, and no family drops more than 2 points. The sealed battery stays closed.</div></section>
+<section class="panel"><h2>Benchmark v2 · capabilities and domains <span class="tag">DIAGNOSTIC ONLY</span></h2>
+<div id="ev-v2"></div>
+<div class="ref-note">Quick is 100 rows per capability each cycle. Full is 10,000 rows every fifth cycle. Neither score selects the champion while the prose and source layers are still being built.</div></section>
 <section class="panel"><h2>Failed cycles</h2><div id="ev-fail"></div></section>
 <section class="panel"><h2>BANKING77 · K=77 · protocol-labelled comparison</h2>
 <div class="cards">
@@ -1731,7 +1770,7 @@ const hm=s=>s==null?'-':(s>=3600?Math.floor(s/3600)+'h '+Math.floor(s%3600/60)+'
 function stageBody(s){{
   const d=s.detail||{{}};
   const lines=[];let bar=null;
-  if(s.id==='public'||s.id==='rules'){{lines.push(s.now);lines.push(s.next);}}
+  if(s.id==='public'||s.id==='rules'||s.id==='curriculum'){{lines.push(s.now);lines.push(s.next);}}
   if(s.id==='generate'){{
     lines.push((d.published||0)+' / '+(d.planned||'-')+' published · '+(d.rate_per_h?d.rate_per_h+'/h':'rate pending'));
     lines.push('model '+(d.model||'-'));
@@ -1745,7 +1784,7 @@ function stageBody(s){{
   }}
   if(s.id==='mix'){{
     const b=d.by_source;
-    lines.push(b?('qwen '+b.qwen+' · public '+b.public+' · rules '+b.rule):'built after verification');
+    lines.push(b?('qwen '+b.qwen+' · public '+b.public+' · v2 '+(b.curriculum||0)+' · rules '+b.rule):'built after verification');
     if(d.n!=null)lines.push(d.n.toLocaleString('es')+' rows · '+(d.leak_removed||0)+' removed by the leak filter');
   }}
   if(s.id==='train'){{
@@ -1761,6 +1800,14 @@ function stageBody(s){{
   if(s.id==='decide'){{
     lines.push(d.last||'no decision yet');
     if(d.streak)lines.push(d.streak+' cycle(s) without promotion');
+  }}
+  if(s.id==='benchmark'){{
+    lines.push(d.status?((d.scope||'next')+' · '+d.status):'quick each cycle · full every 5');
+    if(d.report)lines.push(d.report);
+  }}
+  if(s.id==='benchmark_refine'){{
+    lines.push((d.published||0)+' / '+(d.source_rows||10000)+' rewritten');
+    if(d.remaining!=null)lines.push(d.remaining+' remaining · '+(d.rejected_this_run||0)+' rejected this slot');
   }}
   lines.push('<i>'+esc(s.role)+'</i>');
   const [word,cls]=LIGHT[s.light]||['-','l-pause'];
@@ -1816,7 +1863,9 @@ function renderTabs(p){{
   $('ds-gen-s').textContent=gen.model?('model '+gen.model+' · '+(gen.published||0)+' / '+(gen.planned||'-')+' this cycle'):'-';
   $('ds-pool').textContent=nfmt(ds.qwen_pool);
   $('ds-pub').textContent=ds.public.length+' sources';
-  $('ds-pub-s').textContent=nfmt(ds.public.reduce((a,m)=>a+(m.under_cap||0),0))+' rows under the cap · 30% of every mix';
+  $('ds-pub-s').textContent=nfmt(ds.public.reduce((a,m)=>a+(m.under_cap||0),0))+' rows under the cap · 20% of every mix';
+  $('ds-cur').textContent=nfmt(ds.curriculum_rows);
+  $('ds-cur-s').textContent=(ds.curriculum_sources||[]).join(', ')+' · 25% of every mix';
   $('ds-rule').textContent=nfmt(ds.rule_batches)+' batches';
   $('ds-qwen').innerHTML=ds.qwen_cycles.length?tbl(['cycle','generator','#published','#Qwen prose','#fallback prose','verifier','#kept','#dropped','top drop reason','#yield'],
     ds.qwen_cycles.map(c=>{{const top=Object.entries(c.reasons||{{}}).sort((a,b)=>b[1]-a[1])[0];
@@ -1832,7 +1881,7 @@ function renderTabs(p){{
   $('tr-loss').textContent=ts.train_loss!=null?Number(ts.train_loss).toFixed(4):'-';
   $('tr-loss-s').textContent='rule holdout '+pctf(ts.holdout_forced)+' · '+nfmt(ts.decisions)+' decisions seen';
   $('tr-mix').textContent=mix.n!=null?nfmt(mix.n)+' rows':'-';
-  $('tr-mix-s').textContent=mix.by_source?('qwen '+mix.by_source.qwen+' · public '+mix.by_source.public+' · rules '+mix.by_source.rule+' · leak filter removed '+(mix.leak_removed||0)):'built after verification';
+  $('tr-mix-s').textContent=mix.by_source?('qwen '+mix.by_source.qwen+' · public '+mix.by_source.public+' · v2 '+(mix.by_source.curriculum||0)+' · rules '+mix.by_source.rule+' · leak filter removed '+(mix.leak_removed||0)):'built after verification';
   const cv=(tr.curve||[]).filter(c=>c.loss!=null);
   if(cv.length){{
     const ymax=Math.max(0.05,...cv.map(c=>c.loss))*1.05,smax=Math.max(td.steps||200,...cv.map(c=>c.step));
@@ -1853,6 +1902,11 @@ function renderTabs(p){{
     [['champion',pctf(champ.written),pctf(champ.mean),pctf(champ.min)].concat(famKeys.map(k=>pctf(champ.by_family[k]))),
      ['last candidate',pctf(lc.written),pctf(lc.mean),pctf(lc.min)].concat(famKeys.map(k=>pctf((lc.by_family||{{}})[k])))])
     +'<div class="stage-l">'+esc((p.last_reasons||[]).join(' · ')||'promoted')+'</div>'):'<div class="stage-l">no candidate scored yet</div>';
+  const v2=p.benchmark_v2||{{}},vr=(v2.full&&v2.full.n)?v2.full:v2.quick;
+  if(vr&&vr.n){{
+    const caps=vr.by_capability||{{}},dom=vr.by_domain||{{}};
+    $('ev-v2').innerHTML='<div class="cards"><div class="card"><div class="k">scope</div><div class="v">'+(vr.n>=10000?'FULL':'QUICK')+'</div><div class="s">'+nfmt(vr.n)+' rows · '+pctf(vr.forced)+'</div></div><div class="card"><div class="k">worst capability</div><div class="v">'+pctf(Math.min(...Object.values(caps).map(x=>x.forced)))+'</div><div class="s">'+esc(Object.entries(caps).sort((a,b)=>a[1].forced-b[1].forced)[0]?.[0]||'-')+'</div></div><div class="card"><div class="k">worst domain</div><div class="v">'+pctf(Math.min(...Object.values(dom).map(x=>x.forced)))+'</div><div class="s">'+esc(Object.entries(dom).sort((a,b)=>a[1].forced-b[1].forced)[0]?.[0]||'-')+'</div></div><div class="card"><div class="k">prose refinement</div><div class="v">'+nfmt((v2.refine||{{}}).published)+'</div><div class="s">of '+nfmt((v2.refine||{{}}).source_rows||10000)+'</div></div></div>'+tbl(['capability','#n','#accuracy','#Wilson lower'],Object.entries(caps).map(([k,v])=>[esc(k.replace(/_/g,' ')),v.n,pctf(v.forced),pctf(v.wilson95_lower)]));
+  }}else $('ev-v2').innerHTML='<div class="stage-l">first diagnostic runs after the current cycle</div>';
   $('ev-fail').innerHTML=(p.failures||[]).length?tbl(['cycle','phase','outcome','at (UTC)'],p.failures.slice().reverse().map(f=>[f.cycle,f.phase,esc(f.outcome),esc((f.at||'').slice(5,16).replace('T',' '))])):'<div class="stage-l">none</div>';
   $('rs-cal').innerHTML=$('ov-cal').innerHTML;
   const dv=p.devloop||{{}},hl=dv.health||{{}},sg=p.strategy||{{}};

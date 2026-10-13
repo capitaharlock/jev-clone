@@ -146,9 +146,10 @@ class StrategyTest(unittest.TestCase):
         self.assertEqual(got["rule_weak_weight"], 8)
 
     def test_shares_are_normalised_and_unknown_families_dropped(self):
-        got = AL.load_strategy({"shares": {"qwen": 2, "public": 1, "rule": 1},
-                                "families": ["priority_decision", "nope"]})
-        self.assertAlmostEqual(got["shares"]["qwen"], 0.5)
+        got = AL.load_strategy({
+            "shares": {"qwen": 2, "public": 1, "curriculum": 1, "rule": 1},
+            "families": ["priority_decision", "nope"]})
+        self.assertAlmostEqual(got["shares"]["qwen"], 0.4)
         self.assertEqual(got["families"], ["priority_decision"])
 
     def test_garbage_falls_back_to_base(self):

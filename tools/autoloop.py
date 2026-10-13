@@ -44,6 +44,14 @@ HISTORY = LOOP / "history.jsonl"
 STOP = LOOP / "STOP"
 MODELS_FILE = LOOP / "models.json"
 STRATEGY_FILE = LOOP / "strategy.json"
+BENCHMARK_V2 = Path(os.environ.get(
+    "BENCHMARK_V2_PATH",
+    ROOT.parent / "decision-dataset-factory" / "work" /
+    "benchmark-v2" / "dev.jsonl",
+))
+BENCHMARK_DIR = BENCHMARK_V2.parent
+BENCHMARK_REFINE_SECONDS = int(os.environ.get(
+    "AUTOLOOP_BENCHMARK_REFINE_SECONDS", "1800"))
 PYTHON = ROOT / ".venv-train" / "bin" / "python"
 SEED_RUN = ROOT / "artifacts" / "checkpoints" / "pointer" / "loop"
 RULE_ROOT = ROOT / "artifacts" / "episodes-rule"
@@ -53,7 +61,8 @@ PUBLIC_MANIFEST = (ROOT / "artifacts" / "episodes-external" / "public-mix"
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 QWEN_MODEL = os.environ.get("QWEN_MODEL", "qwen3.6:27b-q8_0")
 
-PHASES = ("generate", "verify", "mix", "train", "eval", "decide")
+PHASES = ("generate", "verify", "mix", "train", "eval", "decide",
+          "benchmark_refine", "benchmark")
 FAMILIES = (
     "attribute_comparison",
     "description_classification",
@@ -70,7 +79,7 @@ GEN_BATCH = int(os.environ.get("AUTOLOOP_GEN_BATCH", "12"))
 GEN_VARIETY = 16
 TRAIN_STEPS = int(os.environ.get("AUTOLOOP_TRAIN_STEPS", "200"))
 MIX_SIZE = int(os.environ.get("AUTOLOOP_MIX_SIZE", "12000"))
-SHARES = {"qwen": 0.45, "public": 0.30, "rule": 0.25}
+SHARES = {"qwen": 0.35, "public": 0.20, "curriculum": 0.25, "rule": 0.20}
 QWEN_REPEAT_MAX = 4
 RULE_BATCHES_PER_MIX = 8
 OPTION_PAD = 9
@@ -86,6 +95,8 @@ TIMEOUTS = {
     "verify": 4 * 3600,
     "train": 10 * 3600,
     "eval": 2 * 3600,
+    "benchmark_refine": BENCHMARK_REFINE_SECONDS + 10 * 60,
+    "benchmark": 3 * 3600,
 }
 
 NO_REPLY_MAX = 0.20
@@ -306,6 +317,16 @@ def public_sample(n: int, rng: random.Random) -> list[dict]:
     return rows
 
 
+def curriculum_sample(n: int, rng: random.Random) -> list[dict]:
+    """Pinned source-grounded rows published by the independent factory."""
+    from data import factory_v2 as FV2
+
+    pool = FV2.load_training()
+    if not pool or n <= 0:
+        return []
+    return rng.sample(pool, min(n, len(pool)))
+
+
 def rule_sample(n: int, weak: list[str], rng: random.Random,
                 weak_weight: int = 2) -> list[dict]:
     """Draw from batches across the whole stream, not only the first ones."""
@@ -329,8 +350,15 @@ def rule_sample(n: int, weak: list[str], rng: random.Random,
 
 def leak_free(episodes: list[dict]) -> tuple[list[dict], int]:
     from data import episode_bridge as EB
+    from data import benchmark_v2 as BV2
 
-    index = EB.TrigramIndex(EB.blocked_texts())
+    blocked = EB.blocked_texts()
+    try:
+        blocked["benchmark-v2"] = [
+            ep["state"] for ep in BV2.load_battery(active_benchmark())]
+    except (OSError, ValueError, KeyError):
+        blocked["benchmark-v2"] = []
+    index = EB.TrigramIndex(blocked)
     verdict: dict[str, bool] = {}
     kept = []
     for ep in episodes:
@@ -355,9 +383,12 @@ def build_mix(cycle: int, weak: list[str], out: Path,
     short = qwen_target - len(qwen_rows)
     public_n = int(MIX_SIZE * shares["public"]) + short // 2
     public_rows = public_sample(public_n, rng)
-    rule_n = MIX_SIZE - len(qwen_rows) - len(public_rows)
+    curriculum_n = int(MIX_SIZE * shares["curriculum"]) + short - short // 2
+    curriculum_rows = curriculum_sample(curriculum_n, rng)
+    rule_n = (MIX_SIZE - len(qwen_rows) - len(public_rows)
+              - len(curriculum_rows))
     rule_rows = rule_sample(rule_n, weak, rng, strategy["rule_weak_weight"])
-    rows = qwen_rows + public_rows + rule_rows
+    rows = qwen_rows + public_rows + curriculum_rows + rule_rows
     rows = [ep for ep in rows if len(ep["candidates"]) <= OPTION_PAD]
     rows, leaks = leak_free(rows)
     rng.shuffle(rows)
@@ -371,8 +402,12 @@ def build_mix(cycle: int, weak: list[str], out: Path,
         "path": str(out.relative_to(ROOT)),
         "sha256": digest,
         "n": len(rows),
-        "by_source": {"qwen": len(qwen_rows), "public": len(public_rows),
-                      "rule": len(rule_rows)},
+        "by_source": {
+            "qwen": len(qwen_rows),
+            "public": len(public_rows),
+            "curriculum": len(curriculum_rows),
+            "rule": len(rule_rows),
+        },
         "qwen_pool": len(qwen),
         "qwen_repeat": repeat,
         "leak_removed": leaks,
@@ -677,6 +712,67 @@ def phase_decide(cycle: int, state: dict) -> str:
     return "ok"
 
 
+def phase_benchmark_refine(cycle: int, state: dict) -> str:
+    active = read_json(BENCHMARK_DIR / "active.json")
+    if active.get("path") and Path(active["path"]).is_file():
+        state["benchmark_refine"] = {"status": "published", **active}
+        return "ok"
+    model = qwen_models()["generate"]
+    cmd = [
+        str(PYTHON), "-u", "tools/benchmark_refine.py",
+        "--source", str(BENCHMARK_V2),
+        "--out", str(BENCHMARK_DIR / "refined.jsonl"),
+        "--seconds", str(BENCHMARK_REFINE_SECONDS),
+        "--batch", str(GEN_BATCH),
+    ]
+    outcome = supervise(
+        cmd, "benchmark_refine", LOOP / "logs" / "benchmark_refine.log",
+        BENCHMARK_DIR / "refine_state.json", state, model)
+    detail = read_json(BENCHMARK_DIR / "refine_state.json")
+    state["benchmark_refine"] = detail
+    # A time slot that published rows is useful progress, not a failed phase.
+    if outcome == "timeout" and detail.get("published"):
+        return "ok"
+    return outcome
+
+
+def active_benchmark() -> Path:
+    active = read_json(BENCHMARK_DIR / "active.json")
+    candidate = Path(active.get("path") or "")
+    return candidate if candidate.is_file() else BENCHMARK_V2
+
+
+def phase_benchmark(cycle: int, state: dict) -> str:
+    """Measure broader capability/domain coverage without selecting on it.
+
+    A 1,000-row fixed diagnostic runs every cycle. Every fifth cycle scores
+    all 10,000 rows. These reports do not participate in promotion.
+    """
+    benchmark = active_benchmark()
+    if not benchmark.is_file():
+        state["benchmark_v2"] = {
+            "status": "missing", "path": str(benchmark)}
+        return "ok"
+    unload_qwen()
+    full = cycle % 5 == 0
+    report = "benchmark_v2_full.json" if full else "benchmark_v2_quick.json"
+    cmd = [
+        str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
+        "eval-battery", "--out", str(CHAMPION),
+        "--episodes", str(benchmark),
+        "--limit-per-capability", "0" if full else "100",
+        "--orders", "0", "--report", report,
+    ]
+    outcome = supervise(
+        cmd, "benchmark", LOOP / "logs" / "benchmark.log", None, state)
+    state["benchmark_v2"] = {
+        "status": outcome,
+        "scope": "full" if full else "quick",
+        "report": str((CHAMPION / report).relative_to(ROOT)),
+    }
+    return outcome
+
+
 RUNNERS = {
     "generate": phase_generate,
     "verify": phase_verify,
@@ -684,6 +780,8 @@ RUNNERS = {
     "train": phase_train,
     "eval": phase_eval,
     "decide": phase_decide,
+    "benchmark_refine": phase_benchmark_refine,
+    "benchmark": phase_benchmark,
 }
 
 
