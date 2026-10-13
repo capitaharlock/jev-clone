@@ -43,6 +43,7 @@ STATE = LOOP / "state.json"
 HISTORY = LOOP / "history.jsonl"
 STOP = LOOP / "STOP"
 MODELS_FILE = LOOP / "models.json"
+STRATEGY_FILE = LOOP / "strategy.json"
 PYTHON = ROOT / ".venv-train" / "bin" / "python"
 SEED_RUN = ROOT / "artifacts" / "checkpoints" / "pointer" / "loop"
 RULE_ROOT = ROOT / "artifacts" / "episodes-rule"
@@ -87,7 +88,18 @@ TIMEOUTS = {
     "eval": 2 * 3600,
 }
 
+NO_REPLY_MAX = 0.20
+DEFAULT_STRATEGY = {
+    "arm": "base",
+    "steps": TRAIN_STEPS,
+    "lr": 2e-5,
+    "warmup": 100,
+    "shares": dict(SHARES),
+    "rule_weak_weight": 2,
+    "families": [],
+}
 _TERM = {"flag": False}
+_SOURCE_MTIME = Path(__file__).stat().st_mtime
 
 
 def utcnow() -> str:
@@ -179,6 +191,34 @@ def promotion(champion: dict, candidate: dict) -> tuple[bool, list[str]]:
     return not reasons, reasons
 
 
+def load_strategy(raw: dict | None = None) -> dict:
+    """The arm the development loop picked for the next cycle.
+
+    Values are clamped so a malformed file cannot push the trainer outside
+    the ranges the arms were designed for; anything missing keeps the base.
+    """
+    raw = read_json(STRATEGY_FILE) if raw is None else raw
+    out = json.loads(json.dumps(DEFAULT_STRATEGY))
+    out["arm"] = str(raw.get("arm") or "base")[:40]
+    try:
+        out["steps"] = min(600, max(50, int(raw.get("steps", out["steps"]))))
+        out["lr"] = min(1e-4, max(2e-6, float(raw.get("lr", out["lr"]))))
+        out["warmup"] = min(out["steps"] // 2,
+                            max(0, int(raw.get("warmup", out["warmup"]))))
+        out["rule_weak_weight"] = min(8, max(1, int(
+            raw.get("rule_weak_weight", out["rule_weak_weight"]))))
+    except (TypeError, ValueError):
+        return json.loads(json.dumps(DEFAULT_STRATEGY))
+    shares = raw.get("shares") or {}
+    if set(shares) == set(SHARES) and all(
+            isinstance(v, (int, float)) and v >= 0 for v in shares.values()):
+        total = sum(shares.values())
+        if total > 0:
+            out["shares"] = {k: v / total for k, v in shares.items()}
+    out["families"] = [f for f in raw.get("families") or [] if f in FAMILIES]
+    return out
+
+
 def weak_families(summary: dict, cycle: int) -> list[str]:
     """Families under the bar, worst first, plus one strong family in turn
     so the generated pool keeps covering what already works."""
@@ -266,13 +306,14 @@ def public_sample(n: int, rng: random.Random) -> list[dict]:
     return rows
 
 
-def rule_sample(n: int, weak: list[str], rng: random.Random) -> list[dict]:
+def rule_sample(n: int, weak: list[str], rng: random.Random,
+                weak_weight: int = 2) -> list[dict]:
     """Draw from batches across the whole stream, not only the first ones."""
     batches = sorted(RULE_ROOT.glob("batch-*/episodes.jsonl"))
     if not batches or n <= 0:
         return []
     picked = rng.sample(batches, min(RULE_BATCHES_PER_MIX, len(batches)))
-    weight = {f: (2 if f in weak else 1) for f in RULE_FAMILIES}
+    weight = {f: (weak_weight if f in weak else 1) for f in RULE_FAMILIES}
     total = sum(weight.values())
     want = {f: round(n * weight[f] / total) for f in RULE_FAMILIES}
     by_family: dict[str, list[dict]] = {f: [] for f in RULE_FAMILIES}
@@ -301,18 +342,21 @@ def leak_free(episodes: list[dict]) -> tuple[list[dict], int]:
     return kept, len(episodes) - len(kept)
 
 
-def build_mix(cycle: int, weak: list[str], out: Path) -> dict:
+def build_mix(cycle: int, weak: list[str], out: Path,
+              strategy: dict | None = None) -> dict:
+    strategy = strategy or DEFAULT_STRATEGY
+    shares = strategy["shares"]
     rng = random.Random(1_000_003 * cycle + 17)
     qwen = qwen_pool()
-    qwen_target = int(MIX_SIZE * SHARES["qwen"])
+    qwen_target = int(MIX_SIZE * shares["qwen"])
     repeat = (min(QWEN_REPEAT_MAX, max(1, math.ceil(qwen_target / len(qwen))))
               if qwen else 0)
     qwen_rows = [ep for _ in range(repeat) for ep in qwen][:qwen_target]
     short = qwen_target - len(qwen_rows)
-    public_n = int(MIX_SIZE * SHARES["public"]) + short // 2
+    public_n = int(MIX_SIZE * shares["public"]) + short // 2
     public_rows = public_sample(public_n, rng)
     rule_n = MIX_SIZE - len(qwen_rows) - len(public_rows)
-    rule_rows = rule_sample(rule_n, weak, rng)
+    rule_rows = rule_sample(rule_n, weak, rng, strategy["rule_weak_weight"])
     rows = qwen_rows + public_rows + rule_rows
     rows = [ep for ep in rows if len(ep["candidates"]) <= OPTION_PAD]
     rows, leaks = leak_free(rows)
@@ -333,6 +377,7 @@ def build_mix(cycle: int, weak: list[str], out: Path) -> dict:
         "qwen_repeat": repeat,
         "leak_removed": leaks,
         "weak_families": weak,
+        "arm": strategy["arm"],
         "by_family": dict(Counter(ep["family"] for ep in rows)),
         "by_k": dict(sorted(Counter(len(ep["candidates"])
                                     for ep in rows).items())),
@@ -487,7 +532,8 @@ def phase_generate(cycle: int, state: dict) -> str:
            "--concurrency", str(GEN_CONCURRENCY),
            "--batch", str(GEN_BATCH),
            "--variety", str(GEN_VARIETY),
-           "--families", ",".join(state["weak_families"]),
+           "--families", ",".join(cycle_strategy(state)["families"]
+                                  or state["weak_families"]),
            "--group-prefix", f"al{cycle:04d}-",
            "--out", str(out)]
     if (out / "episodes.jsonl").is_file():
@@ -511,24 +557,50 @@ def phase_generate(cycle: int, state: dict) -> str:
     return outcome
 
 
+def no_reply_share(manifest: dict) -> float:
+    n = int(manifest.get("n_input") or 0)
+    lost = int((manifest.get("quarantine_reasons") or {})
+               .get("verifier:no-reply") or 0)
+    return lost / n if n else 0.0
+
+
+def discard_verification(out: Path) -> None:
+    """A run where the verifier never answered measured the server, not the
+    episodes; its quarantine must not stand as a verdict."""
+    stamp = time.strftime("%Y%m%dT%H%M%S")
+    for name in ("verify_manifest.json", "verified.jsonl", "quarantine.jsonl",
+                 "human_sample.jsonl"):
+        if (out / name).is_file():
+            (out / name).rename(out / f"{name}.no-reply-{stamp}")
+
+
 def phase_verify(cycle: int, state: dict) -> str:
     out = QWEN_OUT / f"cycle-{cycle:04d}"
     if not (out / "episodes.jsonl").is_file():
         return "ok"
-    if read_json(out / "verify_manifest.json").get("status") == "published":
-        return "ok"
+    manifest = read_json(out / "verify_manifest.json")
+    if manifest.get("status") == "published":
+        if no_reply_share(manifest) <= NO_REPLY_MAX:
+            return "ok"
+        discard_verification(out)
     cmd = [str(PYTHON), "-u", "-m", "data.episode_verify", "run",
            "--dir", str(out), "--concurrency", str(GEN_CONCURRENCY),
            "--job-id", "autoloop"]
     model = qwen_models()["verify"]
     state["verify_model"] = model
     log = LOOP / "logs" / "verify.log"
-    return supervise(cmd, "verify", log, log, state, model)
+    outcome = supervise(cmd, "verify", log, log, state, model)
+    manifest = read_json(out / "verify_manifest.json")
+    if outcome == "ok" and no_reply_share(manifest) > NO_REPLY_MAX:
+        discard_verification(out)
+        return "exit verifier-no-reply"
+    return outcome
 
 
 def phase_mix(cycle: int, state: dict) -> str:
     run = cycle_dir(cycle)
-    manifest = build_mix(cycle, state["weak_families"], run / "mix.jsonl")
+    manifest = build_mix(cycle, state["weak_families"], run / "mix.jsonl",
+                         cycle_strategy(state))
     write_json(run / "mix_manifest.json", manifest)
     print(f"[mix] {manifest['n']} rows {manifest['by_source']}", flush=True)
     return "ok" if manifest["n"] else "exit empty-mix"
@@ -537,13 +609,16 @@ def phase_mix(cycle: int, state: dict) -> str:
 def phase_train(cycle: int, state: dict) -> str:
     unload_qwen()
     run = cycle_dir(cycle)
+    strategy = cycle_strategy(state)
     if not (run / "checkpoint.json").is_file():
         shutil.copy2(CHAMPION / "adapters.safetensors",
                      run / "adapters.safetensors")
     cmd = [str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
            "train", "--out", str(run),
            "--episodes", str(run / "mix.jsonl"),
-           "--steps", str(TRAIN_STEPS),
+           "--steps", str(strategy["steps"]),
+           "--lr", str(strategy["lr"]),
+           "--warmup", str(strategy["warmup"]),
            "--init", f"champion-cycle-{state['champion_cycle']:04d}"]
     return supervise(cmd, "train", LOOP / "logs" / "train.log",
                      run / "state.json", state)
@@ -571,6 +646,7 @@ def phase_decide(cycle: int, state: dict) -> str:
         "champion_cycle_before": champion.get("cycle"),
         "mix": read_json(run / "mix_manifest.json").get("by_source"),
         "weak_families": state["weak_families"],
+        "strategy": cycle_strategy(state),
     }
     if promote:
         archive = CHAMPION / "previous" / f"cycle-{champion.get('cycle', 0):04d}"
@@ -611,6 +687,11 @@ RUNNERS = {
 }
 
 
+def cycle_strategy(state: dict) -> dict:
+    """The arm fixed at cycle start; a cycle never changes arm halfway."""
+    return load_strategy(state.get("strategy") or {})
+
+
 def start_cycle(state: dict, cycle: int) -> None:
     champion = read_json(CHAMPION / "champion.json")
     state.update({
@@ -620,8 +701,32 @@ def start_cycle(state: dict, cycle: int) -> None:
         "run_dir": str(cycle_dir(cycle).relative_to(ROOT)),
         "weak_families": weak_families(champion.get("summary") or {}, cycle),
         "champion": champion.get("summary"),
+        "strategy": next_strategy(),
         "cycle_started_utc": utcnow(),
     })
+
+
+def next_strategy() -> dict:
+    try:
+        import devloop
+        devloop.refresh_strategy()
+    except Exception as exc:
+        print(f"[loop] devloop unavailable, keeping strategy.json: {exc}",
+              flush=True)
+    return load_strategy()
+
+
+def reload_if_changed(state: dict) -> None:
+    """Pick up a new autoloop.py at a cycle boundary without a manual
+    restart; launchd keeps the same pid supervised across exec."""
+    try:
+        changed = Path(__file__).stat().st_mtime > _SOURCE_MTIME
+    except OSError:
+        return
+    if changed:
+        heartbeat(state, status="reloading", child_pid=None)
+        print("[loop] autoloop.py changed; reloading", flush=True)
+        os.execv(sys.executable, [sys.executable, "-u", *sys.argv])
 
 
 def on_term(signum, frame) -> None:
@@ -662,6 +767,7 @@ def main() -> int:
                 state["phase"], state["attempts"] = PHASES[index + 1], 0
             else:
                 start_cycle(state, cycle + 1)
+                reload_if_changed(state)
             continue
         state["attempts"] = int(state.get("attempts") or 0) + 1
         print(f"[{phase}] {outcome} (attempt {state['attempts']})", flush=True)

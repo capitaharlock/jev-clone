@@ -129,5 +129,40 @@ class ModelsTest(unittest.TestCase):
         self.assertEqual(got, {"generate": "moe", "verify": AL.QWEN_MODEL})
 
 
+class StrategyTest(unittest.TestCase):
+
+    def test_empty_file_keeps_the_base_recipe(self):
+        got = AL.load_strategy({})
+        self.assertEqual(got["arm"], "base")
+        self.assertEqual(got["steps"], AL.TRAIN_STEPS)
+        self.assertEqual(got["shares"], AL.SHARES)
+
+    def test_out_of_range_values_are_clamped(self):
+        got = AL.load_strategy({"arm": "x", "steps": 5000, "lr": 1.0,
+                                "warmup": 900, "rule_weak_weight": 50})
+        self.assertEqual(got["steps"], 600)
+        self.assertEqual(got["lr"], 1e-4)
+        self.assertEqual(got["warmup"], 300)
+        self.assertEqual(got["rule_weak_weight"], 8)
+
+    def test_shares_are_normalised_and_unknown_families_dropped(self):
+        got = AL.load_strategy({"shares": {"qwen": 2, "public": 1, "rule": 1},
+                                "families": ["priority_decision", "nope"]})
+        self.assertAlmostEqual(got["shares"]["qwen"], 0.5)
+        self.assertEqual(got["families"], ["priority_decision"])
+
+    def test_garbage_falls_back_to_base(self):
+        self.assertEqual(AL.load_strategy({"steps": "many"})["arm"], "base")
+
+
+class NoReplyTest(unittest.TestCase):
+
+    def test_share_of_unanswered_rows(self):
+        manifest = {"n_input": 800, "quarantine_reasons": {
+            "verifier:no-reply": 620, "verifier:abstain": 19}}
+        self.assertGreater(AL.no_reply_share(manifest), AL.NO_REPLY_MAX)
+        self.assertEqual(AL.no_reply_share({}), 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()
