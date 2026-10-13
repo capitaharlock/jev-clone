@@ -588,6 +588,7 @@ def train(args: argparse.Namespace) -> None:
     import mlx.core as mx
     import mlx.optimizers as opt
     from mlx.nn.utils import value_and_grad
+    from mlx.utils import tree_map
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -633,9 +634,14 @@ def train(args: argparse.Namespace) -> None:
     if not 20_000_000 <= n_train <= 80_000_000:
         raise RuntimeError(f"unexpected trainable count {n_train}")
     model.train()
-    warmup = opt.linear_schedule(0.0, LR, WARMUP_STEPS)
-    flat = opt.linear_schedule(LR, LR, 10**9)
-    base_schedule = opt.join_schedules([warmup, flat], [WARMUP_STEPS])
+    lr = args.lr or LR
+    warmup_steps = args.warmup if args.warmup >= 0 else WARMUP_STEPS
+    flat = opt.linear_schedule(lr, lr, 10**9)
+    if warmup_steps:
+        warmup = opt.linear_schedule(0.0, lr, warmup_steps)
+        base_schedule = opt.join_schedules([warmup, flat], [warmup_steps])
+    else:
+        base_schedule = flat
     resume_offset = int(checkpoint.get("step") or 0)
     optimizer_path = out / "optimizer.safetensors"
     schedule = base_schedule
@@ -670,8 +676,8 @@ def train(args: argparse.Namespace) -> None:
         "lora_rank": LORA_RANK,
         "lora_alpha": LORA_ALPHA,
         "lora_keys": list(LORA_KEYS),
-        "lr": LR,
-        "warmup_steps": WARMUP_STEPS,
+        "lr": lr,
+        "warmup_steps": warmup_steps,
         "p_none": 0.25,
         "family_weight": FAMILY_WEIGHT,
         "split_seed": SPLIT_SEED,
@@ -716,17 +722,27 @@ def train(args: argparse.Namespace) -> None:
         rows = encode_rows(
             family, train_eps, indices, rng, pool, train=True)
         arrays = collate(rows, family.pad_token_id)
+        saved_params = model.trainable_parameters()
+        saved_state = None
         try:
             loss, grads = loss_and_grad(model, *arrays)
             apply_pending_moments(optimizer, grads)
+            saved_state = tree_map(lambda value: value, optimizer.state)
             optimizer.update(model, grads)
             mx.eval(loss, model.parameters(), optimizer.state)
         except RuntimeError as exc:
-            if "Memory" not in str(exc):
+            if "Memory" not in str(exc) and "Resource limit" not in str(exc):
                 raise
-            batch = max(8, batch // 2)
+            # A failed eval leaves lazy graphs in the weights and moments;
+            # retrying on top of them grows the graph until Metal runs out
+            # of buffer handles.
+            model.update(saved_params)
+            if saved_state is not None:
+                optimizer.state = saved_state
+            loss = grads = None
             mx.clear_cache()
-            print(f"oom, batch now {batch}", flush=True)
+            batch = max(8, batch // 2)
+            print(f"oom, batch now {batch}: {str(exc)[:120]}", flush=True)
             continue
         mx.clear_cache()
         step += 1
@@ -897,6 +913,10 @@ def main() -> None:
     parser.add_argument("--init", default="",
                         help="label recorded for the adapter the run starts "
                              "from")
+    parser.add_argument("--lr", type=float, default=0.0,
+                        help="peak learning rate; 0 keeps LR")
+    parser.add_argument("--warmup", type=int, default=-1,
+                        help="warmup steps; -1 keeps WARMUP_STEPS")
     args = parser.parse_args()
     if args.command == "eval-battery":
         eval_battery(args)
