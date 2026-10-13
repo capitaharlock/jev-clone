@@ -923,6 +923,375 @@ def _add_open_gate_history(history, gate_path, forced):
     return result
 
 
+AUTOLOOP = ROOT / "artifacts" / "autoloop"
+LOOP_PHASES = ("generate", "verify", "mix", "train", "eval", "decide")
+TARGET_ACC = 0.95
+_PIPE_CACHE = {"t": 0.0, "static": {}}
+_RE_PROGRESS = re.compile(
+    r"progress (\d+)/(\d+) ok=(\d+) rej=(\d+) rate=([\d.]+) ep/s")
+
+
+def _tail_text(path, n_bytes=6000):
+    try:
+        with open(path, "rb") as handle:
+            handle.seek(0, 2)
+            size = handle.tell()
+            handle.seek(max(0, size - n_bytes))
+            return handle.read().decode("utf-8", "replace")
+    except OSError:
+        return ""
+
+
+def _count_lines(path):
+    try:
+        with open(path, "rb") as handle:
+            return sum(1 for line in handle if line.strip())
+    except OSError:
+        return 0
+
+
+def _age_s(stamp):
+    parsed = _parse_utc(stamp) if stamp else None
+    return None if parsed is None else max(0, int(time.time() - parsed))
+
+
+def _static_inputs():
+    """Inputs that change once a day at most, read every 60 s."""
+    if time.time() - _PIPE_CACHE["t"] < 60 and _PIPE_CACHE["static"]:
+        return _PIPE_CACHE["static"]
+    public = _read_json(ROOT / "artifacts" / "episodes-external" /
+                        "public-mix" / "manifest.json")
+    members = [m for m in public.get("members") or []
+               if m.get("split") == "train"]
+    rule_root = ROOT / "artifacts" / "episodes-rule"
+    rule_batches = sum(1 for _ in rule_root.glob("batch-*"))
+    qwen_pool = 0
+    for path in (ROOT / "artifacts" / "episodes-qwen").glob("**/verified.jsonl"):
+        qwen_pool += _count_lines(path)
+    for path in (AUTOLOOP / "qwen").glob("cycle-*/verified.jsonl"):
+        qwen_pool += _count_lines(path)
+    audits = sorted((ROOT / ".meshkore" / "docs" / "audits").glob("*.md"))
+    scans = sorted((ROOT / ".meshkore" / "docs" / "research").glob("*.md"))
+    static = {
+        "public_sources": len(members),
+        "public_rows": sum(int(m.get("n_under_cap") or 0) for m in members),
+        "public_keys": [m.get("key") for m in members],
+        "rule_batches": rule_batches,
+        "qwen_pool": qwen_pool,
+        "last_audit": audits[-1].stem[:10] if audits else None,
+        "last_scan": scans[-1].stem[:10] if scans else None,
+    }
+    _PIPE_CACHE.update({"t": time.time(), "static": static})
+    return static
+
+
+def _next_local(hour, weekday=None):
+    """Next local wall-clock slot for the research calendar."""
+    now = dt.datetime.now()
+    slot = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+    while slot <= now or (weekday is not None and slot.weekday() != weekday):
+        slot += dt.timedelta(days=1)
+    return slot
+
+
+def _next_first_friday():
+    slot = _next_local(19, weekday=4)
+    while slot.day > 7:
+        slot += dt.timedelta(days=7)
+    return slot
+
+
+def _calendar(static):
+    last_audit = static.get("last_audit")
+    last_scan = static.get("last_scan")
+    audit_due = dt.datetime(2026, 10, 9, 18, 0)
+    if last_audit:
+        audit_due = dt.datetime.fromisoformat(last_audit).replace(
+            hour=18) + dt.timedelta(days=2)
+    scan_due = (dt.datetime.fromisoformat(last_scan).replace(hour=19)
+                + dt.timedelta(days=7)) if last_scan else None
+    now = dt.datetime.now()
+
+    def row(name, last, due, what):
+        overdue = due is not None and due < now
+        return {"name": name, "last": last, "what": what,
+                "due": due.strftime("%a %d %b %H:%M") if due else None,
+                "status": "overdue" if overdue else "scheduled"}
+
+    return [
+        row("Daily health", None, _next_local(18), "heartbeat, disk, rates"),
+        row("Results audit · 48 h", last_audit, audit_due,
+            "continue / correct / change-arm / pause"),
+        row("External research · weekly", last_scan,
+            scan_due or _next_local(19, weekday=4),
+            "papers, datasets, open models, JEv"),
+        row("Publication review · monthly", None, _next_first_friday(),
+            "Hugging Face, GitHub, Zenodo"),
+    ]
+
+
+def _log_lines(name, n=18):
+    lines = _tail_text(AUTOLOOP / "logs" / f"{name}.log", 4000).splitlines()
+    return [line for line in lines if line.strip()][-n:]
+
+
+def _qwen_cycles():
+    """Per-cycle Qwen yield, newest first; manifests only change per phase."""
+    if time.time() - _PIPE_CACHE.get("q_t", 0) < 30 and "qwen" in _PIPE_CACHE:
+        return _PIPE_CACHE["qwen"]
+    rows = []
+    for qdir in sorted((AUTOLOOP / "qwen").glob("cycle-*"), reverse=True):
+        gen = _read_json(qdir / "manifest.json")
+        ver = _read_json(qdir / "verify_manifest.json")
+        origins = gen.get("prose_origins") or {}
+        rows.append({
+            "cycle": int(qdir.name.split("-")[-1]),
+            "gen_model": gen.get("qwen_model"),
+            "families": gen.get("families") or [],
+            "planned": gen.get("n"),
+            "published": gen.get("n_episodes") or _count_lines(
+                qdir / "episodes.jsonl"),
+            "rejects": gen.get("n_rejects"),
+            "qwen_prose": origins.get("qwen-local"),
+            "fallback_prose": origins.get("local-fallback"),
+            "gen_s": gen.get("elapsed_s"),
+            "verify_model": ver.get("qwen_model"),
+            "verified": ver.get("n_verified"),
+            "quarantined": ver.get("n_quarantine"),
+            "reasons": ver.get("quarantine_reasons") or {},
+            "verify_s": ver.get("elapsed_s"),
+        })
+    _PIPE_CACHE.update({"q_t": time.time(), "qwen": rows})
+    return rows
+
+
+def _public_members():
+    public = _read_json(ROOT / "artifacts" / "episodes-external" /
+                        "public-mix" / "manifest.json")
+    return [{
+        "key": m.get("key"),
+        "license": m.get("license"),
+        "available": m.get("n_available"),
+        "under_cap": m.get("n_under_cap"),
+        "langs": sorted((m.get("per_lang") or {}).keys()),
+    } for m in public.get("members") or [] if m.get("split") == "train"]
+
+
+def _curve(run):
+    try:
+        lines = (run / "curve.jsonl").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    points = []
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        points.append({"step": row.get("step"), "loss": row.get("loss"),
+                       "step_s": row.get("step_s")})
+    return points[-400:]
+
+
+def pipeline_snapshot():
+    """What every stage of the closed loop is doing right now.
+
+    The GPU holds one heavy job at a time, so Qwen generation, Qwen
+    verification, training and evaluation take turns inside a cycle.
+    """
+    state = _read_json(AUTOLOOP / "state.json")
+    static = _static_inputs()
+    alive = (state.get("status") == "running"
+             and process_alive(state.get("pid")))
+    age = _age_s(state.get("updated_utc"))
+    phase = state.get("phase") if alive else None
+    cycle = int(state.get("cycle") or 0)
+    run = AUTOLOOP / "cycles" / f"cycle-{cycle:04d}"
+    qdir = AUTOLOOP / "qwen" / f"cycle-{cycle:04d}"
+    phase_age = _age_s(state.get("phase_started_utc"))
+    attempts = int(state.get("attempts") or 0)
+
+    def light(stage):
+        if not alive:
+            return "down"
+        if stage == phase:
+            if age is not None and age > 180:
+                return "stale"
+            return "retry" if attempts else "running"
+        if phase in LOOP_PHASES and stage in LOOP_PHASES:
+            done = LOOP_PHASES.index(stage) < LOOP_PHASES.index(phase)
+            return "done" if done else "queued"
+        return "queued"
+
+    try:
+        lines = (AUTOLOOP / "history.jsonl").read_text(
+            encoding="utf-8").splitlines()
+    except OSError:
+        lines = []
+    decisions = [json.loads(line) for line in lines if line.strip()]
+    history = [row for row in decisions if row.get("candidate")]
+    failures = [row for row in decisions if row.get("failed_phase")]
+    champion = _read_json(AUTOLOOP / "champion" / "champion.json")
+    champ = champion.get("summary") or {}
+
+    gen_manifest = _read_json(qdir / "manifest.json")
+    published = _count_lines(qdir / "episodes.jsonl")
+    progress = _RE_PROGRESS.findall(
+        _tail_text(AUTOLOOP / "logs" / "generate.log"))
+    gen_rate = float(progress[-1][4]) if progress else None
+    gen_detail = {
+        "model": state.get("generate_model"),
+        "published": published,
+        "planned": gen_manifest.get("n"),
+        "families": state.get("weak_families") or [],
+        "rate_per_h": round(gen_rate * 3600) if gen_rate else None,
+    }
+
+    verify = _read_json(qdir / "verify_manifest.json")
+    if verify.get("status") != "published":
+        previous = AUTOLOOP / "qwen" / f"cycle-{max(0, cycle - 1):04d}"
+        verify_last = _read_json(previous / "verify_manifest.json")
+    else:
+        verify_last = verify
+    reasons = verify_last.get("quarantine_reasons") or {}
+    verify_detail = {
+        "model": state.get("verify_model"),
+        "input": verify_last.get("n_input"),
+        "verified": verify_last.get("n_verified"),
+        "quarantine": verify_last.get("n_quarantine"),
+        "top_reason": (max(reasons, key=reasons.get) if reasons else None),
+        "pool": static["qwen_pool"],
+    }
+
+    mix = _read_json(run / "mix_manifest.json")
+    train_state = _read_json(run / "state.json")
+    curve = _last_jsonl(run / "curve.jsonl")
+    train_steps = int(os.environ.get("AUTOLOOP_TRAIN_STEPS", "200"))
+    step = train_state.get("step") if phase in ("train", "eval", "decide") \
+        else None
+    step_s = curve.get("step_s")
+    train_detail = {
+        "step": step,
+        "steps": train_steps,
+        "loss": train_state.get("train_loss"),
+        "step_s": step_s,
+        "eta_s": (int((train_steps - step) * step_s)
+                  if step is not None and step_s else None),
+        "holdout": train_state.get("holdout_forced"),
+        "init": f"champion · cycle {champion.get('cycle', 0)}",
+    }
+    report = _read_json(run / "battery_regression.json")
+    eval_detail = {
+        "orders": 9,
+        "running_s": phase_age if phase == "eval" else None,
+        "candidate": None,
+    }
+    if report and phase in ("decide",):
+        eval_detail["candidate"] = report.get("forced")
+    last = history[-1] if history else {}
+    gpu_holder = {
+        "generate": f"Qwen generator · {state.get('generate_model') or '-'}",
+        "verify": f"Qwen verifier · {state.get('verify_model') or '-'}",
+        "train": "TinyJev trainer · MLX",
+        "eval": "TinyJev battery eval · MLX",
+        "mix": "CPU only · building the mix",
+        "decide": "CPU only · promotion gate",
+    }.get(phase, "idle")
+
+    stages = [
+        {"id": "public", "title": "Public datasets",
+         "light": "paused",
+         "now": (f"{static['public_sources']} sources on disk · "
+                 f"{static['public_rows']:,} train rows under the 25% cap"),
+         "next": "new sources enter through the weekly research review",
+         "role": "30% of every mix"},
+        {"id": "rules", "title": "Rule episodes",
+         "light": "paused",
+         "now": (f"producer stopped by design · {static['rule_batches']:,} "
+                 "batches on disk"),
+         "next": "sampled from 8 random batches per mix; no new volume needed",
+         "role": "25% of every mix"},
+        {"id": "generate", "title": "Qwen generation",
+         "light": light("generate"), "detail": gen_detail,
+         "role": "weakest families, 2 h GPU slot"},
+        {"id": "verify", "title": "Qwen verification",
+         "light": light("verify"), "detail": verify_detail,
+         "role": "separate auditor; disagreement is dropped"},
+        {"id": "mix", "title": "Training mix",
+         "light": light("mix"),
+         "detail": {"n": mix.get("n"), "by_source": mix.get("by_source"),
+                    "leak_removed": mix.get("leak_removed")},
+         "role": "45% Qwen · 30% public · 25% rules · leak filter"},
+        {"id": "train", "title": "Training",
+         "light": light("train"), "detail": train_detail,
+         "role": "short LoRA run from the champion"},
+        {"id": "eval", "title": "Evaluation",
+         "light": light("eval"), "detail": eval_detail,
+         "role": "battery-dev 400 rows · written + 8 shuffles"},
+        {"id": "decide", "title": "Promotion gate",
+         "light": light("decide"),
+         "detail": {"last": state.get("last_decision"),
+                    "streak": state.get("streak_no_promote")},
+         "role": "mean up, worst order not down, no family -0.02"},
+    ]
+    weakest = min(champ.get("by_family", {}).items(), key=lambda kv: kv[1],
+                  default=(None, None))
+    return {
+        "alive": alive,
+        "heartbeat_age_s": age,
+        "cycle": cycle,
+        "phase": phase,
+        "phase_age_s": phase_age,
+        "attempts": attempts,
+        "gpu_holder": gpu_holder,
+        "phases": list(LOOP_PHASES),
+        "stages": stages,
+        "champion": {"cycle": champion.get("cycle"),
+                     "source": champion.get("source"), **champ},
+        "target": TARGET_ACC,
+        "weakest": {"family": weakest[0], "score": weakest[1]},
+        "history": [{
+            "cycle": row.get("cycle"),
+            "promoted": row.get("promoted"),
+            "written": (row.get("candidate") or {}).get("written"),
+            "mean": (row.get("candidate") or {}).get("mean"),
+            "min": (row.get("candidate") or {}).get("min"),
+            "priority": ((row.get("candidate") or {}).get("by_family")
+                         or {}).get("priority_decision"),
+            "mix": row.get("mix"),
+            "at": row.get("decided_utc"),
+        } for row in history[-8:]],
+        "last_candidate": last.get("candidate"),
+        "last_reasons": last.get("reasons") or [],
+        "failures": [{"cycle": row.get("cycle"),
+                      "phase": row.get("failed_phase"),
+                      "outcome": row.get("outcome"),
+                      "at": row.get("at")} for row in failures[-6:]],
+        "phase_log": (state.get("phase_log") or [])[-12:],
+        "calendar": _calendar(static),
+        "datasets": {
+            "public": _public_members(),
+            "rule_batches": static["rule_batches"],
+            "qwen_pool": static["qwen_pool"],
+            "qwen_cycles": _qwen_cycles(),
+            "shares": {"qwen": 0.45, "public": 0.30, "rule": 0.25},
+        },
+        "training": {
+            "run_dir": state.get("run_dir"),
+            "curve": _curve(run),
+            "state": train_state,
+            "manifest": {k: _read_json(run / "train_manifest.json").get(k)
+                         for k in ("init", "batch", "lora_rank", "lr",
+                                   "n_train", "n_holdout", "by_family",
+                                   "resume_count")},
+        },
+        "logs": {name: _log_lines(name)
+                 for name in ("generate", "verify", "train", "eval")},
+        "strategy": state.get("strategy"),
+        "devloop": _read_json(ROOT / "artifacts" / "devloop" / "state.json"),
+    }
+
+
 def process_alive(pid) -> bool:
     try:
         os.kill(int(pid), 0)
@@ -1115,6 +1484,7 @@ def live_snapshot():
         "toward_goal": round(toward, 4),
         "history": hist,
         "benchmarks": _research_benchmarks(),
+        "pipeline": pipeline_snapshot(),
         "dashboard_age_s": 0,
     }
 
@@ -1200,142 +1570,134 @@ pre{{background:var(--panel2);border:1px solid var(--line);border-radius:8px;pad
 .pill{{display:inline-block;padding:2px 10px;border-radius:999px;font-size:14px;border:1px solid var(--line)}}
 .on{{color:var(--acc);border-color:var(--acc)}}.off{{color:var(--dim)}}footer{{color:var(--dim);font-size:11px;margin-top:7px}}
 @media(max-width:850px){{.cards.activity-cards{{grid-template-columns:repeat(4,1fr)}}.charts-main,.lower-grid{{grid-template-columns:1fr}}}}
+.cards.ov-cards{{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.rail{{display:flex;align-items:center;gap:6px;margin:2px 0 11px;flex-wrap:wrap}}
+.rail-step{{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}}
+.rail-step.past{{color:var(--acc);border-color:rgba(57,230,163,.35)}}
+.rail-step.cur{{color:#06110c;background:var(--acc);border-color:var(--acc);font-weight:750;box-shadow:0 0 12px rgba(57,230,163,.35)}}
+.rail-sep{{width:18px;height:1px;background:var(--line)}}
+.stage-grid{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}}
+@media(max-width:1200px){{.stage-grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}.cards.ov-cards{{grid-template-columns:repeat(3,1fr)}}}}
+.stage{{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:9px 11px;background:rgba(8,13,21,.7);min-height:118px}}
+.stage-h{{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px}}
+.stage-h .word{{margin-left:auto;font-size:10px;letter-spacing:.09em;font-weight:750}}
+.stage-l{{font-size:12px;color:var(--dim);line-height:1.5;overflow:hidden;text-overflow:ellipsis}}
+.stage-l i{{color:#6f7d92}}
+.dot{{width:11px;height:11px;border-radius:50%;flex:none;background:#56627a}}
+.l-run{{border-left-color:var(--acc)}}.l-run .dot{{background:var(--acc);box-shadow:0 0 10px var(--acc);animation:pulse 1.5s infinite}}.l-run .word{{color:var(--acc)}}
+.l-wait{{border-left-color:var(--blue)}}.l-wait .dot{{background:var(--blue)}}.l-wait .word{{color:var(--blue)}}
+.l-done .dot{{background:rgba(57,230,163,.45)}}.l-done .word{{color:rgba(57,230,163,.7)}}
+.l-pause .dot{{background:#56627a}}.l-pause .word{{color:var(--dim)}}
+.l-warn{{border-left-color:var(--warn)}}.l-warn .dot{{background:var(--warn)}}.l-warn .word{{color:var(--warn)}}
+.l-bad{{border-left-color:var(--bad)}}.l-bad .dot{{background:var(--bad)}}.l-bad .word{{color:var(--bad)}}
+.ov-grid{{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(260px,.8fr);gap:10px}}
+@media(max-width:1200px){{.ov-grid{{grid-template-columns:1fr}}}}
+table.mini{{font-size:12px}}table.mini td,table.mini th{{padding:5px 7px}}
+.fam-track{{position:relative}}.fam-target{{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--txt);opacity:.6}}
+.cal-row{{display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-bottom:1px solid rgba(38,52,74,.55);font-size:12px}}
+pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap;word-break:break-all}}
+.cal-row:last-child{{border-bottom:none}}.cal-row .dot{{margin-top:3px}}.d-wait{{background:var(--blue)}}.d-warn{{background:var(--warn)}}
 </style></head><body>
 <header class="top"><div class="brand"><h1><span class="live-dot"></span>JEv · Decision Intelligence Lab</h1><small>Continuous learning research system</small></div>
 <nav>
-<button class="active" data-tab="activity">Overview</button><button data-tab="training">Training</button>
-<button data-tab="data">Datasets</button><button data-tab="model">Model</button>
-<button data-tab="benchmarks">Benchmarks</button>
+<button class="active" data-tab="activity">Overview</button><button data-tab="data">Datasets</button>
+<button data-tab="training">Training</button><button data-tab="benchmarks">Evaluation</button>
+<button data-tab="model">Model</button><button data-tab="research">Research</button>
 </nav>
 <div class="header-right"><span class="live-badge">LIVE RESEARCH RUN</span><small id="clock">{tick_ts}</small></div></header>
 <main id="activity" class="tab-page active">
-<div class="cards activity-cards">
-<div class="card"><div class="k">Research state</div><div class="v status-running" id="live-state">LOADING</div><div class="s" id="live-elapsed">-</div></div>
-<div class="card"><div class="k">Active model accuracy</div><div class="v" id="live-forced">-</div><div class="s" id="live-forced-src">promoted model</div></div>
-<div class="card"><div class="k">Progress to 99%</div><div class="v" id="live-toward">-</div><div class="s" id="live-goal-s">baseline 62.25%</div>
-<div class="goalbar"><div class="fill" id="live-goal-fill" style="width:0%"></div></div></div>
-<div class="card"><div class="k">Research corpus</div><div class="v" id="live-episodes">-</div><div class="s" id="live-ep-rate">verified episodes</div></div>
-<div class="card"><div class="k">Training · 12 h</div><div class="v" id="live-12h">-</div><div class="s" id="live-12h-s">decisions processed</div></div>
-<div class="card"><div class="k">Active cycle</div><div class="v" id="live-cycle">-</div><div class="s" id="live-consumed">batch progress</div></div>
-<div class="card"><div class="k">Current battery</div><div class="v" id="live-current">-</div><div class="s" id="live-streak">measured on 400 rows</div></div>
-<div class="card"><div class="k">Counterfactual</div><div class="v" id="live-counter">-</div><div class="s">joint consistency</div></div>
+<div class="cards activity-cards ov-cards">
+<div class="card"><div class="k">Closed loop</div><div class="v" id="ov-loop">-</div><div class="s" id="ov-loop-s">-</div></div>
+<div class="card"><div class="k">Champion · mean of 9 orders</div><div class="v" id="ov-champ">-</div><div class="s" id="ov-champ-s">-</div></div>
+<div class="card"><div class="k">Gap to 95% sustained</div><div class="v" id="ov-gap">-</div><div class="s" id="ov-gap-s">worst order must clear it too</div></div>
+<div class="card"><div class="k">Weakest family</div><div class="v" id="ov-weak">-</div><div class="s" id="ov-weak-s">-</div></div>
+<div class="card"><div class="k">GPU now</div><div class="v" id="ov-gpu">-</div><div class="s" id="ov-gpu-s">-</div></div>
+<div class="card"><div class="k">Verified Qwen pool</div><div class="v" id="ov-pool">-</div><div class="s">episodes that passed the separate auditor</div></div>
 </div>
-<div class="charts-main">
-<section class="panel"><h2>Battery accuracy · 24 hours · full 0-100% scale</h2>
-<div class="chart tall with-axis"><div class="axis-y"><span class="y100">100%</span><span class="y75">75%</span><span class="y50">50%</span><span class="y25">25%</span><span class="y0">0%</span></div><svg id="svg-acc" viewBox="0 0 900 300" preserveAspectRatio="none">
-<line class="grid" x1="0" y1="75" x2="900" y2="75"/><line class="grid" x1="0" y1="150" x2="900" y2="150"/><line class="grid" x1="0" y1="225" x2="900" y2="225"/>
-<line class="mark" id="mark-chance" x1="0" y1="0" x2="900" y2="0" style="stroke:var(--bad)"/>
-<line class="mark" id="mark-start" x1="0" y1="0" x2="900" y2="0" style="stroke:var(--dim)"/>
-<line class="mark" id="mark-h3" x1="0" y1="0" x2="900" y2="0" style="stroke:var(--warn)"/>
-<line class="mark" id="mark-goal" x1="0" y1="0" x2="900" y2="0" style="stroke:var(--acc)"/>
-<polyline id="line-acc" points=""/>
-<polyline id="line-best" points="" style="stroke:var(--acc);stroke-width:2.5;fill:none"/></svg>
-<div class="chart-labels"><span><span style="color:var(--bad)">chance 33.75%</span> · <span style="color:var(--dim)">baseline 62.25%</span> · <b id="legend-current" style="color:var(--blue)">candidate -</b> · <b id="legend-best" style="color:var(--acc)">best -</b> · <span style="color:var(--warn)">H3 70%</span> · <span style="color:var(--acc)">target 99%</span></span><span>24 h</span></div></div>
+<section class="panel"><h2>Closed loop · <span id="ov-cycle">cycle -</span> <span class="tag" id="ov-phase-tag">-</span></h2>
+<div class="rail" id="ov-rail"></div>
+<div class="stage-grid" id="ov-stages"></div>
+<div class="ref-note">One heavy job holds the GPU at a time: Qwen and the trainer do not fit in 48 GB together, so generation, verification, training and evaluation take turns inside each cycle. Public datasets and rule episodes are inputs already on disk; they feed every mix without running.</div>
 </section>
-<section class="panel"><h2>Verified corpus growth · 24 hours</h2>
-<div class="chart tall"><svg viewBox="0 0 900 280" preserveAspectRatio="none">
-<line class="grid" x1="0" y1="70" x2="900" y2="70"/><line class="grid" x1="0" y1="140" x2="900" y2="140"/><line class="grid" x1="0" y1="210" x2="900" y2="210"/>
-<polyline id="line-vol" points=""/></svg>
-<div class="chart-labels"><span><b style="color:var(--blue)">published episodes</b></span><span id="vol-max">-</span></div></div>
-</section>
+<div class="ov-grid">
+<section class="panel"><h2>Cycle results <span class="tag">BATTERY-DEV · 400 ROWS</span></h2>
+<div id="ov-history"></div></section>
+<section class="panel"><h2>Champion by family <span class="tag">TARGET 95%</span></h2>
+<div class="fam-list" id="ov-fam"></div></section>
+<section class="panel"><h2>Research calendar</h2>
+<div id="ov-cal"></div></section>
 </div>
-<div class="mid-grid">
-<section class="panel"><h2>Competitive benchmark <span class="tag">MEASURED + CITED</span></h2>
-<div class="ref-group"><h3>Decision battery · same 400 rows · K=2/3/8</h3>
-<div class="ref-list">
-<div class="ref-row"><span class="ref-name">Qwen 3.8</span><span class="ref-score" data-metric="ref-qwen">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-qwen-bar" style="width:{w_qwen}"></div></div></div>
-<div class="ref-row"><span class="ref-name">TypeSafe JEv</span><span class="ref-score" data-metric="ref-jev">-</span><div class="ref-track"><div class="ref-fill winner" data-metric="ref-jev-bar" style="width:{w_jev}"></div></div></div>
-<div class="ref-row" data-role="ours"><span class="ref-name">Clone · active architecture</span><span class="ref-score" data-metric="ref-current">-</span><div class="ref-track"><div class="ref-fill ours" data-metric="ref-current-bar" style="width:{w_current}"></div></div></div>
-<div class="ref-row"><span class="ref-name">MiniLM base</span><span class="ref-score" data-metric="ref-base">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-base-bar" style="width:{w_base}"></div></div></div>
-<div class="ref-row"><span class="ref-name">Laya</span><span class="ref-score" data-metric="ref-laya">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-laya-bar" style="width:{w_laya}"></div></div></div>
-</div></div>
-<div class="ref-group"><h3>BANKING77 · K=77 · 3,080 rows</h3>
-<div class="ref-list">
-<div class="ref-row"><span class="ref-name">JEv (cited)</span><span class="ref-score" data-metric="ref-bank-jev">-</span><div class="ref-track"><div class="ref-fill winner" data-metric="ref-bank-jev-bar" style="width:{w_bank_jev}"></div></div></div>
-<div class="ref-row"><span class="ref-name">Laya</span><span class="ref-score" data-metric="ref-bank-laya">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-bank-laya-bar" style="width:{w_bank_laya}"></div></div></div>
-<div class="ref-row" data-role="ours"><span class="ref-name">Clone · untuned</span><span class="ref-score" data-metric="ref-bank-ours">-</span><div class="ref-track"><div class="ref-fill ours" data-metric="ref-bank-ours-bar" style="width:{w_bank_ours}"></div></div></div>
-</div></div>
-<div class="ref-note">Green is the leader. Blue is this clone. Every other result is grey. The BANKING77 JEv figure is a published citation under a richer information regime. Chance there is 1.3%, and the clone was never trained on that 77-label space.</div>
-</section>
-<section class="panel"><h2>Accuracy by decision family · live candidate</h2>
-<div class="fam-list" id="fam-list"><div class="fam-row"><span class="fam-name">waiting for evaluation</span><span class="fam-val">-</span></div></div>
-</section>
-<section class="panel"><h2>Research infrastructure</h2>
-<div class="spec">
-<div class="spec-row"><span class="spec-k">Compute</span><span class="spec-v">Apple M5 Pro · 20-core GPU</span></div>
-<div class="spec-row"><span class="spec-k">Unified memory</span><span class="spec-v" id="spec-mem">-</span></div>
-<div class="spec-row"><span class="spec-k">Backbone</span><span class="spec-v" id="spec-model">MiniLMv2-L6</span></div>
-<div class="spec-row"><span class="spec-k">Parameters</span><span class="spec-v" id="spec-params">-</span></div>
-<div class="spec-row"><span class="spec-k">Teacher</span><span class="spec-v">Qwen 3.8 · 27B MLX</span></div>
-<div class="spec-row"><span class="spec-k">Cycles completed</span><span class="spec-v" id="spec-cycles">-</span></div>
-<div class="spec-row"><span class="spec-k">Rule holdout · same distribution</span><span class="spec-v" id="spec-holdout">-</span></div>
-<div class="spec-row"><span class="spec-k">Batch loss</span><span class="spec-v" id="spec-loss">-</span></div>
-<div class="spec-row"><span class="spec-k">Data producer</span><span class="spec-v" id="spec-producer">-</span></div>
+</main>
+<main id="data" class="tab-page">
+<div class="cards">
+<div class="card"><div class="k">Qwen generation</div><div class="v" id="ds-gen">-</div><div class="s" id="ds-gen-s">-</div></div>
+<div class="card"><div class="k">Verified Qwen pool</div><div class="v" id="ds-pool">-</div><div class="s">45% of every mix, each episode repeated at most 4 times</div></div>
+<div class="card"><div class="k">Public datasets</div><div class="v" id="ds-pub">-</div><div class="s" id="ds-pub-s">30% of every mix</div></div>
+<div class="card"><div class="k">Rule episodes</div><div class="v" id="ds-rule">-</div><div class="s">25% of every mix · 8 random batches each time</div></div>
 </div>
-</section>
-</div>
-<div class="lower-grid">
-<section class="panel"><h2>Accelerator load · last 2 min</h2>
-<div class="chart short named"><span class="axis-name gpu">GPU</span><svg viewBox="0 0 900 160" preserveAspectRatio="none">
-<line class="grid" x1="0" y1="40" x2="900" y2="40"/><line class="grid" x1="0" y1="80" x2="900" y2="80"/><line class="grid" x1="0" y1="120" x2="900" y2="120"/>
-<polyline id="line-gpu" class="gpu" points=""/></svg>
-<div class="chart-labels"><span>usage</span><span id="live-gpu">-</span></div></div>
-</section>
-<section class="panel"><h2>Host load · last 2 min</h2>
-<div class="chart short named"><span class="axis-name cpu">CPU</span><svg viewBox="0 0 900 160" preserveAspectRatio="none">
-<line class="grid" x1="0" y1="40" x2="900" y2="40"/><line class="grid" x1="0" y1="80" x2="900" y2="80"/><line class="grid" x1="0" y1="120" x2="900" y2="120"/>
-<polyline id="line-cpu" class="cpu" points=""/></svg>
-<div class="chart-labels"><span>usage</span><span id="live-cpu">-</span></div></div>
-</section>
-<section class="panel"><h2>Same-row research battery <span class="tag">400 ROWS</span></h2>
-<div class="ref-list">
-<div class="ref-row"><span class="ref-name">Qwen 3.8</span><span class="ref-score" data-metric="ref-qwen">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-qwen-bar" style="width:{w_qwen}"></div></div></div>
-<div class="ref-row" data-role="ours"><span class="ref-name">Candidate</span><span class="ref-score" data-metric="ref-current">-</span><div class="ref-track"><div class="ref-fill ours" data-metric="ref-current-bar" style="width:{w_current}"></div></div></div>
-<div class="ref-row"><span class="ref-name">MiniLM base</span><span class="ref-score" data-metric="ref-base">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-base-bar" style="width:{w_base}"></div></div></div>
-<div class="ref-row"><span class="ref-name">Laya</span><span class="ref-score" data-metric="ref-laya">-</span><div class="ref-track"><div class="ref-fill" data-metric="ref-laya-bar" style="width:{w_laya}"></div></div></div>
-</div>
-<div class="ref-note">Identical battery-dev rows and candidate sets. The rule holdout is reported separately because it is drawn from the training generator distribution.</div>
-</section>
+<section class="panel"><h2>Qwen episodes by cycle <span class="tag">GENERATE · VERIFY</span></h2>
+<div id="ds-qwen"></div>
+<div class="ref-note">The generator writes episodes for the weakest families; a different model audits each one and anything it rejects or abstains on is dropped. Gold comes from the rule that built the episode, never from the generator alone.</div></section>
+<div class="ov-grid">
+<section class="panel"><h2>Public sources <span class="tag">TRAIN SPLIT ONLY</span></h2><div id="ds-public"></div></section>
+<section class="panel"><h2>Generation log</h2><pre id="ds-log-gen">-</pre></section>
+<section class="panel"><h2>Verification log</h2><pre id="ds-log-ver">-</pre></section>
 </div>
 </main>
 <main id="training" class="tab-page">
-{decision_sec}
-<section class="panel"><h2>Execution summary</h2><div class="cards">
-<div class="card"><div class="k">historical training</div><div class="v">{trained:,}</div><div class="s">run {run}</div></div>
-<div class="card"><div class="k">total examples</div><div class="v">{total:,}</div><div class="s">{size}</div></div>
-<div class="card"><div class="k">pending</div><div class="v">{pending:,}</div><div class="s">{pct}%</div></div>
-<div class="card"><div class="k">historical baseline</div><div class="v">≈ {params:,}</div><div class="s">TF-IDF · not the product model</div></div>
-</div><div class="bar"><div class="fill" style="width:{pct}%"></div></div></section>
-<section class="panel"><h2>Training log</h2><pre>{train_tail}</pre><p><span class="pill">{procs}</span></p><p><i>{note}</i></p></section>
-</main>
-<main id="data" class="tab-page">
-<section class="panel"><h2>Producers and corpora</h2><div class="cards">
-<div class="card"><div class="k">synth-loop on disk</div><div class="v">{synth_live}</div><div class="s">trained {synth_tr} · {rate}</div></div>
-<div class="card"><div class="k">total Qwen</div><div class="v">{qwen_tot}</div><div class="s">templates {qwen_tpl}</div></div>
-<div class="card"><div class="k">historical generator</div><div class="v">{gen_state}</div><div class="s">data_gen_loop.py</div></div>
-<div class="card"><div class="k">Ollama</div><div class="v">{oll_state}</div><div class="s">runner {run_state} · convert {conv_state}</div></div>
-</div>{synth_sec}{fwd_sec}</section>
-<section class="panel"><h2>Datasets</h2><table><tr><th>dataset</th><th class="num">examples</th><th class="num">size</th><th>status</th></tr>{rows}</table></section>
+<div class="cards">
+<div class="card"><div class="k">Trainer</div><div class="v" id="tr-state">-</div><div class="s" id="tr-state-s">-</div></div>
+<div class="card"><div class="k">Step</div><div class="v" id="tr-step">-</div><div class="s" id="tr-step-s">-</div></div>
+<div class="card"><div class="k">Loss · last step</div><div class="v" id="tr-loss">-</div><div class="s" id="tr-loss-s">-</div></div>
+<div class="card"><div class="k">Training mix</div><div class="v" id="tr-mix">-</div><div class="s" id="tr-mix-s">-</div></div>
+</div>
+<section class="panel"><h2>Loss this cycle</h2>
+<div class="chart tall"><svg viewBox="0 0 900 260" preserveAspectRatio="none">
+<line class="grid" x1="0" y1="65" x2="900" y2="65"/><line class="grid" x1="0" y1="130" x2="900" y2="130"/><line class="grid" x1="0" y1="195" x2="900" y2="195"/>
+<polyline id="tr-curve" points=""/></svg>
+<div class="chart-labels"><span id="tr-curve-l">-</span><span id="tr-curve-r">-</span></div></div>
+</section>
+<div class="ov-grid">
+<section class="panel"><h2>Phase log</h2><div id="tr-phases"></div></section>
+<section class="panel" style="grid-column:span 2"><h2>Trainer log</h2><pre id="tr-log">-</pre></section>
+</div>
 </main>
 <main id="model" class="tab-page">
 <section class="panel"><h2>Decision model</h2><div class="cards">
-<div class="card"><div class="k">backbone</div><div class="v">MiniLMv2-L6</div><div class="s">multilingual NLI</div></div>
-<div class="card"><div class="k">parameters</div><div class="v">107M</div><div class="s">encoder + classification head</div></div>
-<div class="card"><div class="k">device</div><div class="v">Apple MPS</div><div class="s">M5 Pro · 48 GB</div></div>
-<div class="card"><div class="k">promotion</div><div class="v">GATE</div><div class="s">paired bootstrap · no regression</div></div>
+<div class="card"><div class="k">model</div><div class="v">TinyJev-4B-v1</div><div class="s">Qwen3-4B-Base backbone · pointer head over up to 9 options</div></div>
+<div class="card"><div class="k">trainable</div><div class="v">34.3M</div><div class="s">LoRA rank 16 · embeddings frozen</div></div>
+<div class="card"><div class="k">runtime</div><div class="v">MLX</div><div class="s">Apple M5 Pro · 48 GB unified memory</div></div>
+<div class="card"><div class="k">champion</div><div class="v" id="md-champ">-</div><div class="s" id="md-champ-s">-</div></div>
+</div>
+<div class="spec">
+<div class="spec-row"><span class="spec-k">Loss</span><span class="spec-v">listwise NLL over pointer logits</span></div>
+<div class="spec-row"><span class="spec-k">Cycle</span><span class="spec-v">short LoRA run from the champion on a fresh mix, then the gate</span></div>
+<div class="spec-row"><span class="spec-k">Generator</span><span class="spec-v" id="md-gen">-</span></div>
+<div class="spec-row"><span class="spec-k">Verifier</span><span class="spec-v" id="md-ver">-</span></div>
+<div class="spec-row"><span class="spec-k">Goal</span><span class="spec-v">above 95% sustained across every arena, worst order included</span></div>
 </div></section>
 </main>
-<main id="benchmarks" class="tab-page">
-<section class="panel"><h2>Battery-dev · same 400 rows · K=2/3/8 · English and Spanish</h2>
+<main id="research" class="tab-page">
 <div class="cards">
-<div class="card"><div class="k">Qwen 3.8 teacher</div><div class="v">{battery_qwen}</div><div class="s">gate artifact · measured</div></div>
-<div class="card"><div class="k">MiniLM untuned</div><div class="v">{battery_base}</div><div class="s">control checkpoint · measured</div></div>
-<div class="card"><div class="k">Laya</div><div class="v">{battery_laya}</div><div class="s">gate artifact · measured</div></div>
-<div class="card"><div class="k">TypeSafe JEv</div><div class="v">{battery_jev}</div><div class="s">remote gate · same 400 rows</div></div>
+<div class="card"><div class="k">Development loop</div><div class="v" id="rs-dev">-</div><div class="s" id="rs-dev-s">-</div></div>
+<div class="card"><div class="k">This cycle's arm</div><div class="v" id="rs-arm">-</div><div class="s" id="rs-arm-s">-</div></div>
+<div class="card"><div class="k">Next cycle's arm</div><div class="v" id="rs-next">-</div><div class="s" id="rs-next-s">-</div></div>
+<div class="card"><div class="k">Cycles since promotion</div><div class="v" id="rs-since">-</div><div class="s" id="rs-since-s">-</div></div>
 </div>
-<p>Forced accuracy is paired on the exact same rows and candidate sets.
-The active candidate is shown live in Overview and remains experimental when
-its gate verdict is NO-GO.</p></section>
+<section class="panel"><h2>Training arms <span class="tag">GAIN = CANDIDATE MEAN - CHAMPION MEAN</span></h2><div id="rs-arms"></div>
+<div class="ref-note">Every arm runs once, then the loop favours the arm with the best upper bound on its measured gain. The gain is read on battery-dev, the battery the gate uses; a release claim still needs the sealed battery.</div></section>
+<div class="ov-grid">
+<section class="panel"><h2>Health</h2><div id="rs-health"></div></section>
+<section class="panel"><h2>Events</h2><div id="rs-events"></div></section>
+<section class="panel"><h2>Research calendar</h2><div id="rs-cal"></div>
+<div class="ref-note">Daily health, arm choice and the daily report run on their own. The weekly external review still runs on request.</div></section>
+</div>
+</main>
+<main id="benchmarks" class="tab-page">
+<section class="panel"><h2>Promotion gate · battery-dev 400 rows · written order + 8 shuffles</h2>
+<div id="ev-gate"></div>
+<div class="ref-note">A candidate replaces the champion only when its mean over the 9 orders is strictly higher, its worst order is not lower, and no family drops more than 2 points. The sealed battery stays closed.</div></section>
+<section class="panel"><h2>Failed cycles</h2><div id="ev-fail"></div></section>
 <section class="panel"><h2>BANKING77 · K=77 · protocol-labelled comparison</h2>
 <div class="cards">
 <div class="card"><div class="k">JEv teacher</div><div class="v">{bank_jev}</div><div class="s">citation only · richer information regime</div></div>
@@ -1348,10 +1710,8 @@ same-pipeline measurement and is never presented as one.</p></section>
 <section class="panel"><h2>Arena board <span class="tag">MEASURED + CITED</span></h2>
 <p id="arena-note">Same-protocol numbers are measured. A citation stays labelled as a citation. An empty JEv cell has no same-protocol score.</p>
 <div id="arena-board"></div></section>
-{unseen_sec}
-<section class="panel"><h2>Historical comparisons by task</h2>{invalid_sec}<table><tr><th>task</th><th class="num">n_train</th><th class="num">accuracy</th><th class="num">seconds</th></tr>{trows}</table></section>
 </main>
-<footer>Live telemetry: 1 s · research curves: completed evaluations over 24 h · static evidence: {tick} s</footer>
+<footer>Live: 1 s · loop state from artifacts/autoloop</footer>
 <script>
 const $=id=>document.getElementById(id);
 const fmt=v=>v===null||v===undefined||v===''?'-':Number(v).toFixed(4);
@@ -1364,77 +1724,162 @@ function plotWindow(id,series,ymin,ymax,now,windowS,w,h){{
   $(id).setAttribute('points',pts);
 }}
 function hline(id,y,ymin,ymax,h){{const yy=yOf(y,ymin,ymax,h);$(id).setAttribute('y1',yy);$(id).setAttribute('y2',yy);}}
+const LIGHT={{running:['RUNNING','l-run'],queued:['WAITING TURN','l-wait'],done:['DONE THIS CYCLE','l-done'],paused:['PAUSED BY DESIGN','l-pause'],retry:['RETRYING','l-warn'],stale:['NO PROGRESS','l-warn'],down:['LOOP DOWN','l-bad']}};
+const pctf=v=>v==null?'-':(Number(v)*100).toFixed(2)+'%';
+const esc=s=>String(s==null?'':s).replace(/[&<>]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;'}}[c]));
+const hm=s=>s==null?'-':(s>=3600?Math.floor(s/3600)+'h '+Math.floor(s%3600/60)+'m':Math.floor(s/60)+'m '+(s%60)+'s');
+function stageBody(s){{
+  const d=s.detail||{{}};
+  const lines=[];let bar=null;
+  if(s.id==='public'||s.id==='rules'){{lines.push(s.now);lines.push(s.next);}}
+  if(s.id==='generate'){{
+    lines.push((d.published||0)+' / '+(d.planned||'-')+' published · '+(d.rate_per_h?d.rate_per_h+'/h':'rate pending'));
+    lines.push('model '+(d.model||'-'));
+    lines.push('families: '+(d.families||[]).map(f=>f.replace(/_.*/,'')).join(', '));
+    if(d.planned)bar=(d.published||0)/d.planned;
+  }}
+  if(s.id==='verify'){{
+    lines.push('last run: '+(d.verified==null?'-':d.verified)+' kept of '+(d.input==null?'-':d.input));
+    if(d.top_reason)lines.push('top drop: '+d.top_reason);
+    lines.push('model '+(d.model||'next turn'));
+  }}
+  if(s.id==='mix'){{
+    const b=d.by_source;
+    lines.push(b?('qwen '+b.qwen+' · public '+b.public+' · rules '+b.rule):'built after verification');
+    if(d.n!=null)lines.push(d.n.toLocaleString('es')+' rows · '+(d.leak_removed||0)+' removed by the leak filter');
+  }}
+  if(s.id==='train'){{
+    if(d.step!=null){{lines.push('step '+d.step+' / '+d.steps+' · '+(d.step_s?d.step_s.toFixed(0)+' s/step':'')+(d.eta_s?' · ETA '+hm(d.eta_s):''));bar=d.step/d.steps;}}
+    else lines.push(d.steps+' steps when its turn comes');
+    if(d.loss!=null)lines.push('loss '+Number(d.loss).toFixed(4)+(d.holdout!=null?' · rule holdout '+pctf(d.holdout):''));
+    lines.push('starts from '+d.init);
+  }}
+  if(s.id==='eval'){{
+    lines.push(d.running_s!=null?('scoring for '+hm(d.running_s)+' · about 10 min'):'written order + 8 shuffles');
+    if(d.candidate!=null)lines.push('candidate written '+pctf(d.candidate));
+  }}
+  if(s.id==='decide'){{
+    lines.push(d.last||'no decision yet');
+    if(d.streak)lines.push(d.streak+' cycle(s) without promotion');
+  }}
+  lines.push('<i>'+esc(s.role)+'</i>');
+  const [word,cls]=LIGHT[s.light]||['-','l-pause'];
+  return '<div class="stage '+cls+'"><div class="stage-h"><span class="dot"></span><b>'+esc(s.title)+'</b><span class="word">'+word+'</span></div>'
+    +lines.map((l,i)=>'<div class="stage-l">'+(i===lines.length-1?l:esc(l))+'</div>').join('')
+    +(bar!=null?'<div class="goalbar"><div class="fill" style="width:'+Math.round(bar*100)+'%"></div></div>':'')+'</div>';
+}}
+function renderPipeline(p,x){{
+  if(!p)return;
+  const champ=p.champion||{{}};
+  $('ov-loop').textContent=p.alive?(p.phase||'idle').toUpperCase():'DOWN';
+  $('ov-loop').className='v '+(p.alive?'status-running':'delta-down');
+  $('ov-loop-s').textContent='cycle '+p.cycle+' · phase '+hm(p.phase_age_s)+' · heartbeat '+(p.heartbeat_age_s==null?'-':p.heartbeat_age_s+'s');
+  $('ov-champ').textContent=pctf(champ.mean);
+  $('ov-champ-s').textContent='written '+pctf(champ.written)+' · worst '+pctf(champ.min)+' · cycle '+(champ.cycle==null?'-':champ.cycle);
+  const gap=champ.min!=null?(champ.min-p.target):null;
+  $('ov-gap').textContent=gap==null?'-':((gap>=0?'+':'')+(gap*100).toFixed(2)+' pts');
+  $('ov-gap').className='v '+(gap!=null&&gap>=0?'status-running':'status-idle');
+  $('ov-gap-s').textContent='worst order '+pctf(champ.min)+' vs target '+pctf(p.target);
+  const w=p.weakest||{{}};
+  $('ov-weak').textContent=pctf(w.score);
+  $('ov-weak-s').textContent=(w.family||'-').replace(/_/g,' ');
+  const g=x.gpu||{{}};
+  $('ov-gpu').textContent=(g.util==null?'-':g.util+'%');
+  $('ov-gpu-s').textContent=p.gpu_holder+' · CPU '+((x.cpu||{{}}).util==null?'-':x.cpu.util+'%');
+  $('ov-pool').textContent=nfmt((p.stages.find(s=>s.id==='verify')||{{detail:{{}}}}).detail.pool);
+  $('ov-cycle').textContent='cycle '+p.cycle;
+  $('ov-phase-tag').textContent=p.alive?('NOW · '+(p.phase||'-').toUpperCase()):'LOOP DOWN';
+  $('ov-rail').innerHTML=p.phases.map(ph=>{{
+    const i=p.phases.indexOf(ph),cur=p.phases.indexOf(p.phase);
+    const cls=!p.alive?'':(ph===p.phase?'cur':(i<cur?'past':''));
+    return '<span class="rail-step '+cls+'">'+ph+'</span>';
+  }}).join('<span class="rail-sep"></span>');
+  $('ov-stages').innerHTML=p.stages.map(stageBody).join('');
+  const hist=(p.history||[]).slice().reverse();
+  $('ov-history').innerHTML=hist.length?('<table class="mini"><tr><th>cycle</th><th>gate</th><th class="num">written</th><th class="num">mean 9</th><th class="num">worst</th><th class="num">priority</th><th>mix q/p/r</th></tr>'
+    +hist.map(h=>'<tr><td>'+h.cycle+'</td><td class="'+(h.promoted?'status-running':'status-idle')+'">'+(h.promoted?'PROMOTED':'kept champion')+'</td><td class="num">'+pctf(h.written)+'</td><td class="num">'+pctf(h.mean)+'</td><td class="num">'+pctf(h.min)+'</td><td class="num">'+pctf(h.priority)+'</td><td>'+(h.mix?(h.mix.qwen+'/'+h.mix.public+'/'+h.mix.rule):'-')+'</td></tr>').join('')
+    +'</table>'):'<div class="stage-l">first cycle still running</div>';
+  const fam=champ.by_family||{{}};const cand=(p.last_candidate||{{}}).by_family||{{}};
+  $('ov-fam').innerHTML=Object.keys(fam).sort().map(k=>{{
+    const v=Number(fam[k])||0;const c=cand[k];
+    const color=v>=p.target?'var(--acc)':v>=0.85?'var(--warn)':'var(--bad)';
+    return '<div class="fam-row"><span class="fam-name">'+k.replace(/_/g,' ')+(c!=null&&c!==v?' · last candidate '+pctf(c):'')+'</span><span class="fam-val">'+(v*100).toFixed(1)+'%</span><div class="fam-track"><div class="fam-fill" style="width:'+(v*100)+'%;background:'+color+'"></div><div class="fam-target" style="left:'+(p.target*100)+'%"></div></div></div>';
+  }}).join('');
+  $('ov-cal').innerHTML=(p.calendar||[]).map(c=>'<div class="cal-row"><span class="dot '+(c.status==='overdue'?'d-warn':'d-wait')+'"></span><div><b>'+esc(c.name)+'</b><div class="stage-l">next '+esc(c.due||'-')+(c.last?' · last '+esc(c.last):' · not run yet')+'</div><div class="stage-l"><i>'+esc(c.what)+'</i></div></div></div>').join('');
+}}
+const tbl=(head,rows)=>'<table class="mini"><tr>'+head.map(h=>h.startsWith('#')?'<th class="num">'+h.slice(1)+'</th>':'<th>'+h+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(head[i].startsWith('#')?' class="num"':'')+'>'+(c==null?'-':c)+'</td>').join('')+'</tr>').join('')+'</table>';
+const logText=lines=>(lines&&lines.length)?lines.join('\\n'):'no output yet';
+function renderTabs(p){{
+  if(!p||!p.datasets)return;
+  const ds=p.datasets,st=Object.fromEntries(p.stages.map(s=>[s.id,s])),gen=st.generate.detail||{{}};
+  $('ds-gen').textContent=(LIGHT[st.generate.light]||['-'])[0];
+  $('ds-gen-s').textContent=gen.model?('model '+gen.model+' · '+(gen.published||0)+' / '+(gen.planned||'-')+' this cycle'):'-';
+  $('ds-pool').textContent=nfmt(ds.qwen_pool);
+  $('ds-pub').textContent=ds.public.length+' sources';
+  $('ds-pub-s').textContent=nfmt(ds.public.reduce((a,m)=>a+(m.under_cap||0),0))+' rows under the cap · 30% of every mix';
+  $('ds-rule').textContent=nfmt(ds.rule_batches)+' batches';
+  $('ds-qwen').innerHTML=ds.qwen_cycles.length?tbl(['cycle','generator','#published','#Qwen prose','#fallback prose','verifier','#kept','#dropped','top drop reason','#yield'],
+    ds.qwen_cycles.map(c=>{{const top=Object.entries(c.reasons||{{}}).sort((a,b)=>b[1]-a[1])[0];
+      return [c.cycle,esc(c.gen_model),c.published,c.qwen_prose,c.fallback_prose,esc(c.verify_model||'pending'),c.verified,c.quarantined,top?esc(top[0])+' '+top[1]:null,(c.verified!=null&&c.published)?pctf(c.verified/c.published):null]}})):'<div class="stage-l">no Qwen cycle yet</div>';
+  $('ds-public').innerHTML=tbl(['source','licence','langs','#rows under cap','#available'],ds.public.map(m=>[esc(m.key),esc(m.license),esc(m.langs.join(' ')),nfmt(m.under_cap),nfmt(m.available)]));
+  $('ds-log-gen').textContent=logText(p.logs.generate);
+  $('ds-log-ver').textContent=logText(p.logs.verify);
+  const tr=p.training||{{}},ts=tr.state||{{}},man=tr.manifest||{{}},td=st.train.detail||{{}},mix=st.mix.detail||{{}};
+  $('tr-state').textContent=(LIGHT[st.train.light]||['-'])[0];
+  $('tr-state-s').textContent=(ts.note||'waiting for a new verified mix')+(man.resume_count>1?' · attempt '+man.resume_count:'');
+  $('tr-step').textContent=td.step!=null?(td.step+' / '+td.steps):('0 / '+td.steps);
+  $('tr-step-s').textContent=(ts.batch?'batch '+ts.batch:'')+(td.step_s?' · '+td.step_s.toFixed(0)+' s/step':'')+(td.eta_s?' · ETA '+hm(td.eta_s):'');
+  $('tr-loss').textContent=ts.train_loss!=null?Number(ts.train_loss).toFixed(4):'-';
+  $('tr-loss-s').textContent='rule holdout '+pctf(ts.holdout_forced)+' · '+nfmt(ts.decisions)+' decisions seen';
+  $('tr-mix').textContent=mix.n!=null?nfmt(mix.n)+' rows':'-';
+  $('tr-mix-s').textContent=mix.by_source?('qwen '+mix.by_source.qwen+' · public '+mix.by_source.public+' · rules '+mix.by_source.rule+' · leak filter removed '+(mix.leak_removed||0)):'built after verification';
+  const cv=(tr.curve||[]).filter(c=>c.loss!=null);
+  if(cv.length){{
+    const ymax=Math.max(0.05,...cv.map(c=>c.loss))*1.05,smax=Math.max(td.steps||200,...cv.map(c=>c.step));
+    $('tr-curve').setAttribute('points',cv.map(c=>(c.step/smax*900)+','+yOf(c.loss,0,ymax,260)).join(' '));
+    $('tr-curve-l').textContent='listwise NLL per step · top '+ymax.toFixed(2);
+    $('tr-curve-r').textContent='step '+cv[cv.length-1].step+' of '+smax;
+  }}else{{$('tr-curve').setAttribute('points','');$('tr-curve-l').textContent='no steps this cycle yet';$('tr-curve-r').textContent='';}}
+  $('tr-phases').innerHTML=tbl(['cycle','phase','outcome','at (UTC)'],(p.phase_log||[]).slice().reverse().map(r=>[r.cycle,r.phase,'<span class="'+(r.outcome==='ok'?'status-running':'status-idle')+'">'+esc(r.outcome)+'</span>',esc((r.at||'').slice(5,16).replace('T',' '))]));
+  $('tr-log').textContent=logText(p.logs.train);
+  const champ=p.champion||{{}};
+  $('md-champ').textContent=pctf(champ.mean);
+  $('md-champ-s').textContent='mean of 9 orders · '+(champ.cycle?'promoted in cycle '+champ.cycle:'seed checkpoint, step '+(champ.step||'-'));
+  $('md-gen').textContent=gen.model||'-';
+  $('md-ver').textContent=(st.verify.detail||{{}}).model||'-';
+  const lc=p.last_candidate;
+  const famKeys=Object.keys(champ.by_family||{{}}).sort();
+  $('ev-gate').innerHTML=lc?(tbl(['','#written','#mean of 9','#worst order'].concat(famKeys.map(k=>'#'+k.replace(/_/g,' '))),
+    [['champion',pctf(champ.written),pctf(champ.mean),pctf(champ.min)].concat(famKeys.map(k=>pctf(champ.by_family[k]))),
+     ['last candidate',pctf(lc.written),pctf(lc.mean),pctf(lc.min)].concat(famKeys.map(k=>pctf((lc.by_family||{{}})[k])))])
+    +'<div class="stage-l">'+esc((p.last_reasons||[]).join(' · ')||'promoted')+'</div>'):'<div class="stage-l">no candidate scored yet</div>';
+  $('ev-fail').innerHTML=(p.failures||[]).length?tbl(['cycle','phase','outcome','at (UTC)'],p.failures.slice().reverse().map(f=>[f.cycle,f.phase,esc(f.outcome),esc((f.at||'').slice(5,16).replace('T',' '))])):'<div class="stage-l">none</div>';
+  $('rs-cal').innerHTML=$('ov-cal').innerHTML;
+  const dv=p.devloop||{{}},hl=dv.health||{{}},sg=p.strategy||{{}};
+  const dvAge=dv.updated_utc?Math.round((Date.now()-Date.parse(dv.updated_utc))/1000):null;
+  $('rs-dev').textContent=dv.updated_utc?(dvAge<1500?'RUNNING':'NO HEARTBEAT'):'NOT STARTED';
+  $('rs-dev').className='v '+(dv.updated_utc&&dvAge<1500?'status-running':'delta-down');
+  $('rs-dev-s').textContent=dv.updated_utc?('last check '+hm(dvAge)+' ago · every 10 min'):'-';
+  $('rs-arm').textContent=sg.arm||'base';
+  $('rs-arm-s').textContent=sg.arm?('steps '+sg.steps+' · lr '+sg.lr+' · warmup '+sg.warmup):'cycle started before the arms existed';
+  $('rs-next').textContent=dv.next_arm||'-';
+  $('rs-next-s').textContent=dv.next_arm_why||'-';
+  $('rs-since').textContent=dv.cycles_since_promotion==null?'-':dv.cycles_since_promotion;
+  $('rs-since').className='v '+(dv.plateau?'delta-down':'');
+  $('rs-since-s').textContent=dv.plateau?'plateau: every recipe tried, needs new data or ideas':'plateau alert at 8';
+  const arms=dv.arms||{{}};
+  $('rs-arms').innerHTML=tbl(['arm','#cycles','#mean gain','#best gain','hypothesis'],Object.entries(arms).map(([k,a])=>[esc(k)+(k===dv.next_arm?' · next':''),a.cycles,a.mean_gain==null?null:(a.mean_gain*100).toFixed(2)+' pts',a.best_gain==null?null:(a.best_gain*100).toFixed(2)+' pts',esc(a.why)]));
+  const ck=hl.checks||{{}};
+  $('rs-health').innerHTML=tbl(['check','state'],Object.entries(ck).map(([k,v])=>[k,'<span class="'+(v?'status-running':'delta-down')+'">'+(v?'ok':'DOWN')+'</span>']).concat([['disk free',hl.disk_free_gb==null?null:hl.disk_free_gb+' GB'],['power',hl.ac_power==null?null:(hl.ac_power?'AC':'<span class="delta-down">battery</span>')]]))+(hl.alerts||[]).map(a=>'<div class="stage-l">alert: '+esc(a)+'</div>').join('');
+  $('rs-events').innerHTML=(dv.events||[]).length?tbl(['at (UTC)','event'],dv.events.slice().reverse().slice(0,12).map(e=>[esc((e.at||'').slice(5,16).replace('T',' ')),esc(e.event)])):'<div class="stage-l">no events yet</div>';
+}}
 async function live(){{
  try{{
   const r=await fetch('/api/live?'+Date.now());const x=await r.json();
-  const h=x.history||{{}}; const last=h.last_eval||{{}};
   $('clock').textContent=x.ts+' · 1 s';
-  $('live-state').textContent=x.training?'TRAINING':'EVALUATING';
-  $('live-state').className='v '+(x.training?'status-running':'status-idle');
-  $('live-elapsed').textContent=x.training?dur(x.elapsed_s):'closing batch and scoring';
-  const gpu=(x.gpu&&x.gpu.util!=null)?x.gpu.util:null;
-  $('live-gpu').textContent=gpu==null?'-':gpu+'%';
-  const cpu=(x.cpu&&x.cpu.util!=null)?x.cpu.util:null;
-  $('live-cpu').textContent=cpu==null?'-':cpu+'%';
-  $('live-forced').textContent=fmt(x.active_forced);
-  $('live-forced-src').textContent=x.active_run?('promoted model · '+x.active_run):'no promoted model yet';
-  const pct=Math.round((x.toward_goal||0)*100);
-  $('live-toward').textContent=pct+'%';
-  $('live-goal-s').textContent=`baseline ${{fmt(x.start_acc)}} / target ${{fmt(x.goal_acc)}}`;
-  $('live-goal-fill').style.width=pct+'%';
-  $('live-episodes').textContent=nfmt(h.episodes_now);
-  $('live-ep-rate').textContent=`+${{nfmt(h.episodes_12h)}} in 12 h`;
-  $('live-12h').textContent=nfmt(h.trained_12h);
-  $('live-12h-s').textContent=`${{h.cycles_24h||0}} cycles in 24 h`;
-  $('live-cycle').textContent=x.cycle||'-';
-  $('live-consumed').textContent=`${{nfmt(x.decisions_consumed)}} / ${{nfmt(x.budget)}} decisions`;
-  $('live-current').textContent=x.candidate_forced!=null?fmt(x.candidate_forced):'measuring';
-  $('live-streak').textContent=x.candidate_metric||'battery-dev · 400 rows';
-  $('live-counter').textContent=fmt(x.counterfactual);
-  const now=x.now||(Date.now()/1000);
-  const ymin=0, ymax=1.0, ah=300, aw=900;
-  hline('mark-chance', x.chance_acc||0.3375, ymin, ymax, ah);
-  hline('mark-start', x.start_acc||0.6225, ymin, ymax, ah);
-  hline('mark-h3', 0.70, ymin, ymax, ah);
-  hline('mark-goal', x.goal_acc||0.99, ymin, ymax, ah);
-  plotWindow('line-acc', h.acc, ymin, ymax, now, 86400, aw, ah);
-  plotWindow('line-best', h.best||[], ymin, ymax, now, 86400, aw, ah);
-  const accPoints=(h.acc||[]).filter(p=>p&&p.t>=now-86400&&p.y!=null);
-  const current=x.candidate_forced!=null?{{y:x.candidate_forced}}:(accPoints.length?accPoints[accPoints.length-1]:null);
-  $('legend-current').textContent=current?'candidate '+(current.y*100).toFixed(2)+'%':'candidate -';
-  $('legend-best').textContent=x.active_forced!=null?'best '+(x.active_forced*100).toFixed(2)+'%':'best -';
-  const setMetric=(id,text,width)=>{{
-    document.querySelectorAll('[data-metric="'+id+'"]').forEach(node=>{{
-      if(text!=null)node.textContent=text;
-    }});
-    if(width!=null){{
-      document.querySelectorAll('[data-metric="'+id+'-bar"]').forEach(node=>{{
-        node.style.width=width;
-      }});
-    }}
-  }};
-  const shown=x.active_forced!=null?x.active_forced:(current?current.y:null);
-  if(shown!=null)setMetric('ref-current',(shown*100).toFixed(1)+'%',(shown*100)+'%');
+  renderPipeline(x.pipeline,x);
+  renderTabs(x.pipeline);
   const bm=x.benchmarks||{{}};
-  const battery=bm.battery||{{}}; const bank=bm.banking77||{{}};
-  [['qwen','ref-qwen'],['jev','ref-jev'],['baseline','ref-base'],['laya','ref-laya']].forEach(([key,id])=>{{
-    const v=battery[key]; if(v!=null)setMetric(id,(v*100).toFixed(1)+'%',(v*100)+'%');
-  }});
-  [['jev_cited','ref-bank-jev'],['laya','ref-bank-laya'],['pointer','ref-bank-ours']].forEach(([key,id])=>{{
-    const v=bank[key]; if(v!=null)setMetric(id,(v*100).toFixed(1)+'%',(v*100)+'%');
-  }});
-  document.querySelectorAll('.ref-list').forEach(list=>{{
-    const rows=[...list.querySelectorAll('.ref-row')];
-    const score=row=>{{const n=parseFloat(row.querySelector('.ref-score').textContent);return Number.isFinite(n)?n:-1;}};
-    rows.sort((a,b)=>score(b)-score(a));
-    rows.forEach(row=>list.appendChild(row));
-    rows.forEach((row,i)=>{{
-      const fill=row.querySelector('.ref-fill');
-      fill.classList.remove('winner','ours');
-      if(i===0&&score(row)>=0)fill.classList.add('winner');
-      else if(row.dataset.role==='ours')fill.classList.add('ours');
-    }});
-  }});
   const arenas=bm.arenas||[];
   const arena=$('arena-board');
   if(arena){{
@@ -1444,26 +1889,7 @@ async function live(){{
     if(note)note.textContent='Same-protocol numbers are measured. A citation stays labelled as a citation. Qwen stream: '+(q.action||'off')+(q.batch?(' · batch '+q.batch):'')+(q.model?(' · '+q.model):'');
     arena.innerHTML='<table><tr><th>arena</th><th class="num">n</th><th class="num">chance</th><th class="num">clone</th><th class="num">JEv</th><th>JEv source</th><th>status</th></tr>'+arenas.map(a=>'<tr><td>'+a.title+'</td><td class="num">'+(a.n==null?'':nfmt(a.n))+'</td><td class="num">'+pct(a.chance)+'</td><td class="num">'+pct(a.clone)+'</td><td class="num">'+pct(a.jev)+'</td><td>'+(a.jev_kind||'')+'</td><td>'+(a.clone_kind||'')+'</td></tr>').join('')+'</table>';
   }}
-  const fam=x.by_family||{{}}; const famKeys=Object.keys(fam).sort();
-  $('fam-list').innerHTML=famKeys.length?famKeys.map(k=>{{
-    const v=Number(fam[k])||0; const pctv=(v*100);
-    const color=v>=0.70?'var(--acc)':v>=0.50?'var(--warn)':'var(--bad)';
-    const label=k.replace(/_/g,' ');
-    return `<div class="fam-row"><span class="fam-name">${{label}}</span><span class="fam-val">${{pctv.toFixed(1)}}%</span><div class="fam-track"><div class="fam-fill" style="width:${{pctv}}%;background:${{color}}"></div></div></div>`;
-  }}).join(''):'<div class="fam-row"><span class="fam-name">waiting for evaluation</span><span class="fam-val">-</span></div>';
-  $('spec-mem').textContent=(x.gpu&&x.gpu.mem_gb)?x.gpu.mem_gb+' GB in use':'48 GB';
-  $('spec-model').textContent=x.model||'MiniLMv2-L6';
-  $('spec-params').textContent=(x.params_m||107)+'M';
-  $('spec-cycles').textContent=nfmt(x.completed_cycle);
-  $('spec-holdout').textContent=fmt(x.holdout);
-  $('spec-loss').textContent=fmt(x.loss);
-  $('spec-producer').textContent=(x.producer&&x.producer.action)||'idle';
-  const vols=h.vol||[]; const vmax=Math.max(1, ...vols.map(p=>p.y||0));
-  plotWindow('line-vol', vols, 0, vmax*1.05, now, 86400, 900, 280);
-  $('vol-max').textContent='total '+nfmt(vmax);
-  plotWindow('line-gpu', (x.gpu&&x.gpu.spark)||[], 0, 100, now, 120, 900, 160);
-  plotWindow('line-cpu', (x.cpu&&x.cpu.spark)||[], 0, 100, now, 120, 900, 160);
- }}catch(e){{$('live-state').textContent='NO HEARTBEAT';$('live-state').className='v delta-down'}}
+ }}catch(e){{$('ov-loop').textContent='NO HEARTBEAT';$('ov-loop').className='v delta-down'}}
 }}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{{document.querySelectorAll('nav button,.tab-page').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active');location.hash=b.dataset.tab}});
 const initial=location.hash.slice(1);if(initial&&$(initial))document.querySelector(`[data-tab="${{initial}}"]`).click();
