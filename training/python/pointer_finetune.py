@@ -487,25 +487,62 @@ def battery_report(episodes: list[dict], hits: list[bool]) -> dict:
         cell["n"] += 1
         cell["hits"] += int(hit)
     by_family = {}
+    by_capability = {}
+    by_domain = {}
+    by_capability_domain = {}
     for (family, _k), cell in cells.items():
         bucket = by_family.setdefault(family, {"hits": 0, "n": 0})
         bucket["hits"] += cell["hits"]
         bucket["n"] += cell["n"]
+    for ep, hit in zip(episodes, hits):
+        for buckets, key in (
+            (by_capability, ep.get("capability")),
+            (by_domain, ep.get("domain")),
+            (by_capability_domain, (
+                f"{ep.get('capability')}:{ep.get('domain')}"
+                if ep.get("capability") and ep.get("domain") else None)),
+        ):
+            if key:
+                bucket = buckets.setdefault(key, {"hits": 0, "n": 0})
+                bucket["hits"] += int(hit)
+                bucket["n"] += 1
+
+    def rates(buckets):
+        return {
+            key: {
+                **bucket,
+                "forced": bucket["hits"] / bucket["n"],
+                "wilson95_lower": wilson_lower(bucket["hits"], bucket["n"]),
+            }
+            for key, bucket in sorted(buckets.items())
+        }
+
     n = len(episodes)
     got = sum(int(hit) for hit in hits)
     return {
         "n": n,
         "hits": got,
         "forced": got / n if n else None,
-        "by_family": {
-            family: {**bucket, "forced": bucket["hits"] / bucket["n"]}
-            for family, bucket in sorted(by_family.items())
-        },
+        "by_family": rates(by_family),
+        "by_capability": rates(by_capability),
+        "by_domain": rates(by_domain),
+        "by_capability_domain": rates(by_capability_domain),
         "by_k": {
             f"{family}:k={k}": {**cell, "forced": cell["hits"] / cell["n"]}
             for (family, k), cell in sorted(cells.items())
         },
     }
+
+
+def wilson_lower(hits: int, n: int, z: float = 1.959964) -> float:
+    if not n:
+        return 0.0
+    p = hits / n
+    denominator = 1 + z * z / n
+    centre = p + z * z / (2 * n)
+    margin = z * math.sqrt(
+        p * (1 - p) / n + z * z / (4 * n * n))
+    return (centre - margin) / denominator
 
 
 def holdout_accuracy(model, family, episodes, pools, batch, pad_id,
@@ -837,7 +874,17 @@ def eval_battery(args: argparse.Namespace) -> None:
     if not adapter.is_file():
         raise FileNotFoundError(adapter)
     load_adapter(model, adapter)
-    episodes = BD.load_battery()
+    if args.episodes:
+        from data import benchmark_v2 as BV2
+        source = Path(args.episodes)
+        episodes = BV2.load_battery(
+            source, limit_per_capability=args.limit_per_capability)
+        battery_name = str(source)
+        battery_sha = BV2.battery_sha(source)
+    else:
+        episodes = BD.load_battery()
+        battery_name = "data/battery_dev.jsonl"
+        battery_sha = BD.battery_sha(episodes)
     if any(len(ep["candidates"]) > OPTION_PAD for ep in episodes):
         raise RuntimeError("battery row exceeds the option pad")
     workers = max(4, (os.cpu_count() or 8) // 2)
@@ -865,9 +912,9 @@ def eval_battery(args: argparse.Namespace) -> None:
         "task": TASK,
         "role": "regression",
         "decides": False,
-        "battery": "data/battery_dev.jsonl",
+        "battery": battery_name,
         "n": report["n"],
-        "sha256": BD.battery_sha(episodes),
+        "sha256": battery_sha,
         "adapter_step": checkpoint.get("step"),
         "order": "written",
         "shuffle": False,
@@ -876,7 +923,7 @@ def eval_battery(args: argparse.Namespace) -> None:
         "measured_utc": utcnow(),
         **report,
     }
-    dest = out / "battery_regression.json"
+    dest = out / args.report
     write_json(dest, payload)
     pool.shutdown(wait=False, cancel_futures=True)
     print(
@@ -910,6 +957,11 @@ def main() -> None:
     parser.add_argument("--episodes", default="",
                         help="comma-separated jsonl files instead of the "
                              "rule stream")
+    parser.add_argument("--limit-per-capability", type=int, default=0,
+                        help="evaluation-only cap for each benchmark v2 "
+                             "capability")
+    parser.add_argument("--report", default="battery_regression.json",
+                        help="evaluation report name inside --out")
     parser.add_argument("--init", default="",
                         help="label recorded for the adapter the run starts "
                              "from")

@@ -95,6 +95,22 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(report["by_family"]["priority_decision"]["hits"], 1)
         self.assertEqual(report["by_family"]["priority_decision"]["n"], 2)
 
+    def test_v2_reports_capability_domain_cells(self):
+        episodes = [
+            {"family": "attribute_comparison", "candidates": [{}, {}],
+             "capability": "quantitative_reasoning", "domain": "physics"},
+            {"family": "attribute_comparison", "candidates": [{}, {}],
+             "capability": "quantitative_reasoning", "domain": "physics"},
+        ]
+        report = PF.battery_report(episodes, [True, False])
+        self.assertEqual(
+            report["by_capability"]["quantitative_reasoning"]["forced"], 0.5)
+        self.assertEqual(
+            report["by_domain"]["physics"]["n"], 2)
+        self.assertEqual(
+            report["by_capability_domain"]
+            ["quantitative_reasoning:physics"]["hits"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
