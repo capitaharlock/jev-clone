@@ -1212,6 +1212,19 @@ def pipeline_snapshot():
     if candidate_reports:
         benchmark_candidate["cycle"] = int(
             candidate_reports[-1].parent.name.split("-")[1])
+    v3_candidates = sorted(
+        (AUTOLOOP / "cycles").glob("cycle-*/benchmark_v3_probe.json"))
+    v3_candidate = _read_json(v3_candidates[-1]) if v3_candidates else {}
+    if v3_candidates:
+        v3_candidate["cycle"] = int(v3_candidates[-1].parent.name.split("-")[1])
+    benchmark_v3 = {
+        "dev": _read_json(AUTOLOOP / "champion" / "benchmark_v3_dev.json"),
+        "probe": _read_json(AUTOLOOP / "champion" / "benchmark_v3_probe.json"),
+        "candidate": v3_candidate,
+        "manifest": _read_json(
+            ROOT.parent / "decision-dataset-factory" / "work" /
+            "benchmark-v3" / "release" / "manifest.json"),
+    }
     eval_detail = {
         "orders": 9,
         "running_s": phase_age if phase == "eval" else None,
@@ -1345,6 +1358,7 @@ def pipeline_snapshot():
             "candidate": benchmark_candidate,
             "refine": state.get("benchmark_refine") or {},
         },
+        "benchmark_v3": benchmark_v3,
     }
 
 
@@ -1759,6 +1773,9 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <section class="panel"><h2>Promotion gate · battery-dev 400 rows · written order + 8 shuffles</h2>
 <div id="ev-gate"></div>
 <div class="ref-note">A candidate replaces the champion only when its mean over the 9 orders is strictly higher, its worst order is not lower, and no family drops more than 2 points. The sealed battery stays closed.</div></section>
+<section class="panel"><h2>Benchmark v3 · real sources by arena <span class="tag">DIAGNOSTIC ONLY</span></h2>
+<div id="ev-v3"></div>
+<div class="ref-note">Built by the dataset factory from MMLU, ARC, ANLI, GSM8K, HumanEval, MBPP and Stack Exchange, split by source question. Gold comes from the source label or from running the source tests. The champion is scored on the whole dev set once per benchmark version; every candidate is scored on the stratified probe. The sealed cut stays closed.</div></section>
 <section class="panel"><h2>Benchmark v2 · capabilities and domains <span class="tag">DIAGNOSTIC ONLY</span></h2>
 <div id="ev-v2"></div>
 <div class="ref-note">Quick is 100 rows per capability each cycle. Full is 10,000 rows every fifth cycle. Neither score selects the champion while the prose and source layers are still being built.</div></section>
@@ -1848,7 +1865,13 @@ function renderPipeline(p,x){{
   $('ov-loop').className='v '+(p.alive?'status-running':'delta-down');
   $('ov-loop-s').textContent='cycle '+p.cycle+' · phase '+hm(p.phase_age_s)+' · heartbeat '+(p.heartbeat_age_s==null?'-':p.heartbeat_age_s+'s');
   const bv=(p.benchmark_v2||{{}}).full||{{}},bc=(p.benchmark_v2||{{}}).candidate||{{}};
-  if(bv.n){{
+  const b3=p.benchmark_v3||{{}},d3=b3.dev||{{}},p3=b3.probe||{{}},c3=b3.candidate||{{}};
+  if(d3.n){{
+    const na=Object.keys(d3.by_capability||{{}}).length,nd=Object.keys(d3.by_capability_domain||d3.by_domain||{{}}).length;
+    $('ov-champ-k').textContent='Champion · benchmark v3 · '+na+' arenas · '+nd+' domains · '+nfmt(d3.n)+' cases';
+    $('ov-champ').textContent=pctf(d3.forced);
+    $('ov-champ-s').textContent=nfmt(d3.hits)+' / '+nfmt(d3.n)+' · probe '+pctf(p3.forced)+' vs candidate '+(c3.n?pctf(c3.forced)+' (cycle '+c3.cycle+')':'-')+' · v2 '+pctf(bv.forced)+' · gate 400: '+pctf(champ.mean);
+  }}else if(bv.n){{
     const nd=Object.keys(bv.by_domain||{{}}).length,nc=Object.keys(bv.by_capability||{{}}).length;
     $('ov-champ-k').textContent='Champion · benchmark v2 · '+nd+' domains · '+nfmt(bv.n)+' cases';
     $('ov-champ').textContent=pctf(bv.forced);
@@ -1947,6 +1970,13 @@ function renderTabs(p){{
       +tbl(['capability','#cases','#champion','#Wilson lower','#candidate'],rows(caps,ccap))
       +tbl(['domain','#cases','#champion','#Wilson lower','#candidate'],rows(dom,cdom));
   }}else $('ev-v2').innerHTML='<div class="stage-l">first full run after the current cycle</div>';
+  const v3=p.benchmark_v3||{{}},v3d=v3.dev||{{}},v3p=v3.probe||{{}},v3c=v3.candidate||{{}},v3m=((v3.manifest||{{}}).files||{{}});
+  if(v3d.n||v3p.n){{
+    const arenas=Object.keys(Object.assign({{}},(v3m.dev||{{}}).by_arena||{{}},v3d.by_capability||{{}}));
+    const cell=(r,k)=>((r.by_capability||{{}})[k]||{{}});
+    $('ev-v3').innerHTML='<div class="cards"><div class="card"><div class="k">champion · dev</div><div class="v">'+(v3d.n?pctf(v3d.forced):'-')+'</div><div class="s">'+(v3d.n?nfmt(v3d.hits)+' / '+nfmt(v3d.n):'scoring')+'</div></div><div class="card"><div class="k">champion · probe</div><div class="v">'+pctf(v3p.forced)+'</div><div class="s">'+nfmt(v3p.hits)+' / '+nfmt(v3p.n)+'</div></div><div class="card"><div class="k">last candidate · probe</div><div class="v">'+(v3c.n?pctf(v3c.forced):'-')+'</div><div class="s">'+(v3c.n?'cycle '+v3c.cycle:'after the next training')+'</div></div><div class="card"><div class="k">dev / sealed</div><div class="v">'+nfmt((v3m.dev||{{}}).rows)+'</div><div class="s">sealed '+nfmt((v3m.sealed||{{}}).rows)+' · closed</div></div></div>'
+      +tbl(['arena','#dev cases','#champion dev','#Wilson lower','#champion probe','#candidate probe'],arenas.map(k=>[esc(k.replace(/_/g,' ')),nfmt(((v3m.dev||{{}}).by_arena||{{}})[k]),pctf(cell(v3d,k).forced),pctf(cell(v3d,k).wilson95_lower),pctf(cell(v3p,k).forced),pctf(cell(v3c,k).forced)]));
+  }}else $('ev-v3').innerHTML='<div class="stage-l">'+nfmt(((v3m.dev||{{}}).rows))+' dev cases ready · first score in the benchmark phase of the next cycle</div>';
   $('ev-fail').innerHTML=(p.failures||[]).length?tbl(['cycle','phase','outcome','at (UTC)'],p.failures.slice().reverse().map(f=>[f.cycle,f.phase,esc(f.outcome),esc((f.at||'').slice(5,16).replace('T',' '))])):'<div class="stage-l">none</div>';
   $('rs-cal').innerHTML=$('ov-cal').innerHTML;
   const dv=p.devloop||{{}},hl=dv.health||{{}},sg=p.strategy||{{}};
@@ -2453,7 +2483,13 @@ def main():
     print(f"train python: {train_python()}", flush=True)
     trainer = Trainer(STATE_DIR)
     cycle = 0
+    source_mtime = Path(__file__).stat().st_mtime
     while True:
+        if (a.port and not a.train
+                and Path(__file__).stat().st_mtime != source_mtime):
+            print("source changed; exiting so launchd restarts the dashboard",
+                  flush=True)
+            raise SystemExit(0)
         cycle += 1
         state = build_state()
         note = ""
