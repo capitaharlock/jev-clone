@@ -723,6 +723,10 @@ def phase_decide(cycle: int, state: dict) -> str:
             "summary": candidate, "promoted_utc": utcnow()})
         state["champion_cycle"] = cycle
         state["streak_no_promote"] = 0
+        export_log = (LOOP / "export.log").open("a", encoding="utf-8")
+        subprocess.Popen(
+            ["nice", "-n", "10", str(PYTHON), "-u", "tools/export_champion.py"],
+            cwd=ROOT, stdout=export_log, stderr=subprocess.STDOUT)
     else:
         state["streak_no_promote"] = int(state.get("streak_no_promote") or 0) + 1
     write_json(run / "decision.json", decision)
