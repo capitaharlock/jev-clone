@@ -9,7 +9,7 @@ initiative: daily-learning-loop
 depends_on:
   - T-loop-scoreboard
 created: 2026-10-09
-updated: 2026-10-09
+updated: 2026-10-15
 ---
 
 # Auditoría e investigación recurrentes
@@ -39,5 +39,6 @@ El calendario canónico está en
 - Hay cuatro auditorías consecutivas con veredicto y evidencia.
 - Hay cuatro investigaciones semanales con fuentes y decisiones.
 - Al menos una revisión mensual decide qué publicar o explica por qué no.
-- El calendario se convierte en jobs solo cuando cada informe pueda producirse
-  sin abrir el corte sellado ni ingerir fuentes sin revisión.
+- El calendario corre bajo `com.jevclone.research` sin abrir el corte sellado
+  ni ingerir fuentes sin revisión. La tarea sigue activa hasta acumular las
+  cuatro auditorías y cuatro investigaciones exigidas arriba.

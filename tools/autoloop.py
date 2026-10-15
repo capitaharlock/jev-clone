@@ -388,6 +388,13 @@ def build_mix(cycle: int, weak: list[str], out: Path,
     rule_n = (MIX_SIZE - len(qwen_rows) - len(public_rows)
               - len(curriculum_rows))
     rule_rows = rule_sample(rule_n, weak, rng, strategy["rule_weak_weight"])
+    focus = set(strategy.get("families") or [])
+    if focus:
+        qwen_rows = [ep for ep in qwen_rows if ep.get("family") in focus]
+        public_rows = [ep for ep in public_rows if ep.get("family") in focus]
+        curriculum_rows = [ep for ep in curriculum_rows
+                           if ep.get("family") in focus]
+        rule_rows = [ep for ep in rule_rows if ep.get("family") in focus]
     rows = qwen_rows + public_rows + curriculum_rows + rule_rows
     rows = [ep for ep in rows if len(ep["candidates"]) <= OPTION_PAD]
     rows, leaks = leak_free(rows)
@@ -659,8 +666,25 @@ def phase_train(cycle: int, state: dict) -> str:
                      run / "state.json", state)
 
 
+def use_best_holdout(run: Path) -> bool:
+    """The trainer keeps the best holdout weights apart from the last step.
+
+    Runs often leave the good region in the final steps, and the last step
+    is what used to be scored. The held-aside file is the one that enters
+    evaluation and, later, the benchmark.
+    """
+    best = run / "best.safetensors"
+    adapter = run / "adapters.safetensors"
+    if not best.is_file() or not adapter.is_file():
+        return False
+    shutil.copy2(best, adapter)
+    return True
+
+
 def phase_eval(cycle: int, state: dict) -> str:
     run = cycle_dir(cycle)
+    if use_best_holdout(run):
+        print("[eval] scoring the best holdout checkpoint", flush=True)
     cmd = [str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
            "eval-battery", "--out", str(run), "--orders", str(ORDERS)]
     return supervise(cmd, "eval", LOOP / "logs" / "eval.log", None, state)
@@ -742,33 +766,53 @@ def active_benchmark() -> Path:
     return candidate if candidate.is_file() else BENCHMARK_V2
 
 
-def phase_benchmark(cycle: int, state: dict) -> str:
-    """Measure broader capability/domain coverage without selecting on it.
+BENCHMARK_REPORT = "benchmark_v2_full.json"
 
-    A 1,000-row fixed diagnostic runs every cycle. Every fifth cycle scores
-    all 10,000 rows. These reports do not participate in promotion.
-    """
+
+def benchmark_current(out: Path, benchmark: Path) -> bool:
+    """A report counts only for the benchmark file and weights it scored."""
+    report = out / BENCHMARK_REPORT
+    weights = out / "adapters.safetensors"
+    if not report.is_file() or read_json(report).get("battery") != str(benchmark):
+        return False
+    return not weights.is_file() or report.stat().st_mtime >= weights.stat().st_mtime
+
+
+def phase_benchmark(cycle: int, state: dict) -> str:
+    """Score every row of benchmark v2 for this cycle's candidate and for
+    the champion. The reports do not participate in promotion."""
     benchmark = active_benchmark()
     if not benchmark.is_file():
         state["benchmark_v2"] = {
             "status": "missing", "path": str(benchmark)}
         return "ok"
     unload_qwen()
-    full = cycle % 5 == 0
-    report = "benchmark_v2_full.json" if full else "benchmark_v2_quick.json"
-    cmd = [
-        str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
-        "eval-battery", "--out", str(CHAMPION),
-        "--episodes", str(benchmark),
-        "--limit-per-capability", "0" if full else "100",
-        "--orders", "0", "--report", report,
-    ]
-    outcome = supervise(
-        cmd, "benchmark", LOOP / "logs" / "benchmark.log", None, state)
+    run = cycle_dir(cycle)
+    promoted = state.get("champion_cycle") == cycle
+    targets = [out for out in ([run] if promoted else [run, CHAMPION])
+               if (out / "adapters.safetensors").is_file()
+               and not benchmark_current(out, benchmark)]
+    outcome = "ok"
+    for out in targets:
+        cmd = [
+            str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
+            "eval-battery", "--out", str(out),
+            "--episodes", str(benchmark),
+            "--limit-per-capability", "0",
+            "--orders", "0", "--report", BENCHMARK_REPORT,
+        ]
+        outcome = supervise(
+            cmd, "benchmark", LOOP / "logs" / "benchmark.log", None, state)
+        if outcome != "ok":
+            break
+    if outcome == "ok" and promoted:
+        shutil.copy2(run / BENCHMARK_REPORT, CHAMPION / BENCHMARK_REPORT)
     state["benchmark_v2"] = {
         "status": outcome,
-        "scope": "full" if full else "quick",
-        "report": str((CHAMPION / report).relative_to(ROOT)),
+        "scope": "full",
+        "benchmark": str(benchmark),
+        "candidate": str((run / BENCHMARK_REPORT).relative_to(ROOT)),
+        "champion": str((CHAMPION / BENCHMARK_REPORT).relative_to(ROOT)),
     }
     return outcome
 
@@ -864,8 +908,11 @@ def main() -> int:
             if index + 1 < len(PHASES):
                 state["phase"], state["attempts"] = PHASES[index + 1], 0
             else:
-                start_cycle(state, cycle + 1)
+                # A reload has to happen before the next cycle is planned,
+                # so the new process is the one that picks the arm.
+                state["phase"] = "reload"
                 reload_if_changed(state)
+                start_cycle(state, cycle + 1)
             continue
         state["attempts"] = int(state.get("attempts") or 0) + 1
         print(f"[{phase}] {outcome} (attempt {state['attempts']})", flush=True)

@@ -41,8 +41,21 @@ class ChooseArmTest(unittest.TestCase):
 
     def test_a_rarely_tried_arm_gets_another_turn(self):
         results = {name: [-0.001] * 20 for name in DL.ARMS}
-        results["longer"] = [-0.002]
+        results["gentle"] = [0.0001] * 20
+        results["longer"] = [-0.001]
         self.assertEqual(DL.choose_arm(results)[0], "longer")
+
+    def test_large_steps_stay_retired_once_all_lose(self):
+        results = {name: [-0.01] for name in DL.ARMS if name != "nudge"}
+        results["nudge"] = []
+        arm, why = DL.choose_arm(results)
+        self.assertEqual(arm, "nudge")
+        self.assertIn("lost ground", why)
+        results["nudge"] = [-0.002]
+        results["longer"] = [-0.0001]
+        arm, why = DL.choose_arm(results)
+        self.assertEqual(arm, "nudge")
+        self.assertIn("retired", why)
 
 
 class PlateauTest(unittest.TestCase):

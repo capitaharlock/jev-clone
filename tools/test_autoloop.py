@@ -165,5 +165,42 @@ class NoReplyTest(unittest.TestCase):
         self.assertEqual(AL.no_reply_share({}), 0.0)
 
 
+class BestHoldoutTest(unittest.TestCase):
+
+    def test_eval_receives_the_best_holdout_weights(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp)
+            (run / "adapters.safetensors").write_bytes(b"last")
+            self.assertFalse(AL.use_best_holdout(run))
+            (run / "best.safetensors").write_bytes(b"best")
+            self.assertTrue(AL.use_best_holdout(run))
+            self.assertEqual((run / "adapters.safetensors").read_bytes(),
+                             b"best")
+
+
+class BenchmarkCurrentTest(unittest.TestCase):
+
+    def test_report_follows_weights_and_benchmark_file(self):
+        import json
+        import os
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            out, bench = Path(tmp), Path(tmp) / "refined.jsonl"
+            weights = out / "adapters.safetensors"
+            weights.write_bytes(b"w")
+            self.assertFalse(AL.benchmark_current(out, bench))
+            report = out / AL.BENCHMARK_REPORT
+            report.write_text(json.dumps({"battery": str(bench)}))
+            os.utime(weights, (1, 1))
+            self.assertTrue(AL.benchmark_current(out, bench))
+            self.assertFalse(AL.benchmark_current(out, out / "dev.jsonl"))
+            os.utime(weights, None)
+            os.utime(report, (1, 1))
+            self.assertFalse(AL.benchmark_current(out, bench))
+
+
 if __name__ == "__main__":
     unittest.main()

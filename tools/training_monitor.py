@@ -1008,7 +1008,8 @@ def _next_first_friday():
     return slot
 
 
-def _calendar(static):
+def _calendar(static, research=None):
+    research = research or {}
     last_audit = static.get("last_audit")
     last_scan = static.get("last_scan")
     audit_due = dt.datetime(2026, 10, 9, 18, 0)
@@ -1019,6 +1020,10 @@ def _calendar(static):
                 + dt.timedelta(days=7)) if last_scan else None
     now = dt.datetime.now()
 
+    def research_due(cadence):
+        parsed = _parse_utc((research.get(cadence) or {}).get("next_due_utc"))
+        return (dt.datetime.fromtimestamp(parsed) if parsed else None)
+
     def row(name, last, due, what):
         overdue = due is not None and due < now
         return {"name": name, "last": last, "what": what,
@@ -1027,12 +1032,21 @@ def _calendar(static):
 
     return [
         row("Daily health", None, _next_local(18), "heartbeat, disk, rates"),
-        row("Results audit · 48 h", last_audit, audit_due,
+        row("Results audit · 48 h",
+            (research.get("audit") or {}).get("completed_utc") or last_audit,
+            research_due("audit") or audit_due,
             "continue / correct / change-arm / pause"),
-        row("External research · weekly", last_scan,
-            scan_due or _next_local(19, weekday=4),
+        row("External research · daily",
+            (research.get("daily") or {}).get("completed_utc"),
+            research_due("daily"),
+            "papers, datasets, repositories, models, JEv"),
+        row("External research · weekly",
+            (research.get("weekly") or {}).get("completed_utc") or last_scan,
+            research_due("weekly") or scan_due or _next_local(19, weekday=4),
             "papers, datasets, open models, JEv"),
-        row("Publication review · monthly", None, _next_first_friday(),
+        row("Publication review · monthly",
+            (research.get("monthly") or {}).get("completed_utc"),
+            research_due("monthly") or _next_first_friday(),
             "Hugging Face, GitHub, Zenodo"),
     ]
 
@@ -1108,6 +1122,7 @@ def pipeline_snapshot():
     """
     state = _read_json(AUTOLOOP / "state.json")
     static = _static_inputs()
+    research = _read_json(ROOT / "artifacts" / "research-loop" / "state.json")
     alive = (state.get("status") == "running"
              and process_alive(state.get("pid")))
     age = _age_s(state.get("updated_utc"))
@@ -1188,10 +1203,15 @@ def pipeline_snapshot():
         "init": f"champion · cycle {champion.get('cycle', 0)}",
     }
     report = _read_json(run / "battery_regression.json")
-    benchmark_quick = _read_json(
-        AUTOLOOP / "champion" / "benchmark_v2_quick.json")
     benchmark_full = _read_json(
         AUTOLOOP / "champion" / "benchmark_v2_full.json")
+    candidate_reports = sorted(
+        (AUTOLOOP / "cycles").glob("cycle-*/benchmark_v2_full.json"))
+    benchmark_candidate = (_read_json(candidate_reports[-1])
+                           if candidate_reports else {})
+    if candidate_reports:
+        benchmark_candidate["cycle"] = int(
+            candidate_reports[-1].parent.name.split("-")[1])
     eval_detail = {
         "orders": 9,
         "running_s": phase_age if phase == "eval" else None,
@@ -1295,7 +1315,7 @@ def pipeline_snapshot():
                       "outcome": row.get("outcome"),
                       "at": row.get("at")} for row in failures[-6:]],
         "phase_log": (state.get("phase_log") or [])[-12:],
-        "calendar": _calendar(static),
+        "calendar": _calendar(static, research),
         "datasets": {
             "public": _public_members(),
             "rule_batches": static["rule_batches"],
@@ -1319,9 +1339,10 @@ def pipeline_snapshot():
                  for name in ("generate", "verify", "train", "eval")},
         "strategy": state.get("strategy"),
         "devloop": _read_json(ROOT / "artifacts" / "devloop" / "state.json"),
+        "research_loop": research,
         "benchmark_v2": {
-            "quick": benchmark_quick,
             "full": benchmark_full,
+            "candidate": benchmark_candidate,
             "refine": state.get("benchmark_refine") or {},
         },
     }
@@ -1643,7 +1664,7 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <main id="activity" class="tab-page active">
 <div class="cards activity-cards ov-cards">
 <div class="card"><div class="k">Closed loop</div><div class="v" id="ov-loop">-</div><div class="s" id="ov-loop-s">-</div></div>
-<div class="card"><div class="k">Champion · mean of 9 orders</div><div class="v" id="ov-champ">-</div><div class="s" id="ov-champ-s">-</div></div>
+<div class="card"><div class="k" id="ov-champ-k">Champion · benchmark v2</div><div class="v" id="ov-champ">-</div><div class="s" id="ov-champ-s">-</div></div>
 <div class="card"><div class="k">Gap to 95% sustained</div><div class="v" id="ov-gap">-</div><div class="s" id="ov-gap-s">worst order must clear it too</div></div>
 <div class="card"><div class="k">Weakest family</div><div class="v" id="ov-weak">-</div><div class="s" id="ov-weak-s">-</div></div>
 <div class="card"><div class="k">GPU now</div><div class="v" id="ov-gpu">-</div><div class="s" id="ov-gpu-s">-</div></div>
@@ -1719,6 +1740,9 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <div class="card"><div class="k">This cycle's arm</div><div class="v" id="rs-arm">-</div><div class="s" id="rs-arm-s">-</div></div>
 <div class="card"><div class="k">Next cycle's arm</div><div class="v" id="rs-next">-</div><div class="s" id="rs-next-s">-</div></div>
 <div class="card"><div class="k">Cycles since promotion</div><div class="v" id="rs-since">-</div><div class="s" id="rs-since-s">-</div></div>
+<div class="card"><div class="k">External research loop</div><div class="v" id="rs-ext">-</div><div class="s" id="rs-ext-s">-</div></div>
+<div class="card"><div class="k">Latest external scan</div><div class="v" id="rs-findings">-</div><div class="s" id="rs-findings-s">-</div></div>
+<div class="card"><div class="k">48 h results audit</div><div class="v" id="rs-audit">-</div><div class="s" id="rs-audit-s">-</div></div>
 </div>
 <section class="panel"><h2>Training arms <span class="tag">GAIN = CANDIDATE MEAN - CHAMPION MEAN</span></h2><div id="rs-arms"></div>
 <div class="ref-note">Every arm runs once, then the loop favours the arm with the best upper bound on its measured gain. The gain is read on battery-dev, the battery the gate uses; a release claim still needs the sealed battery.</div></section>
@@ -1726,8 +1750,10 @@ pre[id]{{font-size:11.5px;line-height:1.45;max-height:340px;white-space:pre-wrap
 <section class="panel"><h2>Health</h2><div id="rs-health"></div></section>
 <section class="panel"><h2>Events</h2><div id="rs-events"></div></section>
 <section class="panel"><h2>Research calendar</h2><div id="rs-cal"></div>
-<div class="ref-note">Daily health, arm choice and the daily report run on their own. The weekly external review still runs on request.</div></section>
+<div class="ref-note">Daily discovery, weekly review and the monthly publication check run under launchd. External findings never enter training or benchmark gold automatically.</div></section>
 </div>
+<section class="panel"><h2>External evidence <span class="tag">DISCOVERY ONLY</span></h2><div id="rs-external"></div>
+<div class="ref-note">Every run records source status, URLs, dates, revisions, licenses and relevance. Adoption still needs a pinned source, license review, contamination check and a measured held-out experiment.</div></section>
 </main>
 <main id="benchmarks" class="tab-page">
 <section class="panel"><h2>Promotion gate · battery-dev 400 rows · written order + 8 shuffles</h2>
@@ -1802,7 +1828,7 @@ function stageBody(s){{
     if(d.streak)lines.push(d.streak+' cycle(s) without promotion');
   }}
   if(s.id==='benchmark'){{
-    lines.push(d.status?((d.scope||'next')+' · '+d.status):'quick each cycle · full every 5');
+    lines.push(d.status?((d.scope||'next')+' · '+d.status):'all 10,000 rows every cycle');
     if(d.report)lines.push(d.report);
   }}
   if(s.id==='benchmark_refine'){{
@@ -1821,8 +1847,17 @@ function renderPipeline(p,x){{
   $('ov-loop').textContent=p.alive?(p.phase||'idle').toUpperCase():'DOWN';
   $('ov-loop').className='v '+(p.alive?'status-running':'delta-down');
   $('ov-loop-s').textContent='cycle '+p.cycle+' · phase '+hm(p.phase_age_s)+' · heartbeat '+(p.heartbeat_age_s==null?'-':p.heartbeat_age_s+'s');
-  $('ov-champ').textContent=pctf(champ.mean);
-  $('ov-champ-s').textContent='written '+pctf(champ.written)+' · worst '+pctf(champ.min)+' · cycle '+(champ.cycle==null?'-':champ.cycle);
+  const bv=(p.benchmark_v2||{{}}).full||{{}},bc=(p.benchmark_v2||{{}}).candidate||{{}};
+  if(bv.n){{
+    const nd=Object.keys(bv.by_domain||{{}}).length,nc=Object.keys(bv.by_capability||{{}}).length;
+    $('ov-champ-k').textContent='Champion · benchmark v2 · '+nd+' domains · '+nfmt(bv.n)+' cases';
+    $('ov-champ').textContent=pctf(bv.forced);
+    $('ov-champ-s').textContent=nfmt(bv.hits)+' / '+nfmt(bv.n)+' · '+nc+' capabilities · last candidate '+(bc.n?pctf(bc.forced)+' (cycle '+bc.cycle+')':'-')+' · gate 400: '+pctf(champ.mean);
+  }}else{{
+    $('ov-champ-k').textContent='Champion · mean of 9 orders · 400 cases';
+    $('ov-champ').textContent=pctf(champ.mean);
+    $('ov-champ-s').textContent='written '+pctf(champ.written)+' · worst '+pctf(champ.min)+' · cycle '+(champ.cycle==null?'-':champ.cycle);
+  }}
   const gap=champ.min!=null?(champ.min-p.target):null;
   $('ov-gap').textContent=gap==null?'-':((gap>=0?'+':'')+(gap*100).toFixed(2)+' pts');
   $('ov-gap').className='v '+(gap!=null&&gap>=0?'status-running':'status-idle');
@@ -1902,11 +1937,16 @@ function renderTabs(p){{
     [['champion',pctf(champ.written),pctf(champ.mean),pctf(champ.min)].concat(famKeys.map(k=>pctf(champ.by_family[k]))),
      ['last candidate',pctf(lc.written),pctf(lc.mean),pctf(lc.min)].concat(famKeys.map(k=>pctf((lc.by_family||{{}})[k])))])
     +'<div class="stage-l">'+esc((p.last_reasons||[]).join(' · ')||'promoted')+'</div>'):'<div class="stage-l">no candidate scored yet</div>';
-  const v2=p.benchmark_v2||{{}},vr=(v2.full&&v2.full.n)?v2.full:v2.quick;
-  if(vr&&vr.n){{
-    const caps=vr.by_capability||{{}},dom=vr.by_domain||{{}};
-    $('ev-v2').innerHTML='<div class="cards"><div class="card"><div class="k">scope</div><div class="v">'+(vr.n>=10000?'FULL':'QUICK')+'</div><div class="s">'+nfmt(vr.n)+' rows · '+pctf(vr.forced)+'</div></div><div class="card"><div class="k">worst capability</div><div class="v">'+pctf(Math.min(...Object.values(caps).map(x=>x.forced)))+'</div><div class="s">'+esc(Object.entries(caps).sort((a,b)=>a[1].forced-b[1].forced)[0]?.[0]||'-')+'</div></div><div class="card"><div class="k">worst domain</div><div class="v">'+pctf(Math.min(...Object.values(dom).map(x=>x.forced)))+'</div><div class="s">'+esc(Object.entries(dom).sort((a,b)=>a[1].forced-b[1].forced)[0]?.[0]||'-')+'</div></div><div class="card"><div class="k">prose refinement</div><div class="v">'+nfmt((v2.refine||{{}}).published)+'</div><div class="s">of '+nfmt((v2.refine||{{}}).source_rows||10000)+'</div></div></div>'+tbl(['capability','#n','#accuracy','#Wilson lower'],Object.entries(caps).map(([k,v])=>[esc(k.replace(/_/g,' ')),v.n,pctf(v.forced),pctf(v.wilson95_lower)]));
-  }}else $('ev-v2').innerHTML='<div class="stage-l">first diagnostic runs after the current cycle</div>';
+  const v2=p.benchmark_v2||{{}},vr=v2.full||{{}},vc=v2.candidate||{{}};
+  if(vr.n){{
+    const caps=vr.by_capability||{{}},dom=vr.by_domain||{{}},ccap=vc.by_capability||{{}},cdom=vc.by_domain||{{}};
+    const worst=o=>Object.entries(o).sort((a,b)=>a[1].forced-b[1].forced)[0]||['-',{{}}];
+    const rows=(o,c)=>Object.entries(o).map(([k,v])=>[esc(k.replace(/_/g,' ')),nfmt(v.n),pctf(v.forced),pctf(v.wilson95_lower),c[k]?pctf(c[k].forced):'-']);
+    const src=(vr.battery||'').split('/').pop();
+    $('ev-v2').innerHTML='<div class="cards"><div class="card"><div class="k">champion · all rows</div><div class="v">'+pctf(vr.forced)+'</div><div class="s">'+nfmt(vr.hits)+' / '+nfmt(vr.n)+' · '+esc(src)+'</div></div><div class="card"><div class="k">last candidate</div><div class="v">'+(vc.n?pctf(vc.forced):'-')+'</div><div class="s">'+(vc.n?'cycle '+vc.cycle+' · '+nfmt(vc.hits)+' / '+nfmt(vc.n):'scored after the next training')+'</div></div><div class="card"><div class="k">worst capability</div><div class="v">'+pctf(worst(caps)[1].forced)+'</div><div class="s">'+esc(worst(caps)[0])+'</div></div><div class="card"><div class="k">worst domain</div><div class="v">'+pctf(worst(dom)[1].forced)+'</div><div class="s">'+esc(worst(dom)[0])+'</div></div><div class="card"><div class="k">prose refinement</div><div class="v">'+nfmt((v2.refine||{{}}).published)+'</div><div class="s">of '+nfmt((v2.refine||{{}}).source_rows||10000)+'</div></div></div>'
+      +tbl(['capability','#cases','#champion','#Wilson lower','#candidate'],rows(caps,ccap))
+      +tbl(['domain','#cases','#champion','#Wilson lower','#candidate'],rows(dom,cdom));
+  }}else $('ev-v2').innerHTML='<div class="stage-l">first full run after the current cycle</div>';
   $('ev-fail').innerHTML=(p.failures||[]).length?tbl(['cycle','phase','outcome','at (UTC)'],p.failures.slice().reverse().map(f=>[f.cycle,f.phase,esc(f.outcome),esc((f.at||'').slice(5,16).replace('T',' '))])):'<div class="stage-l">none</div>';
   $('rs-cal').innerHTML=$('ov-cal').innerHTML;
   const dv=p.devloop||{{}},hl=dv.health||{{}},sg=p.strategy||{{}};
@@ -1926,6 +1966,22 @@ function renderTabs(p){{
   const ck=hl.checks||{{}};
   $('rs-health').innerHTML=tbl(['check','state'],Object.entries(ck).map(([k,v])=>[k,'<span class="'+(v?'status-running':'delta-down')+'">'+(v?'ok':'DOWN')+'</span>']).concat([['disk free',hl.disk_free_gb==null?null:hl.disk_free_gb+' GB'],['power',hl.ac_power==null?null:(hl.ac_power?'AC':'<span class="delta-down">battery</span>')]]))+(hl.alerts||[]).map(a=>'<div class="stage-l">alert: '+esc(a)+'</div>').join('');
   $('rs-events').innerHTML=(dv.events||[]).length?tbl(['at (UTC)','event'],dv.events.slice().reverse().slice(0,12).map(e=>[esc((e.at||'').slice(5,16).replace('T',' ')),esc(e.event)])):'<div class="stage-l">no events yet</div>';
+  const rl=p.research_loop||{{}},rr=rl.last_run||{{}};
+  const rlAge=rl.updated_utc?Math.round((Date.now()-Date.parse(rl.updated_utc))/1000):null;
+  const rlAlive=rlAge!=null&&rlAge<180;
+  $('rs-ext').textContent=rl.updated_utc?(rlAlive?(String(rl.status||'running').toUpperCase()):'NO HEARTBEAT'):'NOT STARTED';
+  $('rs-ext').className='v '+(rlAlive?'status-running':'delta-down');
+  $('rs-ext-s').textContent=rl.updated_utc?('heartbeat '+hm(rlAge)+' ago · daily + weekly + monthly'):'-';
+  const rd=rl[rr.cadence]||{{}};
+  $('rs-findings').textContent=rr.completed_utc?nfmt(rd.relevant_findings||0):'-';
+  $('rs-findings-s').textContent=rr.completed_utc?((rr.cadence||'scan')+' · '+(rr.status||'-')+' · '+nfmt(rd.new_findings||0)+' new · '+esc(rr.completed_utc.slice(0,16).replace('T',' '))+' UTC'):'no scan yet';
+  const ra=rl.audit||{{}};
+  $('rs-audit').textContent=ra.verdict?String(ra.verdict).toUpperCase():'-';
+  $('rs-audit').className='v '+(ra.verdict==='continue'?'status-running':'status-idle');
+  $('rs-audit-s').textContent=ra.completed_utc?(esc(ra.reason||'')+' · '+esc(ra.completed_utc.slice(0,16).replace('T',' '))+' UTC'):'not run yet';
+  const src=rl.last_sources||{{}},findings=rl.recent_findings||[];
+  $('rs-external').innerHTML=tbl(['source','state','#items','error'],Object.entries(src).map(([k,v])=>[esc(k),'<span class="'+(v.status==='ok'?'status-running':'delta-down')+'">'+esc(v.status)+'</span>',nfmt(v.count||0),esc(v.error||'')]))
+    +(findings.length?tbl(['score','source','kind','candidate','license','revision'],findings.map(f=>[f.score,esc(f.source),esc(f.kind),'<a href="'+esc(f.url)+'" target="_blank" rel="noreferrer">'+esc(f.title)+'</a>',esc(f.license||'unknown'),esc((f.revision||'unknown').slice(0,14))])):'<div class="stage-l">no candidates recorded yet</div>');
 }}
 async function live(){{
  try{{

@@ -35,6 +35,7 @@ REPORTS = DEV / "reports"
 HISTORY = LOOP / "history.jsonl"
 STRATEGY_FILE = LOOP / "strategy.json"
 LOOP_STATE = LOOP / "state.json"
+RESEARCH_STATE = ROOT / "artifacts" / "research-loop" / "state.json"
 STOP = DEV / "STOP"
 
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
@@ -49,6 +50,7 @@ LABELS = {
     "autoloop": "com.jevclone.autoloop",
     "ollama": "com.asimovia.ollama-qwen",
     "dashboard": "com.jevclone.dashboard",
+    "research": "com.jevclone.research",
 }
 
 BASE = {"steps": 200, "lr": 2e-5, "warmup": 100,
@@ -72,6 +74,12 @@ ARMS = {
                     "why": "rule gold is exact by construction"},
     "longer": {"steps": 400, "warmup": 40,
                "why": "200 steps may be too few to move a 4B model"},
+    "nudge": {"steps": 50, "lr": 2e-6, "warmup": 5,
+              "families": ["priority_decision", "attribute_comparison"],
+              "rule_weak_weight": 4,
+              "why": "the large-step recipes all lost ground, so the update "
+                     "stays on the families that still miss and takes a "
+                     "much smaller step"},
 }
 
 
@@ -131,7 +139,24 @@ def arm_results(history: list[dict]) -> dict[str, list[float]]:
     return results
 
 
+def large_steps_retired(results: dict[str, list[float]]) -> bool:
+    """True once every recipe except the short step has been measured and
+    every one of them moved the battery down."""
+    settled = [name for name in ARMS
+               if name != "nudge" and results.get(name)]
+    if len(settled) < len(ARMS) - (1 if "nudge" in ARMS else 0):
+        return False
+    return all(sum(results[name]) / len(results[name]) < 0 for name in settled)
+
+
 def choose_arm(results: dict[str, list[float]]) -> tuple[str, str]:
+    if large_steps_retired(results):
+        gains = results.get("nudge") or []
+        if not gains:
+            return "nudge", "every measured recipe lost ground"
+        mean = sum(gains) / len(gains)
+        return "nudge", (f"large-step recipes stay retired; mean gain "
+                         f"{mean:+.4f} over {len(gains)} cycle(s)")
     untried = [name for name in ARMS if not results.get(name)]
     if untried:
         return untried[0], "not measured yet"
@@ -210,6 +235,7 @@ def kickstart(label: str) -> str:
 
 def health(repair: bool = True) -> dict:
     loop = read_json(LOOP_STATE)
+    research = read_json(RESEARCH_STATE)
     stopped = (LOOP / "STOP").exists()
     heartbeat = age_s(loop.get("updated_utc"))
     checks = {
@@ -219,6 +245,13 @@ def health(repair: bool = True) -> dict:
                      and heartbeat < HEARTBEAT_STALE_S),
         "ollama": http_ok(OLLAMA + "/api/tags"),
         "dashboard": http_ok(DASHBOARD),
+        "research": (
+            research.get("status") in ("running", "scanning-daily",
+                                       "scanning-audit", "scanning-weekly",
+                                       "scanning-monthly")
+            and pid_alive(research.get("pid"))
+            and age_s(research.get("updated_utc")) is not None
+            and age_s(research.get("updated_utc")) < HEARTBEAT_STALE_S),
     }
     free_gb = shutil.disk_usage(ROOT).free / 2**30
     power = on_ac_power()

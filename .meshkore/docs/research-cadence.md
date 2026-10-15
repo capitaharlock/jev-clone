@@ -10,7 +10,7 @@ se ancla el 9 de octubre de 2026, zona `Europe/Madrid`.
 
 | Frecuencia | Momento | Trabajo | Resultado |
 |---|---|---|---|
-| Cada 24 h | 18:00 | Salud operativa | Latido, procesos, checkpoint, velocidad, disco, volumen generado y errores |
+| Cada 24 h | Continuo desde la última ejecución | Salud y descubrimiento externo | Latido, procesos, fuentes externas, checkpoint, velocidad, disco, volumen generado y errores |
 | Cada 48 h | Desde 2026-10-09 18:00 | Auditoría interna | Informe con veredicto `continue`, `correct`, `change-arm` o `pause` |
 | Cada viernes | 19:00 | Investigación externa | Novedades de los últimos 14 días, fuentes, licencias y decisiones |
 | Primer viernes del mes | Después de la investigación | Revisión de publicación | Candidatos para Hugging Face, GitHub o Zenodo, con bloqueos de licencia y privacidad |
@@ -73,6 +73,26 @@ redistribución, tamaño, idiomas, arena que cubre, riesgo de fuga y coste de
 integración. Internet aporta candidatos y evidencia, no gold automático.
 Nada entra en entrenamiento hasta pasar el registro de fuentes, el contrato,
 deduplicación, firewall de evaluación y una revisión de licencia.
+
+## Automatización
+
+`tools/research_loop.py` mantiene tres cadencias independientes:
+
+- cada 24 horas consulta arXiv, GitHub, Hugging Face y las páginas oficiales
+  de JEv;
+- cada siete días amplía la muestra y vuelve a ordenar los candidatos;
+- el primer viernes del mes prepara la revisión de publicación.
+
+El servicio `com.jevclone.research` queda bajo `launchd`, se reinicia si cae y
+escribe el latido en `artifacts/research-loop/state.json`. Cada ejecución
+conserva un JSON y un informe Markdown bajo `artifacts/research-loop/runs/` y
+`reports/`; `events.jsonl` y `findings.jsonl` son append-only. Un fallo de red
+queda registrado por fuente y se reintenta una hora después.
+
+El proceso solo descubre y prioriza evidencia. Nunca descarga pesos, ejecuta
+código ajeno, modifica mezclas de entrenamiento ni crea gold. La adopción
+exige revisión de licencia, revisión de contaminación y un experimento con
+criterio de éxito fijado de antemano.
 
 ## Publicación y contribución
 
