@@ -29,11 +29,12 @@ La implementación vive en el repositorio independiente
 
 ## Estado
 
-- 35 fuentes, 51 ramas cubiertas.
-- 10 fuentes locales, 6,43 GB inventariados.
-- 134.802 registros de texto normalizados en 25,5 MB.
-- Pendientes los parsers y las decisiones de licencia de las fuentes marcadas
-  `review`.
+- 42 fuentes, 51 ramas cubiertas; 19 activas y 2 en caché local.
+- Worker continuo `com.decisiondata.worker` desde el 16 de octubre: corpus
+  normalizado de unos 1,5 GB comprimidos, con Stack Exchange todavía en
+  proceso.
+- La cola de parsers y fuentes sigue en `#T-parser-queue`.
+- Pendientes las decisiones de licencia de las fuentes marcadas `review`.
 
 ## Done when
 
