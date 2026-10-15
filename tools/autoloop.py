@@ -767,13 +767,31 @@ def active_benchmark() -> Path:
 
 
 BENCHMARK_REPORT = "benchmark_v2_full.json"
+BENCHMARK_V3 = Path(os.environ.get(
+    "BENCHMARK_V3_DIR",
+    ROOT.parent / "decision-dataset-factory" / "work" / "benchmark-v3" /
+    "release",
+))
+V3_DEV_REPORT = "benchmark_v3_dev.json"
+V3_PROBE_REPORT = "benchmark_v3_probe.json"
 
 
-def benchmark_current(out: Path, benchmark: Path) -> bool:
-    """A report counts only for the benchmark file and weights it scored."""
-    report = out / BENCHMARK_REPORT
+def file_sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def benchmark_current(out: Path, benchmark: Path,
+                      report_name: str = BENCHMARK_REPORT) -> bool:
+    """A report counts only for the benchmark file and weights it scored.
+    v3 is rebuilt in place, so its reports are also matched by hash."""
+    report = out / report_name
     weights = out / "adapters.safetensors"
-    if not report.is_file() or read_json(report).get("battery") != str(benchmark):
+    if not report.is_file():
+        return False
+    body = read_json(report)
+    if body.get("battery") != str(benchmark):
+        return False
+    if report_name != BENCHMARK_REPORT and body.get("sha256") != file_sha(benchmark):
         return False
     return not weights.is_file() or report.stat().st_mtime >= weights.stat().st_mtime
 
@@ -813,6 +831,49 @@ def phase_benchmark(cycle: int, state: dict) -> str:
         "benchmark": str(benchmark),
         "candidate": str((run / BENCHMARK_REPORT).relative_to(ROOT)),
         "champion": str((CHAMPION / BENCHMARK_REPORT).relative_to(ROOT)),
+    }
+    if outcome == "ok" and benchmark_v3(run, promoted, state) == "stop":
+        outcome = "stop"
+    return outcome
+
+
+def v3_jobs(run: Path, promoted: bool) -> list[tuple[Path, Path, str]]:
+    """The full dev set is costly, so it runs for the champion once per
+    benchmark version; every candidate gets the stratified probe."""
+    dev, probe = BENCHMARK_V3 / "dev.jsonl", BENCHMARK_V3 / "probe.jsonl"
+    if not (dev.is_file() and probe.is_file()):
+        return []
+    champion = run if promoted else CHAMPION
+    jobs = [(champion, dev, V3_DEV_REPORT), (champion, probe, V3_PROBE_REPORT)]
+    if not promoted:
+        jobs.append((run, probe, V3_PROBE_REPORT))
+    return [(out, bench, name) for out, bench, name in jobs
+            if (out / "adapters.safetensors").is_file()
+            and not benchmark_current(out, bench, name)]
+
+
+def benchmark_v3(run: Path, promoted: bool, state: dict) -> str:
+    outcome = "ok"
+    for out, bench, name in v3_jobs(run, promoted):
+        cmd = [
+            str(PYTHON), "-u", "-m", "training.python.pointer_finetune",
+            "eval-battery", "--out", str(out), "--episodes", str(bench),
+            "--limit-per-capability", "0", "--orders", "0", "--report", name,
+        ]
+        outcome = supervise(
+            cmd, "benchmark", LOOP / "logs" / "benchmark_v3.log", None, state)
+        if outcome != "ok":
+            break
+    if outcome == "ok" and promoted:
+        for name in (V3_DEV_REPORT, V3_PROBE_REPORT):
+            if (run / name).is_file():
+                shutil.copy2(run / name, CHAMPION / name)
+    state["benchmark_v3"] = {
+        "status": outcome,
+        "benchmark": str(BENCHMARK_V3),
+        "candidate": str((run / V3_PROBE_REPORT).relative_to(ROOT)),
+        "champion_dev": str((CHAMPION / V3_DEV_REPORT).relative_to(ROOT)),
+        "champion_probe": str((CHAMPION / V3_PROBE_REPORT).relative_to(ROOT)),
     }
     return outcome
 

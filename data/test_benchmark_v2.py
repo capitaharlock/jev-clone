@@ -48,7 +48,7 @@ class BenchmarkV2AdapterTest(unittest.TestCase):
                 encoding="utf-8",
             )
             episodes = B.load_battery(path, limit_per_capability=2)
-        self.assertEqual(len(episodes), 20)
+        self.assertEqual(len(episodes), 2 * len(B.CAPABILITY_TO_FAMILY))
 
 
 if __name__ == "__main__":

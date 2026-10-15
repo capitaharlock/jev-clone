@@ -201,6 +201,51 @@ class BenchmarkCurrentTest(unittest.TestCase):
             os.utime(report, (1, 1))
             self.assertFalse(AL.benchmark_current(out, bench))
 
+    def test_v3_report_is_stale_once_the_file_is_rebuilt(self):
+        import json
+        import os
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            out, bench = Path(tmp), Path(tmp) / "probe.jsonl"
+            bench.write_text("a\n")
+            (out / "adapters.safetensors").write_bytes(b"w")
+            os.utime(out / "adapters.safetensors", (1, 1))
+            report = out / AL.V3_PROBE_REPORT
+            report.write_text(json.dumps(
+                {"battery": str(bench), "sha256": AL.file_sha(bench)}))
+            self.assertTrue(AL.benchmark_current(out, bench, AL.V3_PROBE_REPORT))
+            bench.write_text("b\n")
+            self.assertFalse(AL.benchmark_current(out, bench, AL.V3_PROBE_REPORT))
+
+
+class V3JobsTest(unittest.TestCase):
+
+    def test_champion_gets_dev_and_candidate_only_probe(self):
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bench, run, champ = root / "v3", root / "run", root / "champ"
+            for d in (bench, run, champ):
+                d.mkdir()
+            for name in ("dev.jsonl", "probe.jsonl"):
+                (bench / name).write_text("x\n")
+            for d in (run, champ):
+                (d / "adapters.safetensors").write_bytes(b"w")
+            with mock.patch.object(AL, "BENCHMARK_V3", bench), \
+                    mock.patch.object(AL, "CHAMPION", champ):
+                jobs = AL.v3_jobs(run, promoted=False)
+                promoted = AL.v3_jobs(run, promoted=True)
+        self.assertEqual(
+            [(o.name, b.name) for o, b, _ in jobs],
+            [("champ", "dev.jsonl"), ("champ", "probe.jsonl"),
+             ("run", "probe.jsonl")])
+        self.assertEqual(
+            [(o.name, b.name) for o, b, _ in promoted],
+            [("run", "dev.jsonl"), ("run", "probe.jsonl")])
+
 
 if __name__ == "__main__":
     unittest.main()

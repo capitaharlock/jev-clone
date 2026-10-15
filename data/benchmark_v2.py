@@ -32,6 +32,15 @@ CAPABILITY_TO_FAMILY = {
     "causal_counterfactual": EC.INFERENCE,
     "temporal_spatial": EC.COMPARISON,
     "uncertainty_abstention": EC.INFERENCE,
+    "code_correctness": EC.INFERENCE,
+    "code_quality": EC.PRIORITY,
+    "technical_answers": EC.PRIORITY,
+    "knowledge": EC.INFERENCE,
+    "science_reasoning": EC.INFERENCE,
+    "inference_facts": EC.INFERENCE,
+    "mathematics": EC.COMPARISON,
+    "product_specs": EC.COMPARISON,
+    "abstention": EC.INFERENCE,
 }
 
 
