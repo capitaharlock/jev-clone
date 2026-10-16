@@ -35,6 +35,8 @@ Investigación en
 ## Cola
 
 1. Señales de calidad, valor educativo, repetición, idioma, PII y licencia.
+   Primera pasada hecha: `quality.py` puntúa longitud, proporción alfabética,
+   repetición de líneas y densidad de enlaces en un sidecar. No admite filas.
 2. Deduplicación exacta y aproximada entre fuentes y splits.
 3. Manifiestos de mezcla con pesos por fuente, dominio e idioma.
 4. Muestras deterministas y acotadas de FineWeb-Edu, DCLM, Dolma y FineMath.
