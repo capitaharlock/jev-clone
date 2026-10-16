@@ -29,7 +29,9 @@ La implementación vive en el repositorio independiente
 
 ## Estado
 
-- 42 fuentes, 51 ramas cubiertas; 19 activas y 2 en caché local.
+- 52 fuentes, 51 ramas cubiertas; 19 activas y 2 en caché local. Diez corpus
+  abiertos de escala frontier están catalogados en `review`, sin descarga
+  automática.
 - Worker continuo `com.decisiondata.worker` desde el 16 de octubre: corpus
   normalizado de unos 1,5 GB comprimidos, con Stack Exchange todavía en
   proceso.

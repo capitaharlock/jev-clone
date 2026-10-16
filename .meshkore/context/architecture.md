@@ -13,7 +13,8 @@ consume y promueve un campeón; el runtime sirve ese campeón.
 
 - Repositorio propio en `~/Prj/asimovia/decision-dataset-factory`, privado.
 - Iniciativa `#decision-dataset-factory`; tareas `#T-world-corpus-engine`,
-  `#T-real-sources`, `#T-parser-queue`, `#T-source-corpus-projections`.
+  `#T-real-sources`, `#T-parser-queue`, `#T-source-corpus-projections` y
+  `#T-frontier-data-map`.
 - Servicio `com.decisiondata.worker` (launchd, KeepAlive). Cada ciclo descarga
   en paralelo las fuentes activas que tocan, normaliza en paralelo las que han
   cambiado, rehace el inventario y deja un latido en
