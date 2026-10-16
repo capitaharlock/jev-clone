@@ -6,7 +6,7 @@ owner: architect-master
 modules:
   - data
 created: 2026-10-03
-updated: 2026-10-03
+updated: 2026-10-16
 ---
 
 # Fábrica independiente de datasets de decisión
@@ -17,9 +17,16 @@ otros modelos y equipos.
 
 ## Resultado
 
-Cada publicación contiene episodios, manifiesto, hashes, procedencia, licencias,
-estadísticas, rechazos y una data card. Los workers pueden ejecutarse en Mac,
-VPS o nodos con GPU sin compartir el árbol de trabajo.
+La fábrica conserva primero un corpus fuente neutral con texto, procedencia,
+licencia y hashes. Cada tarea publica después una proyección versionada del
+corpus. La primera es para modelos de decisión; en el futuro podrán añadirse
+proyecciones para lenguaje, recuperación o embeddings sin repetir la descarga
+y limpieza.
+
+Cada publicación contiene manifiesto, `corpus_id`, receta, hashes,
+procedencia, licencias, estadísticas, rechazos y una data card. Los workers
+pueden ejecutarse en Mac, VPS o nodos con GPU sin compartir el árbol de
+trabajo.
 
 ## Reglas
 

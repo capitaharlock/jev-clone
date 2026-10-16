@@ -13,15 +13,18 @@ consume y promueve un campeón; el runtime sirve ese campeón.
 
 - Repositorio propio en `~/Prj/asimovia/decision-dataset-factory`, privado.
 - Iniciativa `#decision-dataset-factory`; tareas `#T-world-corpus-engine`,
-  `#T-real-sources`, `#T-parser-queue`.
+  `#T-real-sources`, `#T-parser-queue`, `#T-source-corpus-projections`.
 - Servicio `com.decisiondata.worker` (launchd, KeepAlive). Cada ciclo descarga
   en paralelo las fuentes activas que tocan, normaliza en paralelo las que han
   cambiado, rehace el inventario y deja un latido en
   `work/world/worker-state.json`. Si no hay trabajo, espera diez minutos.
 - Entrada: el catálogo `config/source-catalog.json` y el árbol
   `config/world-taxonomy.json`.
-- Salida: corpus normalizado `work/world/corpus/<fuente>.jsonl.gz`, inventario,
-  y los paquetes de episodios y el benchmark v3 que consume el entrenamiento.
+- Salida base: corpus neutral `source-document-v1` en
+  `work/world/corpus/<fuente>.jsonl.gz`, inventario y un manifiesto con
+  `corpus_id`. Los datasets de decisión son proyecciones que fijan ese ID y su
+  receta. Una futura proyección para un modelo de lenguaje reutiliza los mismos
+  documentos y raw locales.
 - Regla de frontera: descargar no es admitir. Una fuente solo llega a
   entrenamiento tras revisión de licencia, deduplicación, firewall contra el
   corte sellado y una ganancia medida en v3.
