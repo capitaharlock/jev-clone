@@ -59,5 +59,9 @@ alquilada después de medir el cuello con esta fase.
   2/4. Prueba que la ruta completa ejecuta y guarda pesos.
 - Gate de capacidad con 16.394.498 parámetros, 29 filas y 500 pasos: pérdida
   1,0984 a 0; precisión de entrenamiento 0,9655; holdout 2/3. PASS.
-- Siete tests pasan. El siguiente gate amplía datos y mide etiquetas no
-  vistas; el holdout de tres filas de esta prueba no mide generalización.
+- Nueve tests pasan, incluidos el corte limpio y el lote de igual K.
+- Gate de etiquetas no vistas, 18 de octubre, 19:14: 16.419.074 parámetros,
+  2.500 pasos, lote 8, Metal, 451 s. Entrenamiento 284 filas, precisión 1,000.
+  Evaluación 308 filas cuyos textos no aparecen en el entrenamiento:
+  130/308 = 0,4221, azar 0,3013, cota inferior de Wilson 0,3682. Corte limpio.
+  PASS. Es un lote sintético de reglas, no el benchmark v3.
