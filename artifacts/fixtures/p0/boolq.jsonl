@@ -1,0 +1,6 @@
+{"passage": "The Eiffel Tower is in Paris.", "question": "Is the Eiffel Tower in Paris?", "answer": true, "split": "train"}
+{"passage": "Water boils at 100°C at sea level.", "question": "Does water boil at 50°C?", "answer": false, "split": "train"}
+{"passage": "El sol sale por el este cada mañana.", "question": "¿Sale el sol por el oeste?", "answer": false, "split": "calibration"}
+{"passage": "Bats are mammals.", "question": "Are bats birds?", "answer": false, "split": "test"}
+{"passage": "Honey never spoils.", "question": "Does honey expire?", "answer": true, "split": "train"}
+{"passage": "Schrödinger's cat is a thought experiment.", "question": "Is the cat definitely alive?", "answer": null, "split": "train"}

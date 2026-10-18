@@ -1,0 +1,6 @@
+{"headline": "Mayor unveils transit plan", "description": "The city council approved funding.", "category": "POLITICS", "split": "train"}
+{"headline": "Rookie scores hat trick", "description": "A stunning debut night at the arena.", "category": "SPORTS", "split": "train"}
+{"headline": "New chip breaks records", "description": "Benchmarks show a 40% efficiency gain.", "category": "TECH", "split": "calibration"}
+{"headline": "Café opens in old quarter", "description": "A tiny kitchen serving seasonal dishes — cafés everywhere.", "category": "FOOD", "split": "train"}
+{"headline": "Markets rally at close", "description": "Investors brush off inflation fears.", "category": "BUSINESS", "split": "test"}
+{"headline": "Mystery wire story", "description": "Editors could not agree on a desk.", "category": null, "split": "train"}

@@ -1,0 +1,93 @@
+---
+superseded_by: honest-eval / T-battery-calib
+id: T-data-eval
+title: OOD, calibration split y reportes públicos
+status: superseded
+priority: medium
+owner: unassigned
+category: data
+initiative: honest-eval
+depends_on:
+  - T-mix-5m
+created: 2026-09-20
+updated: 2026-09-25
+failed_at: 2026-09-22T10:00:34.877Z
+resolved_by: A029
+resolved_by_conv: work-data-training-T-data-eval-1790030000
+commit_shas: ['c34024f4e54986178cc172830df494261fefd9ae']
+---
+# OOD, calibration split y reportes públicos
+
+> **Retirada el 2026-09-25.** Estaba escrita contra la estrategia de
+> `#data-training` (§§54–55, 76–83, 138–140): clean room Jevals, calibration
+> split de 20–100 k etiquetas y OOD sobre la mezcla de 5 M. Esa mezcla ya no es
+> la base del entreno. Lo que sobrevive —calibración, curva risk–coverage,
+> abstención medida aparte del ranking y reportes reproducibles— se rehace sobre
+> la batería privada en `#T-battery-calib`.
+
+Cierra el work-stream con lo que lo hace creíble (§§76–83, 138–140):
+set OOD 100 k train + 10 k held-out sin overlap (correcta removida,
+ambiguity con targets 0.5/0.5, §§54–55, 138); calibration split
+sellado 20–100 k labels reales multi-dominio/multi-K/multi-idioma —
+NUNCA gradient-train sobre él (§§76, 139); clean room Jevals con IDs
+congelados y leak detector triple (hash exacto, normalizado,
+semántico, §77); `JevClone-General-Eval` 10–50 k held-out propio,
+jamás entrenado (§78); benchmarks de dynamic labels (labels B
+no vistas, §79), option shuffle (flip rate, JS divergence, §80),
+candidate insertion (§81), OOD/abstención (§82) y multi-question
+1→50 Q con latencia/memoria (§83). Publica `JEVALS_REPORT.md`,
+`GENERALIZATION_REPORT.md`, `CALIBRATION_REPORT.md`,
+`LATENCY_REPORT.md` (§140). Métricas: accuracy, NLL, Brier, ECE,
+risk/coverage, high-confidence errors, OOD, estabilidad (§113);
+primer objetivo: batir baselines encoder + POC + zero-shot dinámico
++ calibración antes de mirar a Jev (§115).
+
+Fuentes: data-training §§54–55, 76–83, 113–115, 138–140.
+
+## Verification gate
+
+- Requiere PASS de `T-mix-5m`; el harness falla si el calibration
+  split aparece en train o si un ID Jevals está en train (§§77, 139).
+- Tests: permutation stability y candidate-insertion en verde con
+  umbrales escritos; curva risk-coverage mejor que azar con abstención
+  real (§82); multi-Q muestra ganancia shared-state en latencia;
+  dynamic-labels B supera memorización de IDs (§79); los 4 reportes
+  existen y son reproducibles por seed+manifest.
+- El gate escribe `artifacts/gates/T-data-eval/gate.json` con
+  `pass: true` y referencias a los 4 reportes; es el gate de cierre
+  de `#data-training`.
+
+## Done when
+
+- OOD + calibration split sellados; clean room Jevals congelado.
+- 4 reportes publicados; objetivo §115 (baselines + zero-shot +
+  calibración) cumplido antes de comparar con Jev.
+
+## Resolution
+
+
+Now I'll write the surface-vs-reasoning diagnostic tool.
+
+**Commit** `c34024f4e` · 20 files
+
+**Files changed (20):**
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-000500000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-ettin-68m-s20260922/stage-001000000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260921/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260921/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-000500000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-curve-modernbert-base-s20260922/stage-001000000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-nosynth-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000062500/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000125000/manifest.json`
+- `artifacts/checkpoints/decision/mix1m-synth-modernbert-base-s20260922/stage-000250000/manifest.json`
+- `artifacts/gates/T-mix-1m/gate.json`
+- `artifacts/mix-1m/decision-mix-clean-1m-seed20260922.manifest.json`

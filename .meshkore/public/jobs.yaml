@@ -1,0 +1,42 @@
+# .meshkore/public/jobs.yaml — Jobs registry (initiative jobs-and-links).
+# Definitions only: a job is a command the daemon runs as its own child.
+# Runtime state (pid/status/logs) lives in .meshkore/.runtime/ — never here.
+# Agent-maintained via POST /jobs. Do not check in secrets.
+
+version: 1
+
+jobs:
+  - id: dashboard
+    name: "Dashboard de entrenamiento :8794"
+    command: ".venv-train/bin/python tools/training_monitor.py --interval 60 --tick 20 --port 8794"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    port: 8794
+    notes: "UNICO frontend del cluster."
+  - id: evalgate
+    name: "Evaluacion / gates (unico)"
+    command: "env PYTHONPATH=. .venv-train/bin/python -m eval.preflight_refs refs --only qwen-local --no-table"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    notes: "UNICO job de evaluacion: preflight, eval.unseen, release_gate. Se edita el command. Run actual: columna qwen-local de #T-preflight-refs (4 peticiones en vuelo sobre el unico servidor ollama)."
+  - id: ollama
+    name: "Ollama local (Qwen) :11434"
+    command: "/opt/homebrew/bin/ollama serve"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    port: 11434
+    env:
+      OLLAMA_NUM_PARALLEL: "4"
+    notes: "UNICO servicio de modelo local (profesor Qwen). NUM_PARALLEL=4: las referencias del piloto preguntan 400 filas y con 1 slot se serializan."
+  - id: qwen38-ref
+    name: "Qwen 3.8 sobre la batería de desarrollo (#T-qwen38-ref)"
+    command: "env PYTHONPATH=. OLLAMA_NUM_PARALLEL=4 QWEN_MODEL=qwen3.8:27b-mlx python3 -u -m eval.qwen38_ref measure"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    notes: "Paso 1 del bucle (docs/bucle-infinito.md §8): mide la columna del profesor NUEVO sobre las MISMAS 400 filas de desarrollo del 3.6 y firma el gate con la decisión de qué QWEN_MODEL usa el productor. Reanudable: el log de picks (artifacts/gates/T-qwen38-ref/columns/qwen-local-3.8.picks.jsonl) es el estado, relanzar el mismo comando retoma donde iba. Fila a fila con teacher_structured, NO por lote: el 3.6 se midió así y cambiar de protocolo dejaría de comparar. Medido el 2026-09-27: ~3,3 filas/min con OLLAMA_NUM_PARALLEL=4 (ya en el servidor) → ≈ 2 h, no los 15 min que estimaba la task. Un solo run de Qwen a la vez: no arrancar `datagen` mientras este viva."
+  - id: datagen
+    name: "Generador de datos (único)"
+    command: "env PYTHONPATH=. QWEN_MODEL=qwen3.6:27b-q8_0 QWEN_STREAM=0 EPISODE_GEN_BULK=1 .venv-train/bin/python -u -m data.stream run --forever --rule-batch 5000 --qwen-batch 10 --variety 16 --sleep 180 --max-batches 10000"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    notes: "Proceso A 24h (#T-episode-scale). Lotes por regla en CPU, por debajo del entrenador. Qwen queda apagado mientras el puntero ocupa la GPU. Tope 10000 lotes: 48 dejaba el productor parado."
+  - id: trainer
+    name: "Entrenador (único) — edita el command por run"
+    command: "env PYTHONPATH=. TOKENIZERS_PARALLELISM=false PYTORCH_ENABLE_MPS_FALLBACK=1 .venv-train/bin/python -u -m training.python.loop run --forever --device mps --weights auto --sleep 20"
+    cwd: "/Users/rjuncadell001/Prj/asimovia/jev.clone"
+    notes: "Proceso B 24h (#T-loop-nightly). `auto` cambia de MiniLM a mDeBERTa tras 3 ciclos sin promocion; cada backbone conserva su propio control. Los dos van en MPS. mDeBERTa baja a 1 decision por paso: un lote de 8 llego a 51 GB y la copia MPS no termino. Ciclos reanudables: mix + train + eval + promocion. Arranque: ./tools/run_24h.sh"

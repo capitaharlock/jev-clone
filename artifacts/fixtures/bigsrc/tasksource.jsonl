@@ -1,0 +1,6 @@
+{"task": "glue-mnli", "task_type": "nli", "input": "Premise: The cat sleeps. Hypothesis: An animal rests.", "target": "entailment", "split": "train"}
+{"task": "glue-mnli", "task_type": "nli", "input": "Premise: It rains. Hypothesis: The sun shines.", "target": "contradiction", "split": "train"}
+{"task": "race", "task_type": "multiple-choice", "input": "Passage: Water boils at 100C. What boils at 100C?", "target": "water", "choices": ["water", "oil", "ice", "sand"], "split": "train"}
+{"task": "race", "task_type": "multiple-choice", "input": "Passage: Paris is a city. Where is Paris?", "target": "france", "choices": ["france", "italy", "spain"], "split": "calibration"}
+{"task": "boolq-x", "task_type": "boolean", "input": "Is the sky blue?", "target": "yes", "choices": ["yes", "no"], "split": "test"}
+{"task": "race", "task_type": "multiple-choice", "input": "Q sin split?", "target": "a", "choices": ["a", "b"], "split": "train"}

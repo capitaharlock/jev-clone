@@ -1,0 +1,11 @@
+{
+  "run_id": "curriculum-seed5050",
+  "seed": 5050,
+  "stages": [
+    "s0-warmup",
+    "s1-multi",
+    "s2-semantic",
+    "s3-hardneg"
+  ],
+  "report": "report.json"
+}

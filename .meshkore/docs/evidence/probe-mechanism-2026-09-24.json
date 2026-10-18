@@ -1,0 +1,455 @@
+{
+  "created_utc": "2026-09-24T20:17:23.708868+00:00",
+  "device": "cpu",
+  "scope": "five hand-authored mechanism probes; not an accuracy benchmark",
+  "runs": [
+    {
+      "checkpoint": "artifacts/checkpoints/decision/leverstack-d512-prior-ettin-68m-s20260922/stage-001000000",
+      "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n1000000-be9f0d454360",
+      "cases": [
+        {
+          "name": "color_green_en",
+          "state": "Pedro explicitly says: My favorite color is green.",
+          "question": "What is Pedro's favorite color?",
+          "labels": [
+            "red",
+            "yellow",
+            "green"
+          ],
+          "gold": "green",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              -2.1580662727355957,
+              0.44593241810798645,
+              0.5683866143226624
+            ],
+            "probs": [
+              0.033558446913957596,
+              0.4536324441432953,
+              0.5127259492874146
+            ],
+            "unknown_logit": -8.158170700073242,
+            "unknown_prob": 8.317434549098834e-05,
+            "argmax_id": "2",
+            "ranking": [
+              "2",
+              "1",
+              "0"
+            ],
+            "k": 3
+          },
+          "forced_choice": "green",
+          "options_only_probs": [
+            0.03356123785493015,
+            0.45367017119836683,
+            0.512768590946703
+          ],
+          "permutation_max_abs_probability_error": 1.7881393432617188e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.47916750609874725,
+          "swapping_texts_probabilities_follow_text_max_error": 8.940696716308594e-08
+        },
+        {
+          "name": "color_red_en",
+          "state": "Pedro explicitly says: My favorite color is red.",
+          "question": "What is Pedro's favorite color?",
+          "labels": [
+            "red",
+            "yellow",
+            "green"
+          ],
+          "gold": "red",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              -2.046036958694458,
+              0.45416000485420227,
+              0.51764315366745
+            ],
+            "probs": [
+              0.038210801780223846,
+              0.465594619512558,
+              0.4961104094982147
+            ],
+            "unknown_logit": -8.163881301879883,
+            "unknown_prob": 8.418607467319816e-05,
+            "argmax_id": "2",
+            "ranking": [
+              "2",
+              "1",
+              "0"
+            ],
+            "k": 3
+          },
+          "forced_choice": "green",
+          "options_only_probs": [
+            0.038214018223910594,
+            0.46563381154216077,
+            0.49615217023392866
+          ],
+          "permutation_max_abs_probability_error": 1.1920928955078125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.4578996077179909,
+          "swapping_texts_probabilities_follow_text_max_error": 1.862645149230957e-08
+        },
+        {
+          "name": "color_green_es",
+          "state": "Pedro dice: Mi color favorito es el verde.",
+          "question": "¿Cuál es el color favorito de Pedro?",
+          "labels": [
+            "rojo",
+            "amarillo",
+            "verde"
+          ],
+          "gold": "verde",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              -1.2359943389892578,
+              1.0782190561294556,
+              -2.3119285106658936
+            ],
+            "probs": [
+              0.08726611733436584,
+              0.8828678727149963,
+              0.029755914583802223
+            ],
+            "unknown_logit": -7.911654949188232,
+            "unknown_prob": 0.00011006344720954075,
+            "argmax_id": "1",
+            "ranking": [
+              "1",
+              "0",
+              "2"
+            ],
+            "k": 3
+          },
+          "forced_choice": "amarillo",
+          "options_only_probs": [
+            0.08727572598743427,
+            0.882965083079721,
+            0.029759190932844706
+          ],
+          "permutation_max_abs_probability_error": 1.1920928955078125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.05751020275056362,
+          "swapping_texts_probabilities_follow_text_max_error": 5.587935447692871e-09
+        },
+        {
+          "name": "price",
+          "state": "Product A costs 20 euros. Product B costs 50 euros. Product A lasts 2 years. Product B lasts 5 years.",
+          "question": "Which product is cheaper?",
+          "labels": [
+            "Product A",
+            "Product B"
+          ],
+          "gold": "Product A",
+          "output": {
+            "option_ids": [
+              "0",
+              "1"
+            ],
+            "logits": [
+              -3.7246711254119873,
+              -5.311862468719482
+            ],
+            "probs": [
+              0.8237068057060242,
+              0.1684473603963852
+            ],
+            "unknown_logit": -8.378504753112793,
+            "unknown_prob": 0.007845822721719742,
+            "argmax_id": "0",
+            "ranking": [
+              "0",
+              "1"
+            ],
+            "k": 2
+          },
+          "forced_choice": "Product A",
+          "options_only_probs": [
+            0.8302205784630066,
+            0.16977942153699346
+          ],
+          "permutation_max_abs_probability_error": 1.1920928955078125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.6552595645189285,
+          "swapping_texts_probabilities_follow_text_max_error": 1.1920928955078125e-07
+        },
+        {
+          "name": "durability",
+          "state": "Product A costs 20 euros. Product B costs 50 euros. Product A lasts 2 years. Product B lasts 5 years.",
+          "question": "Which product lasts longer?",
+          "labels": [
+            "Product A",
+            "Product B"
+          ],
+          "gold": "Product B",
+          "output": {
+            "option_ids": [
+              "0",
+              "1"
+            ],
+            "logits": [
+              -8.327085494995117,
+              -9.924090385437012
+            ],
+            "probs": [
+              0.43715032935142517,
+              0.08852387219667435
+            ],
+            "unknown_logit": -8.245468139648438,
+            "unknown_prob": 0.47432583570480347,
+            "argmax_id": "unknown",
+            "ranking": [
+              "0",
+              "1"
+            ],
+            "k": 2
+          },
+          "forced_choice": "Product A",
+          "options_only_probs": [
+            0.8315993595729572,
+            0.16840064042704284
+          ],
+          "permutation_max_abs_probability_error": 4.76837158203125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.348626933991909,
+          "swapping_texts_probabilities_follow_text_max_error": 4.76837158203125e-07
+        }
+      ]
+    },
+    {
+      "checkpoint": "artifacts/checkpoints/decision/fullspace-sampled-d512-prior-ettin-68m-s20260922/stage-000062500",
+      "model_version": "jev-dec-ettin-68m-d512l2h8-s20260922-n62528-62ee2f57d7e6",
+      "cases": [
+        {
+          "name": "color_green_en",
+          "state": "Pedro explicitly says: My favorite color is green.",
+          "question": "What is Pedro's favorite color?",
+          "labels": [
+            "red",
+            "yellow",
+            "green"
+          ],
+          "gold": "green",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              -1.4024431705474854,
+              -1.374169945716858,
+              -0.8545701503753662
+            ],
+            "probs": [
+              0.2285185158252716,
+              0.23507167398929596,
+              0.39523884654045105
+            ],
+            "unknown_logit": -1.8840892314910889,
+            "unknown_prob": 0.14117088913917542,
+            "argmax_id": "2",
+            "ranking": [
+              "2",
+              "1",
+              "0"
+            ],
+            "k": 3
+          },
+          "forced_choice": "green",
+          "options_only_probs": [
+            0.26608149719196,
+            0.2737118379077756,
+            0.4602066649002644
+          ],
+          "permutation_max_abs_probability_error": 8.940696716308594e-08,
+          "swapping_texts_keep_ids_max_probability_change": 0.16672030091285706,
+          "swapping_texts_probabilities_follow_text_max_error": 4.470348358154297e-08
+        },
+        {
+          "name": "color_red_en",
+          "state": "Pedro explicitly says: My favorite color is red.",
+          "question": "What is Pedro's favorite color?",
+          "labels": [
+            "red",
+            "yellow",
+            "green"
+          ],
+          "gold": "red",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              -1.4245723485946655,
+              -1.3955280780792236,
+              -0.9185317754745483
+            ],
+            "probs": [
+              0.23174390196800232,
+              0.23857343196868896,
+              0.3843960762023926
+            ],
+            "unknown_logit": -1.8914965391159058,
+            "unknown_prob": 0.1452866494655609,
+            "argmax_id": "2",
+            "ranking": [
+              "2",
+              "1",
+              "0"
+            ],
+            "k": 3
+          },
+          "forced_choice": "green",
+          "options_only_probs": [
+            0.2711363823463254,
+            0.279126815068769,
+            0.44973680258490556
+          ],
+          "permutation_max_abs_probability_error": 8.940696716308594e-08,
+          "swapping_texts_keep_ids_max_probability_change": 0.15265214443206787,
+          "swapping_texts_probabilities_follow_text_max_error": 4.470348358154297e-08
+        },
+        {
+          "name": "color_green_es",
+          "state": "Pedro dice: Mi color favorito es el verde.",
+          "question": "¿Cuál es el color favorito de Pedro?",
+          "labels": [
+            "rojo",
+            "amarillo",
+            "verde"
+          ],
+          "gold": "verde",
+          "output": {
+            "option_ids": [
+              "0",
+              "1",
+              "2"
+            ],
+            "logits": [
+              1.969380497932434,
+              3.0482969284057617,
+              -0.18451307713985443
+            ],
+            "probs": [
+              0.24503692984580994,
+              0.7207738161087036,
+              0.028432000428438187
+            ],
+            "unknown_logit": -1.7815847396850586,
+            "unknown_prob": 0.0057571567595005035,
+            "argmax_id": "1",
+            "ranking": [
+              "1",
+              "0",
+              "2"
+            ],
+            "k": 3
+          },
+          "forced_choice": "amarillo",
+          "options_only_probs": [
+            0.24645583861411371,
+            0.7249475228568414,
+            0.02859663852904495
+          ],
+          "permutation_max_abs_probability_error": 1.1920928955078125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.2166049238294363,
+          "swapping_texts_probabilities_follow_text_max_error": 1.1920928955078125e-07
+        },
+        {
+          "name": "price",
+          "state": "Product A costs 20 euros. Product B costs 50 euros. Product A lasts 2 years. Product B lasts 5 years.",
+          "question": "Which product is cheaper?",
+          "labels": [
+            "Product A",
+            "Product B"
+          ],
+          "gold": "Product A",
+          "output": {
+            "option_ids": [
+              "0",
+              "1"
+            ],
+            "logits": [
+              -0.6949453353881836,
+              -1.5284407138824463
+            ],
+            "probs": [
+              0.5636197328567505,
+              0.2449084371328354
+            ],
+            "unknown_logit": -1.774584412574768,
+            "unknown_prob": 0.19147183001041412,
+            "argmax_id": "0",
+            "ranking": [
+              "0",
+              "1"
+            ],
+            "k": 2
+          },
+          "forced_choice": "Product A",
+          "options_only_probs": [
+            0.6970935012245895,
+            0.3029064987754105
+          ],
+          "permutation_max_abs_probability_error": 1.1920928955078125e-07,
+          "swapping_texts_keep_ids_max_probability_change": 0.31871122121810913,
+          "swapping_texts_probabilities_follow_text_max_error": 1.1920928955078125e-07
+        },
+        {
+          "name": "durability",
+          "state": "Product A costs 20 euros. Product B costs 50 euros. Product A lasts 2 years. Product B lasts 5 years.",
+          "question": "Which product lasts longer?",
+          "labels": [
+            "Product A",
+            "Product B"
+          ],
+          "gold": "Product B",
+          "output": {
+            "option_ids": [
+              "0",
+              "1"
+            ],
+            "logits": [
+              -0.7451586127281189,
+              -1.5804195404052734
+            ],
+            "probs": [
+              0.5657568573951721,
+              0.24540342390537262
+            ],
+            "unknown_logit": -1.8424245119094849,
+            "unknown_prob": 0.18883968889713287,
+            "argmax_id": "0",
+            "ranking": [
+              "0",
+              "1"
+            ],
+            "k": 2
+          },
+          "forced_choice": "Product A",
+          "options_only_probs": [
+            0.6974661733783195,
+            0.30253382662168055
+          ],
+          "permutation_max_abs_probability_error": 0.0,
+          "swapping_texts_keep_ids_max_probability_change": 0.3203534334897995,
+          "swapping_texts_probabilities_follow_text_max_error": 0.0
+        }
+      ]
+    }
+  ]
+}

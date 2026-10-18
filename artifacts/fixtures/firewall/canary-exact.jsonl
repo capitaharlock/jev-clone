@@ -1,0 +1,8 @@
+{"text": "MMLU-Pro sample 0041: Which chemical element has atomic number 6? Answer: Carbon, which forms the backbone of all known organic compounds."}
+{"text": "GPQA sample 0117: What is the major product of the Diels-Alder cycloaddition between butadiene and maleic anhydride? Answer: cis-5-norbornene-endo-2,3-dicarboxylic anhydride."}
+{"text": "ARC-Challenge sample 0233: Which biological process describes water moving from the roots to the leaves of a tall tree? Answer: transpiration pull through the xylem vessels."}
+{"text": "MuSR sample 0089: Alice trades three red apples to Bob for two green pears, then Bob gives one pear to Carol. Who ends the day with exactly two green pears? Answer: Bob keeps one pear and receives nothing further."}
+{"text": "RewardBench2 sample 0152: Prompt: explain photosynthesis simply. Chosen response: Plants convert sunlight, water and carbon dioxide into glucose and oxygen. Rejected response: Photosynthesis is when plants eat soil."}
+{"text": "SimpleQA sample 0064: In which year did the first human set foot on the Moon during the Apollo 11 mission? Answer: 1969, on July 20."}
+{"text": "OpenBookQA sample 0310: Which force pulls objects toward the center of the Earth? Answer: gravity, which accelerates falling objects at about 9.8 meters per second squared."}
+{"text": "CLINC150-OOS holdout probe: I want to transfer money between my savings and checking accounts before Friday. Intent: transfer, domain: banking, holdout only."}

@@ -1,0 +1,4 @@
+{"task": "x", "task_type": "generation", "input": "Write a story", "target": "once upon", "split": "train"}
+{"task": "x", "task_type": "dialogue", "input": "Chat history", "target": "hi", "split": "train"}
+{"task": "x", "task_type": "multiple-choice", "input": "Think step by step and explain your reasoning", "target": "a", "choices": ["a", "b"], "split": "train"}
+{"task": "x", "task_type": "summarization", "input": "Long article", "target": "short", "split": "train"}

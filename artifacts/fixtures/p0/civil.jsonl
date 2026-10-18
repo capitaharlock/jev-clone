@@ -1,0 +1,6 @@
+{"text": "You are an idiot, shut up", "toxic": true, "slice": "gender", "split": "train"}
+{"text": "Thanks for the helpful explanation!", "toxic": false, "slice": "none", "split": "train"}
+{"text": "Eres un desastre total", "toxic": true, "slice": "race", "split": "calibration"}
+{"text": "Great article, learned a lot.", "toxic": false, "slice": "none", "split": "test"}
+{"text": "Whatever, moving on", "toxic": false, "slice": "religion", "split": "train"}
+{"text": "Ambiguous remark here", "toxic": null, "slice": "none", "split": "train"}

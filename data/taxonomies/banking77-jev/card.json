@@ -1,0 +1,38 @@
+{
+  "id": "banking77-jev-descriptions",
+  "what": "Natural-language definitions of the 77 BANKING77 intents, one per label, as the Jev (teacher) experiment published them. This is the option-text material of arm B and arm C of #T-option-text: without it the arm is not reproducible, and a definition somebody invented in a turn is not a source.",
+  "source_original": "https://github.com/simonmesmith/jev-banking77-experiment",
+  "mirror": "https://raw.githubusercontent.com/simonmesmith/jev-banking77-experiment/5cac4ff7783a4cfc0badba4124a309dd2a2b9862/configs/descriptions.json",
+  "revision": "5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+  "sha256": "ea930901fa349f167ad392e432b68f34b15fef97cca3fbd9944a4119131aa3ed",
+  "bytes": 7727,
+  "labels": 77,
+  "fetched_utc": "2026-09-24",
+  "transform": "none — the upstream file is stored byte for byte; `data/taxonomy.py` verifies the sha256 before returning it and never rewrites it",
+  "usage": "eval-only",
+  "usage_why": "these definitions come from the experiment we are comparing ourselves against, so putting them into a training mixture would be training on the reference protocol. Arm B and arm C are forward-only reads of an existing checkpoint (#T-option-text); no gradient ever sees this file.",
+  "license": "CC-BY-4.0",
+  "license_evidence": {
+    "file": "sources/DATA_LICENSE in the same repository and revision",
+    "text": "Creative Commons Attribution 4.0 International",
+    "covers": "the BANKING77 source data vendored in that repository, which these definitions were written from (its PROTOCOL.md: 'Official PolyAI dataset, pinned commit and file hashes in sources/data_manifest.json; CC-BY-4.0' and 'The 10,003 training messages are the only source of taxonomy definitions and examples')"
+  },
+  "license_caveat": "the repository has NO root LICENSE file: the CC-BY-4.0 above is the licence its authors declared for the data the definitions derive from, not an explicit licence grant on `configs/descriptions.json` itself. It is redistributed here, unmodified and attributed, as a citation of a published experimental configuration, pinned to the commit above. If the author declares a different licence, this file has to be revisited — that is why the caveat is in the card and not only in a commit message.",
+  "attribution": "Simon Mesmith, 'Experiment 003: Jev on BANKING77' (jev-banking77-experiment), configs/descriptions.json, commit 5cac4ff7783a4cfc0badba4124a309dd2a2b9862",
+  "upstream_protocol": {
+    "file": "PROTOCOL.md of the same revision",
+    "says": "all 77 official options in a single Choice question; preserve the original labels; natural-language definitions based only on training data; the selected variant was `retrieved24` — the same definitions plus up to 24 BM25-retrieved training examples, at most four per class",
+    "why_it_matters": "R8 — the definitions are only half of the teacher's input protocol; the retrieved examples are the other half, and they are what arm C prices against a 256-token window"
+  },
+  "examples_source": {
+    "what": "the labelled examples arm C retrieves are NOT in this file: they are BANKING77 train rows",
+    "dataset": "banking77",
+    "path": "artifacts/data-prefetch/banking77.jsonl",
+    "split": "train",
+    "license": "CC-BY-4.0",
+    "source_original": "https://github.com/PolyAI-LDN/task-specific-datasets, mirror https://huggingface.co/datasets/PolyAI/banking77",
+    "register": ".meshkore/docs/source-register.md",
+    "support_pool": "every train row whose sample id is NOT in the sealed dev cut (artifacts/splits/T-eval-cardinality-banking77-dev/manifest.json), minus any row whose normalised text equals the query's — the teacher excludes normalised-text duplicates of a held-out message from its retrieval support too",
+    "retrieval": "BM25 over word unigrams and adjacent word pairs, k1=1.5, b=0.75 — the algorithm PROTOCOL.md declares; deterministic, no seed, reimplemented in `eval/optiontext.py` (the teacher's own implementation is not vendored)"
+  }
+}
