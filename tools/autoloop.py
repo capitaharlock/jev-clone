@@ -108,6 +108,7 @@ DEFAULT_STRATEGY = {
     "shares": dict(SHARES),
     "rule_weak_weight": 2,
     "families": [],
+    "mix_size": MIX_SIZE,
 }
 _TERM = {"flag": False}
 _SOURCE_MTIME = Path(__file__).stat().st_mtime
@@ -212,7 +213,9 @@ def load_strategy(raw: dict | None = None) -> dict:
     out = json.loads(json.dumps(DEFAULT_STRATEGY))
     out["arm"] = str(raw.get("arm") or "base")[:40]
     try:
-        out["steps"] = min(600, max(50, int(raw.get("steps", out["steps"]))))
+        out["steps"] = min(1500, max(50, int(raw.get("steps", out["steps"]))))
+        out["mix_size"] = min(80000, max(4000, int(
+            raw.get("mix_size", out["mix_size"]))))
         out["lr"] = min(1e-4, max(2e-6, float(raw.get("lr", out["lr"]))))
         out["warmup"] = min(out["steps"] // 2,
                             max(0, int(raw.get("warmup", out["warmup"]))))
@@ -374,18 +377,19 @@ def build_mix(cycle: int, weak: list[str], out: Path,
               strategy: dict | None = None) -> dict:
     strategy = strategy or DEFAULT_STRATEGY
     shares = strategy["shares"]
+    size = int(strategy.get("mix_size") or MIX_SIZE)
     rng = random.Random(1_000_003 * cycle + 17)
     qwen = qwen_pool()
-    qwen_target = int(MIX_SIZE * shares["qwen"])
+    qwen_target = int(size * shares["qwen"])
     repeat = (min(QWEN_REPEAT_MAX, max(1, math.ceil(qwen_target / len(qwen))))
               if qwen else 0)
     qwen_rows = [ep for _ in range(repeat) for ep in qwen][:qwen_target]
     short = qwen_target - len(qwen_rows)
-    public_n = int(MIX_SIZE * shares["public"]) + short // 2
+    public_n = int(size * shares["public"]) + short // 2
     public_rows = public_sample(public_n, rng)
-    curriculum_n = int(MIX_SIZE * shares["curriculum"]) + short - short // 2
+    curriculum_n = int(size * shares["curriculum"]) + short - short // 2
     curriculum_rows = curriculum_sample(curriculum_n, rng)
-    rule_n = (MIX_SIZE - len(qwen_rows) - len(public_rows)
+    rule_n = (size - len(qwen_rows) - len(public_rows)
               - len(curriculum_rows))
     rule_rows = rule_sample(rule_n, weak, rng, strategy["rule_weak_weight"])
     focus = set(strategy.get("families") or [])

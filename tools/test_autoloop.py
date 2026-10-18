@@ -139,11 +139,13 @@ class StrategyTest(unittest.TestCase):
 
     def test_out_of_range_values_are_clamped(self):
         got = AL.load_strategy({"arm": "x", "steps": 5000, "lr": 1.0,
-                                "warmup": 900, "rule_weak_weight": 50})
-        self.assertEqual(got["steps"], 600)
+                                "warmup": 900, "rule_weak_weight": 50,
+                                "mix_size": 10**6})
+        self.assertEqual(got["steps"], 1500)
         self.assertEqual(got["lr"], 1e-4)
-        self.assertEqual(got["warmup"], 300)
+        self.assertEqual(got["warmup"], 750)
         self.assertEqual(got["rule_weak_weight"], 8)
+        self.assertEqual(got["mix_size"], 80000)
 
     def test_shares_are_normalised_and_unknown_families_dropped(self):
         got = AL.load_strategy({

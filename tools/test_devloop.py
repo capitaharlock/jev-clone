@@ -45,16 +45,28 @@ class ChooseArmTest(unittest.TestCase):
         results["longer"] = [-0.001]
         self.assertEqual(DL.choose_arm(results)[0], "longer")
 
-    def test_large_steps_stay_retired_once_all_lose(self):
-        results = {name: [-0.01] for name in DL.ARMS if name != "nudge"}
-        results["nudge"] = []
+    def test_an_arm_that_never_promotes_is_retired(self):
+        results = {name: [-0.01] for name in DL.ARMS}
+        results["nudge"] = [-0.001] * DL.RETIRE_AFTER
+        self.assertNotEqual(DL.choose_arm(results)[0], "nudge")
+
+    def test_one_win_keeps_an_arm_alive(self):
+        results = {name: [-0.01] * DL.RETIRE_AFTER for name in DL.ARMS}
+        results["base"] = [-0.02] * DL.RETIRE_AFTER + [0.009]
+        self.assertEqual(DL.choose_arm(results)[0], "base")
+
+    def test_new_arms_run_before_retirement_matters(self):
+        results = {name: [-0.01] * DL.RETIRE_AFTER for name in DL.ARMS}
+        results["long-continue"] = []
         arm, why = DL.choose_arm(results)
-        self.assertEqual(arm, "nudge")
-        self.assertIn("lost ground", why)
-        results["nudge"] = [-0.002]
-        results["longer"] = [-0.0001]
+        self.assertEqual(arm, "long-continue")
+        self.assertIn("not measured", why)
+
+    def test_all_retired_falls_back_to_best_single_gain(self):
+        results = {name: [-0.01] * DL.RETIRE_AFTER for name in DL.ARMS}
+        results["longer"] = [-0.02] * DL.RETIRE_AFTER + [-0.0008]
         arm, why = DL.choose_arm(results)
-        self.assertEqual(arm, "nudge")
+        self.assertEqual(arm, "longer")
         self.assertIn("retired", why)
 
 
@@ -74,7 +86,8 @@ class ArmSpecTest(unittest.TestCase):
             spec = DL.arm_strategy(name)
             loaded = AL.load_strategy(spec)
             self.assertEqual(loaded["arm"], name)
-            for key in ("steps", "lr", "warmup", "rule_weak_weight"):
+            for key in ("steps", "lr", "warmup", "rule_weak_weight",
+                        "mix_size"):
                 self.assertEqual(loaded[key], spec[key], (name, key))
 
 

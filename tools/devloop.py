@@ -46,6 +46,7 @@ DISK_MIN_GB = 40
 REPORT_HOUR = 18
 PLATEAU_CYCLES = 8
 UCB_C = 0.01
+RETIRE_AFTER = 8
 LABELS = {
     "autoloop": "com.jevclone.autoloop",
     "ollama": "com.asimovia.ollama-qwen",
@@ -56,7 +57,7 @@ LABELS = {
 BASE = {"steps": 200, "lr": 2e-5, "warmup": 100,
         "shares": {"qwen": 0.35, "public": 0.20,
                    "curriculum": 0.25, "rule": 0.20},
-        "rule_weak_weight": 2, "families": []}
+        "rule_weak_weight": 2, "families": [], "mix_size": 12000}
 ARMS = {
     "base": {"why": "recipe of cycles 1 to 9"},
     "short-warmup": {"warmup": 20,
@@ -80,6 +81,15 @@ ARMS = {
               "why": "the large-step recipes all lost ground, so the update "
                      "stays on the families that still miss and takes a "
                      "much smaller step"},
+    "long-continue": {"steps": 1200, "lr": 1e-5, "warmup": 60,
+                      "mix_size": 60000,
+                      "why": "every short run from the champion lands inside "
+                             "its noise; 1200 steps over a mix five times "
+                             "larger is about one pass, not eight over the "
+                             "same rows"},
+    "long-low": {"steps": 1200, "lr": 5e-6, "warmup": 60, "mix_size": 60000,
+                 "why": "same long pass at half the rate, for the case where "
+                        "1e-5 still erases families the champion solves"},
 }
 
 
@@ -139,35 +149,32 @@ def arm_results(history: list[dict]) -> dict[str, list[float]]:
     return results
 
 
-def large_steps_retired(results: dict[str, list[float]]) -> bool:
-    """True once every recipe except the short step has been measured and
-    every one of them moved the battery down."""
-    settled = [name for name in ARMS
-               if name != "nudge" and results.get(name)]
-    if len(settled) < len(ARMS) - (1 if "nudge" in ARMS else 0):
-        return False
-    return all(sum(results[name]) / len(results[name]) < 0 for name in settled)
+def retired(gains: list[float]) -> bool:
+    """An arm that never beat its champion in RETIRE_AFTER tries is out.
+
+    Ranking on mean gain alone favours an arm that barely moves the weights:
+    a near no-op loses little on average and never promotes either.
+    """
+    return len(gains) >= RETIRE_AFTER and max(gains) < 0
 
 
 def choose_arm(results: dict[str, list[float]]) -> tuple[str, str]:
-    if large_steps_retired(results):
-        gains = results.get("nudge") or []
-        if not gains:
-            return "nudge", "every measured recipe lost ground"
-        mean = sum(gains) / len(gains)
-        return "nudge", (f"large-step recipes stay retired; mean gain "
-                         f"{mean:+.4f} over {len(gains)} cycle(s)")
     untried = [name for name in ARMS if not results.get(name)]
     if untried:
         return untried[0], "not measured yet"
-    total = sum(len(v) for v in results.values())
+    live = [name for name in ARMS if not retired(results[name])]
+    if not live:
+        best = max(ARMS, key=lambda name: max(results[name]))
+        return best, (f"every arm retired; best single gain "
+                      f"{max(results[best]):+.4f}")
+    total = sum(len(results[name]) for name in live)
 
     def bound(name: str) -> float:
         gains = results[name]
         return (sum(gains) / len(gains)
                 + UCB_C * math.sqrt(math.log(total) / len(gains)))
 
-    best = max(ARMS, key=bound)
+    best = max(live, key=bound)
     gains = results[best]
     return best, (f"best upper bound {bound(best):+.4f} over "
                   f"{len(gains)} cycle(s), mean gain "
