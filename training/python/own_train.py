@@ -117,6 +117,7 @@ def train(args: argparse.Namespace) -> dict:
         "holdout_rows": len(holdout),
         "first_loss": first_loss,
         "last_loss": float(loss.detach()),
+        "train_accuracy": accuracy(model, train_rows, args.max_length, device),
         "holdout_accuracy": accuracy(model, holdout, args.max_length, device),
         "device": str(device),
         "seed": args.seed,
@@ -124,6 +125,12 @@ def train(args: argparse.Namespace) -> dict:
         "sources": [{"path": str(path), "sha256": digest(path)}
                     for path in args.episodes],
     }
+    result["checks"] = {
+        "loss_decreased": result["last_loss"] < result["first_loss"],
+        "train_memorized": result["train_accuracy"] >= 0.95,
+        "random_initialization": not result["external_checkpoint"],
+    }
+    result["pass"] = all(result["checks"].values())
     args.out.mkdir(parents=True, exist_ok=True)
     tensors = {name: value.detach().cpu().contiguous()
                for name, value in model.state_dict().items()}
@@ -132,6 +139,10 @@ def train(args: argparse.Namespace) -> dict:
         json.dumps(asdict(config), indent=2, sort_keys=True) + "\n")
     (args.out / "train.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n")
+    if args.gate:
+        args.gate.parent.mkdir(parents=True, exist_ok=True)
+        args.gate.write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n")
     return result
 
 
@@ -139,6 +150,7 @@ def parser() -> argparse.ArgumentParser:
     cli = argparse.ArgumentParser()
     cli.add_argument("--episodes", type=Path, nargs="+", required=True)
     cli.add_argument("--out", type=Path, required=True)
+    cli.add_argument("--gate", type=Path)
     cli.add_argument("--steps", type=int, default=1000)
     cli.add_argument("--limit", type=int, default=0)
     cli.add_argument("--seed", type=int, default=1789)

@@ -56,6 +56,8 @@ alquilada después de medir el cuello con esta fase.
 - `training/python/own_train.py`: lectura de `episode-v1`, entrenamiento desde
   cero, holdout, hashes y exportación safetensors.
 - Smoke de 42.498 parámetros y 20 pasos: pérdida 1,3871 a 1,3552; holdout
-  2/4. Solo prueba que la ruta completa ejecuta y guarda pesos.
-- Siete tests pasan. El siguiente gate es memorizar un corte pequeño con la
-  configuración de 16,8 M antes de usar el dataset de entrenamiento.
+  2/4. Prueba que la ruta completa ejecuta y guarda pesos.
+- Gate de capacidad con 16.394.498 parámetros, 29 filas y 500 pasos: pérdida
+  1,0984 a 0; precisión de entrenamiento 0,9655; holdout 2/3. PASS.
+- Siete tests pasan. El siguiente gate amplía datos y mide etiquetas no
+  vistas; el holdout de tres filas de esta prueba no mide generalización.
