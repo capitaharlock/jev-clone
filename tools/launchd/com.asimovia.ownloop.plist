@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.asimovia.ownloop</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/rjuncadell001/Prj/asimovia/jev.clone/.venv-train/bin/python</string>
+    <string>-u</string>
+    <string>tools/own_loop.py</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/rjuncadell001/Prj/asimovia/decision-model</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONPATH</key>
+    <string>/Users/rjuncadell001/Prj/asimovia/decision-model</string>
+    <key>PYTHONUNBUFFERED</key>
+    <string>1</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>Nice</key>
+  <integer>1</integer>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>StandardOutPath</key>
+  <string>/Users/rjuncadell001/Prj/asimovia/decision-model/artifacts/own-loop/service.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/rjuncadell001/Prj/asimovia/decision-model/artifacts/own-loop/service.log</string>
+</dict>
+</plist>

@@ -65,3 +65,7 @@ alquilada después de medir el cuello con esta fase.
   Evaluación 308 filas cuyos textos no aparecen en el entrenamiento:
   130/308 = 0,4221, azar 0,3013, cota inferior de Wilson 0,3682. Corte limpio.
   PASS. Es un lote sintético de reglas, no el benchmark v3.
+- `tools/own_loop.py` encadena ciclos desde el mejor checkpoint propio. Cada
+  ciclo toma el siguiente lote local, mide textos no vistos y solo sustituye
+  el campeón si el margen sobre el azar crece. `com.asimovia.ownloop` lo
+  mantiene vivo. El autoloop de TinyJev sigue parado.

@@ -12,7 +12,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import torch
-from safetensors.torch import save_file
+from safetensors.torch import load_file, save_file
 
 from model.own_backbone import OwnDecisionModel, OwnModelConfig
 
@@ -171,6 +171,16 @@ def batch_tensors(model: OwnDecisionModel, rows: list[dict], max_length: int,
     return inputs, torch.tensor(golds, device=device)
 
 
+def load_config(path: Path) -> OwnModelConfig:
+    return OwnModelConfig(**json.loads(path.read_text(encoding="utf-8")))
+
+
+def load_weights(model: OwnDecisionModel, path: Path) -> None:
+    missing, unexpected = model.load_state_dict(load_file(path), strict=True)
+    if missing or unexpected:
+        raise RuntimeError(f"checkpoint mismatch: {missing} {unexpected}")
+
+
 def digest(path: Path) -> str:
     value = hashlib.sha256()
     with path.open("rb") as handle:
@@ -194,17 +204,22 @@ def train(args: argparse.Namespace) -> dict:
         rng.shuffle(rows)
         split = max(1, min(len(rows) - 1, round(len(rows) * 0.9)))
         train_rows, holdout = rows[:split], rows[split:]
-    config = OwnModelConfig(
-        max_length=args.max_length,
-        d_model=args.d_model,
-        n_heads=args.heads,
-        n_layers=args.layers,
-        d_ff=args.d_ff,
-        pointer_layers=args.pointer_layers,
-        dropout=args.dropout,
-    )
+    if args.init:
+        config = load_config(args.init.parent / "config.json")
+    else:
+        config = OwnModelConfig(
+            max_length=args.max_length,
+            d_model=args.d_model,
+            n_heads=args.heads,
+            n_layers=args.layers,
+            d_ff=args.d_ff,
+            pointer_layers=args.pointer_layers,
+            dropout=args.dropout,
+        )
     device = torch.device(args.device)
     model = OwnDecisionModel(config).to(device)
+    if args.init:
+        load_weights(model, args.init)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr,
                                   weight_decay=args.weight_decay)
     first_loss = None
@@ -228,6 +243,8 @@ def train(args: argparse.Namespace) -> dict:
                   flush=True)
     result = {
         **model.lineage(),
+        "initialization": "continued" if args.init else "random",
+        "continued_from": str(args.init) if args.init else None,
         "task": "T-own-backbone",
         "steps": args.steps,
         "train_rows": len(train_rows),
@@ -252,8 +269,10 @@ def train(args: argparse.Namespace) -> dict:
     leaks = leaked_texts(train_rows, holdout) if args.unseen_fraction else []
     result["checks"] = {
         "loss_decreased": result["last_loss"] < result["first_loss"],
-        "random_initialization": not result["external_checkpoint"],
+        "own_weights": not result["external_checkpoint"],
     }
+    if result["initialization"] == "random":
+        result["checks"]["random_initialization"] = True
     if args.unseen_fraction:
         result["checks"].update({
             "holdout_clean": not leaks,
@@ -282,6 +301,7 @@ def parser() -> argparse.ArgumentParser:
     cli = argparse.ArgumentParser()
     cli.add_argument("--episodes", type=Path, nargs="+", required=True)
     cli.add_argument("--out", type=Path, required=True)
+    cli.add_argument("--init", type=Path)
     cli.add_argument("--gate", type=Path)
     cli.add_argument("--steps", type=int, default=1000)
     cli.add_argument("--batch-size", type=int, default=8)

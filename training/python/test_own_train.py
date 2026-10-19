@@ -6,8 +6,11 @@ from pathlib import Path
 import torch
 
 from model.own_backbone import OwnDecisionModel, OwnModelConfig
+from safetensors.torch import save_file
+
 from training.python.own_train import (
-    batch_tensors, leaked_texts, read_episodes, row_tensors, split_unseen)
+    batch_tensors, leaked_texts, load_weights, read_episodes, row_tensors,
+    split_unseen)
 
 
 def episode(answer: str = "a") -> dict:
@@ -87,6 +90,21 @@ class UnseenSplitTest(unittest.TestCase):
         inputs, gold = batch_tensors(model, rows, 32, torch.device("cpu"))
         self.assertEqual(tuple(model(*inputs).shape), (2, 3))
         self.assertEqual(gold.tolist(), [0, 1])
+
+    def test_saved_weights_reload_into_a_new_model(self):
+        source = OwnDecisionModel(OwnModelConfig(
+            max_length=32, d_model=32, n_heads=4, n_layers=1, d_ff=64,
+            pointer_layers=1, dropout=0.0))
+        target = OwnDecisionModel(OwnModelConfig(
+            max_length=32, d_model=32, n_heads=4, n_layers=1, d_ff=64,
+            pointer_layers=1, dropout=0.0))
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "model.safetensors"
+            save_file({name: value.detach()
+                       for name, value in source.state_dict().items()}, path)
+            load_weights(target, path)
+        for left, right in zip(source.parameters(), target.parameters()):
+            torch.testing.assert_close(left, right)
 
 
 if __name__ == "__main__":
