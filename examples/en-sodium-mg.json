@@ -1,0 +1,27 @@
+{
+  "note": "extreme, sodium_mg; 4 products; en",
+  "source": "Open Food Facts (ODbL-1.0), benchmark row v3-prod-6919f75f135cb4f6",
+  "request": {
+    "state": "Comparing rice dishes on the shelf. Nutrition values are per 100 g as printed on each pack.",
+    "question": "Which product gives the most salt?",
+    "candidates": [
+      {
+        "id": "c0",
+        "text": "Morrisons · Paella Seasoning. energy 281 kcal, fat 4.2 g, of which saturates 0.5 g, sugars 9.6 g, fibre 21.5 g, protein 12.6 g, sodium 3924 mg."
+      },
+      {
+        "id": "c1",
+        "text": "Tesco · Eggy style tofu rice. energy 145 kcal, fat 1.2 g, of which saturates 0.2 g, sugars 0.8 g, fibre 2.7 g, protein 4 g, salt 0.5 g."
+      },
+      {
+        "id": "c2",
+        "text": "Specially Selected · Vegan Red Thai Curry. energy 97 kcal, fat 3.5 g, of which saturates 1.2 g, sugars 2.3 g, fibre 1.2 g, protein 2.5 g, sodium 128 mg."
+      },
+      {
+        "id": "c3",
+        "text": "M&S Food · Stir Fry Spring Onion Rice (275g). energy 148 kcal, fat 2.3 g, of which saturates 0.3 g, sugars 0.2 g, fibre 1.7 g, protein 2.4 g, salt 0.8 g."
+      }
+    ]
+  },
+  "expected": "c0"
+}

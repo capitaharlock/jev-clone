@@ -1,0 +1,70 @@
+{
+  "accuracy": 0.9686666666666667,
+  "batched_decisions_per_s": 39.5901908707216,
+  "benchmark": "product_specs.dev.jsonl",
+  "by": {
+    "difficulty:constrained": {
+      "accuracy": 0.9130952380952381,
+      "rows": 840
+    },
+    "difficulty:extreme": {
+      "accuracy": 0.9902777777777778,
+      "rows": 2160
+    },
+    "lang:en": {
+      "accuracy": 0.9736842105263158,
+      "rows": 1938
+    },
+    "lang:es": {
+      "accuracy": 0.9595103578154426,
+      "rows": 1062
+    },
+    "options:3": {
+      "accuracy": 0.9852579852579852,
+      "rows": 814
+    },
+    "options:4": {
+      "accuracy": 0.9714475431606906,
+      "rows": 1506
+    },
+    "options:5": {
+      "accuracy": 0.9426470588235294,
+      "rows": 680
+    },
+    "units:salt_g": {
+      "accuracy": 0.9735507246376811,
+      "rows": 2760
+    },
+    "units:sodium_mg": {
+      "accuracy": 0.9125,
+      "rows": 240
+    }
+  },
+  "chance": 0.2612777777777778,
+  "decidable_accuracy": 0.9697478991596639,
+  "decidable_rows": 2975,
+  "hits": 2906,
+  "host": {
+    "machine": "arm64",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6"
+  },
+  "latency_ms": {
+    "mean": 22.777627268107608,
+    "p50": 21.81429136544466,
+    "p95": 28.62595790065825
+  },
+  "measured_utc": "2026-11-16T20:20:33Z",
+  "rows": 3000,
+  "subset": null,
+  "system": {
+    "checkpoint": "asimovia-decision-v1",
+    "device": "mps",
+    "kind": "own",
+    "name": "asimovia-decision-v1",
+    "parameters": 16959746,
+    "torch": "2.14.0"
+  },
+  "unparsed": 0,
+  "wilson_lower": 0.9618083773796193
+}

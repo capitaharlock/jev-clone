@@ -1,0 +1,23 @@
+{
+  "note": "constrained; 3 products; es",
+  "source": "Open Food Facts (ODbL-1.0), benchmark row v3-prod-70fe49dc9bdf74ed",
+  "request": {
+    "state": "Comparando artichoke hearts en el lineal. Los valores nutricionales son por 100 g, tal como figuran en cada envase.",
+    "question": "El contenido de grasa saturada no puede pasar de 0 g por 100 g. Dentro de ese límite, ¿qué producto tiene más fibra?",
+    "candidates": [
+      {
+        "id": "c0",
+        "text": "Carrefour · Coeurs d'artichauts. energía 61 kcal, grasas 3.3 g, de las cuales saturadas 0.4 g, azúcares 1.9 g, fibra 5.3 g, proteínas 2.6 g, sal 1 g."
+      },
+      {
+        "id": "c1",
+        "text": "Cynara · Corazones de ALCACHOFA (175 g). energía 32 kcal, grasas 0 g, de las cuales saturadas 0 g, azúcares 1 g, fibra 2 g, proteínas 2 g, sal 0.7 g."
+      },
+      {
+        "id": "c2",
+        "text": "Vega del Ebro · CORAZONES DE ALCACHOFA. energía 21 kcal, grasas 0 g, de las cuales saturadas 0 g, azúcares 0 g, fibra 4 g, proteínas 1.5 g, sal 1.1 g."
+      }
+    ]
+  },
+  "expected": "c2"
+}

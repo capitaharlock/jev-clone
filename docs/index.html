@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>asimovia-decision-v1 · how it works</title>
+<style>
+  :root {
+    --ink: #2f3747; --muted: #6b7486; --line: #dfe3ec; --paper: #f7f6f2;
+    --blue: #dbe7fb; --blue-edge: #a9c1ee; --mint: #d6f0e3; --mint-edge: #9fd4b9;
+    --peach: #fde2d1; --peach-edge: #f2b897; --lilac: #e7e0f8; --lilac-edge: #bfaeea;
+    --butter: #fbf0c4; --butter-edge: #e8d27c; --rose: #f9dbe4; --rose-edge: #ebaabd;
+    --sky: #d7eff6; --sky-edge: #98cfe0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: var(--paper);
+         font: 16px/1.6 -apple-system, "Segoe UI", Inter, sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 32px 80px; }
+  h1 { font-size: 34px; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-size: 22px; margin: 56px 0 6px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 820px; margin: 8px 0 0; }
+  p { max-width: 860px; }
+  .board { background-color: #fff; border: 1px solid var(--line); border-radius: 18px;
+           margin-top: 18px; padding: 10px; overflow-x: auto;
+           background-image: radial-gradient(#e6e8ef 1px, transparent 1px);
+           background-size: 20px 20px; box-shadow: 0 2px 10px rgba(47,55,71,.05); }
+  svg { display: block; min-width: 1080px; width: 100%; height: auto; }
+  svg text { font-family: -apple-system, "Segoe UI", Inter, sans-serif; fill: var(--ink); }
+  .t { font-size: 15px; font-weight: 650; }
+  .s { font-size: 12.5px; fill: #555f73; }
+  .k { font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: #7a8396; }
+  .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+           gap: 14px; margin-top: 18px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .card b { display: block; font-size: 14px; margin-bottom: 4px; }
+  .card span { color: var(--muted); font-size: 14px; }
+  .num { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  table { border-collapse: collapse; width: 100%; margin-top: 16px; background: #fff;
+          border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 14.5px; }
+  th, td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { background: #f2f4f8; font-weight: 650; }
+  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  code { background: #eef1f6; padding: 1px 6px; border-radius: 6px; font-size: 14px; }
+  .note { color: var(--muted); font-size: 14px; }
+  a { color: #3b5b9a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>asimovia-decision-v1</h1>
+<p class="lead">A 17-million-parameter decision model trained from random weights. It reads a
+situation, a question and a set of options as raw UTF-8 bytes and returns one probability per
+option. This page shows how a decision flows through the network, where the training data comes
+from, and the curriculum loop that trained it.</p>
+
+<div class="cards">
+  <div class="card"><b>Parameters</b><span class="num">16.96 M</span><br><span>byte encoder plus pointer head</span></div>
+  <div class="card"><b>Initialization</b><span class="num">random</span><br><span>no pretrained checkpoint, no fitted tokenizer</span></div>
+  <div class="card"><b>Task</b><span class="num">nutrition</span><br><span>compare 3 to 5 real product cards, English and Spanish</span></div>
+  <div class="card"><b>Compute</b><span class="num">1 laptop</span><br><span>Apple M-series GPU (Metal), no cluster</span></div>
+</div>
+
+<!-- ============================================================ 1 -->
+<h2>1 · One decision, end to end</h2>
+<p>The whole decision is one sequence. The encoder reads the state, the question and every option
+together, so each option is encoded in the context of the others. The pointer head then scores
+each option span; its output size is the number of options in the request, not a fixed label set.</p>
+<div class="board">
+<svg viewBox="0 0 1160 560" role="img" aria-label="Inference flow">
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b93a7"/></marker>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2f3747" flood-opacity=".10"/></filter>
+  </defs>
+  <g fill="none" stroke="#8b93a7" stroke-width="1.8" marker-end="url(#a1)">
+    <path d="M232 122 H286"/><path d="M500 122 H554"/><path d="M768 122 H822"/>
+    <path d="M930 186 V246"/>
+    <path d="M822 312 H768"/><path d="M554 312 H500"/><path d="M286 312 H232"/>
+    <path d="M126 376 V436"/>
+  </g>
+  <!-- row 1 -->
+  <g filter="url(#sh)">
+    <rect x="20" y="58" width="212" height="128" rx="14" fill="var(--butter)" stroke="var(--butter-edge)"/>
+    <rect x="288" y="58" width="212" height="128" rx="14" fill="var(--blue)" stroke="var(--blue-edge)"/>
+    <rect x="556" y="58" width="212" height="128" rx="14" fill="var(--sky)" stroke="var(--sky-edge)"/>
+    <rect x="824" y="58" width="316" height="128" rx="14" fill="var(--lilac)" stroke="var(--lilac-edge)"/>
+  </g>
+  <text x="36" y="84" class="k">INPUT</text>
+  <text x="36" y="108" class="t">Request JSON</text>
+  <text x="36" y="132" class="s">state: the situation</text>
+  <text x="36" y="150" class="s">question: what to decide</text>
+  <text x="36" y="168" class="s">candidates: K options, id + text</text>
+
+  <text x="304" y="84" class="k">TOKENIZE</text>
+  <text x="304" y="108" class="t">UTF-8 bytes</text>
+  <text x="304" y="132" class="s">256 byte ids + PAD, BOS,</text>
+  <text x="304" y="150" class="s">EOS, SEP: vocabulary of 260</text>
+  <text x="304" y="168" class="s">nothing learned, nothing fetched</text>
+
+  <text x="572" y="84" class="k">PACK</text>
+  <text x="572" y="108" class="t">One sequence</text>
+  <text x="572" y="132" class="s">fixed slots: state 256 B (tail),</text>
+  <text x="572" y="150" class="s">question 108 B, option 191 B;</text>
+  <text x="572" y="168" class="s">longer text grows its own slot</text>
+
+  <text x="840" y="84" class="k">LAYOUT</text>
+  <g class="mono">
+    <rect x="840" y="98" width="62" height="26" rx="6" fill="#fff" stroke="var(--lilac-edge)"/>
+    <text x="852" y="116">state</text>
+    <rect x="906" y="98" width="30" height="26" rx="6" fill="#f3effc" stroke="var(--lilac-edge)"/>
+    <text x="912" y="116">SEP</text>
+    <rect x="940" y="98" width="78" height="26" rx="6" fill="#fff" stroke="var(--lilac-edge)"/>
+    <text x="950" y="116">question</text>
+    <rect x="840" y="132" width="30" height="26" rx="6" fill="#f3effc" stroke="var(--lilac-edge)"/>
+    <text x="846" y="150">SEP</text>
+    <rect x="874" y="132" width="56" height="26" rx="6" fill="#fff" stroke="var(--lilac-edge)"/>
+    <text x="884" y="150">opt 1</text>
+    <rect x="934" y="132" width="30" height="26" rx="6" fill="#f3effc" stroke="var(--lilac-edge)"/>
+    <text x="940" y="150">SEP</text>
+    <rect x="968" y="132" width="56" height="26" rx="6" fill="#fff" stroke="var(--lilac-edge)"/>
+    <text x="978" y="150">opt 2</text>
+    <text x="1032" y="150">. . .  opt K</text>
+  </g>
+  <text x="840" y="178" class="s">at most 1,536 bytes per decision</text>
+
+  <!-- row 2 -->
+  <g filter="url(#sh)">
+    <rect x="824" y="248" width="316" height="128" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="556" y="248" width="212" height="128" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="288" y="248" width="212" height="128" rx="14" fill="var(--peach)" stroke="var(--peach-edge)"/>
+    <rect x="20" y="248" width="212" height="128" rx="14" fill="var(--peach)" stroke="var(--peach-edge)"/>
+  </g>
+  <text x="840" y="274" class="k">ENCODE</text>
+  <text x="840" y="298" class="t">Transformer encoder</text>
+  <text x="840" y="322" class="s">byte + learned position embeddings</text>
+  <text x="840" y="340" class="s">6 layers, d = 384, 8 heads, FFN 1,536</text>
+  <text x="840" y="358" class="s">pre-norm, GELU, bidirectional attention</text>
+
+  <text x="572" y="274" class="k">POOL</text>
+  <text x="572" y="298" class="t">Span vectors</text>
+  <text x="572" y="322" class="s">question: mean of its bytes</text>
+  <text x="572" y="340" class="s">option k: mean of its bytes</text>
+  <text x="572" y="358" class="s">state bytes kept as memory</text>
+
+  <text x="304" y="274" class="k">POINTER HEAD</text>
+  <text x="304" y="298" class="t">2 cross blocks</text>
+  <text x="304" y="322" class="s">options attend to the state,</text>
+  <text x="304" y="340" class="s">then to each other (set attention)</text>
+  <text x="304" y="358" class="s">no weight sized by K or labels</text>
+
+  <text x="36" y="274" class="k">SCORE</text>
+  <text x="36" y="298" class="t">K + 1 logits</text>
+  <text x="36" y="322" class="s">s_k = q(ctx_k) . key(opt_k) / sqrt(d)</text>
+  <text x="36" y="340" class="s">plus one learned "unknown" logit</text>
+  <text x="36" y="358" class="s">from a pooled summary</text>
+
+  <!-- output -->
+  <g filter="url(#sh)">
+    <rect x="20" y="438" width="420" height="104" rx="14" fill="var(--rose)" stroke="var(--rose-edge)"/>
+  </g>
+  <text x="36" y="464" class="k">OUTPUT</text>
+  <text x="36" y="488" class="t">Softmax over the offered options</text>
+  <g class="mono">
+    <text x="36" y="514">{"choice": "c2", "probabilities":</text>
+    <text x="36" y="532"> {"c0": 0.003, "c1": 0.011, "c2": 0.986}}</text>
+  </g>
+  <g>
+    <rect x="470" y="438" width="670" height="104" rx="14" fill="#fff" stroke="var(--line)" stroke-dasharray="5 5"/>
+    <text x="490" y="466" class="k">WHY A POINTER</text>
+    <text x="490" y="490" class="s">A classifier head fixes the label set at training time. Here the options are text in the</text>
+    <text x="490" y="508" class="s">input, so a request may carry any number of options, including products never seen in</text>
+    <text x="490" y="526" class="s">training. Each row is laid out from its own text only, so its answer is the same in any batch.</text>
+  </g>
+</svg>
+</div>
+
+<!-- ============================================================ 2 -->
+<h2>2 · Where the data comes from</h2>
+<p>Every label is computed by a program from the numbers printed on the cards, so no model and no
+annotator decides an answer. Splits are made on products before any question is written, which
+keeps every product of the benchmark out of training.</p>
+<div class="board">
+<svg viewBox="0 0 1160 470" role="img" aria-label="Data pipeline">
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b93a7"/></marker>
+    <filter id="sh2" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2f3747" flood-opacity=".10"/></filter>
+  </defs>
+  <text x="24" y="34" class="k">REAL DATA · data/off_products.py</text>
+  <g fill="none" stroke="#8b93a7" stroke-width="1.8" marker-end="url(#a2)">
+    <path d="M214 110 H252"/><path d="M444 110 H482"/><path d="M674 110 H712"/>
+    <path d="M904 90 H942"/><path d="M904 140 Q 925 140 925 190 T 942 236"/>
+  </g>
+  <g filter="url(#sh2)">
+    <rect x="20" y="52" width="194" height="116" rx="14" fill="var(--butter)" stroke="var(--butter-edge)"/>
+    <rect x="254" y="52" width="190" height="116" rx="14" fill="var(--blue)" stroke="var(--blue-edge)"/>
+    <rect x="484" y="52" width="190" height="116" rx="14" fill="var(--sky)" stroke="var(--sky-edge)"/>
+    <rect x="714" y="52" width="190" height="116" rx="14" fill="var(--lilac)" stroke="var(--lilac-edge)"/>
+    <rect x="944" y="52" width="196" height="76" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="944" y="200" width="196" height="76" rx="14" fill="var(--rose)" stroke="var(--rose-edge)"/>
+  </g>
+  <text x="36" y="78" class="t">Open Food Facts</text>
+  <text x="36" y="102" class="s">public dump, ODbL 1.0</text>
+  <text x="36" y="120" class="s">ES, US and UK products</text>
+  <text x="36" y="138" class="s">117,003 with a full,</text>
+  <text x="36" y="156" class="s">self-consistent panel</text>
+
+  <text x="270" y="78" class="t">Split by barcode</text>
+  <text x="270" y="102" class="s">sha256 of the code:</text>
+  <text x="270" y="120" class="s">80% train, 20% eval</text>
+  <text x="270" y="138" class="s">before any episode exists</text>
+
+  <text x="500" y="78" class="t">Write episodes</text>
+  <text x="500" y="102" class="s">3 to 5 products per row</text>
+  <text x="500" y="120" class="s">7 nutrients, most or least</text>
+  <text x="500" y="138" class="s">60% add a cap that rules</text>
+  <text x="500" y="156" class="s">out the naive winner</text>
+
+  <text x="730" y="78" class="t">Keep it decidable</text>
+  <text x="730" y="102" class="s">winner clears a 15% margin</text>
+  <text x="730" y="120" class="s">40% of salt rows print</text>
+  <text x="730" y="138" class="s">sodium in mg instead</text>
+  <text x="730" y="156" class="s">rounding on the cap: drop</text>
+
+  <text x="960" y="80" class="t">Train · 77,094 rows</text>
+  <text x="960" y="104" class="s">en 62%, es 38%</text>
+  <text x="960" y="226" class="t">Benchmark · 3,000</text>
+  <text x="960" y="250" class="s">frozen, sha256 pinned</text>
+  <text x="960" y="268" class="s">a sealed quarter never written</text>
+
+  <text x="24" y="330" class="k">SYNTHETIC CURRICULUM · data/curriculum.py</text>
+  <g fill="none" stroke="#8b93a7" stroke-width="1.8" marker-end="url(#a2)">
+    <path d="M222 400 H244"/><path d="M446 400 H468"/><path d="M670 400 H692"/><path d="M894 400 H916"/>
+  </g>
+  <g filter="url(#sh2)">
+    <rect x="20" y="350" width="202" height="100" rx="14" fill="#fff" stroke="var(--peach-edge)"/>
+    <rect x="246" y="350" width="200" height="100" rx="14" fill="#fff" stroke="var(--peach-edge)"/>
+    <rect x="470" y="350" width="200" height="100" rx="14" fill="#fff" stroke="var(--peach-edge)"/>
+    <rect x="694" y="350" width="200" height="100" rx="14" fill="#fff" stroke="var(--peach-edge)"/>
+    <rect x="918" y="350" width="222" height="100" rx="14" fill="var(--peach)" stroke="var(--peach-edge)"/>
+  </g>
+  <text x="36" y="376" class="k">R0 · MOST</text>
+  <text x="36" y="398" class="s">2 values, one nutrient,</text>
+  <text x="36" y="416" class="s">always the highest</text>
+  <text x="262" y="376" class="k">R1 · PAIR</text>
+  <text x="262" y="398" class="s">2 values, highest</text>
+  <text x="262" y="416" class="s">or lowest</text>
+  <text x="486" y="376" class="k">R2 · PANEL</text>
+  <text x="486" y="398" class="s">2 to 4 full panels,</text>
+  <text x="486" y="416" class="s">find the asked nutrient</text>
+  <text x="710" y="376" class="k">R3 · UNITS</text>
+  <text x="710" y="398" class="s">named products, half</text>
+  <text x="710" y="416" class="s">print sodium in mg</text>
+  <text x="934" y="376" class="k">R4 · CONSTRAINTS</text>
+  <text x="934" y="398" class="s">a cap on a second nutrient</text>
+  <text x="934" y="416" class="s">excludes the naive pick</text>
+  <text x="934" y="434" class="s">then R5: the real rows</text>
+</svg>
+</div>
+
+<!-- ============================================================ 3 -->
+<h2>3 · The curriculum loop</h2>
+<p>Training runs as cycles. Each cycle continues the latest weights on a fresh batch, then takes a
+fixed exam. A rung is passed at 90%; the real rung never ends, and the best exam score is kept as
+the champion. Each rung adds one difficulty, so the model always trains on something it can
+almost do.</p>
+<div class="board">
+<svg viewBox="0 0 1160 430" role="img" aria-label="Training loop">
+  <defs>
+    <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b93a7"/></marker>
+    <filter id="sh3" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2f3747" flood-opacity=".10"/></filter>
+  </defs>
+  <g fill="none" stroke="#8b93a7" stroke-width="1.8" marker-end="url(#a3)">
+    <path d="M250 110 H300"/><path d="M530 110 H580"/><path d="M810 110 H860"/>
+    <path d="M975 172 V232"/>
+    <path d="M860 290 H810"/>
+    <path d="M580 290 H530"/>
+    <path d="M415 232 Q 415 200 300 200 T 140 172"/>
+  </g>
+  <text x="862" y="270" class="s">yes</text>
+  <text x="430" y="210" class="s">next cycle</text>
+  <g filter="url(#sh3)">
+    <rect x="20" y="48" width="230" height="124" rx="14" fill="var(--butter)" stroke="var(--butter-edge)"/>
+    <rect x="302" y="48" width="228" height="124" rx="14" fill="var(--blue)" stroke="var(--blue-edge)"/>
+    <rect x="582" y="48" width="228" height="124" rx="14" fill="var(--sky)" stroke="var(--sky-edge)"/>
+    <rect x="862" y="48" width="278" height="124" rx="14" fill="var(--lilac)" stroke="var(--lilac-edge)"/>
+    <rect x="862" y="234" width="278" height="112" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="582" y="234" width="228" height="112" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="302" y="234" width="228" height="112" rx="14" fill="var(--rose)" stroke="var(--rose-edge)"/>
+  </g>
+  <text x="36" y="74" class="k">1 · BATCH</text>
+  <text x="36" y="98" class="t">Fresh rows</text>
+  <text x="36" y="122" class="s">current rung, plus 20% replay</text>
+  <text x="36" y="140" class="s">of earlier rungs; on R5, hard</text>
+  <text x="36" y="158" class="s">rows twice and 12% synthetic</text>
+
+  <text x="318" y="74" class="k">2 · TRAIN</text>
+  <text x="318" y="98" class="t">600 to 1,000 steps</text>
+  <text x="318" y="122" class="s">AdamW 3e-4, warmup 100,</text>
+  <text x="318" y="140" class="s">cosine to 10%, clip 1.0</text>
+  <text x="318" y="158" class="s">options shuffled every step</text>
+
+  <text x="598" y="74" class="k">3 · EXAM</text>
+  <text x="598" y="98" class="t">Fixed dev file</text>
+  <text x="598" y="122" class="s">1,000 rows per synthetic rung,</text>
+  <text x="598" y="140" class="s">the 3,000-row benchmark on R5,</text>
+  <text x="598" y="158" class="s">400-row watch every 200 steps</text>
+
+  <text x="878" y="74" class="k">4 · DECIDE</text>
+  <text x="878" y="98" class="t">Rung passed?</text>
+  <text x="878" y="122" class="s">forced accuracy 90% or more</text>
+  <text x="878" y="140" class="s">on R0 to R4 moves up a rung;</text>
+  <text x="878" y="158" class="s">R5 runs until stopped</text>
+
+  <text x="878" y="260" class="k">5 · KEEP</text>
+  <text x="878" y="284" class="t">Latest and champion</text>
+  <text x="878" y="308" class="s">latest seeds the next cycle;</text>
+  <text x="878" y="326" class="s">best R5 exam is the champion</text>
+
+  <text x="598" y="260" class="k">6 · LOG</text>
+  <text x="598" y="284" class="t">history.jsonl</text>
+  <text x="598" y="308" class="s">one line per cycle: rung,</text>
+  <text x="598" y="326" class="s">accuracy, Wilson bound, rows</text>
+
+  <text x="318" y="260" class="k">GATES ON R5</text>
+  <text x="318" y="284" class="t">G1 · G2 · G3</text>
+  <text x="318" y="308" class="s">G1 Wilson lower 10 pts over</text>
+  <text x="318" y="326" class="s">chance, G2 80%, G3 95%</text>
+
+  <rect x="20" y="234" width="250" height="176" rx="14" fill="#fff" stroke="var(--line)" stroke-dasharray="5 5"/>
+  <text x="36" y="262" class="k">WHY R0 EXISTS</text>
+  <text x="36" y="286" class="s">Asking "most" and "least" at</text>
+  <text x="36" y="304" class="s">random from step one cancels</text>
+  <text x="36" y="322" class="s">the gradient of any magnitude</text>
+  <text x="36" y="340" class="s">feature, and the first attempt</text>
+  <text x="36" y="358" class="s">sat at 49% on two options.</text>
+  <text x="36" y="376" class="s">Teaching "most" alone first</text>
+  <text x="36" y="394" class="s">broke the symmetry.</text>
+</svg>
+</div>
+
+<h2>4 · What it does not do</h2>
+<p>The model has learned one narrow skill: reading nutrition panels and applying a comparison with
+an optional cap, in two languages. It has no world knowledge, no notion of price, taste or
+sustainability, and it was never trained on other product kinds. A hand-written rule program
+answers every decidable benchmark row, which is the point of the benchmark: every label can be
+checked against the text. The
+experiment shows that a tiny model trained from nothing can learn to read and compare structured
+text when the curriculum is right. Turning that into a general decision model would need far more
+data generation and far more compute than one laptop.</p>
+<p class="note">Code: Apache-2.0. Data derived from Open Food Facts: ODbL 1.0. See the repository README for
+results, comparisons and how to run everything.</p>
+
+</div>
+</body>
+</html>

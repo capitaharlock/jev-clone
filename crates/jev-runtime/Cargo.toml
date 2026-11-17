@@ -1,8 +1,0 @@
-[package]
-license = "MIT OR Apache-2.0"
-name = "jev-runtime"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-jev-model = { path = "../jev-model" }

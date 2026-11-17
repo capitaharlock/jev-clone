@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>asimovia-decision-v1 · examples</title>
+<style>
+  :root {
+    --ink: #2f3747; --muted: #6b7486; --line: #e3e6ee; --paper: #fbfaf7;
+    --card: #ffffff; --blue: #dbe7fb; --blue-ink: #3b5b9a; --mint: #d8f1e6;
+    --mint-ink: #2f7a5a; --peach: #fde3d3; --peach-ink: #a65a2e;
+    --lilac: #e8e1f8; --lilac-ink: #5b4a99; --butter: #fbf1c9;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 -apple-system, "Segoe UI", Inter, sans-serif;
+         color: var(--ink); background: var(--paper); }
+  header { padding: 28px 40px 8px; }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; color: var(--muted); max-width: 880px; }
+  header a { color: var(--blue-ink); }
+  main { display: grid; grid-template-columns: 250px minmax(0, 1fr) minmax(0, 1fr);
+         gap: 20px; padding: 20px 40px 40px; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+           padding: 18px; box-shadow: 0 1px 2px rgba(47,55,71,.04); }
+  .panel h2 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase;
+              letter-spacing: .06em; color: var(--muted); }
+  .example { display: block; width: 100%; text-align: left; border: 1px solid var(--line);
+             background: #fff; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+             cursor: pointer; font: inherit; color: inherit; }
+  .example:hover { border-color: #c9d3ea; }
+  .example.on { background: var(--blue); border-color: #b9cbef; }
+  .example b { display: block; font-size: 14px; }
+  .example span { font-size: 12px; color: var(--muted); }
+  textarea { width: 100%; min-height: 460px; border: 1px solid var(--line); border-radius: 10px;
+             padding: 12px; font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+             color: var(--ink); background: #fcfcfe; resize: vertical; }
+  .row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  button.run { border: 0; background: var(--lilac-ink); color: #fff; border-radius: 10px;
+               padding: 9px 18px; font: 600 14px/1 inherit; cursor: pointer; }
+  button.run:disabled { opacity: .5; cursor: default; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .question { background: var(--butter); border-radius: 10px; padding: 10px 12px;
+              margin-bottom: 14px; font-weight: 600; }
+  .option { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+            margin-bottom: 10px; position: relative; overflow: hidden; }
+  .option .bar { position: absolute; inset: 0 auto 0 0; background: var(--blue);
+                 z-index: 0; transition: width .5s ease; }
+  .option.pick .bar { background: var(--mint); }
+  .option > * { position: relative; z-index: 1; }
+  .option .top { display: flex; justify-content: space-between; gap: 12px;
+                 font-size: 13px; font-weight: 600; }
+  .option .text { font-size: 12.5px; color: #4a5366; margin-top: 4px; }
+  .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+  .tag.ok { background: var(--mint); color: var(--mint-ink); }
+  .tag.bad { background: var(--peach); color: var(--peach-ink); }
+  .tag.gold { background: var(--lilac); color: var(--lilac-ink); }
+  .meta { display: flex; gap: 16px; color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+  pre { margin: 12px 0 0; background: #fcfcfe; border: 1px solid var(--line); border-radius: 10px;
+        padding: 10px 12px; font: 12px/1.45 ui-monospace, Menlo, monospace; overflow: auto; }
+  .error { color: var(--peach-ink); background: var(--peach); border-radius: 10px; padding: 10px 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>asimovia-decision-v1 · examples</h1>
+  <p>Each sample is a real comparison from the benchmark: product cards from Open Food Facts
+     and a question whose answer follows from the printed numbers. Pick one, edit the JSON if
+     you like, and send it to <code>POST /v1/decide</code>. The model returns one probability
+     per product. <a href="/v1/health">Model info</a>.</p>
+</header>
+<main>
+  <section class="panel">
+    <h2>Samples</h2>
+    <div id="list"></div>
+  </section>
+  <section class="panel">
+    <h2>Request JSON</h2>
+    <textarea id="request" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="run" id="run">Decide</button>
+      <span class="hint" id="hint"></span>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Result</h2>
+    <div id="result"><p class="hint">Run a sample to see the answer.</p></div>
+  </section>
+</main>
+<script>
+const list = document.getElementById("list");
+const box = document.getElementById("request");
+const result = document.getElementById("result");
+const runButton = document.getElementById("run");
+const hint = document.getElementById("hint");
+let samples = [];
+let expected = null;
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"}[c]));
+}
+
+function select(index) {
+  const sample = samples[index];
+  expected = sample.expected || null;
+  box.value = JSON.stringify(sample.request, null, 2);
+  hint.textContent = sample.source || "";
+  [...list.children].forEach((node, i) => node.classList.toggle("on", i === index));
+  run();
+}
+
+async function run() {
+  let body;
+  try { body = JSON.parse(box.value); }
+  catch (err) { result.innerHTML = `<div class="error">The request is not valid JSON.</div>`; return; }
+  runButton.disabled = true;
+  try {
+    const response = await fetch("/v1/decide", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+    const answer = await response.json();
+    if (!response.ok) throw new Error(answer.error || response.statusText);
+    render(body, answer);
+  } catch (err) {
+    result.innerHTML = `<div class="error">${escapeHtml(err.message)}</div>`;
+  } finally { runButton.disabled = false; }
+}
+
+function render(body, answer) {
+  const verdict = expected
+    ? (answer.choice === expected ? `<span class="tag ok">matches the computed answer</span>`
+                                  : `<span class="tag bad">differs from the computed answer</span>`)
+    : "";
+  const options = body.candidates.map(c => {
+    const p = answer.probabilities[c.id] || 0;
+    const pick = c.id === answer.choice;
+    const gold = expected && c.id === expected ? `<span class="tag gold">computed answer</span>` : "";
+    return `<div class="option${pick ? " pick" : ""}">
+      <div class="bar" style="width:${(p * 100).toFixed(1)}%"></div>
+      <div class="top"><span>${escapeHtml(c.id)} ${pick ? "· model choice" : ""} ${gold}</span>
+        <span>${(p * 100).toFixed(1)}%</span></div>
+      <div class="text">${escapeHtml(c.text)}</div></div>`;
+  }).join("");
+  result.innerHTML = `<div class="question">${escapeHtml(body.question)}</div>${options}
+    <div class="meta"><span>${verdict}</span><span>${answer.latency_ms} ms</span>
+    <span>${escapeHtml(answer.model)}</span></div>
+    <pre>${escapeHtml(JSON.stringify(answer, null, 2))}</pre>`;
+}
+
+box.addEventListener("input", () => { expected = null; });
+runButton.addEventListener("click", run);
+fetch("/examples").then(r => r.json()).then(items => {
+  samples = items;
+  list.innerHTML = items.map((s, i) =>
+    `<button class="example" data-i="${i}"><b>${escapeHtml(s.name)}</b>
+     <span>${escapeHtml(s.note || "")}</span></button>`).join("");
+  [...list.children].forEach(node => node.addEventListener("click",
+    () => select(Number(node.dataset.i))));
+  if (items.length) select(0);
+});
+</script>
+</body>
+</html>

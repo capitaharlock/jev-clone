@@ -1,0 +1,31 @@
+{
+  "note": "constrained, sodium_mg; 5 products; es",
+  "source": "Open Food Facts (ODbL-1.0), benchmark row v3-prod-b432dff90653e9a1",
+  "request": {
+    "state": "Comparando fruit turrón en el lineal. Los valores nutricionales son por 100 g, tal como figuran en cada envase.",
+    "question": "El contenido de sal no puede pasar de 0.1 g por 100 g. Dentro de ese límite, ¿qué producto tiene más grasa?",
+    "candidates": [
+      {
+        "id": "c0",
+        "text": "Alteza · Turrón mazapán fruta. energía 389 kcal, grasas 16 g, de las cuales saturadas 1.3 g, azúcares 47 g, fibra 3.9 g, proteínas 7.3 g, sodio 40 mg."
+      },
+      {
+        "id": "c1",
+        "text": "Consum · Turrón fruta (250g). energía 400 kcal, grasas 15 g, de las cuales saturadas 1.3 g, azúcares 55 g, fibra 2.9 g, proteínas 7 g, sal 0 g."
+      },
+      {
+        "id": "c2",
+        "text": "Auchan · Turrón de queso con arándanos. energía 561 kcal, grasas 36.2 g, de las cuales saturadas 13.8 g, azúcares 48.4 g, fibra 1 g, proteínas 8.8 g, sodio 152 mg."
+      },
+      {
+        "id": "c3",
+        "text": "El Almendro · Turrón fruta (200 g). energía 425 kcal, grasas 18 g, de las cuales saturadas 2 g, azúcares 55 g, fibra 2.5 g, proteínas 7 g, sal 0 g."
+      },
+      {
+        "id": "c4",
+        "text": "Torrons Vicens · Turrón Mazapán Frutas (300 g). energía 449 kcal, grasas 22 g, de las cuales saturadas 1.9 g, azúcares 48 g, fibra 0 g, proteínas 10 g, sodio 40 mg."
+      }
+    ]
+  },
+  "expected": "c4"
+}

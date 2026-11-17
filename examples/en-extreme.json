@@ -1,0 +1,23 @@
+{
+  "note": "extreme; 3 products; en",
+  "source": "Open Food Facts (ODbL-1.0), benchmark row v3-prod-45186bcaf4120dc2",
+  "request": {
+    "state": "Comparing fruits and vegetables based foods on the shelf. Nutrition values are per 100 g as printed on each pack.",
+    "question": "I want the option with the highest sugar. Which one?",
+    "candidates": [
+      {
+        "id": "c0",
+        "text": "PER0 Family Farms · mini Sweet pepper Rings. energy 41.2 kcal, fat 0 g, of which saturates 0 g, sugars 5.9 g, fibre 3.5 g, protein 1.2 g, salt 0 g."
+      },
+      {
+        "id": "c1",
+        "text": "Fresh Express · Premium Romaine. energy 23.5 kcal, fat 0 g, of which saturates 0 g, sugars 2.4 g, fibre 2.4 g, protein 1.2 g, salt 0.1 g."
+      },
+      {
+        "id": "c2",
+        "text": "Little Salad Bar · Fresh Peeled Garlic (6 oz). energy 125 kcal, fat 0 g, of which saturates 0 g, sugars 0 g, fibre 0 g, protein 0 g, salt 0 g."
+      }
+    ]
+  },
+  "expected": "c0"
+}

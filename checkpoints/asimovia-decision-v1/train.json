@@ -1,0 +1,35 @@
+{
+  "champion_cycle": {
+    "batch_size": 8,
+    "elapsed_s": 704.0,
+    "first_loss": 0.0019277601968497038,
+    "last_loss": 0.008854974992573261,
+    "seed": 20263414,
+    "steps": 1000,
+    "train_accuracy": 0.972,
+    "train_rows": 127051
+  },
+  "curriculum": {
+    "champion_cycle": 2394,
+    "cycles": 2404,
+    "device": "Apple M5 Pro GPU (Metal)",
+    "first_cycle_utc": "2026-10-20T17:09:27Z",
+    "last_cycle_utc": "2026-11-16T19:31:18Z",
+    "training_hours": 643
+  },
+  "exam_at_selection": {
+    "forced_accuracy": 0.9536666666666667,
+    "note": "scored in batches of 32 with the earlier batch-dependent layout",
+    "rows": 3000
+  },
+  "external_checkpoint": false,
+  "format": "asimovia-decision-v1",
+  "initialization": "random at cycle 0, continued every cycle after",
+  "parameters": 16959746,
+  "published_scores": {
+    "benchmark": "see bench/results/own--asimovia-decision-v1--cpu.json",
+    "validation": "see bench/results/validation/own--asimovia-decision-v1--mps.json"
+  },
+  "tokenizer": "utf-8-bytes",
+  "weights_sha256": "00c0fd3bf3c7a3b19f586edf35406e0befde419ed63c49e071abe8331c7799dd"
+}

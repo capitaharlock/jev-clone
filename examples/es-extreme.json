@@ -1,0 +1,27 @@
+{
+  "note": "extreme; 4 products; es",
+  "source": "Open Food Facts (ODbL-1.0), benchmark row v3-prod-883a6d54ec0df8a3",
+  "request": {
+    "state": "Comparando mortadella en el lineal. Los valores nutricionales son por 100 g, tal como figuran en cada envase.",
+    "question": "¿Qué producto aporta más sal?",
+    "candidates": [
+      {
+        "id": "c0",
+        "text": "Alipende · Mortadela con aceitunas (250 g). energía 261 kcal, grasas 23 g, de las cuales saturadas 8.7 g, azúcares 0.5 g, fibra 0 g, proteínas 9 g, sal 2.5 g."
+      },
+      {
+        "id": "c1",
+        "text": "Così Bio · Mortadella (80 g). energía 273 kcal, grasas 22 g, de las cuales saturadas 8.6 g, azúcares 0 g, fibra 0 g, proteínas 16 g, sal 2.1 g."
+      },
+      {
+        "id": "c2",
+        "text": "Carrefour · Mortadela de pavo. energía 159 kcal, grasas 11 g, de las cuales saturadas 2.8 g, azúcares 1.5 g, fibra 0.1 g, proteínas 11 g, sal 2.1 g."
+      },
+      {
+        "id": "c3",
+        "text": "Argal · Mortadela con aceitunas (3 Kg.). energía 240 kcal, grasas 20 g, de las cuales saturadas 8 g, azúcares 1 g, fibra 0 g, proteínas 10 g, sal 2.1 g."
+      }
+    ]
+  },
+  "expected": "c0"
+}

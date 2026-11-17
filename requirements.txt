@@ -1,0 +1,2 @@
+torch>=2.2
+safetensors>=0.4

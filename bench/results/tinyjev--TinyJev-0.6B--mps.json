@@ -1,0 +1,105 @@
+{
+  "accuracy": 0.361,
+  "benchmark": "product_specs.dev.jsonl",
+  "by": {
+    "difficulty:constrained": {
+      "accuracy": 0.25833333333333336,
+      "rows": 840
+    },
+    "difficulty:extreme": {
+      "accuracy": 0.4009259259259259,
+      "rows": 2160
+    },
+    "lang:en": {
+      "accuracy": 0.39164086687306504,
+      "rows": 1938
+    },
+    "lang:es": {
+      "accuracy": 0.3050847457627119,
+      "rows": 1062
+    },
+    "options:3": {
+      "accuracy": 0.45085995085995084,
+      "rows": 814
+    },
+    "options:4": {
+      "accuracy": 0.3346613545816733,
+      "rows": 1506
+    },
+    "options:5": {
+      "accuracy": 0.31176470588235294,
+      "rows": 680
+    },
+    "units:salt_g": {
+      "accuracy": 0.36920289855072463,
+      "rows": 2760
+    },
+    "units:sodium_mg": {
+      "accuracy": 0.26666666666666666,
+      "rows": 240
+    }
+  },
+  "chance": 0.2612777777777778,
+  "decidable_accuracy": 0.3626890756302521,
+  "decidable_rows": 2975,
+  "hits": 1083,
+  "host": {
+    "machine": "arm64",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6"
+  },
+  "latency_ms": {
+    "mean": 35.60417130899926,
+    "p50": 35.82095797173679,
+    "p95": 43.99020900018513
+  },
+  "measured_utc": "2026-11-16T20:33:18Z",
+  "rows": 3000,
+  "subset": null,
+  "system": {
+    "device": "mps",
+    "kind": "tinyjev",
+    "manifest": {
+      "dtypes": {
+        "backbone": "float16",
+        "head": "float32"
+      },
+      "family": "kev",
+      "format": "tinyjev-v2",
+      "head": {
+        "head_dim": 256,
+        "option_isolation": false,
+        "temperature": 1.4640856959456252,
+        "temperature_note": "fitted on decision-v7 calibration partition by Kev trial scorer (micro NLL); served probabilities are logits / T"
+      },
+      "max_branch": 8192,
+      "max_state": 8192,
+      "name": "TinyJev-0.6B",
+      "tokenizer": {
+        "eos_token_id": 151643,
+        "pad_token_id": 151643
+      },
+      "upstream": {
+        "base_model": "Qwen/Qwen3-0.6B-Base",
+        "base_revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+        "data": "jaredpalmer/kev-suites decision-v7 train",
+        "decision_v7_test_locked_once": 0.8075,
+        "full_finetune": false,
+        "lora_alpha": 32,
+        "lora_rank": 16,
+        "merged_tensors": 196,
+        "repo": "AnkitAI/TinyJev-0.6B (E1(b): LoRA r16 lr5e-5 seed 2 on Qwen3-0.6B-Base, merged)",
+        "trained_by": "tinyjev E1(b)",
+        "transfer_v4_dev_calibrated_ece": 0.0739,
+        "transfer_v4_dev_raw": 0.625,
+        "transfer_v4_test_locked_once": 0.6631,
+        "trial": "tinyjev-e1-lora/01-trial-1"
+      }
+    },
+    "name": "TinyJev-0.6B",
+    "revision": "c559c2f7ea95069f92af8b999f512345bbb87d22",
+    "tinyjev": "0.1.3"
+  },
+  "unparsed": 0,
+  "wilson_lower": 0.34400117276027603
+}
