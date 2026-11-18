@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>asimovia-decision-v1 · watching the run</title>
+<style>
+  :root {
+    --ink: #2f3747; --muted: #6b7486; --line: #dfe3ec; --paper: #f7f6f2;
+    --blue: #dbe7fb; --blue-edge: #a9c1ee; --mint: #d6f0e3; --mint-edge: #9fd4b9;
+    --peach: #fde2d1; --peach-edge: #f2b897; --lilac: #e7e0f8; --lilac-edge: #bfaeea;
+    --butter: #fbf0c4; --butter-edge: #e8d27c; --rose: #f9dbe4; --rose-edge: #ebaabd;
+    --sky: #d7eff6; --sky-edge: #98cfe0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: var(--paper);
+         font: 16px/1.6 -apple-system, "Segoe UI", Inter, sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 32px 80px; }
+  h1 { font-size: 34px; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-size: 22px; margin: 56px 0 6px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 820px; margin: 8px 0 0; }
+  p { max-width: 860px; }
+  .board { background-color: #fff; border: 1px solid var(--line); border-radius: 18px;
+           margin-top: 18px; padding: 10px; overflow-x: auto;
+           background-image: radial-gradient(#e6e8ef 1px, transparent 1px);
+           background-size: 20px 20px; box-shadow: 0 2px 10px rgba(47,55,71,.05); }
+  svg { display: block; min-width: 1080px; width: 100%; height: auto; }
+  svg text { font-family: -apple-system, "Segoe UI", Inter, sans-serif; fill: var(--ink); }
+  .t { font-size: 15px; font-weight: 650; }
+  .s { font-size: 12.5px; fill: #555f73; }
+  .k { font-size: 11px; font-weight: 700; letter-spacing: .08em; fill: #7a8396; }
+  table { border-collapse: collapse; width: 100%; margin-top: 16px; background: #fff;
+          border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 14.5px; }
+  th, td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left;
+           vertical-align: top; }
+  th { background: #f2f4f8; font-weight: 650; }
+  code { background: #eef1f6; padding: 1px 6px; border-radius: 6px; font-size: 14px; }
+  .note { color: var(--muted); font-size: 14px; }
+  a { color: #3b5b9a; }
+  figure.shot { margin: 18px 0 0; background: #fff; border: 1px solid var(--line);
+                border-radius: 18px; padding: 10px; box-shadow: 0 2px 10px rgba(47,55,71,.05); }
+  figure.shot img { width: 100%; height: auto; border-radius: 10px; display: block; }
+  figure.shot figcaption { color: var(--muted); font-size: 14px; padding: 10px 8px 4px; max-width: 860px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Watching the run</h1>
+<p class="lead">Two jobs ran at the same time. One built the next batch of decisions on the CPU.
+The other trained on the batch that was already ready, on the GPU. A local console put both
+on one screen. This page is one frame from the last afternoon of training, and how to read it.</p>
+<p class="note"><a href="index.html">How the model works</a> · <a href="../README.md">README</a></p>
+
+<h2>1 · Two jobs, one screen</h2>
+<p>The data job does not need the GPU, so it stays ahead of training. The learning job owns the
+GPU alone: a cycle trains, then sits the fixed exam, and the next cycle waits until that exam
+has been written down. The console refreshes about once a second from files on disk. It does
+not train, and it does not write labels.</p>
+
+<div class="board">
+<svg viewBox="0 0 1160 420" role="img" aria-label="Dataset job beside the training job">
+  <defs>
+    <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b93a7"/></marker>
+    <filter id="shm" x="-8%" y="-8%" width="116%" height="124%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2f3747" flood-opacity=".10"/></filter>
+  </defs>
+  <g fill="none" stroke="#8b93a7" stroke-width="1.8" marker-end="url(#am)">
+    <path d="M250 118 H304"/><path d="M534 118 H588"/>
+    <path d="M250 292 H304"/><path d="M534 292 H588"/>
+    <path d="M700 168 H754"/>
+  </g>
+  <g filter="url(#shm)">
+    <rect x="20" y="36" width="230" height="148" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="306" y="36" width="228" height="148" rx="14" fill="var(--mint)" stroke="var(--mint-edge)"/>
+    <rect x="590" y="36" width="250" height="148" rx="14" fill="#fff" stroke="var(--mint-edge)"/>
+    <rect x="20" y="210" width="230" height="148" rx="14" fill="var(--blue)" stroke="var(--blue-edge)"/>
+    <rect x="306" y="210" width="228" height="148" rx="14" fill="var(--blue)" stroke="var(--blue-edge)"/>
+    <rect x="590" y="210" width="250" height="148" rx="14" fill="#fff" stroke="var(--blue-edge)"/>
+    <rect x="890" y="96" width="250" height="176" rx="14" fill="var(--butter)" stroke="var(--butter-edge)"/>
+  </g>
+  <text x="36" y="62" class="k">DATA · CPU</text>
+  <text x="36" y="88" class="t">Open Food Facts</text>
+  <text x="36" y="112" class="s">one dump, products with a</text>
+  <text x="36" y="130" class="s">complete panel, split by</text>
+  <text x="36" y="148" class="s">barcode before any question</text>
+  <text x="36" y="166" class="s">is written</text>
+
+  <text x="322" y="62" class="k">DATA · CPU</text>
+  <text x="322" y="88" class="t">Episodes</text>
+  <text x="322" y="112" class="s">3 to 5 cards, a question,</text>
+  <text x="322" y="130" class="s">a label computed from the</text>
+  <text x="322" y="148" class="s">printed numbers. Undecidable</text>
+  <text x="322" y="166" class="s">rows are dropped.</text>
+
+  <text x="606" y="62" class="k">DATA · CPU</text>
+  <text x="606" y="88" class="t">The next batch</text>
+  <text x="606" y="112" class="s">current rung, 20% replay of</text>
+  <text x="606" y="130" class="s">earlier rungs. On the real</text>
+  <text x="606" y="148" class="s">rung, hard families go in</text>
+  <text x="606" y="166" class="s">twice. Ready before the GPU.</text>
+
+  <text x="36" y="236" class="k">LEARNING · GPU</text>
+  <text x="36" y="262" class="t">One cycle</text>
+  <text x="36" y="286" class="s">continue the latest weights</text>
+  <text x="36" y="304" class="s">for 600 to 1,000 steps.</text>
+  <text x="36" y="322" class="s">Options shuffled every step.</text>
+  <text x="36" y="340" class="s">One job owns Metal.</text>
+
+  <text x="322" y="236" class="k">LEARNING · GPU</text>
+  <text x="322" y="262" class="t">Fixed exam</text>
+  <text x="322" y="286" class="s">the same dev file every</text>
+  <text x="322" y="304" class="s">cycle. On the real rung,</text>
+  <text x="322" y="322" class="s">the 3,000-row benchmark.</text>
+  <text x="322" y="340" class="s">A rung clears at 90%.</text>
+
+  <text x="606" y="236" class="k">LEARNING · GPU</text>
+  <text x="606" y="262" class="t">Write it down</text>
+  <text x="606" y="286" class="s">one line in history.jsonl:</text>
+  <text x="606" y="304" class="s">rung, accuracy, Wilson bound.</text>
+  <text x="606" y="322" class="s">Latest seeds the next cycle.</text>
+  <text x="606" y="340" class="s">Best real exam is champion.</text>
+
+  <text x="906" y="122" class="k">THE CONSOLE</text>
+  <text x="906" y="148" class="t">Reads both</text>
+  <text x="906" y="174" class="s">dataset files and sizes,</text>
+  <text x="906" y="192" class="s">the trainer log, the exam</text>
+  <text x="906" y="210" class="s">history, GPU and CPU load.</text>
+  <text x="906" y="236" class="s">It displays. The loop</text>
+  <text x="906" y="254" class="s">decides what is kept.</text>
+</svg>
+</div>
+
+<h2>2 · The frame</h2>
+<p>16 November 2026, 19:17 UTC, cycle 2403 of 2,404. Training was on the real rung. The cycle's
+exam landed in <code>docs/data/history.jsonl</code> at 19:31 UTC: 94.8% on the 3,000-row
+benchmark. The left cards are the data job (source acquisition, curriculum data). The training
+card and the rung-evaluation card are the learning job. The chart is the last 24 hours of that
+rung.</p>
+
+<figure class="shot">
+  <img src="assets/monitor-2026-11-16.jpg" width="1024" height="568"
+       alt="Console during cycle 2403 on 16 November 2026, with the data cards, the training card and the 24 hour chart">
+  <figcaption>The research console during cycle 2403. Green is a stage that is moving, blue is a
+  stage waiting for the GPU. The nutrition task is the amber row, product specs.</figcaption>
+</figure>
+
+<h2>3 · How to read the numbers</h2>
+<p>The console watched a wider lab than this repository. Most capabilities on the list were
+parked, marked "not training". Only product specs, the nutrition task, was in the loop. The
+headline mixes those parked rows in. The nutrition number that afternoon is the family row,
+and the published number in the README is a later measurement of the champion.</p>
+
+<table>
+  <thead>
+    <tr><th>On the console</th><th>What it is</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Closed loop, 29.14%</td>
+      <td>A single figure across every capability on the board, including the ones that were not in training.</td>
+    </tr>
+    <tr>
+      <td>Weakest family, 94.87%, product specs</td>
+      <td>The nutrition task, the only family training that day. The logged exam for cycle 2403 is 94.8% on 3,000 rows.</td>
+    </tr>
+    <tr>
+      <td>Gap, minus 69.86 points</td>
+      <td>How far a separate wide benchmark, about 26%, sat from a 94% bar set for that wider board.</td>
+    </tr>
+    <tr>
+      <td>Source corpus, 18,716,555</td>
+      <td>Local source rows admitted by the wider lab. The nutrition training set is 77,094 episodes.</td>
+    </tr>
+    <tr>
+      <td>GPU 97%, CPU 29%</td>
+      <td>The cycle owned the Metal GPU. The data job was the quieter CPU load beside it.</td>
+    </tr>
+    <tr>
+      <td>Trend, 93.20% to 95.37%</td>
+      <td>The last 24 hours of the real rung, 102 cycles. The second line counts rows fed in that window, reuse included, so it is not a count of distinct products. The full curve is the chart in the README.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The published accuracy, 96.9%, is a later measurement of the champion, cycle 2394, with the
+slotted input layout described in the README. The console shows the scores the loop recorded
+while it was running. Cycle 2394's logged exam is 95.4%, written at 17:04 UTC the same day.</p>
+
+<h2>4 · What the console did not do</h2>
+<p>It did not choose the champion. That choice is the best logged exam on the real rung, and the
+published weights are that checkpoint. It did not label rows: every label comes from the
+builder. The sealed cut never appears here, because the builder never writes it. And this
+screen is a record of the run, not a service this repository starts. Trying the published model
+is the examples page, <code>python -m serve.server</code>.</p>
+
+<p class="note">Code: Apache-2.0. The photograph is a frame of the local research console from
+16 November 2026.</p>
+
+</div>
+</body>
+</html>

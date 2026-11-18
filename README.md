@@ -190,6 +190,12 @@ champion is cycle 2394. Each cycle is one call to `training/train.py`: AdamW at 
 steps then cosine decay to 10%, gradient clipping at 1.0, batches of 8 to 16 decisions with the
 same option count, options shuffled at every step so position carries no answer.
 
+While that ran, a local console kept the two jobs on one screen: the CPU job building the next
+batch, and the GPU job training and sitting the exam. One frame, cycle 2403 on 16 November 2026,
+is in [Watching the run](docs/monitor.html), with a reading of each number. The scores on that
+screen are the ones the loop logged live. The table at the top of this file is the later
+measurement of the published checkpoint.
+
 ## Quick start
 
 Python 3.10 or newer.
@@ -269,7 +275,7 @@ serve/       server.py (standard-library HTTP server), static/index.html (exampl
 bench/       run.py (one runner for every system), rules.py, report.py, results/
 benchmark/   the frozen 3,000-row benchmark and the 2,162-row validation split
 examples/    six sample requests with their computed answers
-docs/        index.html (diagrams), the training record and its plot
+docs/        index.html (diagrams), monitor.html (the run console), the training record and its plot
 tests/       unit tests for every module
 checkpoints/ config and training report of the published checkpoint
 ```
