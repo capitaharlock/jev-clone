@@ -1,7 +1,7 @@
 # Product comparison benchmark
 
 Two frozen files of nutrition comparison questions built from Open Food Facts by
-`data/off_products.py`. Every product in them is on the evaluation side of the barcode split, so
+`asimovia/data/off_products.py`. Every product in them is on the evaluation side of the barcode split, so
 none of them appears in any training row.
 
 | File | Rows | sha256 |

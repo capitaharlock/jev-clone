@@ -6,17 +6,30 @@ and picks the extreme. It knows the question templates, so its score is
 the ceiling of the task, not a fair rival: it shows that every gold label
 follows from what the model is given.
 """
+
 from __future__ import annotations
 
 import re
 
 NUTRIENTS = {
-    "en": [("saturated fat", "saturates"), ("sugar", "sugars"),
-           ("salt", "salt"), ("fat", "fat"), ("protein", "protein"),
-           ("fibre", "fibre"), ("calories", "energy")],
-    "es": [("grasa saturada", "saturates"), ("azúcar", "sugars"),
-           ("sal", "salt"), ("grasa", "fat"), ("proteína", "protein"),
-           ("fibra", "fibre"), ("calorías", "energy")],
+    "en": [
+        ("saturated fat", "saturates"),
+        ("sugar", "sugars"),
+        ("salt", "salt"),
+        ("fat", "fat"),
+        ("protein", "protein"),
+        ("fibre", "fibre"),
+        ("calories", "energy"),
+    ],
+    "es": [
+        ("grasa saturada", "saturates"),
+        ("azúcar", "sugars"),
+        ("sal", "salt"),
+        ("grasa", "fat"),
+        ("proteína", "protein"),
+        ("fibra", "fibre"),
+        ("calorías", "energy"),
+    ],
 }
 CARD = {
     "energy": r"(?:energy|energía) ([\d.]+) kcal",
@@ -43,7 +56,7 @@ def mentions(question: str, lang: str) -> list[str]:
     taken = [False] * len(text)
     for word, key in NUTRIENTS[lang]:
         for match in re.finditer(rf"\b{re.escape(word)}\b", text):
-            if not any(taken[match.start():match.end()]):
+            if not any(taken[match.start() : match.end()]):
                 found.append((match.start(), key))
                 for i in range(match.start(), match.end()):
                     taken[i] = True

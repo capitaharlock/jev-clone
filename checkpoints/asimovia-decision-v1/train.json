@@ -27,8 +27,8 @@
   "initialization": "random at cycle 0, continued every cycle after",
   "parameters": 16959746,
   "published_scores": {
-    "benchmark": "see bench/results/own--asimovia-decision-v1--cpu.json",
-    "validation": "see bench/results/validation/own--asimovia-decision-v1--mps.json"
+    "benchmark": "see results/raw/own--asimovia-decision-v1--cpu.json",
+    "validation": "see results/raw/validation/own--asimovia-decision-v1--mps.json"
   },
   "tokenizer": "utf-8-bytes",
   "weights_sha256": "00c0fd3bf3c7a3b19f586edf35406e0befde419ed63c49e071abe8331c7799dd"

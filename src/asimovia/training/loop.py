@@ -10,8 +10,9 @@ best cycle on the benchmark is kept as the champion.
 Every cycle appends one line to `history.jsonl`. Touching `STOP` in the
 run folder ends the loop at the next cycle boundary.
 
-    python -m training.loop --run runs/curriculum
+    python -m asimovia.training.loop --run runs/curriculum
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,13 +24,12 @@ import sys
 import time
 from pathlib import Path
 
-from data import curriculum
-from data.io import read_jsonl, write_json, write_jsonl
-from model.backbone import DecisionModel
+from ..data import curriculum
+from ..data.io import read_jsonl, write_json, write_jsonl
+from ..model.backbone import DecisionModel
 
-ROOT = Path(__file__).resolve().parents[1]
-REAL_TRAIN = ROOT / "work" / "off" / "train.jsonl"
-BENCHMARK = ROOT / "benchmark" / "product_specs.dev.jsonl"
+REAL_TRAIN = Path("work/off/train.jsonl")
+BENCHMARK = Path("benchmark/product_specs.dev.jsonl")
 MAX_LENGTH = 1536
 CLEAR_AT = 0.90
 REPLAY = 0.2
@@ -54,21 +54,21 @@ def now() -> str:
 def hard(row: dict) -> bool:
     """The families where the model trailed: caps, K=5 and sodium in mg."""
     question = row["question"].lower()
-    return (any(word in question for word in CAPPED)
-            or len(row["candidates"]) >= 5
-            or any("sodium" in c["text"] or "sodio" in c["text"]
-                   for c in row["candidates"]))
+    return (
+        any(word in question for word in CAPPED)
+        or len(row["candidates"]) >= 5
+        or any("sodium" in c["text"] or "sodio" in c["text"] for c in row["candidates"])
+    )
 
 
 def fits(rows: list[dict], limit: int = MAX_LENGTH) -> float:
     """Share of rows whose question and every option survive packing whole."""
     whole = 0
     for row in rows:
-        question, _, option = DecisionModel._budgets(
-            None, limit, len(row["candidates"]))
-        if (len(row["question"].encode()) + 2 <= question
-                and all(len(c["text"].encode()) + 2 <= option
-                        for c in row["candidates"])):
+        question, _, option = DecisionModel.budgets(limit, len(row["candidates"]))
+        if len(row["question"].encode()) + 2 <= question and all(
+            len(c["text"].encode()) + 2 <= option for c in row["candidates"]
+        ):
             whole += 1
     return whole / len(rows) if rows else 0.0
 
@@ -78,47 +78,46 @@ def dev_file(run: Path, rung: str, benchmark: Path) -> Path:
         return benchmark
     path = run / "dev" / f"{rung}.jsonl"
     if not path.is_file():
-        write_jsonl(path, curriculum.batch(
-            rung, DEV_ROWS, seed=900 + curriculum.RUNGS.index(rung)))
+        write_jsonl(path, curriculum.batch(rung, DEV_ROWS, seed=900 + curriculum.RUNGS.index(rung)))
     return path
 
 
 def train_rows(rung: dict, cycle: int, real_train: Path) -> list[dict]:
     if rung["id"] != "r5-real":
-        return curriculum.batch(rung["id"], rung["rows"], seed=10_000 + cycle,
-                                replay=REPLAY)
+        return curriculum.batch(rung["id"], rung["rows"], seed=10_000 + cycle, replay=REPLAY)
     rows = read_jsonl(real_train)
     rows += [row for row in rows if hard(row)] * HARD_COPIES
     # Synthetic replay keeps the constraint skill sharp while the real
     # cards, with their noisier wording, are learned.
-    rows += curriculum.batch("r4-constraints", len(rows) // 8,
-                             seed=50_000 + cycle, replay=0.5)
+    rows += curriculum.batch("r4-constraints", len(rows) // 8, seed=50_000 + cycle, replay=0.5)
     return rows
 
 
-def update(state: dict, rung: dict, result: dict, cycle: int,
-           seconds: float, rows: int) -> dict:
+def update(state: dict, rung: dict, result: dict, cycle: int, seconds: float, rows: int) -> dict:
     """Bookkeeping after one cycle; returns the history line."""
     accuracy = result["holdout_forced_accuracy"]
     best = state.setdefault("best", {})
     cleared = rung["id"] != "r5-real" and accuracy >= CLEAR_AT
     best[rung["id"]] = max(best.get(rung["id"], 0.0), accuracy)
     if cleared:
-        state["rung_index"] = min(state.get("rung_index", 0) + 1,
-                                  len(RUNGS) - 1)
+        state["rung_index"] = min(state.get("rung_index", 0) + 1, len(RUNGS) - 1)
         state.setdefault("cleared", {})[rung["id"]] = cycle
     return {
-        "cycle": cycle, "rung": rung["id"], "accuracy": accuracy,
+        "cycle": cycle,
+        "rung": rung["id"],
+        "accuracy": accuracy,
         "chance": result["holdout_forced_chance"],
         "wilson_lower": result["holdout_forced_wilson_lower"],
-        "rows": result["holdout_rows"], "loss": result["last_loss"],
-        "train_rows": rows, "cleared": cleared,
-        "seconds": round(seconds, 1), "at": now(),
+        "rows": result["holdout_rows"],
+        "loss": result["last_loss"],
+        "train_rows": rows,
+        "cleared": cleared,
+        "seconds": round(seconds, 1),
+        "at": now(),
     }
 
 
-def run_cycle(run: Path, state: dict, python: str, real_train: Path,
-              benchmark: Path) -> dict:
+def run_cycle(run: Path, state: dict, python: str, real_train: Path, benchmark: Path) -> dict:
     cycle = int(state.get("next_cycle", 0))
     rung = RUNGS[int(state.get("rung_index", 0))]
     dev = dev_file(run, rung["id"], benchmark)
@@ -129,26 +128,43 @@ def run_cycle(run: Path, state: dict, python: str, real_train: Path,
     train = folder / "train.jsonl"
     rows = write_jsonl(train, train_rows(rung, cycle, real_train))
     command = [
-        python, "-u", "-m", "training.train",
-        "--episodes", str(train), "--eval", str(dev), "--out", str(folder),
-        "--steps", str(rung["steps"]), "--batch-size", str(rung["batch"]),
-        "--max-length", str(MAX_LENGTH), "--lr", "3e-4", "--warmup", "100",
-        "--log-every", "100", "--eval-every", "200",
-        "--seed", str(20261020 + cycle),
+        python,
+        "-u",
+        "-m",
+        "asimovia.training.train",
+        "--episodes",
+        str(train),
+        "--eval",
+        str(dev),
+        "--out",
+        str(folder),
+        "--steps",
+        str(rung["steps"]),
+        "--batch-size",
+        str(rung["batch"]),
+        "--max-length",
+        str(MAX_LENGTH),
+        "--lr",
+        "3e-4",
+        "--warmup",
+        "100",
+        "--log-every",
+        "100",
+        "--eval-every",
+        "200",
+        "--seed",
+        str(20261020 + cycle),
     ]
     latest = run / "latest"
     if (latest / "model.safetensors").is_file():
         command += ["--init", str(latest / "model.safetensors")]
-    state.update({"status": "training", "cycle": cycle, "rung": rung["id"],
-                  "updated_utc": now()})
+    state.update({"status": "training", "cycle": cycle, "rung": rung["id"], "updated_utc": now()})
     write_json(run / "state.json", state)
     started = time.time()
     with (run / "train.log").open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps({"cycle": cycle, "rung": rung["id"],
-                                 "at": now()}) + "\n")
+        handle.write(json.dumps({"cycle": cycle, "rung": rung["id"], "at": now()}) + "\n")
         handle.flush()
-        subprocess.run(command, cwd=ROOT, check=True, stdout=handle,
-                       stderr=subprocess.STDOUT)
+        subprocess.run(command, check=True, stdout=handle, stderr=subprocess.STDOUT)
     seconds = time.time() - started
     result = json.loads((folder / "train.json").read_text(encoding="utf-8"))
     train.unlink(missing_ok=True)
@@ -157,20 +173,19 @@ def run_cycle(run: Path, state: dict, python: str, real_train: Path,
     for name in names:
         shutil.copy2(folder / name, latest / name)
     champion = state.get("champion") or {}
-    if (rung["id"] == "r5-real" and result["holdout_forced_accuracy"]
-            > champion.get("accuracy", 0.0)):
+    if rung["id"] == "r5-real" and result["holdout_forced_accuracy"] > champion.get(
+        "accuracy", 0.0
+    ):
         (run / "champion").mkdir(parents=True, exist_ok=True)
         for name in names:
             shutil.copy2(folder / name, run / "champion" / name)
-        state["champion"] = {"cycle": cycle,
-                             "accuracy": result["holdout_forced_accuracy"]}
+        state["champion"] = {"cycle": cycle, "accuracy": result["holdout_forced_accuracy"]}
     # Only the latest and the champion are kept; a cycle folder is 68 MB.
     (folder / "model.safetensors").unlink(missing_ok=True)
     line = update(state, rung, result, cycle, seconds, rows)
     with (run / "history.jsonl").open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(line, sort_keys=True) + "\n")
-    state.update({"status": "idle", "next_cycle": cycle + 1, "last": line,
-                  "updated_utc": now()})
+    state.update({"status": "idle", "next_cycle": cycle + 1, "last": line, "updated_utc": now()})
     write_json(run / "state.json", state)
     print(json.dumps(line), flush=True)
     return line
@@ -178,21 +193,20 @@ def run_cycle(run: Path, state: dict, python: str, real_train: Path,
 
 def main(argv: list[str] | None = None) -> int:
     cli = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    cli.add_argument("--run", type=Path, default=ROOT / "runs" / "curriculum")
+    cli.add_argument("--run", type=Path, default=Path("runs/curriculum"))
     cli.add_argument("--real-train", type=Path, default=REAL_TRAIN)
     cli.add_argument("--benchmark", type=Path, default=BENCHMARK)
-    cli.add_argument("--cycles", type=int, default=0,
-                     help="stop after this many cycles; 0 runs until STOP")
-    cli.add_argument("--python", default=os.environ.get("PYTHON",
-                                                        sys.executable))
+    cli.add_argument(
+        "--cycles", type=int, default=0, help="stop after this many cycles; 0 runs until STOP"
+    )
+    cli.add_argument("--python", default=os.environ.get("PYTHON", sys.executable))
     args = cli.parse_args(argv)
     args.run.mkdir(parents=True, exist_ok=True)
     state_path = args.run / "state.json"
     state = json.loads(state_path.read_text()) if state_path.is_file() else {}
     done = 0
     while not (args.run / "STOP").exists():
-        run_cycle(args.run, state, args.python, args.real_train,
-                  args.benchmark)
+        run_cycle(args.run, state, args.python, args.real_train, args.benchmark)
         done += 1
         if args.cycles and done >= args.cycles:
             break

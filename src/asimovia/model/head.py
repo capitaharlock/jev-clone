@@ -6,6 +6,7 @@ option text never seen in training is scored like any other. The head adds
 no signal along the option axis; any order effect comes from the encoder's
 positions, and training shuffles the options to wash it out.
 """
+
 from __future__ import annotations
 
 import torch
@@ -18,12 +19,9 @@ class CrossBlock(nn.Module):
     def __init__(self, d_model: int, n_heads: int, dropout: float = 0.0):
         super().__init__()
         self.ln_cross = nn.LayerNorm(d_model)
-        self.cross = nn.MultiheadAttention(d_model, n_heads, dropout=dropout,
-                                           batch_first=True)
+        self.cross = nn.MultiheadAttention(d_model, n_heads, dropout=dropout, batch_first=True)
         self.ln_set = nn.LayerNorm(d_model)
-        self.set_attn = nn.MultiheadAttention(d_model, n_heads,
-                                              dropout=dropout,
-                                              batch_first=True)
+        self.set_attn = nn.MultiheadAttention(d_model, n_heads, dropout=dropout, batch_first=True)
         self.ln_ff = nn.LayerNorm(d_model)
         self.ff = nn.Sequential(
             nn.Linear(d_model, 4 * d_model),
@@ -32,19 +30,20 @@ class CrossBlock(nn.Module):
             nn.Linear(4 * d_model, d_model),
         )
 
-    def forward(self, x: torch.Tensor, memory: torch.Tensor,
-                memory_pad: torch.Tensor,
-                option_pad: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        x: torch.Tensor,
+        memory: torch.Tensor,
+        memory_pad: torch.Tensor,
+        option_pad: torch.Tensor,
+    ) -> torch.Tensor:
         h = self.ln_cross(x)
-        attended, _ = self.cross(h, memory, memory,
-                                 key_padding_mask=memory_pad,
-                                 need_weights=False)
+        attended, _ = self.cross(h, memory, memory, key_padding_mask=memory_pad, need_weights=False)
         x = x + attended
         h = self.ln_set(x)
         # A real option must never read a padding slot, or a batch with
         # mixed option counts would disagree with scoring row by row.
-        mixed, _ = self.set_attn(h, h, h, key_padding_mask=option_pad,
-                                 need_weights=False)
+        mixed, _ = self.set_attn(h, h, h, key_padding_mask=option_pad, need_weights=False)
         x = x + mixed
         return x + self.ff(self.ln_ff(x))
 
@@ -52,8 +51,9 @@ class CrossBlock(nn.Module):
 class PointerDecisionHead(nn.Module):
     """Scores a variable-length option set against encoded state tokens."""
 
-    def __init__(self, d_state: int, d_model: int, n_layers: int = 2,
-                 n_heads: int = 8, dropout: float = 0.0):
+    def __init__(
+        self, d_state: int, d_model: int, n_layers: int = 2, n_heads: int = 8, dropout: float = 0.0
+    ):
         super().__init__()
         if not 1 <= n_layers <= 3:
             raise ValueError("n_layers must be between 1 and 3")
@@ -62,7 +62,8 @@ class PointerDecisionHead(nn.Module):
         self.q_proj = nn.Linear(d_state, d_model)
         self.opt_proj = nn.Linear(d_state, d_model)
         self.blocks = nn.ModuleList(
-            [CrossBlock(d_model, n_heads, dropout) for _ in range(n_layers)])
+            [CrossBlock(d_model, n_heads, dropout) for _ in range(n_layers)]
+        )
         self.ln_out = nn.LayerNorm(d_model)
         # The key comes from the option's own text and the query from the
         # option in context, so the score is content against context.
@@ -70,13 +71,17 @@ class PointerDecisionHead(nn.Module):
         self.ptr_key = nn.Linear(d_model, d_model, bias=False)
         self.ptr_bias = nn.Parameter(torch.zeros(1))
         self.unknown_ln = nn.LayerNorm(d_model)
-        self.unknown = nn.Sequential(
-            nn.Linear(d_model, d_model), nn.GELU(), nn.Linear(d_model, 1))
-        self.scale = d_model ** -0.5
+        self.unknown = nn.Sequential(nn.Linear(d_model, d_model), nn.GELU(), nn.Linear(d_model, 1))
+        self.scale = d_model**-0.5
 
-    def forward_batch(self, memory: torch.Tensor, memory_mask: torch.Tensor,
-                      question_emb: torch.Tensor, option_embs: torch.Tensor,
-                      option_mask: torch.Tensor) -> torch.Tensor:
+    def forward_batch(
+        self,
+        memory: torch.Tensor,
+        memory_mask: torch.Tensor,
+        question_emb: torch.Tensor,
+        option_embs: torch.Tensor,
+        option_mask: torch.Tensor,
+    ) -> torch.Tensor:
         """Return `[B, K + 1]` logits; the last column is unknown.
 
         memory        [B, T, d_state]  encoded state tokens

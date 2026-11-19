@@ -31,18 +31,26 @@ Pro GPU, 67 ms on its CPU.
 ## Use
 
 ```python
-import torch
-from model import load_model, predict   # from the GitHub repository
+from asimovia import load_model, predict  # pip install -e . from the GitHub repository
 
 model = load_model("checkpoints/asimovia-decision-v1")
-row = {"state": "Comparing soups on the shelf. Nutrition values are per 100 g as printed on each pack.",
-       "question": "Which product has the least salt per 100 g?",
-       "candidates": [
-           {"id": "a", "text": "Hearth · Tomato Soup. energy 40 kcal, fat 1 g, of which saturates 0.2 g, "
-                               "sugars 4.1 g, fibre 0.8 g, protein 0.9 g, salt 0.9 g."},
-           {"id": "b", "text": "Hearth · Lentil Soup. energy 60 kcal, fat 0.5 g, of which saturates 0.1 g, "
-                               "sugars 1.2 g, fibre 2.3 g, protein 3.6 g, salt 0.4 g."}]}
-print(predict(model, [row], torch.device("cpu"))[0])
+row = {
+    "state": "Comparing soups on the shelf. Nutrition values are per 100 g as printed on each pack.",
+    "question": "Which product has the least salt per 100 g?",
+    "candidates": [
+        {
+            "id": "a",
+            "text": "Hearth · Tomato Soup. energy 40 kcal, fat 1 g, of which saturates 0.2 g, "
+            "sugars 4.1 g, fibre 0.8 g, protein 0.9 g, salt 0.9 g.",
+        },
+        {
+            "id": "b",
+            "text": "Hearth · Lentil Soup. energy 60 kcal, fat 0.5 g, of which saturates 0.1 g, "
+            "sugars 1.2 g, fibre 2.3 g, protein 3.6 g, salt 0.4 g.",
+        },
+    ],
+}
+print(predict(model, [row])[0])  # {'choice': 'b', 'probabilities': {'a': 0.0, 'b': 1.0}}
 ```
 
 Cards must follow the training layout (`Brand · Name.` then energy, fat, of which saturates,

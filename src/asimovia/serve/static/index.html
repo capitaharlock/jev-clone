@@ -156,7 +156,8 @@ fetch("/examples").then(r => r.json()).then(items => {
      <span>${escapeHtml(s.note || "")}</span></button>`).join("");
   [...list.children].forEach(node => node.addEventListener("click",
     () => select(Number(node.dataset.i))));
-  if (items.length) select(0);
+  const wanted = new URLSearchParams(location.search).get("sample");
+  if (items.length) select(Math.max(0, items.findIndex(s => s.name === wanted)));
 });
 </script>
 </body>

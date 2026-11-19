@@ -9,69 +9,138 @@ an answer. The rungs add one difficulty at a time:
     r3-units        3 to 5 named panels, half of them print sodium in mg
     r4-constraints  a cap on a second nutrient that excludes the naive pick
 
-The last rung, r5-real, is the Open Food Facts set from `data.off_products`
+The last rung, r5-real, is the Open Food Facts set from `asimovia.data.off_products`
 and is read from disk, not generated here.
 """
+
 from __future__ import annotations
 
 import random
 
 NUTRIENTS = ("energy", "fat", "saturates", "sugars", "fibre", "protein", "salt")
-RANGES = {"energy": (0, 900), "fat": (0, 100), "saturates": (0, 60),
-          "sugars": (0, 100), "fibre": (0, 30), "protein": (0, 60),
-          "salt": (0, 8)}
+RANGES = {
+    "energy": (0, 900),
+    "fat": (0, 100),
+    "saturates": (0, 60),
+    "sugars": (0, 100),
+    "fibre": (0, 30),
+    "protein": (0, 60),
+    "salt": (0, 8),
+}
 LABELS = {
-    "en": {"energy": "energy", "fat": "fat", "saturates": "of which saturates",
-           "sugars": "sugars", "fibre": "fibre", "protein": "protein",
-           "salt": "salt", "sodium": "sodium"},
-    "es": {"energy": "energía", "fat": "grasas",
-           "saturates": "de las cuales saturadas", "sugars": "azúcares",
-           "fibre": "fibra", "protein": "proteínas", "salt": "sal",
-           "sodium": "sodio"},
+    "en": {
+        "energy": "energy",
+        "fat": "fat",
+        "saturates": "of which saturates",
+        "sugars": "sugars",
+        "fibre": "fibre",
+        "protein": "protein",
+        "salt": "salt",
+        "sodium": "sodium",
+    },
+    "es": {
+        "energy": "energía",
+        "fat": "grasas",
+        "saturates": "de las cuales saturadas",
+        "sugars": "azúcares",
+        "fibre": "fibra",
+        "protein": "proteínas",
+        "salt": "sal",
+        "sodium": "sodio",
+    },
 }
 ASKED = {
-    "en": {"energy": "energy", "fat": "fat", "saturates": "saturated fat",
-           "sugars": "sugar", "fibre": "fibre", "protein": "protein",
-           "salt": "salt"},
-    "es": {"energy": "energía", "fat": "grasa", "saturates": "grasa saturada",
-           "sugars": "azúcar", "fibre": "fibra", "protein": "proteína",
-           "salt": "sal"},
+    "en": {
+        "energy": "energy",
+        "fat": "fat",
+        "saturates": "saturated fat",
+        "sugars": "sugar",
+        "fibre": "fibre",
+        "protein": "protein",
+        "salt": "salt",
+    },
+    "es": {
+        "energy": "energía",
+        "fat": "grasa",
+        "saturates": "grasa saturada",
+        "sugars": "azúcar",
+        "fibre": "fibra",
+        "protein": "proteína",
+        "salt": "sal",
+    },
 }
 EXTREME = {
-    "en": {True: ["Which product has the most {n} per 100 g?",
-                  "Which product gives the most {n}?",
-                  "I want the option with the highest {n}. Which one?"],
-           False: ["Which product has the least {n} per 100 g?",
-                   "Which product gives the least {n}?",
-                   "I want the option with the lowest {n}. Which one?"]},
-    "es": {True: ["¿Qué producto tiene más {n} por 100 g?",
-                  "¿Cuál aporta más {n}?",
-                  "Quiero la opción con más {n}. ¿Cuál es?"],
-           False: ["¿Qué producto tiene menos {n} por 100 g?",
-                   "¿Cuál aporta menos {n}?",
-                   "Quiero la opción con menos {n}. ¿Cuál es?"]},
+    "en": {
+        True: [
+            "Which product has the most {n} per 100 g?",
+            "Which product gives the most {n}?",
+            "I want the option with the highest {n}. Which one?",
+        ],
+        False: [
+            "Which product has the least {n} per 100 g?",
+            "Which product gives the least {n}?",
+            "I want the option with the lowest {n}. Which one?",
+        ],
+    },
+    "es": {
+        True: [
+            "¿Qué producto tiene más {n} por 100 g?",
+            "¿Cuál aporta más {n}?",
+            "Quiero la opción con más {n}. ¿Cuál es?",
+        ],
+        False: [
+            "¿Qué producto tiene menos {n} por 100 g?",
+            "¿Cuál aporta menos {n}?",
+            "Quiero la opción con menos {n}. ¿Cuál es?",
+        ],
+    },
 }
 CONSTRAINED = {
-    "en": "Among the products with at most {x} g of {c} per 100 g, "
-          "which has the {w} {n}?",
-    "es": "Entre los productos con como máximo {x} g de {c} por 100 g, "
-          "¿cuál tiene {w} {n}?",
+    "en": "Among the products with at most {x} g of {c} per 100 g, which has the {w} {n}?",
+    "es": "Entre los productos con como máximo {x} g de {c} por 100 g, ¿cuál tiene {w} {n}?",
 }
-WORDS = {"en": {True: "most", False: "least"},
-         "es": {True: "más", False: "menos"}}
+WORDS = {"en": {True: "most", False: "least"}, "es": {True: "más", False: "menos"}}
 STATES = {
-    "en": "Comparing {item} on the shelf. Nutrition values are per 100 g "
-          "as printed on each pack.",
+    "en": "Comparing {item} on the shelf. Nutrition values are per 100 g as printed on each pack.",
     "es": "Comparando {item} en el lineal. Los valores nutricionales son por "
-          "100 g, tal como figuran en cada envase.",
+    "100 g, tal como figuran en cada envase.",
 }
-ITEMS = {"en": ["breakfast cereals", "yoghurts", "crackers", "soups",
-                "granola bars", "biscuits", "sauces", "breads"],
-         "es": ["cereales de desayuno", "yogures", "galletas saladas",
-                "sopas", "barritas de cereales", "galletas", "salsas",
-                "panes"]}
-BRANDS = ["Nordvik", "La Huerta", "Alba", "Kestrel", "Molino Real", "Brightfield",
-          "Casa Mar", "Oakden", "Verda", "Tisbury", "El Prado", "Hollin"]
+ITEMS = {
+    "en": [
+        "breakfast cereals",
+        "yoghurts",
+        "crackers",
+        "soups",
+        "granola bars",
+        "biscuits",
+        "sauces",
+        "breads",
+    ],
+    "es": [
+        "cereales de desayuno",
+        "yogures",
+        "galletas saladas",
+        "sopas",
+        "barritas de cereales",
+        "galletas",
+        "salsas",
+        "panes",
+    ],
+}
+BRANDS = [
+    "Nordvik",
+    "La Huerta",
+    "Alba",
+    "Kestrel",
+    "Molino Real",
+    "Brightfield",
+    "Casa Mar",
+    "Oakden",
+    "Verda",
+    "Tisbury",
+    "El Prado",
+    "Hollin",
+]
 MARGIN = 0.15
 RUNGS = ("r0-most", "r1-pair", "r2-panel", "r3-units", "r4-constraints")
 
@@ -95,16 +164,14 @@ def _separated(values: list[float], best: int) -> bool:
     if not rivals:
         return False
     scale = max(abs(top), 1e-9)
-    return all(abs(top - v) / scale >= MARGIN and abs(top - v) >= 0.2
-               for v in rivals)
+    return all(abs(top - v) / scale >= MARGIN and abs(top - v) >= 0.2 for v in rivals)
 
 
 def _pick(values: list[float], most: bool) -> int:
     return max(range(len(values)), key=lambda i: values[i] * (1 if most else -1))
 
 
-def _panel(rng: random.Random, lang: str, panel: dict, sodium: bool,
-           name: str | None) -> str:
+def _panel(rng: random.Random, lang: str, panel: dict, sodium: bool, name: str | None) -> str:
     labels = LABELS[lang]
     parts = []
     for nutrient in NUTRIENTS:
@@ -118,8 +185,9 @@ def _panel(rng: random.Random, lang: str, panel: dict, sodium: bool,
     return f"{name}. {body}" if name else body
 
 
-def _episode(rid: str, lang: str, state: str, question: str,
-             texts: list[str], gold: int, rung: str) -> dict:
+def _episode(
+    rid: str, lang: str, state: str, question: str, texts: list[str], gold: int, rung: str
+) -> dict:
     return {
         "id": rid,
         "state": state,
@@ -166,14 +234,23 @@ def make(rung: str, rng: random.Random, index: int) -> dict:
         gold = _pick(values, most)
         if _separated(values, gold):
             break
-    texts = [_panel(rng, lang, p, sodium_mix and rng.random() < 0.5,
-                    _name(rng, lang, item) if named else None) for p in panels]
+    texts = [
+        _panel(
+            rng,
+            lang,
+            p,
+            sodium_mix and rng.random() < 0.5,
+            _name(rng, lang, item) if named else None,
+        )
+        for p in panels
+    ]
     question = rng.choice(EXTREME[lang][most]).format(n=ASKED[lang][target])
     return _episode(rid, lang, state, question, texts, gold, rung)
 
 
-def _constrained(rid: str, lang: str, state: str, item: str, k: int,
-                 most: bool, rng: random.Random) -> dict:
+def _constrained(
+    rid: str, lang: str, state: str, item: str, k: int, most: bool, rng: random.Random
+) -> dict:
     nutrients = [n for n in NUTRIENTS if n != "energy"]
     while True:
         cap, target = rng.sample(nutrients, 2)
@@ -192,22 +269,20 @@ def _constrained(rid: str, lang: str, state: str, item: str, k: int,
         gold = allowed[best]
         outside = [i for i in range(k) if i not in allowed]
         # The trap: an excluded product that would win without the cap.
-        if not any((panels[i][target] > panels[gold][target]) == most
-                   for i in outside):
+        if not any((panels[i][target] > panels[gold][target]) == most for i in outside):
             continue
         break
-    texts = [_panel(rng, lang, p, rng.random() < 0.5, _name(rng, lang, item))
-             for p in panels]
+    texts = [_panel(rng, lang, p, rng.random() < 0.5, _name(rng, lang, item)) for p in panels]
     question = CONSTRAINED[lang].format(
-        x=_fmt(limit), c=ASKED[lang][cap], w=WORDS[lang][most],
-        n=ASKED[lang][target])
+        x=_fmt(limit), c=ASKED[lang][cap], w=WORDS[lang][most], n=ASKED[lang][target]
+    )
     return _episode(rid, lang, state, question, texts, gold, "r4-constraints")
 
 
 def batch(rung: str, rows: int, seed: int, replay: float = 0.0) -> list[dict]:
     """Rows of one rung, with a share of earlier rungs so they stay learned."""
     rng = random.Random(seed)
-    earlier = list(RUNGS[:RUNGS.index(rung)]) if rung in RUNGS else list(RUNGS)
+    earlier = list(RUNGS[: RUNGS.index(rung)]) if rung in RUNGS else list(RUNGS)
     out = []
     for index in range(rows):
         source = rung

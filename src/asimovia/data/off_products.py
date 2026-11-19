@@ -18,8 +18,9 @@ When a product sits on the cap after rounding (fibre 0.03 g printed as
 "0 g" under "at most 0 g") the text no longer decides the answer. Such rows
 are marked `decidable: false` and left out of the written files.
 
-    python -m data.off_products path/to/en.openfoodfacts.org.products.csv.gz
+    python -m asimovia.data.off_products path/to/en.openfoodfacts.org.products.csv.gz
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from data.io import valid_episode, write_json, write_jsonl
+from .io import valid_episode, write_json, write_jsonl
 
 ATTRS = {
     "sugars": ("sugars_100g", 1.0),
@@ -51,44 +52,68 @@ MAX_PER_CATEGORY = 400
 SEED = 20261015
 
 NAMES = {
-    "en": {"sugars": "sugar", "salt": "salt", "fat": "fat",
-           "saturated_fat": "saturated fat", "proteins": "protein",
-           "fiber": "fibre", "energy": "calories"},
-    "es": {"sugars": "azúcar", "salt": "sal", "fat": "grasa",
-           "saturated_fat": "grasa saturada", "proteins": "proteína",
-           "fiber": "fibra", "energy": "calorías"},
+    "en": {
+        "sugars": "sugar",
+        "salt": "salt",
+        "fat": "fat",
+        "saturated_fat": "saturated fat",
+        "proteins": "protein",
+        "fiber": "fibre",
+        "energy": "calories",
+    },
+    "es": {
+        "sugars": "azúcar",
+        "salt": "sal",
+        "fat": "grasa",
+        "saturated_fat": "grasa saturada",
+        "proteins": "proteína",
+        "fiber": "fibra",
+        "energy": "calorías",
+    },
 }
 EXTREME = {
-    "en": {"min": ["Which product has the least {a} per 100 g?",
-                   "I want the option with the lowest {a}. Which one?",
-                   "Which product keeps {a} to a minimum?"],
-           "max": ["Which product has the most {a} per 100 g?",
-                   "I want the option with the highest {a}. Which one?",
-                   "Which product gives the most {a}?"]},
-    "es": {"min": ["¿Qué producto tiene menos {a} por 100 g?",
-                   "Quiero la opción con menos {a}. ¿Cuál es?",
-                   "¿Qué producto reduce al mínimo el contenido de {a}?"],
-           "max": ["¿Qué producto tiene más {a} por 100 g?",
-                   "Quiero la opción con más {a}. ¿Cuál es?",
-                   "¿Qué producto aporta más {a}?"]},
+    "en": {
+        "min": [
+            "Which product has the least {a} per 100 g?",
+            "I want the option with the lowest {a}. Which one?",
+            "Which product keeps {a} to a minimum?",
+        ],
+        "max": [
+            "Which product has the most {a} per 100 g?",
+            "I want the option with the highest {a}. Which one?",
+            "Which product gives the most {a}?",
+        ],
+    },
+    "es": {
+        "min": [
+            "¿Qué producto tiene menos {a} por 100 g?",
+            "Quiero la opción con menos {a}. ¿Cuál es?",
+            "¿Qué producto reduce al mínimo el contenido de {a}?",
+        ],
+        "max": [
+            "¿Qué producto tiene más {a} por 100 g?",
+            "Quiero la opción con más {a}. ¿Cuál es?",
+            "¿Qué producto aporta más {a}?",
+        ],
+    },
 }
 CONSTRAINED = {
-    "en": ["Among the products with at most {limit} g of {c} per 100 g, "
-           "which has the {dir} {a}?",
-           "{c_cap} must stay at or below {limit} g per 100 g. Within that "
-           "limit, which product has the {dir} {a}?"],
-    "es": ["Entre los productos con como máximo {limit} g de {c} por 100 g, "
-           "¿cuál tiene {dir} {a}?",
-           "El contenido de {c} no puede pasar de {limit} g por 100 g. Dentro "
-           "de ese límite, ¿qué producto tiene {dir} {a}?"],
+    "en": [
+        "Among the products with at most {limit} g of {c} per 100 g, which has the {dir} {a}?",
+        "{c_cap} must stay at or below {limit} g per 100 g. Within that "
+        "limit, which product has the {dir} {a}?",
+    ],
+    "es": [
+        "Entre los productos con como máximo {limit} g de {c} por 100 g, ¿cuál tiene {dir} {a}?",
+        "El contenido de {c} no puede pasar de {limit} g por 100 g. Dentro "
+        "de ese límite, ¿qué producto tiene {dir} {a}?",
+    ],
 }
-DIRECTION = {"en": {"min": "lowest", "max": "highest"},
-             "es": {"min": "menos", "max": "más"}}
+DIRECTION = {"en": {"min": "lowest", "max": "highest"}, "es": {"min": "menos", "max": "más"}}
 STATE = {
-    "en": "Comparing {cat} on the shelf. Nutrition values are per 100 g as "
-          "printed on each pack.",
+    "en": "Comparing {cat} on the shelf. Nutrition values are per 100 g as printed on each pack.",
     "es": "Comparando {cat} en el lineal. Los valores nutricionales son por "
-          "100 g, tal como figuran en cada envase.",
+    "100 g, tal como figuran en cada envase.",
 }
 
 
@@ -126,35 +151,35 @@ def read_products(path: Path):
         reader = csv.DictReader(handle, delimiter="\t", quoting=csv.QUOTE_NONE)
         for row in reader:
             countries = (row.get("countries_en") or "").split(",")
-            language = next((COUNTRIES[c] for c in countries
-                             if c in COUNTRIES), None)
+            language = next((COUNTRIES[c] for c in countries if c in COUNTRIES), None)
             name = (row.get("product_name") or "").strip()
             category = (row.get("main_category_en") or "").strip()
             if not language or not name or not category or ":" in category:
                 continue
-            values = {key: _float(row.get(column))
-                      for key, (column, _) in ATTRS.items()}
+            values = {key: _float(row.get(column)) for key, (column, _) in ATTRS.items()}
             if any(value is None for value in values.values()):
                 continue
-            if any(not 0 <= values[key] <= 100
-                   for key in values if key != "energy"):
+            if any(not 0 <= values[key] <= 100 for key in values if key != "energy"):
                 continue
             if not 0 < values["energy"] <= 900:
                 continue
             # Rows whose sodium and salt disagree carry a typing error in
             # one of the two, and a sodium card would then lie.
             sodium = _float(row.get("sodium_100g"))
-            if sodium is None or abs(sodium * 2.5 - values["salt"]) > \
-                    max(0.05, 0.1 * values["salt"]):
+            if sodium is None or abs(sodium * 2.5 - values["salt"]) > max(
+                0.05, 0.1 * values["salt"]
+            ):
                 continue
             yield {
-                "code": row["code"], "name": name[:80],
+                "code": row["code"],
+                "name": name[:80],
                 "brand": (row.get("brands") or "").split(",")[0].strip()[:40],
                 "quantity": (row.get("quantity") or "").strip()[:20],
                 "category": category,
-                "group": ((row.get("categories_en") or "").split(",")[0]
-                          .strip() or category),
-                "language": language, "values": values, "sodium": sodium,
+                "group": ((row.get("categories_en") or "").split(",")[0].strip() or category),
+                "language": language,
+                "values": values,
+                "sodium": sodium,
             }
 
 
@@ -164,19 +189,29 @@ def card(product: dict, language: str, sodium_mg: bool) -> str:
     if product["quantity"]:
         head += f" ({product['quantity']})"
     if language == "es":
-        salt = (f"sodio {_fmt(product['sodium'] * 1000)} mg" if sodium_mg
-                else f"sal {_fmt(v['salt'])} g")
-        body = (f"energía {_fmt(v['energy'])} kcal, grasas {_fmt(v['fat'])} g, "
-                f"de las cuales saturadas {_fmt(v['saturated_fat'])} g, "
-                f"azúcares {_fmt(v['sugars'])} g, fibra {_fmt(v['fiber'])} g, "
-                f"proteínas {_fmt(v['proteins'])} g, {salt}")
+        salt = (
+            f"sodio {_fmt(product['sodium'] * 1000)} mg"
+            if sodium_mg
+            else f"sal {_fmt(v['salt'])} g"
+        )
+        body = (
+            f"energía {_fmt(v['energy'])} kcal, grasas {_fmt(v['fat'])} g, "
+            f"de las cuales saturadas {_fmt(v['saturated_fat'])} g, "
+            f"azúcares {_fmt(v['sugars'])} g, fibra {_fmt(v['fiber'])} g, "
+            f"proteínas {_fmt(v['proteins'])} g, {salt}"
+        )
     else:
-        salt = (f"sodium {_fmt(product['sodium'] * 1000)} mg" if sodium_mg
-                else f"salt {_fmt(v['salt'])} g")
-        body = (f"energy {_fmt(v['energy'])} kcal, fat {_fmt(v['fat'])} g, "
-                f"of which saturates {_fmt(v['saturated_fat'])} g, "
-                f"sugars {_fmt(v['sugars'])} g, fibre {_fmt(v['fiber'])} g, "
-                f"protein {_fmt(v['proteins'])} g, {salt}")
+        salt = (
+            f"sodium {_fmt(product['sodium'] * 1000)} mg"
+            if sodium_mg
+            else f"salt {_fmt(v['salt'])} g"
+        )
+        body = (
+            f"energy {_fmt(v['energy'])} kcal, fat {_fmt(v['fat'])} g, "
+            f"of which saturates {_fmt(v['saturated_fat'])} g, "
+            f"sugars {_fmt(v['sugars'])} g, fibre {_fmt(v['fiber'])} g, "
+            f"protein {_fmt(v['proteins'])} g, {salt}"
+        )
     return f"{head}. {body}."
 
 
@@ -188,8 +223,7 @@ def printed(product: dict, nutrient: str, sodium_mg: bool) -> float:
 
 
 def clear_winner(products: list[dict], attr: str, direction: str):
-    ranked = sorted(products, key=lambda p: p["values"][attr],
-                    reverse=direction == "max")
+    ranked = sorted(products, key=lambda p: p["values"][attr], reverse=direction == "max")
     best, second = ranked[0]["values"][attr], ranked[1]["values"][attr]
     gap = abs(best - second)
     if gap < ATTRS[attr][1] or gap < REL_MARGIN * max(best, second):
@@ -197,8 +231,9 @@ def clear_winner(products: list[dict], attr: str, direction: str):
     return ranked[0]
 
 
-def make_episode(products: list[dict], language: str, rng: random.Random,
-                 category: str) -> dict | None:
+def make_episode(
+    products: list[dict], language: str, rng: random.Random, category: str
+) -> dict | None:
     k = len(products)
     attr = rng.choice(list(ATTRS))
     direction = rng.choice(["min", "max"])
@@ -222,27 +257,28 @@ def make_episode(products: list[dict], language: str, rng: random.Random,
                 winner, kind, constraint = local, "constrained", option
                 template = rng.choice(CONSTRAINED[language])
                 question = template.format(
-                    limit=_fmt(limit), c=names[constraint],
+                    limit=_fmt(limit),
+                    c=names[constraint],
                     c_cap=names[constraint].capitalize(),
-                    dir=DIRECTION[language][direction], a=names[attr])
+                    dir=DIRECTION[language][direction],
+                    a=names[attr],
+                )
                 break
     if winner is None:
         winner = clear_winner(products, attr, direction)
         if winner is None:
             return None
-        question = rng.choice(EXTREME[language][direction]).format(
-            a=names[attr])
-    sodium_cards = attr == "salt" or (kind == "constrained"
-                                      and constraint == "salt")
+        question = rng.choice(EXTREME[language][direction]).format(a=names[attr])
+    sodium_cards = attr == "salt" or (kind == "constrained" and constraint == "salt")
     use_mg = sodium_cards and rng.random() < 0.4
-    texts = [card(p, language, use_mg and i % 2 == 0)
-             for i, p in enumerate(products)]
+    texts = [card(p, language, use_mg and i % 2 == 0) for i, p in enumerate(products)]
     if len(set(texts)) != k:
         return None
     decidable = kind == "extreme" or all(
-        (printed(p, constraint, use_mg and i % 2 == 0)
-         <= float(_fmt(limit))) == (p["values"][constraint] <= limit)
-        for i, p in enumerate(products))
+        (printed(p, constraint, use_mg and i % 2 == 0) <= float(_fmt(limit)))
+        == (p["values"][constraint] <= limit)
+        for i, p in enumerate(products)
+    )
     state = STATE[language].format(cat=category.lower())
     codes = "+".join(sorted(p["code"] for p in products))
     row = {
@@ -264,8 +300,7 @@ def make_episode(products: list[dict], language: str, rng: random.Random,
     return row if valid_episode(row) else None
 
 
-def build(path: Path, out_dir: Path, per_category: int = 12,
-          seed: int = SEED) -> dict:
+def build(path: Path, out_dir: Path, per_category: int = 12, seed: int = SEED) -> dict:
     """Write `train.jsonl` and `dev-pool.jsonl`; return a manifest.
 
     The RNG is drawn in a fixed order over sorted pools, so the same dump
@@ -291,16 +326,14 @@ def build(path: Path, out_dir: Path, per_category: int = 12,
             if budget <= 0:
                 break
             k = rng.choice([3, 4, 4, 5])
-            episode = make_episode(rng.sample(products, k), language, rng,
-                                   category)
+            episode = make_episode(rng.sample(products, k), language, rng, category)
             if episode:
                 rows[split].append(episode)
                 budget -= 1
     # Undecidable rows are dropped only here, after every RNG draw, so the
     # surviving rows are the same ones an unfiltered build would write.
     train = [row for row in rows["train"] if row["decidable"]]
-    dev_pool = [row for row in rows["dev"]
-                if row["decidable"] and not sealed(row["group_id"])]
+    dev_pool = [row for row in rows["dev"] if row["decidable"] and not sealed(row["group_id"])]
     out_dir.mkdir(parents=True, exist_ok=True)
     write_jsonl(out_dir / "train.jsonl", train)
     write_jsonl(out_dir / "dev-pool.jsonl", dev_pool)
@@ -321,14 +354,16 @@ def build(path: Path, out_dir: Path, per_category: int = 12,
 
 def main(argv: list[str] | None = None) -> int:
     cli = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    cli.add_argument("dump", type=Path,
-                     help="en.openfoodfacts.org.products.csv.gz")
+    cli.add_argument("dump", type=Path, help="en.openfoodfacts.org.products.csv.gz")
     cli.add_argument("--out", type=Path, default=Path("work/off"))
     cli.add_argument("--per-category", type=int, default=12)
     cli.add_argument("--seed", type=int, default=SEED)
     args = cli.parse_args(argv)
-    print(json.dumps(build(args.dump, args.out, args.per_category, args.seed),
-                     indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            build(args.dump, args.out, args.per_category, args.seed), indent=2, sort_keys=True
+        )
+    )
     return 0
 
 

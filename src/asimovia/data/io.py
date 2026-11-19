@@ -1,10 +1,11 @@
 """JSONL helpers shared by the builders, the trainer and the benchmarks."""
+
 from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -27,8 +28,7 @@ def write_json(path: Path, payload: dict) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n",
-                         encoding="utf-8")
+    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     temporary.replace(path)
 
 
@@ -44,7 +44,11 @@ def valid_episode(row: dict) -> bool:
     """A row the trainer can score: text fields and a gold among the ids."""
     candidates = row.get("candidates") or []
     ids = [candidate.get("id") for candidate in candidates]
-    return bool(row.get("state") and row.get("question") and len(ids) >= 2
-                and len(set(ids)) == len(ids)
-                and all(candidate.get("text") for candidate in candidates)
-                and row.get("answer") in ids)
+    return bool(
+        row.get("state")
+        and row.get("question")
+        and len(ids) >= 2
+        and len(set(ids)) == len(ids)
+        and all(candidate.get("text") for candidate in candidates)
+        and row.get("answer") in ids
+    )

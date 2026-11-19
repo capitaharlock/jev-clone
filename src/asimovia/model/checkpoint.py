@@ -1,4 +1,5 @@
 """Read and write a checkpoint folder: model.safetensors plus config.json."""
+
 from __future__ import annotations
 
 import json
@@ -15,8 +16,7 @@ CONFIG = "config.json"
 
 
 def load_config(folder: Path) -> ModelConfig:
-    return ModelConfig(**json.loads((Path(folder) / CONFIG).read_text(
-        encoding="utf-8")))
+    return ModelConfig(**json.loads((Path(folder) / CONFIG).read_text(encoding="utf-8")))
 
 
 def load_weights(model: DecisionModel, path: Path) -> None:
@@ -36,13 +36,14 @@ def load_weights(model: DecisionModel, path: Path) -> None:
         if old.shape[0] > new.shape[0]:
             raise RuntimeError("checkpoint context exceeds the new model")
         grown = new.clone()
-        grown[:old.shape[0]] = old
+        grown[: old.shape[0]] = old
         saved[key] = grown
     model.load_state_dict(saved, strict=True)
 
 
-def load_model(folder: Path, device: str | torch.device = "cpu",
-               max_length: int | None = None) -> DecisionModel:
+def load_model(
+    folder: Path, device: str | torch.device = "cpu", max_length: int | None = None
+) -> DecisionModel:
     """An eval-mode model from a checkpoint folder, dropout off."""
     config = replace(load_config(folder), dropout=0.0)
     if max_length and max_length > config.max_length:
@@ -55,9 +56,10 @@ def load_model(folder: Path, device: str | torch.device = "cpu",
 def save(model: DecisionModel, folder: Path) -> None:
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
-    tensors = {name: value.detach().cpu().contiguous()
-               for name, value in model.state_dict().items()}
+    tensors = {
+        name: value.detach().cpu().contiguous() for name, value in model.state_dict().items()
+    }
     save_file(tensors, str(folder / WEIGHTS))
     (folder / CONFIG).write_text(
-        json.dumps(asdict(model.config), indent=2, sort_keys=True) + "\n",
-        encoding="utf-8")
+        json.dumps(asdict(model.config), indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )

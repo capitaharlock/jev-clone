@@ -8,6 +8,7 @@ The encoder reads the whole sequence once, so every option is seen next to
 the question and the state. The head then scores each option span against
 the rest. No pretrained checkpoint and no fitted tokenizer enter the model.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -44,19 +45,19 @@ class ByteTokenizer:
     def encode(self, text: str, max_length: int) -> list[int]:
         if max_length < 2:
             raise ValueError("max_length must leave room for BOS and EOS")
-        body = list(text.encode("utf-8"))[:max_length - 2]
+        body = list(text.encode("utf-8"))[: max_length - 2]
         return [self.BOS, *body, self.EOS]
 
-    def batch(self, texts: list[str], max_length: int,
-              device: torch.device) -> tuple[torch.Tensor, torch.Tensor]:
+    def batch(
+        self, texts: list[str], max_length: int, device: torch.device
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         rows = [self.encode(text, max_length) for text in texts]
         width = max(len(row) for row in rows)
-        ids = torch.full((len(rows), width), self.PAD, dtype=torch.long,
-                         device=device)
+        ids = torch.full((len(rows), width), self.PAD, dtype=torch.long, device=device)
         mask = torch.zeros((len(rows), width), dtype=torch.bool, device=device)
         for index, row in enumerate(rows):
-            ids[index, :len(row)] = torch.tensor(row, device=device)
-            mask[index, :len(row)] = True
+            ids[index, : len(row)] = torch.tensor(row, device=device)
+            mask[index, : len(row)] = True
         return ids, mask
 
 
@@ -65,8 +66,9 @@ class DecisionModel(nn.Module):
 
     format = "asimovia-decision-v1"
 
-    def __init__(self, config: ModelConfig = ModelConfig()):
+    def __init__(self, config: ModelConfig | None = None):
         super().__init__()
+        config = config or ModelConfig()
         if config.vocab_size != ByteTokenizer.VOCAB_SIZE:
             raise ValueError("vocab_size must match the byte tokenizer")
         if config.d_model % config.n_heads:
@@ -85,7 +87,8 @@ class DecisionModel(nn.Module):
             norm_first=True,
         )
         self.encoder = nn.TransformerEncoder(
-            layer, num_layers=config.n_layers, enable_nested_tensor=False)
+            layer, num_layers=config.n_layers, enable_nested_tensor=False
+        )
         self.encoder_norm = nn.LayerNorm(config.d_model)
         self.pointer = PointerDecisionHead(
             d_state=config.d_model,
@@ -106,7 +109,8 @@ class DecisionModel(nn.Module):
                 nn.init.ones_(module.weight)
                 nn.init.zeros_(module.bias)
 
-    def _budgets(self, limit: int, options: int) -> tuple[int, int, int]:
+    @staticmethod
+    def budgets(limit: int, options: int) -> tuple[int, int, int]:
         """Byte budgets for question, state and each option.
 
         The question can carry the constraint of the decision, so its cap
@@ -118,16 +122,21 @@ class DecisionModel(nn.Module):
         state_limit = min(256, max(16, limit // 8))
         option_room = limit - separators - question_limit - state_limit
         if option_room < 4 * max(options, 1):
-            state_limit = max(
-                8, limit - separators - question_limit - 4 * max(options, 1))
+            state_limit = max(8, limit - separators - question_limit - 4 * max(options, 1))
             option_room = limit - separators - question_limit - state_limit
         option_limit = max(1, option_room // max(options, 1))
         return question_limit, state_limit, option_limit
 
-    def _pack(self, state_ids: torch.Tensor, state_mask: torch.Tensor,
-              question_ids: torch.Tensor, question_mask: torch.Tensor,
-              option_ids: torch.Tensor, option_token_mask: torch.Tensor,
-              option_mask: torch.Tensor) -> tuple[torch.Tensor, ...]:
+    def _pack(
+        self,
+        state_ids: torch.Tensor,
+        state_mask: torch.Tensor,
+        question_ids: torch.Tensor,
+        question_mask: torch.Tensor,
+        option_ids: torch.Tensor,
+        option_token_mask: torch.Tensor,
+        option_mask: torch.Tensor,
+    ) -> tuple[torch.Tensor, ...]:
         """Lay every decision out in fixed-width slots.
 
         The state slot is always `state_limit` wide. The question slot and
@@ -139,8 +148,7 @@ class DecisionModel(nn.Module):
         the same logits.
         """
         batch, options, _ = option_ids.shape
-        question_limit, state_limit, option_limit = self._budgets(
-            self.config.max_length, options)
+        question_limit, state_limit, option_limit = self.budgets(self.config.max_length, options)
         device = state_ids.device
         rows = []
         for b in range(batch):
@@ -148,28 +156,30 @@ class DecisionModel(nn.Module):
             # turn is the one the decision is about.
             state = state_ids[b, state_mask[b]][-state_limit:]
             question = question_ids[b, question_mask[b]][:question_limit]
-            texts = [option_ids[b, k, option_token_mask[b, k]][:option_limit]
-                     if option_mask[b, k] else option_ids[b, k, :0]
-                     for k in range(options)]
-            question_width = min(question_limit,
-                                 max(self.config.question_slot,
-                                     question.numel()))
-            option_width = min(option_limit,
-                               max([self.config.option_slot]
-                                   + [t.numel() for t in texts]))
-            pieces = [("state", state, state_limit), ("sep", None, 1),
-                      ("question", question, question_width)]
+            texts = [
+                option_ids[b, k, option_token_mask[b, k]][:option_limit]
+                if option_mask[b, k]
+                else option_ids[b, k, :0]
+                for k in range(options)
+            ]
+            question_width = min(question_limit, max(self.config.question_slot, question.numel()))
+            option_width = min(
+                option_limit, max([self.config.option_slot] + [t.numel() for t in texts])
+            )
+            pieces = [
+                ("state", state, state_limit),
+                ("sep", None, 1),
+                ("question", question, question_width),
+            ]
             for k, text in enumerate(texts):
                 pieces += [("sep", None, 1), (k, text, option_width)]
             rows.append(pieces)
         width = max(sum(w for _, _, w in pieces) for pieces in rows)
-        ids = torch.full((batch, width), self.tokenizer.PAD, dtype=torch.long,
-                         device=device)
+        ids = torch.full((batch, width), self.tokenizer.PAD, dtype=torch.long, device=device)
         mask = torch.zeros((batch, width), dtype=torch.bool, device=device)
         state_span = torch.zeros_like(mask)
         question_span = torch.zeros_like(mask)
-        option_span = torch.zeros((batch, options, width), dtype=torch.bool,
-                                  device=device)
+        option_span = torch.zeros((batch, options, width), dtype=torch.bool, device=device)
         for b, pieces in enumerate(rows):
             cursor = 0
             for name, tokens, slot in pieces:
@@ -180,9 +190,13 @@ class DecisionModel(nn.Module):
                     end = cursor + tokens.numel()
                     ids[b, cursor:end] = tokens
                     mask[b, cursor:end] = True
-                    span = (state_span[b] if name == "state" else
-                            question_span[b] if name == "question" else
-                            option_span[b, name])
+                    span = (
+                        state_span[b]
+                        if name == "state"
+                        else question_span[b]
+                        if name == "question"
+                        else option_span[b, name]
+                    )
                     span[cursor:end] = True
                 cursor += slot
         return ids, mask, state_span, question_span, option_span
@@ -202,10 +216,16 @@ class DecisionModel(nn.Module):
         hidden = self.encoder(hidden, src_key_padding_mask=~mask.bool())
         return self.encoder_norm(hidden)
 
-    def forward(self, state_ids: torch.Tensor, state_mask: torch.Tensor,
-                question_ids: torch.Tensor, question_mask: torch.Tensor,
-                option_ids: torch.Tensor, option_token_mask: torch.Tensor,
-                option_mask: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        state_ids: torch.Tensor,
+        state_mask: torch.Tensor,
+        question_ids: torch.Tensor,
+        question_mask: torch.Tensor,
+        option_ids: torch.Tensor,
+        option_token_mask: torch.Tensor,
+        option_mask: torch.Tensor,
+    ) -> torch.Tensor:
         """Return `[B, K + 1]` logits; the final column is unknown."""
         if option_ids.dim() != 3:
             raise ValueError("option_ids must be [B, K, T]")
@@ -213,15 +233,21 @@ class DecisionModel(nn.Module):
         if option_mask.shape != (batch, options):
             raise ValueError("option_mask must be [B, K]")
         ids, mask, state_span, question_span, option_span = self._pack(
-            state_ids, state_mask, question_ids, question_mask,
-            option_ids, option_token_mask, option_mask)
+            state_ids,
+            state_mask,
+            question_ids,
+            question_mask,
+            option_ids,
+            option_token_mask,
+            option_mask,
+        )
         hidden = self.encode(ids, mask)
         questions = self._pool(hidden, question_span)
         weights = option_span.unsqueeze(-1).to(hidden.dtype)
-        option_vectors = (
-            (hidden[:, None] * weights).sum(2) / weights.sum(2).clamp(min=1))
+        option_vectors = (hidden[:, None] * weights).sum(2) / weights.sum(2).clamp(min=1)
         return self.pointer.forward_batch(
-            hidden, state_span, questions, option_vectors, option_mask)
+            hidden, state_span, questions, option_vectors, option_mask
+        )
 
     def lineage(self) -> dict:
         return {

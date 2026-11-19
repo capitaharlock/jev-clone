@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this model, its benchmark or its data builder, please cite it."
+title: "asimovia-decision-v1: a byte-level decision model trained from random weights"
+type: software
+authors:
+  - family-names: Juncadella
+    given-names: Ricart
+    affiliation: Asimovia
+version: 1.0.0
+date-released: 2026-11-17
+license: Apache-2.0
+repository-code: "https://github.com/capitaharlock/jev-clone"
+keywords:
+  - decision model
+  - pointer network
+  - byte-level transformer
+  - curriculum learning
+  - programmatic supervision
+  - Open Food Facts
